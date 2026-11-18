@@ -8,7 +8,8 @@
 namespace Passepartout {
 class ThemeModal final : public wxDialog {
 public:
+    enum class Mode { ReadOnly, Editable };
     ThemeModal(wxWindow *parent, const wxString &title,
-        const std::function<wxWindow *(wxWindow *)> &makeContent);
+        const std::function<wxWindow *(wxWindow *)> &makeContent, Mode mode = Mode::ReadOnly);
 };
 }

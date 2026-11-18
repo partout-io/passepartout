@@ -149,22 +149,23 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
                 OpenVpnCredentials credentials{};
                 credentials.otpMethod.value = OpenVpnCredentialsOTPMethod::none;
                 if (module.value.credentials) credentials = *module.value.credentials;
-                const auto update = [this, index](std::string username, std::string password) {
-                    auto module = std::get<TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
-                    OpenVpnCredentials credentials{};
-                    credentials.otpMethod.value = OpenVpnCredentialsOTPMethod::none;
-                    if (module.value.credentials) credentials = *module.value.credentials;
+                const auto update = [&credentials](std::string username, std::string password) {
                     credentials.username = std::move(username);
                     credentials.password = std::move(password);
-                    module.value.credentials = std::move(credentials);
-                    editor_->UpdateModule(module);
-                    RefreshState();
                 };
                 ThemeModal modal(this, Localized(StringKey::GlobalNounsAccount),
-                    [credentials, update](wxWindow *parent) {
+                    [&credentials, update](wxWindow *parent) {
                         return new OpenVPNCredentialsView(parent, credentials, update);
-                    });
-                modal.ShowModal();
+                    }, ThemeModal::Mode::Editable);
+                if (modal.ShowModal() != wxID_OK) return;
+                auto updated = std::get<TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
+                // Preserve properties outside this editor from the latest profile draft.
+                auto accepted = updated.value.credentials.value_or(credentials);
+                accepted.username = std::move(credentials.username);
+                accepted.password = std::move(credentials.password);
+                updated.value.credentials = std::move(accepted);
+                editor_->UpdateModule(updated);
+                RefreshState();
             }, [this, index] {
                 const auto draft = editor_->Snapshot().draft;
                 const auto &module = std::get<TaggedModuleOpenVpn>(draft.modules.at(index)).value;
