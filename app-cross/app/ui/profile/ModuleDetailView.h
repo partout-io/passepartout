@@ -13,7 +13,7 @@ using OpenModuleContent = std::function<void(wxString, wxString)>;
 class ModuleDetailView : public ThemeDetailView {
 public:
     ModuleDetailView(wxWindow *parent, OpenModuleContent openContent,
-        Presentation presentation = Presentation::List);
+        Presentation presentation = Presentation::Form);
     void Row(const wxString &title, const nlohmann::json &value, bool longContent = false,
         const std::optional<wxString> &preview = std::nullopt);
     void Row(StringKey title, const nlohmann::json &value, bool longContent = false,

@@ -99,7 +99,7 @@ if(BUILD_APP)
         add_executable(passepartout-ui-test
             tests/ThemeDetails.cc app/ui/settings/SettingsView.cc
             app/theme/Theme.cc app/theme/ThemeList.cc
-            app/theme/ThemeDetailList.cc app/theme/ThemeDetailView.cc
+            app/theme/ThemeDetailView.cc
             app/theme/ThemeContentLink.cc app/strings/Strings.cc)
         target_compile_features(passepartout-ui-test PRIVATE cxx_std_17)
         if(MSVC)

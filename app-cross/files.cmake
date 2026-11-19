@@ -6,7 +6,6 @@ set(APP_SOURCES
     app/strings/Strings.cc
     app/theme/Theme.cc
     app/theme/ThemeContentLink.cc
-    app/theme/ThemeDetailList.cc
     app/theme/ThemeDetailView.cc
     app/theme/ThemeList.cc
     app/theme/ThemeLongContent.cc

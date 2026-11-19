@@ -4,7 +4,6 @@
 
 #pragma once
 #include "Theme.h"
-#include "ThemeDetailList.h"
 #include <wx/scrolwin.h>
 #include <functional>
 #include <vector>
@@ -12,8 +11,8 @@
 namespace Passepartout {
 class ThemeDetailView : public wxScrolledWindow {
 public:
-    enum class Presentation { List, Form, Plain, Centered };
-    explicit ThemeDetailView(wxWindow *parent, Presentation presentation = Presentation::List);
+    enum class Presentation { Form, Plain, Centered };
+    explicit ThemeDetailView(wxWindow *parent, Presentation presentation = Presentation::Plain);
     void Section(const wxString &title);
     void Field(const wxString &title, const wxString &value, bool monospace = false);
     void CopiableField(const wxString &title, const wxString &value, bool monospace = false);
@@ -46,9 +45,7 @@ private:
     wxFlexGridSizer *FormRows();
     wxStaticText *Value(const wxString &value, bool monospace = false);
     wxBoxSizer *Row(const wxString &title);
-    ThemeDetailList *List();
     wxBoxSizer *layout_;
-    ThemeDetailList *list_ = nullptr;
     Presentation presentation_;
     wxWindow *contentParent_;
     wxSizer *section_;

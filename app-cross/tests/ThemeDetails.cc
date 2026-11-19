@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <wx/simplebook.h>
+#include <wx/dataview.h>
 #include <wx/uilocale.h>
 
 class ThemeDetails final : public wxApp {

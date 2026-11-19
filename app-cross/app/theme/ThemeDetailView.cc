@@ -35,24 +35,16 @@ void ThemeDetailView::Section(const wxString &title) {
         formRows_ = nullptr;
         return;
     }
-    list_ = nullptr;
     auto *label = new wxStaticText(this, wxID_ANY, title);
     auto font = label->GetFont().Bold();
     if (presentation_ == Presentation::Centered) font = font.Scaled(1.3f);
     label->SetFont(font);
-    if (presentation_ == Presentation::Plain) {
-        layout_->AddSpacer(Theme::Spacing(this));
-        layout_->Add(label, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
-        layout_->AddSpacer(Theme::Spacing(this, Theme::Space::SectionContent));
-        return;
-    }
     const int alignment = presentation_ == Presentation::Centered
         ? static_cast<int>(wxALIGN_CENTER_HORIZONTAL) : static_cast<int>(wxEXPAND);
     layout_->Add(label, 0, alignment | wxALL,
         presentation_ == Presentation::Centered ? Theme::Spacing(this, Theme::Space::SectionContent) : Theme::Spacing(this));
 }
 wxBoxSizer *ThemeDetailView::Row(const wxString &title) {
-    list_ = nullptr;
     auto *row = new wxBoxSizer(wxHORIZONTAL);
     auto *caption = new wxStaticText(this, wxID_ANY, title);
     caption->SetMinSize(FromDIP(wxSize(150, -1)));
@@ -60,13 +52,6 @@ wxBoxSizer *ThemeDetailView::Row(const wxString &title) {
     layout_->Add(row, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     layout_->Add(new wxStaticLine(this), 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
     return row;
-}
-ThemeDetailList *ThemeDetailView::List() {
-    if (!list_) {
-        list_ = new ThemeDetailList(this);
-        layout_->Add(list_, 0, wxEXPAND | wxLEFT | wxRIGHT, Theme::Spacing(this));
-    }
-    return list_;
 }
 void ThemeDetailView::Field(const wxString &title, const wxString &value, bool monospace) {
     if (presentation_ == Presentation::Plain) {
@@ -118,10 +103,8 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
         }
         return;
     }
-    List()->Append(title, value, std::move(action), enabled);
 }
 void ThemeDetailView::ExternalLink(const wxString &title, std::function<void()> action) {
-    list_ = nullptr;
     auto *link = new ThemeContentLink(contentParent_, title, std::move(action));
     section_->Add(link, SectionRowFlags(false));
 }
@@ -157,7 +140,6 @@ void ThemeDetailView::Items(const wxString &title, const std::vector<wxString> &
 }
 
 wxButton *ThemeDetailView::Action(const wxString &title, std::function<void()> action) {
-    list_ = nullptr;
     auto *button = new wxButton(this, wxID_ANY, title);
     button->Bind(wxEVT_BUTTON, [action = std::move(action)](wxCommandEvent &) {
         action();
@@ -216,7 +198,6 @@ void ThemeDetailView::Finish() {
     FitInside();
 }
 wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &support, bool checked) {
-    list_ = nullptr;
     auto *row = new wxBoxSizer(wxHORIZONTAL);
     auto *captions = new wxBoxSizer(wxVERTICAL);
     captions->Add(WrappingText(title), 0, wxEXPAND);
@@ -248,7 +229,6 @@ wxCheckBox *ThemeDetailView::CopiableToggle(const wxString &value, bool checked)
     return control;
 }
 void ThemeDetailView::Message(const wxString &text, TextStyle style) {
-    list_ = nullptr;
     if (presentation_ != Presentation::Centered) {
         auto *label = WrappingText(text);
         if (style == TextStyle::Secondary) Theme::SecondaryText(label);
@@ -267,7 +247,6 @@ void ThemeDetailView::Message(const wxString &text, TextStyle style) {
     }
 }
 void ThemeDetailView::Logo() {
-    list_ = nullptr;
     const auto icon = Theme::AppIcon(this, 64);
     if (icon.IsOk()) layout_->Add(new wxStaticBitmap(this, wxID_ANY, wxBitmap(icon)),
         0, wxALIGN_CENTER | wxALL, Theme::Spacing(this));
