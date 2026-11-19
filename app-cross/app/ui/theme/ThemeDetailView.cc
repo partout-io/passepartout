@@ -222,8 +222,9 @@ wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &suppo
     auto *row = new wxBoxSizer(wxHORIZONTAL);
     auto *captions = new wxBoxSizer(wxVERTICAL);
     captions->Add(WrappingText(title), 0, wxEXPAND);
+    wxStaticText *subtitle = nullptr;
     if (!support.empty()) {
-        auto *subtitle = WrappingText(support);
+        subtitle = WrappingText(support);
         Theme::SecondaryText(subtitle);
         captions->Add(subtitle, 0, wxEXPAND | wxTOP,
             Theme::Spacing(this, Theme::Space::SectionContent));
@@ -232,9 +233,22 @@ wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &suppo
     auto *control = new wxCheckBox(contentParent_, wxID_ANY, {});
     control->SetName(title);
     control->SetValue(checked);
+    if (subtitle) toggleSupport_[control] = subtitle;
     row->Add(control, 0, wxALIGN_CENTER_VERTICAL);
     section_->Add(row, SectionRowFlags());
     return control;
+}
+void ThemeDetailView::SetToggleSupport(wxCheckBox *toggle, const wxString &support) {
+    const auto found = toggleSupport_.find(toggle);
+    if (found == toggleSupport_.end()) return;
+    for (auto &entry : wrapped_) {
+        if (entry.label != found->second || entry.text == support) continue;
+        entry.text = support;
+        entry.width = -1;
+        entry.label->SetLabel(support);
+        Rewrap();
+        return;
+    }
 }
 wxCheckBox *ThemeDetailView::CopiableToggle(const wxString &value, bool checked) {
     auto *row = new wxBoxSizer(wxHORIZONTAL);

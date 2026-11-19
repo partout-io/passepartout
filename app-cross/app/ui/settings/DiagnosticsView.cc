@@ -27,8 +27,17 @@ DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagno
     extensive->Enable(false);
     auto *privacy = Toggle(Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateData),
         Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle), preferences.Snapshot().logsPrivateData);
-    Message(Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles), TextStyle::Secondary);
-    privacy->Enable(preferences.CanChangePrivateData());
+    const auto refreshLogging = [this, privacy, extensive, &preferences] {
+        const bool canChange = preferences.CanChangePrivateData();
+        privacy->Enable(canChange);
+        SetToggleSupport(privacy, Localized(canChange
+            ? StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle
+            : StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles));
+        SetToggleSupport(extensive, Localized(canChange
+            ? StringKey::ViewsDiagnosticsRowsExtensiveLoggingSubtitle
+            : StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles));
+    };
+    refreshLogging();
     privacy->Bind(wxEVT_CHECKBOX, [this, privacy, &preferences](wxCommandEvent &) {
         try {
             preferences.SetLogsPrivateData(privacy->GetValue());
@@ -37,8 +46,8 @@ DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagno
             PresentError(this);
         }
     });
-    Bind(wxEVT_TIMER, [privacy, &preferences](wxTimerEvent &) {
-        privacy->Enable(preferences.CanChangePrivateData());
+    Bind(wxEVT_TIMER, [refreshLogging](wxTimerEvent &) {
+        refreshLogging();
     });
     timer_.Start(200);
     EndSection();

@@ -7,6 +7,7 @@
 #include <wx/scrolwin.h>
 #include <functional>
 #include <vector>
+#include <map>
 
 namespace Passepartout {
 class ThemeDetailView : public wxScrolledWindow {
@@ -27,6 +28,7 @@ public:
     wxButton *Action(const wxString &title, std::function<void()> action);
     wxTextCtrl *TextField(const wxString &title, const wxString &value, long style = 0);
     wxCheckBox *Toggle(const wxString &title, const wxString &support, bool checked);
+    void SetToggleSupport(wxCheckBox *toggle, const wxString &support);
     wxCheckBox *CopiableToggle(const wxString &value, bool checked);
     enum class TextStyle { Primary, Secondary };
     void Message(const wxString &text, TextStyle style = TextStyle::Primary);
@@ -43,6 +45,7 @@ private:
         int width = -1;
     };
     std::vector<WrappedLabel> wrapped_;
+    std::map<wxCheckBox *, wxStaticText *> toggleSupport_;
     std::vector<std::vector<wxButton *>> buttonGroups_{1};
     bool wrapPending_ = false;
     wxSizerFlags SectionRowFlags(bool expand = true);
