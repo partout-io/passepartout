@@ -29,6 +29,11 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     : wxDialog(parent, wxID_ANY, Localized(StringKey::GlobalNounsProfile), wxDefaultPosition,
         wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
       profiles_(profiles), editor_(std::move(editor)), keys_(keys), timer_(this) {
+    SetIcon(Theme::AppIcon(this));
+    Bind(wxEVT_DPI_CHANGED, [this](wxDPIChangedEvent &event) {
+        SetIcon(Theme::AppIcon(this));
+        event.Skip();
+    });
     auto *layout = new wxBoxSizer(wxVERTICAL);
     auto *splitter = new ThemeSplitView(this);
     auto *sidebarPanel = splitter->Sidebar();
