@@ -5,9 +5,9 @@
 #pragma once
 #include <wx/wx.h>
 #include <wx/snglinst.h>
-#include "../context/AppContext.h"
+#include "context/AppContext.h"
 #ifdef _WIN32
-#include "../ui/platform/WindowsFileActivation.h"
+#include "ui/platform/WindowsFileActivation.h"
 #endif
 
 class PassepartoutApp : public wxApp {

@@ -77,9 +77,6 @@ endfunction()
 if(BUILD_APP)
     include("core.cmake")
     add_executable(passepartout ${APP_SOURCES})
-    target_include_directories(passepartout PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/app/include"
-    )
     target_link_partout_runtime(passepartout)
     target_link_libraries(passepartout PRIVATE passepartout-core)
 
