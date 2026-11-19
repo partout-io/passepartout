@@ -12,6 +12,7 @@ namespace Passepartout {
 ThemeDetailView::ThemeDetailView(wxWindow *parent, Presentation presentation)
     : wxScrolledWindow(parent, wxID_ANY), layout_(new wxBoxSizer(wxVERTICAL)),
       presentation_(presentation), contentParent_(this), section_(layout_) {
+    Theme::Apply(this);
     SetScrollRate(0, Theme::Spacing(this));
     SetSizer(layout_);
     Bind(wxEVT_SIZE, [this](wxSizeEvent &event) {

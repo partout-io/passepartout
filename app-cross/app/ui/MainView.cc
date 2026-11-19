@@ -34,6 +34,7 @@ MainView::MainView(AppContext &context, bool demo,
     : wxFrame(nullptr, wxID_ANY, Text(context.crossConstants.tags.app) +
           (demo ? " (" + Text(context.crossConstants.commandLine.demoArgument) + ")" : wxString())),
       context_(context), timer_(this), picker_(pickerFactory(*this)) {
+    Theme::Apply(this);
     auto *panel = new wxPanel(this);
     Theme::Apply(panel);
     const auto gap = Theme::Spacing(panel);
@@ -132,10 +133,6 @@ MainView::MainView(AppContext &context, bool demo,
         }
     });
     Bind(wxEVT_TIMER, &MainView::Tick, this);
-    Bind(wxEVT_SYS_COLOUR_CHANGED, [panel](wxSysColourChangedEvent &event) {
-        Theme::Apply(panel);
-        event.Skip();
-    });
     const auto icon = Theme::AppIcon(this);
     if (icon.IsOk()) SetIcon(icon);
     SetMinSize(FromDIP(wxSize(640, 360)));

@@ -10,6 +10,7 @@ ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
     const std::function<wxWindow *(wxWindow *)> &makeContent, Mode mode, Sizing sizing)
     : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
         wxDEFAULT_DIALOG_STYLE | (sizing == Sizing::FixedContent ? 0 : wxRESIZE_BORDER)) {
+    Theme::Apply(this);
     auto *layout = new wxBoxSizer(wxVERTICAL);
     layout->Add(makeContent(this), 1, wxEXPAND);
     auto *buttons = new wxStdDialogButtonSizer;

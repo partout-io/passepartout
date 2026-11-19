@@ -17,6 +17,7 @@ namespace Passepartout {
 SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     : wxDialog(parent, wxID_ANY, Localized(StringKey::ViewsSettingsTitle), wxDefaultPosition,
         wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER), context_(context) {
+    Theme::Apply(this);
     SetIcon(Theme::SettingsIcon(this));
     Bind(wxEVT_SYS_COLOUR_CHANGED, [this](wxSysColourChangedEvent &event) {
         SetIcon(Theme::SettingsIcon(this));

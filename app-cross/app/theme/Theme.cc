@@ -55,10 +55,18 @@ int Theme::Spacing(wxWindow *window, Space space) {
     }
     return window->FromDIP(2 * unit);
 }
-void Theme::Apply(wxWindow *window) {
-    window->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOW));
-    window->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT));
-    window->Refresh();
+void Theme::Apply(wxWindow *window, Background background) {
+    const auto update = [window, background] {
+        const bool content = background == Background::Content;
+        window->SetBackgroundColour(wxSystemSettings::GetColour(content ? wxSYS_COLOUR_WINDOW : wxSYS_COLOUR_BTNFACE));
+        window->SetForegroundColour(wxSystemSettings::GetColour(content ? wxSYS_COLOUR_WINDOWTEXT : wxSYS_COLOUR_BTNTEXT));
+        window->Refresh();
+    };
+    update();
+    window->Bind(wxEVT_SYS_COLOUR_CHANGED, [update](wxSysColourChangedEvent &event) {
+        update();
+        event.Skip();
+    });
 }
 void Theme::SecondaryText(wxWindow *window) {
     window->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));

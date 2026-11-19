@@ -29,6 +29,7 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     : wxDialog(parent, wxID_ANY, Localized(StringKey::GlobalNounsProfile), wxDefaultPosition,
         wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
       profiles_(profiles), editor_(std::move(editor)), keys_(keys), timer_(this) {
+    Theme::Apply(this);
     SetIcon(Theme::ProfileIcon(this));
     Bind(wxEVT_SYS_COLOUR_CHANGED, [this](wxSysColourChangedEvent &event) {
         SetIcon(Theme::ProfileIcon(this));
