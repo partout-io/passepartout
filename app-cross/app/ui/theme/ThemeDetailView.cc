@@ -7,7 +7,7 @@
 #include "../../strings/Strings.h"
 #include <wx/statline.h>
 #include <wx/statbox.h>
-#include <wx/wrapsizer.h>
+#include "ThemeButtonRow.h"
 
 namespace Passepartout {
 ThemeDetailView::ThemeDetailView(wxWindow *parent, Presentation presentation)
@@ -141,21 +141,18 @@ void ThemeDetailView::Items(const wxString &title, const std::vector<wxString> &
     for (const auto &value : values) CopiableField(title, value);
 }
 
-std::vector<wxButton *> ThemeDetailView::Actions(
-    const std::vector<std::pair<wxString, std::function<void()>>> &actions) {
-    auto *row = new wxWrapSizer(wxHORIZONTAL);
-    std::vector<wxButton *> buttons;
-    for (const auto &[title, action] : actions) {
-        auto *button = new wxButton(contentParent_, wxID_ANY, title);
-        button->Bind(wxEVT_BUTTON, [action](wxCommandEvent &) {
-            action();
-        });
-        row->Add(button, 0, wxRIGHT | wxBOTTOM, Theme::Spacing(this));
-        buttons.push_back(button);
-    }
+void ThemeDetailView::EndSection() {
+    contentParent_ = this;
+    section_ = layout_;
+    formRows_ = nullptr;
+}
+wxButton *ThemeDetailView::ButtonRow(const wxString &title, std::function<void()> action,
+    const wxString &explanation) {
+    auto *row = new ThemeButtonRow(contentParent_, title, std::move(action), explanation);
+    if (row->Explanation()) wrapped_.push_back({row->Explanation(), explanation});
     section_->Add(row, SectionRowFlags());
     formRows_ = nullptr;
-    return buttons;
+    return row->Button();
 }
 wxButton *ThemeDetailView::Action(const wxString &title, std::function<void()> action) {
     auto *button = new wxButton(this, wxID_ANY, title);

@@ -7,7 +7,6 @@
 #include <wx/scrolwin.h>
 #include <functional>
 #include <vector>
-#include <utility>
 
 namespace Passepartout {
 class ThemeDetailView : public wxScrolledWindow {
@@ -15,6 +14,7 @@ public:
     enum class Presentation { Form, Plain, Centered };
     explicit ThemeDetailView(wxWindow *parent, Presentation presentation = Presentation::Plain);
     void Section(const wxString &title);
+    void EndSection();
     void Field(const wxString &title, const wxString &value, bool monospace = false);
     void CopiableField(const wxString &title, const wxString &value, bool monospace = false);
     void ContentLink(const wxString &title, std::function<void()> action,
@@ -22,7 +22,8 @@ public:
     void ExternalLink(const wxString &title, std::function<void()> action);
     void LongContent(const wxString &title, const wxString &preview, std::function<void()> action, bool secure = false);
     void Items(const wxString &title, const std::vector<wxString> &values);
-    std::vector<wxButton *> Actions(const std::vector<std::pair<wxString, std::function<void()>>> &actions);
+    wxButton *ButtonRow(const wxString &title, std::function<void()> action,
+                        const wxString &explanation = {});
     wxButton *Action(const wxString &title, std::function<void()> action);
     wxTextCtrl *TextField(const wxString &title, const wxString &value, long style = 0);
     wxCheckBox *Toggle(const wxString &title, const wxString &support, bool checked);

@@ -97,6 +97,7 @@ if(BUILD_APP)
             tests/ThemeDetails.cc app/ui/settings/SettingsView.cc
             app/ui/theme/Theme.cc app/ui/theme/ThemeList.cc
             app/ui/theme/ThemeDetailView.cc app/ui/theme/ThemeLongContent.cc
+            app/ui/theme/ThemeButtonRow.cc
             app/ui/theme/ThemeContentLink.cc app/strings/Strings.cc)
         target_compile_features(passepartout-ui-test PRIVATE cxx_std_17)
         if(MSVC)

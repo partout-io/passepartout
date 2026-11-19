@@ -34,6 +34,7 @@ set(APP_SOURCES
     app/ui/settings/SettingsView.cc
     app/ui/settings/VersionView.cc
     app/ui/theme/Theme.cc
+    app/ui/theme/ThemeButtonRow.cc
     app/ui/theme/ThemeContentLink.cc
     app/ui/theme/ThemeDetailView.cc
     app/ui/theme/ThemeList.cc
