@@ -21,6 +21,10 @@ DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagno
         }, available ? wxString() : Localized(StringKey::ViewsDiagnosticsRuntimeUnavailable));
         button->Enable(available);
     }
+    Section({});
+    auto *extensive = Toggle(Localized(StringKey::ViewsDiagnosticsRowsExtensiveLogging),
+        Localized(StringKey::ViewsDiagnosticsRowsExtensiveLoggingSubtitle), false);
+    extensive->Enable(false);
     auto *privacy = Toggle(Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateData),
         Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle), preferences.Snapshot().logsPrivateData);
     Message(Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles), TextStyle::Secondary);

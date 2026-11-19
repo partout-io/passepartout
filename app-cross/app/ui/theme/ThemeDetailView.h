@@ -43,6 +43,7 @@ private:
         int width = -1;
     };
     std::vector<WrappedLabel> wrapped_;
+    std::vector<std::vector<wxButton *>> buttonGroups_{1};
     bool wrapPending_ = false;
     wxSizerFlags SectionRowFlags(bool expand = true);
     wxFlexGridSizer *FormRows();

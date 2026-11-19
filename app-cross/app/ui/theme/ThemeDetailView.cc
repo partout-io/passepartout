@@ -28,6 +28,7 @@ ThemeDetailView::ThemeDetailView(wxWindow *parent, Presentation presentation)
     });
 }
 void ThemeDetailView::Section(const wxString &title) {
+    buttonGroups_.emplace_back();
     if (IsForm() || presentation_ == Presentation::Plain) {
         auto *box = new wxStaticBoxSizer(wxVERTICAL, this, title);
         layout_->Add(box, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, Theme::Spacing(this));
@@ -142,6 +143,7 @@ void ThemeDetailView::Items(const wxString &title, const std::vector<wxString> &
 }
 
 void ThemeDetailView::EndSection() {
+    buttonGroups_.emplace_back();
     contentParent_ = this;
     section_ = layout_;
     formRows_ = nullptr;
@@ -149,6 +151,8 @@ void ThemeDetailView::EndSection() {
 wxButton *ThemeDetailView::ButtonRow(const wxString &title, std::function<void()> action,
     const wxString &explanation) {
     auto *row = new ThemeButtonRow(contentParent_, title, std::move(action), explanation);
+    buttonGroups_.back().push_back(row->Button());
+    ThemeButtonRow::AlignButtons(buttonGroups_.back());
     if (row->Explanation()) wrapped_.push_back({row->Explanation(), explanation});
     section_->Add(row, SectionRowFlags());
     formRows_ = nullptr;
@@ -192,6 +196,8 @@ wxStaticText *ThemeDetailView::WrappingText(const wxString &text) {
     return label;
 }
 void ThemeDetailView::Rewrap() {
+    for (const auto &buttons : buttonGroups_) ThemeButtonRow::AlignButtons(buttons);
+    Layout();
     bool changed = false;
     for (auto &entry : wrapped_) {
         const int width = entry.label->GetSize().x;

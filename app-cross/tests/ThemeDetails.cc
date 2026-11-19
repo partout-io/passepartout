@@ -39,6 +39,13 @@ int main(int argc, char **argv) {
             Passepartout::ThemeDetailView::Presentation::Form);
         secureRow->Section("Keys");
         secureRow->LongContent("Private key", secret, [] {}, true);
+        auto *appLog = secureRow->ButtonRow("App", [] {});
+        auto *tunnelLog = secureRow->ButtonRow("A longer localized tunnel label", [] {}, "Unavailable");
+        if (appLog->GetMinSize().x != tunnelLog->GetMinSize().x ||
+            tunnelLog->GetMinSize().x < tunnelLog->GetBestSize().x) return 10;
+        secureRow->EndSection();
+        secureRow->ButtonRow("An unrelated much longer report action", [] {});
+        if (appLog->GetMinSize().x != tunnelLog->GetMinSize().x) return 11;
         secureRow->Finish();
         if (wxWindow::FindWindowByLabel(secret, secureRow)) return 7;
         if (!wxWindow::FindWindowByLabel(Passepartout::Localized(
