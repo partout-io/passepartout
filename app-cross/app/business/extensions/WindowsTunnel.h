@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../business/TunnelStrategy.h"
+#include "../strategy/TunnelStrategy.h"
 
 namespace Passepartout {
 std::unique_ptr<TunnelStrategy> MakeWindowsTunnelStrategy(const std::string &serverUri,

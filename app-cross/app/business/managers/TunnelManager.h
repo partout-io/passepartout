@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "TunnelStrategy.h"
-#include "AppLogger.h"
+#include "../strategy/TunnelStrategy.h"
+#include "../extensions/AppLogger.h"
 #include <chrono>
 #include <optional>
 

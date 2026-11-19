@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "FileProfileJournal.h"
-#include "AtomicFile.h"
+#include "../extensions/AtomicFile.h"
 #include <stdexcept>
 
 namespace Passepartout {

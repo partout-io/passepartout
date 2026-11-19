@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../business/FileActivation.h"
+#include "../../business/extensions/FileActivation.h"
 
 namespace Passepartout {
 class WindowsFileActivation {

@@ -5,9 +5,9 @@
 #pragma once
 #include "AppSnapshot.h"
 #include "ProfileEditor.h"
-#include "../business/ProfileManager.h"
-#include "../business/TunnelManager.h"
-#include "../business/ConfigurationFiles.h"
+#include "../business/managers/ProfileManager.h"
+#include "../business/managers/TunnelManager.h"
+#include "../business/models/ConfigurationFiles.h"
 #include <condition_variable>
 #include <deque>
 #include <mutex>

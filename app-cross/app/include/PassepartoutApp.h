@@ -7,7 +7,7 @@
 #include <wx/snglinst.h>
 #include "../context/AppContext.h"
 #ifdef _WIN32
-#include "../platform/WindowsFileActivation.h"
+#include "../ui/platform/WindowsFileActivation.h"
 #endif
 
 class PassepartoutApp : public wxApp {

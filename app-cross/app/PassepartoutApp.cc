@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "PassepartoutApp.h"
-#include "business/AppLogger.h"
+#include "business/extensions/AppLogger.h"
 #include "ui/app/MainView.h"
 #include "strings/Strings.h"
 #include "partout.h"

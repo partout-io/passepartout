@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "DiagnosticsObservable.h"
-#include "../business/AppLogger.h"
+#include "../business/extensions/AppLogger.h"
 
 namespace Passepartout {
 DiagnosticsObservable::DiagnosticsObservable(std::unique_ptr<IssueReporter> reporter) : reporter_(std::move(reporter)) {}

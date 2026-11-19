@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "Profile.h"
+#include "../models/Profile.h"
 #include "AppTunnelInfo.h"
 #include "AppPreferences.h"
 #include <map>

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "business/FileActivation.h"
+#include "business/extensions/FileActivation.h"
 #include <cassert>
 #include <iostream>
 #include "Support.h"

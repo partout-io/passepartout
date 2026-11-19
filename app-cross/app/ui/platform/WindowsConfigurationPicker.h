@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../ui/extensions/ConfigurationPicker.h"
+#include "../extensions/ConfigurationPicker.h"
 #include <windows.h>
 
 namespace Passepartout {

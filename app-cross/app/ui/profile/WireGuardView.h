@@ -5,7 +5,7 @@
 #pragma once
 #include "ModuleDetailView.h"
 #include <partout/models/WireGuardModule.h>
-#include "../../business/WireGuardKeyGenerator.h"
+#include "../../business/strategy/WireGuardKeyGenerator.h"
 
 namespace Passepartout {
 class WireGuardView final : public ModuleDetailView {

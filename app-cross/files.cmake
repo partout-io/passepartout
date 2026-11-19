@@ -44,32 +44,32 @@ set(APP_SOURCES
 )
 if(WIN32)
     list(APPEND APP_SOURCES
-        app/platform/WindowsConfigurationPicker.cc
-        app/platform/WindowsFileActivation.cc
-        app/platform/WindowsHttpClient.cc
-        app/platform/WindowsIssueHandoff.cc
-        app/platform/WindowsTunnel.cc
-        app/platform/WindowsURLLauncher.cc
+        app/business/extensions/WindowsHttpClient.cc
+        app/business/extensions/WindowsTunnel.cc
+        app/ui/platform/WindowsConfigurationPicker.cc
+        app/ui/platform/WindowsFileActivation.cc
+        app/ui/platform/WindowsIssueHandoff.cc
+        app/ui/platform/WindowsURLLauncher.cc
     )
 endif()
 set(CORE_SOURCES
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/AppLogger.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/AtomicFile.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/BackgroundWorker.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/ConfigManager.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/ConfigurationFiles.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/FakeTunnelStrategy.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/FileActivation.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/FilePreferencesRepository.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/FileProfileJournal.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/FileProfileRepository.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/IssueReporter.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/PreferencesRepository.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/Profile.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/ProfileJournal.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/ProfileManager.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/TunnelManager.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/VersionChecker.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/AppLogger.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/AtomicFile.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/BackgroundWorker.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/FileActivation.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ConfigManager.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/IssueReporter.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ProfileManager.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/TunnelManager.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/VersionChecker.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/models/ConfigurationFiles.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/models/Profile.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FakeTunnelStrategy.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FilePreferencesRepository.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FileProfileJournal.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FileProfileRepository.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/PreferencesRepository.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/ProfileJournal.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/AppSession.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/AppSnapshot.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/ConfigObservable.cc"

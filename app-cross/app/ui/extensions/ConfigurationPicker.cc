@@ -3,7 +3,7 @@
 
 #include "ConfigurationPickerFactory.h"
 #ifdef _WIN32
-#include "../../platform/WindowsConfigurationPicker.h"
+#include "../platform/WindowsConfigurationPicker.h"
 #include <wx/window.h>
 
 namespace Passepartout {

@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../../observables/ProfileObservable.h"
-#include "../../business/WireGuardKeyGenerator.h"
+#include "../../business/strategy/WireGuardKeyGenerator.h"
 #include <wx/wx.h>
 #include <wx/simplebook.h>
 #include <wx/activityindicator.h>

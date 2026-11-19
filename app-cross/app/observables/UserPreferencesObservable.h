@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../business/PreferencesRepository.h"
+#include "../business/strategy/PreferencesRepository.h"
 #include <functional>
 #include <memory>
 #include <mutex>

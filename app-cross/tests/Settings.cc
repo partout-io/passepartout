@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "business/FilePreferencesRepository.h"
-#include "business/ConfigManager.h"
-#include "business/VersionChecker.h"
-#include "business/IssueReporter.h"
-#include "business/AppLogger.h"
-#include "business/Profile.h"
+#include "business/strategy/FilePreferencesRepository.h"
+#include "business/managers/ConfigManager.h"
+#include "business/managers/VersionChecker.h"
+#include "business/managers/IssueReporter.h"
+#include "business/extensions/AppLogger.h"
+#include "business/models/Profile.h"
 #include "observables/UserPreferencesObservable.h"
 #include "observables/ConfigObservable.h"
 #include "observables/CreditsObservable.h"

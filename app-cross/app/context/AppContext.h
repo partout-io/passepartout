@@ -6,7 +6,7 @@
 #include "../observables/ProfileObservable.h"
 #include "../observables/TunnelObservable.h"
 #include "Dependencies.h"
-#include "../business/WireGuardKeyGenerator.h"
+#include "../business/strategy/WireGuardKeyGenerator.h"
 #include "../observables/UserPreferencesObservable.h"
 #include "../observables/ConfigObservable.h"
 #include "../observables/VersionObservable.h"

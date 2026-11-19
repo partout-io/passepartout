@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "FileProfileRepository.h"
-#include "AtomicFile.h"
+#include "../extensions/AtomicFile.h"
 #include <algorithm>
 #include <stdexcept>
 #include <set>

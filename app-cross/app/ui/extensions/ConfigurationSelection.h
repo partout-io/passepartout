@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../../business/ConfigurationFiles.h"
+#include "../../business/models/ConfigurationFiles.h"
 
 namespace Passepartout {
 // Keep failures from individual native file reads separate from batch failures.

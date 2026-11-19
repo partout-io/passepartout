@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../business/VersionChecker.h"
-#include "../business/BackgroundWorker.h"
+#include "../business/managers/VersionChecker.h"
+#include "../business/extensions/BackgroundWorker.h"
 
 namespace Passepartout {
 class VersionObservable {

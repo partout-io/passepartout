@@ -4,8 +4,8 @@
 
 #pragma once
 #include "Credits.h"
-#include "../business/HttpClient.h"
-#include "../business/BackgroundWorker.h"
+#include "../business/strategy/HttpClient.h"
+#include "../business/extensions/BackgroundWorker.h"
 #include <map>
 
 namespace Passepartout {

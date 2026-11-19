@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../business/HttpClient.h"
+#include "../strategy/HttpClient.h"
 #include <chrono>
 
 namespace Passepartout {

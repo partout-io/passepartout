@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "business/FileProfileRepository.h"
-#include "business/FileProfileJournal.h"
-#include "business/FakeTunnelStrategy.h"
+#include "business/strategy/FileProfileRepository.h"
+#include "business/strategy/FileProfileJournal.h"
+#include "business/strategy/FakeTunnelStrategy.h"
 #include "observables/ProfileEditor.h"
 #include "observables/InteractiveLogin.h"
 #include "observables/TunnelObservable.h"

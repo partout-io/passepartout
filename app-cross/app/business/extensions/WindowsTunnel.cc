@@ -4,8 +4,8 @@
 
 #include "WindowsTunnel.h"
 #include "partout_windows.h"
-#include "../business/AppLogger.h"
-#include "../../tunnel/Preferences.h"
+#include "AppLogger.h"
+#include "../../../tunnel/Preferences.h"
 #include <partout/models/TunnelSnapshot.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Storage.h>

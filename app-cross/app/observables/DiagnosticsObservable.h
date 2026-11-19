@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../business/IssueReporter.h"
+#include "../business/managers/IssueReporter.h"
 #include <memory>
 #include <optional>
 

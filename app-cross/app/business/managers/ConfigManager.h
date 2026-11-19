@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "HttpClient.h"
+#include "../strategy/HttpClient.h"
 #include "ConfigBundleConfig.h"
 #include "ConfigFlag.h"
 #include <chrono>

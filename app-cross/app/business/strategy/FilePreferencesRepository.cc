@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "FilePreferencesRepository.h"
-#include "AtomicFile.h"
-#include "Profile.h"
+#include "../extensions/AtomicFile.h"
+#include "../models/Profile.h"
 
 namespace Passepartout {
 FilePreferencesRepository::FilePreferencesRepository(std::filesystem::path path) : path_(std::move(path)) {
