@@ -88,7 +88,6 @@
     <string name="views_preferences_locks_in_background">Lock in background</string>
     <string name="views_preferences_locks_in_background_footer">Lock the app with FaceID when sent to the background.</string>
     <string name="views_preferences_dns_falls_back">DNS fallback</string>
-    <string name="views_preferences_next_connection">Changes apply the next time a profile connects.</string>
     <string name="views_preferences_dns_falls_back_footer">Fall back to CloudFlare servers when the VPN does not provide DNS settings.</string>
     <string name="views_preferences_enables_iap">In-app purchases</string>
     <string name="views_preferences_enables_iap_footer">Enable support for paid features. Disable this if you do not have an Apple ID.</string>

@@ -371,7 +371,6 @@
 "views.preferences.crypto_backend" = "密码学";
 "views.preferences.dns_falls_back.footer" = "当 VPN 不提供 DNS 设置时，回退到 CloudFlare 服务器。";
 "views.preferences.dns_falls_back" = "DNS 备用";
-"views.preferences.next_connection" = "更改将在配置文件下次连接时生效。";
 "views.preferences.enables_iap.footer" = "启用对付费功能的支持。如果您没有 Apple ID，请禁用此功能。";
 "views.preferences.enables_iap" = "应用内购买";
 "views.preferences.erase_icloud.footer" = "要安全地从 iCloud 存储中删除所有配置文件，请在所有已同步的设备上执行此操作。这不会影响本地配置文件。";

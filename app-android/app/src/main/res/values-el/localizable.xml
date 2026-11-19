@@ -88,7 +88,6 @@
     <string name="views_preferences_locks_in_background">Κλείδωμα στο παρασκήνιο</string>
     <string name="views_preferences_locks_in_background_footer">Κλειδώστε την εφαρμογή με το FaceID όταν αποστέλλεται στο παρασκήνιο.</string>
     <string name="views_preferences_dns_falls_back">Εναλλακτικό DNS</string>
-    <string name="views_preferences_next_connection">Οι αλλαγές εφαρμόζονται την επόμενη φορά που συνδέεται ένα προφίλ.</string>
     <string name="views_preferences_dns_falls_back_footer">Χρησιμοποιεί τους διακομιστές CloudFlare όταν το VPN δεν παρέχει ρυθμίσεις DNS.</string>
     <string name="views_preferences_enables_iap">Αγορές εντός εφαρμογής</string>
     <string name="views_preferences_enables_iap_footer">Ενεργοποιήστε την υποστήριξη για πληρωμένες λειτουργίες. Απενεργοποιήστε το αν δεν έχετε Apple ID.</string>

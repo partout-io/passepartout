@@ -96,7 +96,6 @@
 "views.preferences.locks_in_background" = "Lock in background";
 "views.preferences.locks_in_background.footer" = "Lock the app with FaceID when sent to the background.";
 "views.preferences.dns_falls_back" = "DNS fallback";
-"views.preferences.next_connection" = "Changes apply the next time a profile connects.";
 "views.preferences.dns_falls_back.footer" = "Fall back to CloudFlare servers when the VPN does not provide DNS settings.";
 "views.preferences.enables_iap" = "In-app purchases";
 "views.preferences.enables_iap.footer" = "Enable support for paid features. Disable this if you do not have an Apple ID.";

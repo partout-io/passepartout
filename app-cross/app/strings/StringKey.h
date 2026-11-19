@@ -92,7 +92,6 @@ enum class StringKey {
     ViewsPreferencesLocksInBackground,
     ViewsPreferencesLocksInBackgroundFooter,
     ViewsPreferencesDnsFallsBack,
-    ViewsPreferencesNextConnection,
     ViewsPreferencesDnsFallsBackFooter,
     ViewsPreferencesEnablesIap,
     ViewsPreferencesEnablesIapFooter,
@@ -558,7 +557,6 @@ constexpr const char *StringKeyName(StringKey key) {
         case StringKey::ViewsPreferencesLocksInBackground: return "views.preferences.locks_in_background";
         case StringKey::ViewsPreferencesLocksInBackgroundFooter: return "views.preferences.locks_in_background.footer";
         case StringKey::ViewsPreferencesDnsFallsBack: return "views.preferences.dns_falls_back";
-        case StringKey::ViewsPreferencesNextConnection: return "views.preferences.next_connection";
         case StringKey::ViewsPreferencesDnsFallsBackFooter: return "views.preferences.dns_falls_back.footer";
         case StringKey::ViewsPreferencesEnablesIap: return "views.preferences.enables_iap";
         case StringKey::ViewsPreferencesEnablesIapFooter: return "views.preferences.enables_iap.footer";

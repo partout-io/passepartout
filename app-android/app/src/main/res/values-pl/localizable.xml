@@ -88,7 +88,6 @@
     <string name="views_preferences_locks_in_background">Blokuj w tle</string>
     <string name="views_preferences_locks_in_background_footer">Zablokuj aplikację za pomocą FaceID, gdy zostanie przeniesiona w tle.</string>
     <string name="views_preferences_dns_falls_back">Awaryjny DNS</string>
-    <string name="views_preferences_next_connection">Zmiany zostaną zastosowane przy następnym połączeniu profilu.</string>
     <string name="views_preferences_dns_falls_back_footer">Przełącza się na serwery CloudFlare, gdy VPN nie zapewnia ustawień DNS.</string>
     <string name="views_preferences_enables_iap">Zakupy w aplikacji</string>
     <string name="views_preferences_enables_iap_footer">Włącz obsługę płatnych funkcji. Wyłącz to, jeśli nie masz Apple ID.</string>

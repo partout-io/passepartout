@@ -88,7 +88,6 @@
     <string name="views_preferences_locks_in_background">Verrouiller en arrière-plan</string>
     <string name="views_preferences_locks_in_background_footer">Verrouillez l\'application avec FaceID lorsqu\'elle est envoyée en arrière-plan.</string>
     <string name="views_preferences_dns_falls_back">Basculement DNS</string>
-    <string name="views_preferences_next_connection">Les modifications s’appliqueront à la prochaine connexion d’un profil.</string>
     <string name="views_preferences_dns_falls_back_footer">Bascule vers les serveurs CloudFlare lorsque le VPN ne fournit pas de paramètres DNS.</string>
     <string name="views_preferences_enables_iap">Achats intégrés</string>
     <string name="views_preferences_enables_iap_footer">Activez la prise en charge des fonctionnalités payantes. Désactivez ceci si vous n\'avez pas Apple ID.</string>

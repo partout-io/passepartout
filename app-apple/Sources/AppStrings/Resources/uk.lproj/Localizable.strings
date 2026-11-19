@@ -371,7 +371,6 @@
 "views.preferences.crypto_backend" = "Криптографія";
 "views.preferences.dns_falls_back.footer" = "Перемикається на сервери CloudFlare, коли VPN не надає налаштування DNS.";
 "views.preferences.dns_falls_back" = "Резервний DNS";
-"views.preferences.next_connection" = "Зміни набудуть чинності під час наступного підключення профілю.";
 "views.preferences.enables_iap.footer" = "Увімкніть підтримку платних функцій. Вимкніть це, якщо у вас немає Apple ID.";
 "views.preferences.enables_iap" = "Покупки в додатку";
 "views.preferences.erase_icloud.footer" = "Щоб безпечно видалити всі профілі з iCloud, виконайте цю дію на всіх ваших синхронізованих пристроях. Це не вплине на локальні профілі.";

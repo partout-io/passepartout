@@ -88,7 +88,6 @@
     <string name="views_preferences_locks_in_background">Vergrendelen in achtergrond</string>
     <string name="views_preferences_locks_in_background_footer">Vergrendel de app met FaceID wanneer deze naar de achtergrond wordt gestuurd.</string>
     <string name="views_preferences_dns_falls_back">DNS-terugval</string>
-    <string name="views_preferences_next_connection">Wijzigingen worden toegepast wanneer een profiel opnieuw verbinding maakt.</string>
     <string name="views_preferences_dns_falls_back_footer">Valt terug op CloudFlare-servers wanneer het VPN geen DNS-instellingen biedt.</string>
     <string name="views_preferences_enables_iap">In-app aankopen</string>
     <string name="views_preferences_enables_iap_footer">Schakel ondersteuning voor betaalde functies in. Schakel dit uit als u geen Apple ID heeft.</string>

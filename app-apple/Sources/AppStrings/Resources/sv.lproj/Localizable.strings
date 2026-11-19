@@ -371,7 +371,6 @@
 "views.preferences.crypto_backend" = "Kryptografi";
 "views.preferences.dns_falls_back.footer" = "Återgår till CloudFlare-servrar när VPN inte tillhandahåller DNS-inställningar.";
 "views.preferences.dns_falls_back" = "DNS-backup";
-"views.preferences.next_connection" = "Ändringarna tillämpas nästa gång en profil ansluter.";
 "views.preferences.enables_iap.footer" = "Aktivera stöd för betalda funktioner. Avaktivera detta om du inte har Apple ID.";
 "views.preferences.enables_iap" = "Köp i appen";
 "views.preferences.erase_icloud.footer" = "För att säkert radera alla profiler från iCloud-lagringen, gör det på alla dina synkroniserade enheter. Detta påverkar inte lokala profiler.";

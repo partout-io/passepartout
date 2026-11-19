@@ -371,7 +371,6 @@
 "views.preferences.crypto_backend" = "Криптография";
 "views.preferences.dns_falls_back.footer" = "Переключается на серверы CloudFlare, если VPN не предоставляет настройки DNS.";
 "views.preferences.dns_falls_back" = "Резервный DNS";
-"views.preferences.next_connection" = "Изменения вступят в силу при следующем подключении профиля.";
 "views.preferences.enables_iap.footer" = "Включите поддержку платных функций. Отключите, если у вас нет Apple ID.";
 "views.preferences.enables_iap" = "Покупки в приложении";
 "views.preferences.erase_icloud.footer" = "Чтобы безопасно удалить все профили из iCloud, выполните это действие на всех ваших синхронизированных устройствах. Это не затронет локальные профили.";

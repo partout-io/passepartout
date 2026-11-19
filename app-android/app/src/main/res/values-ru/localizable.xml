@@ -88,7 +88,6 @@
     <string name="views_preferences_locks_in_background">Блокировка в фоновом режиме</string>
     <string name="views_preferences_locks_in_background_footer">Блокируйте приложение с помощью FaceID, когда оно переводится в фоновый режим.</string>
     <string name="views_preferences_dns_falls_back">Резервный DNS</string>
-    <string name="views_preferences_next_connection">Изменения вступят в силу при следующем подключении профиля.</string>
     <string name="views_preferences_dns_falls_back_footer">Переключается на серверы CloudFlare, если VPN не предоставляет настройки DNS.</string>
     <string name="views_preferences_enables_iap">Покупки в приложении</string>
     <string name="views_preferences_enables_iap_footer">Включите поддержку платных функций. Отключите, если у вас нет Apple ID.</string>
