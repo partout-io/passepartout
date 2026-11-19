@@ -11,6 +11,7 @@ public:
     enum class Mode { ReadOnly, Editable };
     enum class Sizing { Reading, Content, FixedContent };
     ThemeModal(wxWindow *parent, const wxString &title,
-        const std::function<wxWindow *(wxWindow *)> &makeContent, Mode mode = Mode::ReadOnly, Sizing sizing = Sizing::Reading);
+        const std::function<wxWindow *(wxWindow *)> &makeContent, Mode mode = Mode::ReadOnly, Sizing sizing = Sizing::Reading,
+        std::function<bool()> canAccept = {});
 };
 }

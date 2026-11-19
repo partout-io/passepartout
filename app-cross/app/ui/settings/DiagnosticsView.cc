@@ -4,12 +4,11 @@
 
 #include "DiagnosticsView.h"
 #include "RuntimeLogView.h"
-#include "IssueReportView.h"
 #include "../extensions/Presentation.h"
 
 namespace Passepartout {
 DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagnostics,
-    UserPreferencesObservable &preferences, SettingsPresentation present) : ThemeDetailView(parent, Presentation::Plain), timer_(this) {
+    UserPreferencesObservable &preferences, SettingsPresentation present, std::function<void()> reportIssue) : ThemeDetailView(parent, Presentation::Plain), timer_(this) {
     Section(Localized(StringKey::ViewsDiagnosticsSectionsLive));
     for (const bool tunnel : {false, true}) {
         const auto title = Localized(tunnel ? StringKey::ViewsDiagnosticsRowsTunnel : StringKey::ViewsDiagnosticsRowsApp);
@@ -51,11 +50,7 @@ DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagno
     });
     timer_.Start(200);
     EndSection();
-    ButtonRow(Localized(StringKey::ViewsDiagnosticsReportIssueTitle), [&diagnostics, present] {
-        present(Localized(StringKey::ViewsDiagnosticsReportIssueTitle), [&diagnostics](wxWindow *parent) {
-            return new IssueReportView(parent, diagnostics);
-        });
-    });
+    ButtonRow(Localized(StringKey::ViewsDiagnosticsReportIssueTitle), std::move(reportIssue));
     Finish();
 }
 }

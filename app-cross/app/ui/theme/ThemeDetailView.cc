@@ -158,15 +158,17 @@ wxButton *ThemeDetailView::ButtonRow(const wxString &title, std::function<void()
     formRows_ = nullptr;
     return row->Button();
 }
-wxButton *ThemeDetailView::Action(const wxString &title, std::function<void()> action) {
-    auto *button = new wxButton(this, wxID_ANY, title);
-    button->Bind(wxEVT_BUTTON, [action = std::move(action)](wxCommandEvent &) {
-        action();
-    });
-    layout_->Add(button, 0, wxALIGN_RIGHT | wxALL, Theme::Spacing(this));
-    return button;
-}
 wxTextCtrl *ThemeDetailView::TextField(const wxString &title, const wxString &value, long style) {
+    if (style & wxTE_MULTILINE) {
+        if (!title.empty()) section_->Add(WrappingText(title), SectionRowFlags());
+        auto *text = new wxTextCtrl(contentParent_, wxID_ANY, value,
+            wxDefaultPosition, wxDefaultSize, style);
+        text->SetName(title);
+        text->SetMinSize(wxSize(GetCharWidth() * 50, GetCharHeight() * 10));
+        section_->Add(text, SectionRowFlags().Proportion(1));
+        formRows_ = nullptr;
+        return text;
+    }
     if (title.empty()) {
         auto *text = new wxTextCtrl(contentParent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, style);
         text->SetName(value);

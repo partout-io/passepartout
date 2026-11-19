@@ -3,22 +3,19 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "IssueReportView.h"
-#include "../extensions/Presentation.h"
+#include "../../strings/Strings.h"
 
 namespace Passepartout {
-IssueReportView::IssueReportView(wxWindow *parent, DiagnosticsObservable &diagnostics) : ThemeDetailView(parent) {
-    auto *comment = TextField(Localized(StringKey::GlobalNounsComment), {}, wxTE_MULTILINE);
-    comment->SetMinSize(FromDIP(wxSize(-1, 200)));
-    comment->SetMaxLength(16000);
-    Action(Localized(StringKey::ViewsDiagnosticsReportIssueTitle), [this, comment, &diagnostics] {
-        try {
-            if (!diagnostics.Report(comment->GetValue().ToStdString(wxConvUTF8))) {
-                PresentError(this, StringKey::ViewsDiagnosticsAlertsReportIssueEmail);
-            }
-        } catch (...) {
-            PresentError(this);
-        }
-    });
+IssueReportView::IssueReportView(wxWindow *parent) : ThemeDetailView(parent) {
+    comment_ = TextField(Localized(StringKey::GlobalNounsComment), {}, wxTE_MULTILINE);
+    comment_->SetMaxLength(16000);
+    comment_->SetFocus();
     Finish();
+}
+std::string IssueReportView::Comment() const {
+    return comment_->GetValue().ToStdString(wxConvUTF8);
+}
+bool IssueReportView::CanSubmit() const {
+    return !comment_->GetValue().empty();
 }
 }

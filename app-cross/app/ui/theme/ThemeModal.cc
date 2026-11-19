@@ -7,7 +7,7 @@
 
 namespace Passepartout {
 ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
-    const std::function<wxWindow *(wxWindow *)> &makeContent, Mode mode, Sizing sizing)
+    const std::function<wxWindow *(wxWindow *)> &makeContent, Mode mode, Sizing sizing, std::function<bool()> canAccept)
     : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
         wxDEFAULT_DIALOG_STYLE | (sizing == Sizing::FixedContent ? 0 : wxRESIZE_BORDER)) {
     Theme::Apply(this);
@@ -21,7 +21,12 @@ ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
         buttons->SetAffirmativeButton(ok);
         SetAffirmativeId(wxID_OK);
         ok->SetDefault();
-        ok->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
+        ok->Enable(!canAccept || canAccept());
+        ok->Bind(wxEVT_UPDATE_UI, [canAccept](wxUpdateUIEvent &event) {
+            event.Enable(!canAccept || canAccept());
+        });
+        ok->Bind(wxEVT_BUTTON, [this, canAccept](wxCommandEvent &) {
+            if (canAccept && !canAccept()) return;
             EndModal(wxID_OK);
         });
     }

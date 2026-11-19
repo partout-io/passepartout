@@ -6,6 +6,7 @@
 #include "CreditsView.h"
 #include "LinksView.h"
 #include "DiagnosticsView.h"
+#include "IssueReportView.h"
 #include "../extensions/Presentation.h"
 #include "../theme/ThemeSplitView.h"
 #include "../theme/ThemeModal.h"
@@ -113,11 +114,28 @@ void SettingsCoordinator::SelectSection(SettingsSection section) {
             break;
         case SettingsSection::Diagnostics:
             ShowSection(Localized(StringKey::ViewsDiagnosticsTitle), [this, present](wxWindow *parent) {
-                return new DiagnosticsView(parent, context_.diagnostics, context_.preferences, present);
+                return new DiagnosticsView(parent, context_.diagnostics, context_.preferences, present, [this] { ReportIssue(); });
             });
             break;
         default:
             break;
+    }
+}
+void SettingsCoordinator::ReportIssue() {
+    IssueReportView *view = nullptr;
+    ThemeModal modal(this, Localized(StringKey::ViewsDiagnosticsReportIssueTitle),
+        [&view](wxWindow *parent) {
+            view = new IssueReportView(parent);
+            return view;
+        }, ThemeModal::Mode::Editable, ThemeModal::Sizing::Content,
+        [&view] { return view && view->CanSubmit(); });
+    if (modal.ShowModal() != wxID_OK) return;
+    try {
+        if (!context_.diagnostics.Report(view->Comment())) {
+            PresentError(this, StringKey::ViewsDiagnosticsAlertsReportIssueEmail);
+        }
+    } catch (...) {
+        PresentError(this);
     }
 }
 void SettingsCoordinator::ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> makePage) {

@@ -5,6 +5,8 @@
 #include "../app/ui/theme/ThemeLongContent.h"
 #include "../app/strings/Strings.h"
 #include "../app/ui/settings/SettingsView.h"
+#include "../app/ui/settings/IssueReportView.h"
+#include "../app/ui/theme/ThemeModal.h"
 #include <cstdio>
 #include <cstdlib>
 #include <wx/simplebook.h>
@@ -34,6 +36,22 @@ int main(int argc, char **argv) {
     }
     {
         wxFrame frame(nullptr, wxID_ANY, "Presentation regression");
+        Passepartout::IssueReportView *report = nullptr;
+        Passepartout::ThemeModal reportModal(&frame, "Report", [&report](wxWindow *parent) {
+            report = new Passepartout::IssueReportView(parent);
+            return report;
+        }, Passepartout::ThemeModal::Mode::Editable, Passepartout::ThemeModal::Sizing::Content,
+            [&report] { return report->CanSubmit(); });
+        auto *ok = reportModal.FindWindow(wxID_OK);
+        auto *comment = dynamic_cast<wxTextCtrl *>(wxWindow::FindWindowByName(
+            Passepartout::Localized(Passepartout::StringKey::GlobalNounsComment), report));
+        if (!ok || !comment || ok->IsEnabled() || report->CanSubmit()) return 12;
+        comment->SetValue("A report comment");
+        ok->UpdateWindowUI();
+        if (!ok->IsEnabled() || report->Comment() != "A report comment") return 13;
+        comment->Clear();
+        ok->UpdateWindowUI();
+        if (ok->IsEnabled() || report->CanSubmit()) return 14;
         const wxString secret = "secret-key-value";
         auto *secureRow = new Passepartout::ThemeDetailView(&frame,
             Passepartout::ThemeDetailView::Presentation::Form);

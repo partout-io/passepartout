@@ -94,10 +94,10 @@ if(BUILD_APP)
     option(BUILD_UI_TESTS "Build native wxWidgets presentation regression tests" OFF)
     if(BUILD_UI_TESTS)
         add_executable(passepartout-ui-test
-            tests/ThemeDetails.cc app/ui/settings/SettingsView.cc
+            tests/ThemeDetails.cc app/ui/settings/SettingsView.cc app/ui/settings/IssueReportView.cc
             app/ui/theme/Theme.cc app/ui/theme/ThemeList.cc
             app/ui/theme/ThemeDetailView.cc app/ui/theme/ThemeLongContent.cc
-            app/ui/theme/ThemeButtonRow.cc
+            app/ui/theme/ThemeButtonRow.cc app/ui/theme/ThemeModal.cc
             app/ui/theme/ThemeContentLink.cc app/strings/Strings.cc)
         target_compile_features(passepartout-ui-test PRIVATE cxx_std_17)
         if(MSVC)

@@ -12,6 +12,7 @@ class SettingsCoordinator final : public wxDialog {
 public:
     SettingsCoordinator(wxWindow *parent, AppContext &context);
 private:
+    void ReportIssue();
     void SelectSection(SettingsSection section);
     void ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> makePage);
     AppContext &context_;

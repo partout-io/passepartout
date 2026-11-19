@@ -4,11 +4,14 @@
 
 #pragma once
 #include "../theme/ThemeDetailView.h"
-#include "../../observables/DiagnosticsObservable.h"
 
 namespace Passepartout {
 class IssueReportView final : public ThemeDetailView {
 public:
-    IssueReportView(wxWindow *parent, DiagnosticsObservable &diagnostics);
+    explicit IssueReportView(wxWindow *parent);
+    std::string Comment() const;
+    bool CanSubmit() const;
+private:
+    wxTextCtrl *comment_;
 };
 }
