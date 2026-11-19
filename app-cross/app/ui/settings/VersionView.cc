@@ -24,6 +24,5 @@ VersionView::VersionView(wxWindow *parent, VersionObservable &version, const wxS
         });
     });
     Finish();
-    SetMinSize(GetSizer()->GetMinSize());
 }
 }

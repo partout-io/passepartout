@@ -14,7 +14,7 @@ ThemeDetailView::ThemeDetailView(wxWindow *parent, Presentation presentation)
     : wxScrolledWindow(parent, wxID_ANY), layout_(new wxBoxSizer(wxVERTICAL)),
       presentation_(presentation), contentParent_(this), section_(layout_) {
     Theme::Apply(this);
-    SetScrollRate(0, Theme::Spacing(this));
+    SetScrollRate(0, presentation_ == Presentation::Centered ? 0 : Theme::Spacing(this));
     SetSizer(layout_);
     Bind(wxEVT_SIZE, [this](wxSizeEvent &event) {
         if (!wrapPending_) {
@@ -222,8 +222,12 @@ void ThemeDetailView::Rewrap() {
     }
 }
 void ThemeDetailView::Finish() {
+    if (presentation_ == Presentation::Centered) {
+        SetMinClientSize(layout_->GetMinSize());
+        SetClientSize(layout_->GetMinSize());
+    }
     Layout();
-    FitInside();
+    if (presentation_ != Presentation::Centered) FitInside();
 }
 wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &support, bool checked) {
     auto *row = new wxBoxSizer(wxHORIZONTAL);

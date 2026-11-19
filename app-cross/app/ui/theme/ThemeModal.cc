@@ -50,7 +50,11 @@ ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
     }
     if (sizing == Sizing::Reading) size.IncTo(wxSize(GetCharWidth() * 80, GetCharHeight() * 24));
     size.DecTo(available);
-    SetSize(size);
+    if (sizing == Sizing::FixedContent) {
+        layout->Fit(this);
+    } else {
+        SetSize(size);
+    }
     CentreOnParent();
 }
 }
