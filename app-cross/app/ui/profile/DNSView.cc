@@ -12,6 +12,7 @@ DNSView::DNSView(wxWindow *parent, const Partout::Models::DNSModule &module, Ope
     const auto c = module.ToJson();
     const auto protocol = c.at("protocolType");
     const auto type = protocol.at("type").get<std::string>();
+    Section({});
     Row(StringKey::ModulesDnsPolicyInheritsVpn, module.inheritsVPN.value_or(false));
     if (module.routesThroughVPN) Row(StringKey::ModulesDnsPolicyRouteThroughVpn, *module.routesThroughVPN);
     else Field(Localized(StringKey::ModulesDnsPolicyRouteThroughVpn), Localized(StringKey::GlobalNounsDefault));

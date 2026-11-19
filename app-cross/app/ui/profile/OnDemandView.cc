@@ -20,7 +20,7 @@ OnDemandView::OnDemandView(wxWindow *parent, const Partout::Models::OnDemandModu
         policy = StringKey::EntitiesOnDemandPolicyExcluding;
         explanation = StringKey::ModulesOnDemandPolicyFooterExcluding;
     }
-    Section(Localized(StringKey::ModulesOnDemandPolicy));
+    Section({});
     Field(Localized(StringKey::ModulesOnDemandPolicy), Localized(policy));
     auto footer = Localized(StringKey::ModulesOnDemandPolicyFooter);
     footer.Replace("%@", Localized(explanation));
