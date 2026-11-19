@@ -7,6 +7,7 @@
 #include <wx/scrolwin.h>
 #include <functional>
 #include <vector>
+#include <utility>
 
 namespace Passepartout {
 class ThemeDetailView : public wxScrolledWindow {
@@ -21,6 +22,7 @@ public:
     void ExternalLink(const wxString &title, std::function<void()> action);
     void LongContent(const wxString &title, const wxString &preview, std::function<void()> action, bool secure = false);
     void Items(const wxString &title, const std::vector<wxString> &values);
+    std::vector<wxButton *> Actions(const std::vector<std::pair<wxString, std::function<void()>>> &actions);
     wxButton *Action(const wxString &title, std::function<void()> action);
     wxTextCtrl *TextField(const wxString &title, const wxString &value, long style = 0);
     wxCheckBox *Toggle(const wxString &title, const wxString &support, bool checked);
