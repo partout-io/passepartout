@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "../app/ui/theme/ThemeDetailView.h"
+#include "../app/ui/theme/ThemeLongContent.h"
+#include "../app/strings/Strings.h"
 #include "../app/ui/settings/SettingsView.h"
 #include <cstdio>
 #include <cstdlib>
@@ -32,6 +34,22 @@ int main(int argc, char **argv) {
     }
     {
         wxFrame frame(nullptr, wxID_ANY, "Presentation regression");
+        const wxString secret = "secret-key-value";
+        auto *secureRow = new Passepartout::ThemeDetailView(&frame,
+            Passepartout::ThemeDetailView::Presentation::Form);
+        secureRow->Section("Keys");
+        secureRow->LongContent("Private key", secret, [] {}, true);
+        secureRow->Finish();
+        if (wxWindow::FindWindowByLabel(secret, secureRow)) return 7;
+        if (!wxWindow::FindWindowByLabel(Passepartout::Localized(
+            Passepartout::StringKey::GlobalActionsEdit), secureRow)) return 8;
+        auto *content = new Passepartout::ThemeLongContent(&frame, "Private key", secret);
+        wxTextCtrl *editor = nullptr;
+        for (auto *child : content->GetChildren()) {
+            if (auto *text = dynamic_cast<wxTextCtrl *>(child)) editor = text;
+        }
+        if (!editor || editor->GetValue() != secret || editor->IsEditable() ||
+            (editor->GetWindowStyleFlag() & wxTE_PASSWORD)) return 9;
         auto *book = new wxSimplebook(&frame);
         int changes = 0;
         auto *sidebar = new Passepartout::SettingsView(&frame, "Update",

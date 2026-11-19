@@ -15,9 +15,9 @@ public:
     ModuleDetailView(wxWindow *parent, OpenModuleContent openContent,
         Presentation presentation = Presentation::Form);
     void Row(const wxString &title, const nlohmann::json &value, bool longContent = false,
-        const std::optional<wxString> &preview = std::nullopt);
+        const std::optional<wxString> &preview = std::nullopt, bool secure = false);
     void Row(StringKey title, const nlohmann::json &value, bool longContent = false,
-        const std::optional<wxString> &preview = std::nullopt);
+        const std::optional<wxString> &preview = std::nullopt, bool secure = false);
     void Duration(StringKey title, const nlohmann::json &value);
     void IP(const wxString &title, const nlohmann::json &settings,
         const nlohmann::json &additionalRoutes = nullptr, bool openVPN = false);

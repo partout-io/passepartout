@@ -20,8 +20,8 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
         return text;
     };
     Section(Localized(StringKey::ModulesWireguardInterface));
-    TextField(Localized(StringKey::GlobalNounsPrivateKey), ValueText(local.at("privateKey")), wxTE_READONLY | wxTE_PASSWORD);
-    TextField(Localized(StringKey::GlobalNounsPublicKey), wxString::FromUTF8(keys.PublicKey(local.at("privateKey").get<std::string>())), wxTE_READONLY);
+    Row(StringKey::GlobalNounsPrivateKey, local.at("privateKey"), true, std::nullopt, true);
+    Row(StringKey::GlobalNounsPublicKey, keys.PublicKey(local.at("privateKey").get<std::string>()));
     Row(StringKey::GlobalNounsAddresses, local.value("addresses", nlohmann::json()), true, entries(local.value("addresses", nlohmann::json())));
     Row(MTU, local.value("mtu", nlohmann::json()));
     if (local.contains("dns") && local["dns"].is_object()) {
@@ -39,8 +39,8 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
         auto title = Localized(StringKey::ModulesWireguardPeer);
         title.Replace("%d", ValueText(++index));
         Section(title);
-        TextField(Localized(StringKey::GlobalNounsPublicKey), ValueText(peer.at("publicKey")), wxTE_READONLY);
-        TextField(Localized(StringKey::ModulesWireguardPresharedKey), ValueText(peer.value("preSharedKey", nlohmann::json())), wxTE_READONLY | wxTE_PASSWORD);
+        Row(StringKey::GlobalNounsPublicKey, peer.at("publicKey"), true);
+        Row(StringKey::ModulesWireguardPresharedKey, peer.value("preSharedKey", nlohmann::json()), true, std::nullopt, true);
         Row(StringKey::GlobalNounsEndpoint, peer.value("endpoint", nlohmann::json()), true);
         Row(StringKey::ModulesWireguardAllowedIps, peer.value("allowedIPs", nlohmann::json()), true, entries(peer.value("allowedIPs", nlohmann::json())));
         Row(StringKey::GlobalNounsKeepAlive, peer.value("keepAlive", nlohmann::json()));

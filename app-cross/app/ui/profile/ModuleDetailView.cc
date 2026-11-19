@@ -32,7 +32,7 @@ wxString ModuleDetailView::ValueText(const nlohmann::json &value) {
     return wxString::FromUTF8(value.dump(2));
 }
 void ModuleDetailView::Row(const wxString &title, const nlohmann::json &value, bool longContent,
-    const std::optional<wxString> &preview) {
+    const std::optional<wxString> &preview, bool secure) {
     const auto text = ValueText(value);
     if (text.empty()) return;
     if (IsForm() && value.is_array() && !longContent) {
@@ -47,13 +47,13 @@ void ModuleDetailView::Row(const wxString &title, const nlohmann::json &value, b
     if (longContent) {
         LongContent(title, preview.value_or(text), [this, title, text] {
             openContent_(title, text);
-        });
+        }, secure);
     } else if (value.is_boolean()) Field(title, text);
     else CopiableField(title, text);
 }
 void ModuleDetailView::Row(StringKey title, const nlohmann::json &value, bool longContent,
-    const std::optional<wxString> &preview) {
-    Row(Localized(title), value, longContent, preview);
+    const std::optional<wxString> &preview, bool secure) {
+    Row(Localized(title), value, longContent, preview, secure);
 }
 void ModuleDetailView::Duration(StringKey title, const nlohmann::json &value) {
     if (!value.is_number()) return;

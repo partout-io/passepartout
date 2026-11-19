@@ -21,24 +21,26 @@ public struct ThemeLongContentLink: View {
         _ title: String,
         text: Binding<String>,
         inputType: ThemeInputType = .text,
-        preview: String? = nil
+        preview: String? = nil,
+        secure: Bool = false
     ) {
         self.title = title
         _text = text
         self.inputType = inputType
-        self.preview = preview ?? text.wrappedValue
+        self.preview = secure ? "" : (preview ?? text.wrappedValue)
     }
 
     public init(
         _ title: String,
         text: Binding<String>,
         inputType: ThemeInputType = .text,
+        secure: Bool = false,
         preview: (String) -> String?
     ) {
         self.title = title
         _text = text
         self.inputType = inputType
-        self.preview = preview(text.wrappedValue)
+        self.preview = secure ? "" : preview(text.wrappedValue)
     }
 
     public var body: some View {

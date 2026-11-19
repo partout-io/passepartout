@@ -110,8 +110,8 @@ void ThemeDetailView::ExternalLink(const wxString &title, std::function<void()> 
     section_->Add(link, SectionRowFlags(false));
 }
 void ThemeDetailView::LongContent(const wxString &title, const wxString &preview,
-    std::function<void()> action) {
-    ContentLink(title, std::move(action), preview.BeforeFirst('\n'));
+    std::function<void()> action, bool secure) {
+    ContentLink(title, std::move(action), secure ? wxString() : preview.BeforeFirst('\n'));
 }
 wxSizerFlags ThemeDetailView::SectionRowFlags(bool expand) {
     auto result = wxSizerFlags();
