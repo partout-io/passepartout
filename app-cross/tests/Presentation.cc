@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ui/extensions/AppProfile.h"
-#include "ui/extensions/DataHelpers.h"
+#include "ui/extensions/FormatDataUnit.h"
 #include <cassert>
 #include <locale>
 

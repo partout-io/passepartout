@@ -5,7 +5,8 @@
 #pragma once
 #include "../observables/ProfileObservable.h"
 #include "../observables/TunnelObservable.h"
-#include "Dependencies.h"
+#include "LoadAppConstants.h"
+#include "CrossConstants.h"
 #include "../business/strategy/WireGuardKeyGenerator.h"
 #include "../observables/UserPreferencesObservable.h"
 #include "../observables/ConfigObservable.h"

@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../theme/ThemeDetailView.h"
-#include "../../observables/InteractiveLogin.h"
+#include "../../business/models/InteractiveLogin.h"
 
 namespace Passepartout {
 class InteractiveLoginView final : public ThemeDetailView {

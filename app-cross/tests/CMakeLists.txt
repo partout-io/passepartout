@@ -20,7 +20,7 @@ target_link_libraries(passepartout-settings-test PRIVATE passepartout-core)
 add_executable(passepartout-activation-test Activation.cc)
 target_link_libraries(passepartout-activation-test PRIVATE passepartout-core)
 add_executable(passepartout-presentation-test Presentation.cc
-    ../app/ui/extensions/AppProfile.cc ../app/ui/extensions/DataHelpers.cc)
+    ../app/ui/extensions/AppProfile.cc ../app/ui/extensions/FormatDataUnit.cc)
 target_link_libraries(passepartout-presentation-test PRIVATE passepartout-core)
 
 # Keep assertions enabled in every build configuration.

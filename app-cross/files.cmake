@@ -9,7 +9,7 @@ set(APP_SOURCES
     app/ui/app/ProfileListView.cc
     app/ui/extensions/AppProfile.cc
     app/ui/extensions/ConfigurationPicker.cc
-    app/ui/extensions/DataHelpers.cc
+    app/ui/extensions/FormatDataUnit.cc
     app/ui/extensions/Module.cc
     app/ui/extensions/Presentation.cc
     app/ui/profile/DNSView.cc
@@ -57,26 +57,26 @@ set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/AtomicFile.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/BackgroundWorker.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/FileActivation.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/AppSession.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ConfigManager.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/IssueReporter.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ProfileManager.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/TunnelManager.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/VersionChecker.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/models/AppSnapshot.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/models/ConfigurationFiles.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/models/InteractiveLogin.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/models/Profile.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/models/ProfileEditor.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FakeTunnelStrategy.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FilePreferencesRepository.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FileProfileJournal.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FileProfileRepository.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/PreferencesRepository.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/ProfileJournal.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/observables/AppSession.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/observables/AppSnapshot.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/ConfigObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/CreditsObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/DiagnosticsObservable.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/observables/InteractiveLogin.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/observables/ProfileEditor.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/ProfileObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/TunnelObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/UserPreferencesObservable.cc"

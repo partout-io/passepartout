@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "AppProfile.h"
-#include "DataHelpers.h"
+#include "FormatDataUnit.h"
 
 namespace Passepartout {
 std::string TransferText(const Models::ProfileTransfer &transfer, NumberFormatter formatter) {

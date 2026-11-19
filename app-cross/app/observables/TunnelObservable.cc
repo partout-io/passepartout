@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "TunnelObservable.h"
-#include "AppSession.h"
+#include "../business/managers/AppSession.h"
 #include <algorithm>
 
 namespace Passepartout {

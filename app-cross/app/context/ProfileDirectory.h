@@ -5,17 +5,12 @@
 #pragma once
 #include "CrossConstants.h"
 #include "AppConstants.h"
-#include "AppConstantsResource.h"
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
 #include <stdexcept>
 
 namespace Passepartout {
-inline Models::AppConstants LoadAppConstants() {
-    return Models::AppConstants::FromJson(nlohmann::json::parse(appConstantsResource));
-}
-
 inline std::filesystem::path ProfileDirectory(const std::filesystem::path &root,
     const Models::AppConstants &constants, const CrossConstants &crossConstants, bool demo) {
     auto name = constants.containers.local;

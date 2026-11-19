@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "AppSnapshot.h"
-#include "ProfileEditor.h"
+#include "../business/models/AppSnapshot.h"
+#include "../business/models/ProfileEditor.h"
 #include "../business/models/ConfigurationFiles.h"
 
 namespace Passepartout {

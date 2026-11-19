@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "AppContext.h"
-#include "../observables/AppSession.h"
+#include "ProfileDirectory.h"
+#include "../business/managers/AppSession.h"
 #include "../business/strategy/FileProfileRepository.h"
 #include "../business/strategy/FileProfileJournal.h"
 #include "../business/strategy/FakeTunnelStrategy.h"
@@ -12,7 +13,7 @@
 #include "../business/platform/WindowsHttpClient.h"
 #include "../ui/platform/WindowsIssueHandoff.h"
 #include "SettingsResources.h"
-#include "ImportResult.h"
+#include "../business/extensions/DecodeImportResult.h"
 #include "partout.h"
 #include <cstdlib>
 #include <stdexcept>

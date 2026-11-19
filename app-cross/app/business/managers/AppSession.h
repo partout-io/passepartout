@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "AppSnapshot.h"
-#include "ProfileEditor.h"
-#include "../business/managers/ProfileManager.h"
-#include "../business/managers/TunnelManager.h"
-#include "../business/models/ConfigurationFiles.h"
+#include "../models/AppSnapshot.h"
+#include "../models/ProfileEditor.h"
+#include "ProfileManager.h"
+#include "TunnelManager.h"
+#include "../models/ConfigurationFiles.h"
 #include <condition_variable>
 #include <deque>
 #include <mutex>

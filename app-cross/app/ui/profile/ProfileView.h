@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../../observables/ProfileEditor.h"
+#include "../../business/models/ProfileEditor.h"
 #include "../theme/ThemeDetailView.h"
 #include <functional>
 #include <memory>

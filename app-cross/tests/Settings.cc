@@ -11,7 +11,7 @@
 #include "observables/UserPreferencesObservable.h"
 #include "observables/ConfigObservable.h"
 #include "observables/CreditsObservable.h"
-#include "context/Dependencies.h"
+#include "context/LoadAppConstants.h"
 #include "SettingsResources.h"
 #include <cassert>
 #include <fstream>
