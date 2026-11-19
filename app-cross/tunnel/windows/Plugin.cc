@@ -186,10 +186,6 @@ struct ChannelSession {
         if (values.HasKey(Passepartout::tunnelPreferencesKey)) {
             preferences = JsonObject::Parse(unbox_value<hstring>(values.Lookup(Passepartout::tunnelPreferencesKey)));
         }
-        std::vector<std::string> fallback;
-        for (const auto &server : preferences.GetNamedArray(L"dnsFallbackServers")) {
-            fallback.push_back(to_string(server.GetString()));
-        }
         partout_init_args init{};
         init.logger_fn = LogNative;
         init.log_level = PartoutLogLevelDebug;
@@ -200,11 +196,17 @@ struct ChannelSession {
         options.cache_dir = temporary.c_str();
         options.starts_immediately = true;
         options.crypto = PartoutCryptoMbedTLS;
-        runtime = std::make_unique<Partout::VpnChannelRuntime>(channel, profile.c_str(), init, options, std::move(fallback));
+        // FIXME: ### Restore DNS fallback preference forwarding when Partout master
+        // gains the VpnChannelRuntime fallback-server argument (39140181).
+        // FIXME: ### Restore native interactive/OTP preparation through the Partout
+        // runtime after 39140181 is merged; master uses saved profile credentials.
+        runtime = std::make_unique<Partout::VpnChannelRuntime>(channel, profile.c_str(), init, options);
     }
     void Cancel() noexcept {
         canceled.store(true);
-        runtime->Cancel();
+        // FIXME: ### Restore VpnChannelRuntime::Cancel after 39140181 is merged.
+        // Partout master cannot interrupt startup; Connect observes this flag
+        // on completion and performs teardown on its owning thread.
     }
 };
 

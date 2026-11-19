@@ -68,11 +68,7 @@ if(WIN32)
     target_compile_options(passepartout-windows-settings-test PRIVATE /UNDEBUG /utf-8 /EHsc /permissive-)
     add_test(NAME passepartout-windows-settings COMMAND passepartout-windows-settings-test)
 
-    add_executable(passepartout-windows-credentials-test
-        ../../partout/tests/c/windows/interactive_credentials.cc
-        ../../partout/cross/windows/src/interactive_credentials.cc)
-    target_link_libraries(passepartout-windows-credentials-test PRIVATE Partout::Models windowsapp)
-    target_compile_features(passepartout-windows-credentials-test PRIVATE cxx_std_20)
-    target_compile_options(passepartout-windows-credentials-test PRIVATE /UNDEBUG /utf-8 /EHsc /permissive-)
-    add_test(NAME passepartout-windows-credentials COMMAND passepartout-windows-credentials-test)
+    # FIXME: ### Restore the Windows interactive-credentials test target when
+    # Partout master includes its source and implementation from 39140181.
+
 endif()

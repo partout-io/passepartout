@@ -52,18 +52,17 @@ public:
     void Connect(const std::string &id) override {
         tunnel_.Connect(id);
     }
-    void ConnectWithCredentials(const std::string &id, const Partout::Models::OpenVpnCredentials &credentials) override {
-        tunnel_.Connect(id, credentials.username, credentials.password);
-    }
+    // FIXME: ### Restore ConnectWithCredentials after Partout master gains the
+    // connection-only Connect(id, username, password) overload (a5252c7a).
+    // Until then the base strategy rejects interactive submissions without saving them.
     void Disconnect(const std::string &id) override {
         tunnel_.Disconnect(id);
     }
     void Remove(const std::string &id) override {
         tunnel_.Remove(id);
     }
-    void Cancel() noexcept override {
-        tunnel_.Cancel();
-    }
+    // FIXME: ### Restore Cancel() delegation when Partout Tunnel::Cancel is merged
+    // (39140181). Master management calls finish or time out before worker shutdown.
     void ApplyPreferences(const Models::AppPreferences &preferences) override {
         winrt::init_apartment(winrt::apartment_type::multi_threaded);
         struct Apartment {
