@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ProfileView.h"
-#include "../../theme/Theme.h"
+#include "../theme/Theme.h"
 #include "../../strings/Strings.h"
 #include "../../strings/Unlocalized.h"
 

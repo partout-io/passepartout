@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "SettingsView.h"
-#include "../../theme/ThemeList.h"
-#include "../../theme/ThemeContentLink.h"
-#include "../../theme/Theme.h"
+#include "../theme/ThemeList.h"
+#include "../theme/ThemeContentLink.h"
+#include "../theme/Theme.h"
 #include "../../strings/Strings.h"
 #include "../../strings/Unlocalized.h"
 #include <algorithm>

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "VersionView.h"
-#include "../../theme/ThemeLongContent.h"
+#include "../theme/ThemeLongContent.h"
 #include "../../strings/Strings.h"
 #include "../../strings/Unlocalized.h"
 

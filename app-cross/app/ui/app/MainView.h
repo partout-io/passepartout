@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../context/AppContext.h"
-#include "ConfigurationPickerFactory.h"
+#include "../../context/AppContext.h"
+#include "../ConfigurationPickerFactory.h"
 #include "../theme/Theme.h"
-#include "ProfileCollectionView.h"
+#include "ProfileListView.h"
 #include <deque>
 
 class MainView : public wxFrame {
@@ -29,7 +29,7 @@ private:
     void Tick(wxTimerEvent &);
     Passepartout::AppContext &context_;
     Passepartout::AppSnapshot snapshot_;
-    Passepartout::ProfileCollectionView *collection_;
+    Passepartout::ProfileListView *collection_;
     wxStaticText *message_;
     wxActivityIndicator *progress_;
     wxButton *import_;

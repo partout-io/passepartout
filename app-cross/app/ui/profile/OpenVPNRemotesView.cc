@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "OpenVPNRemotesView.h"
-#include "../../theme/ThemeList.h"
-#include "../../theme/Theme.h"
+#include "../theme/ThemeList.h"
+#include "../theme/Theme.h"
 #include "../../strings/Strings.h"
 #include <wx/clipbrd.h>
 #include <wx/dataobj.h>

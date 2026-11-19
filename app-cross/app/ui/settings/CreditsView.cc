@@ -4,7 +4,7 @@
 
 #include "CreditsView.h"
 #include "LicenseView.h"
-#include "../../theme/ThemeLongContent.h"
+#include "../theme/ThemeLongContent.h"
 #include "../../strings/Strings.h"
 #include <wx/uilocale.h>
 #include <algorithm>

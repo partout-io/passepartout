@@ -4,7 +4,7 @@
 #include "ProfileModuleList.h"
 #include "../extensions/Module.h"
 #include "../../strings/Strings.h"
-#include "../../theme/Theme.h"
+#include "../theme/Theme.h"
 #include <algorithm>
 #include <type_traits>
 #include <wx/renderer.h>

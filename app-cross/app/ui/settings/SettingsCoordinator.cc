@@ -7,8 +7,8 @@
 #include "LinksView.h"
 #include "DiagnosticsView.h"
 #include "../Presentation.h"
-#include "../../theme/ThemeSplitView.h"
-#include "../../theme/ThemeModal.h"
+#include "../theme/ThemeSplitView.h"
+#include "../theme/ThemeModal.h"
 #include <wx/display.h>
 #include <wx/wupdlock.h>
 #include <algorithm>

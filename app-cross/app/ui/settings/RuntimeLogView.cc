@@ -4,7 +4,7 @@
 
 #include "RuntimeLogView.h"
 #include "../../strings/Strings.h"
-#include "../../theme/Theme.h"
+#include "../theme/Theme.h"
 
 namespace Passepartout {
 RuntimeLogView::RuntimeLogView(wxWindow *parent, DiagnosticsObservable &diagnostics, bool tunnel)

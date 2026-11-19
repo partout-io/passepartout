@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "InteractiveLoginView.h"
-#include "../strings/Strings.h"
-#include "../strings/Unlocalized.h"
+#include "../../strings/Strings.h"
+#include "../../strings/Unlocalized.h"
 
 namespace Passepartout {
 InteractiveLoginView::InteractiveLoginView(wxWindow *parent, InteractiveLogin &login)

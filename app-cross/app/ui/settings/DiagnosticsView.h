@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../../theme/ThemeDetailView.h"
+#include "../theme/ThemeDetailView.h"
 #include "../../observables/DiagnosticsObservable.h"
 #include "../../observables/UserPreferencesObservable.h"
 #include "SettingsPresentation.h"

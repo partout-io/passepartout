@@ -13,15 +13,15 @@
 #include "HTTPProxyView.h"
 #include "IPView.h"
 #include "WireGuardView.h"
-#include "../../theme/ThemeLongContent.h"
+#include "../theme/ThemeLongContent.h"
 #include "../Presentation.h"
 #include "../extensions/Module.h"
 #include <algorithm>
 #include <type_traits>
 #include <wx/display.h>
 #include <wx/wupdlock.h>
-#include "../../theme/ThemeSplitView.h"
-#include "../../theme/ThemeModal.h"
+#include "../theme/ThemeSplitView.h"
+#include "../theme/ThemeModal.h"
 
 namespace Passepartout {
 ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &profiles,

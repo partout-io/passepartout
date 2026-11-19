@@ -3,7 +3,7 @@
 
 #pragma once
 #include "../../observables/ProfileEditor.h"
-#include "../../theme/ThemeDetailView.h"
+#include "../theme/ThemeDetailView.h"
 #include <functional>
 #include <memory>
 

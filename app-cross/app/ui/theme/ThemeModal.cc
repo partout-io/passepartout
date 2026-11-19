@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ThemeModal.h"
-#include "../strings/Strings.h"
+#include "../../strings/Strings.h"
 #include <wx/display.h>
 
 namespace Passepartout {

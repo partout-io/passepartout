@@ -4,12 +4,12 @@
 
 #include "MainView.h"
 #include "InteractiveLoginView.h"
-#include "../strings/Strings.h"
-#include "profile/ProfileCoordinator.h"
-#include "settings/SettingsCoordinator.h"
+#include "../../strings/Strings.h"
+#include "../profile/ProfileCoordinator.h"
+#include "../settings/SettingsCoordinator.h"
 #include <wx/stockitem.h>
-#include "settings/VersionView.h"
-#include "../strings/Unlocalized.h"
+#include "../settings/VersionView.h"
+#include "../../strings/Unlocalized.h"
 #include "../theme/ThemeModal.h"
 #include "../theme/ThemeLongContent.h"
 #ifdef __WXMSW__
@@ -39,7 +39,7 @@ MainView::MainView(AppContext &context, bool demo,
     Theme::Apply(panel);
     const auto gap = Theme::Spacing(panel);
     auto *layout = new wxBoxSizer(wxVERTICAL);
-    collection_ = new ProfileCollectionView(panel, context.tunnel,
+    collection_ = new ProfileListView(panel, context.tunnel,
         [this] {
             UpdateActions();
         },

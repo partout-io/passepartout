@@ -87,7 +87,7 @@ if(BUILD_APP)
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PASSEPARTOUT_APP_ICON}")
     file(READ "${PASSEPARTOUT_APP_ICON}" APP_ICON_HEX HEX)
     string(REGEX REPLACE "(..)" "0x\\1," APP_ICON_BYTES "${APP_ICON_HEX}")
-    configure_file("${CMAKE_CURRENT_LIST_DIR}/app/theme/AppIconResource.h.in"
+    configure_file("${CMAKE_CURRENT_LIST_DIR}/app/ui/theme/AppIconResource.h.in"
         "${CMAKE_CURRENT_BINARY_DIR}/generated/AppIconResource.h" @ONLY)
 
     # Load wxWidgets only for the desktop application.
@@ -98,9 +98,9 @@ if(BUILD_APP)
     if(BUILD_UI_TESTS)
         add_executable(passepartout-ui-test
             tests/ThemeDetails.cc app/ui/settings/SettingsView.cc
-            app/theme/Theme.cc app/theme/ThemeList.cc
-            app/theme/ThemeDetailView.cc
-            app/theme/ThemeContentLink.cc app/strings/Strings.cc)
+            app/ui/theme/Theme.cc app/ui/theme/ThemeList.cc
+            app/ui/theme/ThemeDetailView.cc
+            app/ui/theme/ThemeContentLink.cc app/strings/Strings.cc)
         target_compile_features(passepartout-ui-test PRIVATE cxx_std_17)
         if(MSVC)
             target_compile_options(passepartout-ui-test PRIVATE /utf-8)

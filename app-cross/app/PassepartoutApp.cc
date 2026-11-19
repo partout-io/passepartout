@@ -4,7 +4,7 @@
 
 #include "PassepartoutApp.h"
 #include "business/AppLogger.h"
-#include "ui/MainView.h"
+#include "ui/app/MainView.h"
 #include "strings/Strings.h"
 #include "partout.h"
 #include <wx/stdpaths.h>

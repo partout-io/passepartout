@@ -4,7 +4,7 @@
 
 #include "LicenseView.h"
 #include "../../strings/Strings.h"
-#include "../../theme/Theme.h"
+#include "../theme/Theme.h"
 
 namespace Passepartout {
 LicenseView::LicenseView(wxWindow *parent, CreditsObservable &credits, std::string url, const wxString &title)

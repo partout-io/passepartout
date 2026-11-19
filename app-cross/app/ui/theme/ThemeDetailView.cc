@@ -4,7 +4,7 @@
 
 #include "ThemeDetailView.h"
 #include "ThemeContentLink.h"
-#include "../strings/Strings.h"
+#include "../../strings/Strings.h"
 #include <wx/statline.h>
 #include <wx/statbox.h>
 

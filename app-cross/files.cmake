@@ -4,19 +4,11 @@ set(APP_SOURCES
     app/PassepartoutApp.cc
     app/context/AppContext.cc
     app/strings/Strings.cc
-    app/theme/Theme.cc
-    app/theme/ThemeContentLink.cc
-    app/theme/ThemeDetailView.cc
-    app/theme/ThemeList.cc
-    app/theme/ThemeLongContent.cc
-    app/theme/ThemeModal.cc
-    app/theme/ThemeProfileList.cc
-    app/theme/ThemeSplitView.cc
     app/ui/ConfigurationPicker.cc
-    app/ui/InteractiveLoginView.cc
-    app/ui/MainView.cc
     app/ui/Presentation.cc
-    app/ui/ProfileCollectionView.cc
+    app/ui/app/InteractiveLoginView.cc
+    app/ui/app/MainView.cc
+    app/ui/app/ProfileListView.cc
     app/ui/extensions/AppProfile.cc
     app/ui/extensions/DataHelpers.cc
     app/ui/extensions/Module.cc
@@ -42,6 +34,13 @@ set(APP_SOURCES
     app/ui/settings/SettingsCoordinator.cc
     app/ui/settings/SettingsView.cc
     app/ui/settings/VersionView.cc
+    app/ui/theme/Theme.cc
+    app/ui/theme/ThemeContentLink.cc
+    app/ui/theme/ThemeDetailView.cc
+    app/ui/theme/ThemeList.cc
+    app/ui/theme/ThemeLongContent.cc
+    app/ui/theme/ThemeModal.cc
+    app/ui/theme/ThemeSplitView.cc
 )
 if(WIN32)
     list(APPEND APP_SOURCES
