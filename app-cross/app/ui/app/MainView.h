@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../../context/AppContext.h"
-#include "../ConfigurationPickerFactory.h"
+#include "../extensions/ConfigurationPickerFactory.h"
 #include "../theme/Theme.h"
 #include "ProfileListView.h"
 #include <deque>

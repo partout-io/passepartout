@@ -3,7 +3,7 @@
 
 #include "ConfigurationPickerFactory.h"
 #ifdef _WIN32
-#include "../platform/WindowsConfigurationPicker.h"
+#include "../../platform/WindowsConfigurationPicker.h"
 #include <wx/window.h>
 
 namespace Passepartout {
@@ -13,7 +13,7 @@ std::unique_ptr<ConfigurationPicker> MakeConfigurationPicker(wxWindow &owner) {
 }
 #else
 #include "ModalConfigurationPicker.h"
-#include "../strings/Strings.h"
+#include "../../strings/Strings.h"
 #include <wx/filedlg.h>
 
 namespace Passepartout {

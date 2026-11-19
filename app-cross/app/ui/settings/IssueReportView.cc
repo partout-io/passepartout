@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "IssueReportView.h"
-#include "../Presentation.h"
+#include "../extensions/Presentation.h"
 
 namespace Passepartout {
 IssueReportView::IssueReportView(wxWindow *parent, DiagnosticsObservable &diagnostics) : ThemeDetailView(parent) {

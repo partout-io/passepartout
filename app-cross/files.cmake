@@ -4,14 +4,14 @@ set(APP_SOURCES
     app/PassepartoutApp.cc
     app/context/AppContext.cc
     app/strings/Strings.cc
-    app/ui/ConfigurationPicker.cc
-    app/ui/Presentation.cc
     app/ui/app/InteractiveLoginView.cc
     app/ui/app/MainView.cc
     app/ui/app/ProfileListView.cc
     app/ui/extensions/AppProfile.cc
+    app/ui/extensions/ConfigurationPicker.cc
     app/ui/extensions/DataHelpers.cc
     app/ui/extensions/Module.cc
+    app/ui/extensions/Presentation.cc
     app/ui/profile/DNSView.cc
     app/ui/profile/HTTPProxyView.cc
     app/ui/profile/IPView.cc

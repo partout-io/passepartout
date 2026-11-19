@@ -6,7 +6,7 @@
 #include "CreditsView.h"
 #include "LinksView.h"
 #include "DiagnosticsView.h"
-#include "../Presentation.h"
+#include "../extensions/Presentation.h"
 #include "../theme/ThemeSplitView.h"
 #include "../theme/ThemeModal.h"
 #include <wx/display.h>

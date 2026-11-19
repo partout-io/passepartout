@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "WindowsConfigurationPicker.h"
-#include "../ui/ConfigurationSelection.h"
+#include "../ui/extensions/ConfigurationSelection.h"
 #include <shobjidl.h>
 #include <roapi.h>
 #include <winrt/Windows.Foundation.Collections.h>

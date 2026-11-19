@@ -11,8 +11,8 @@
 #include "observables/AppSession.h"
 #include "observables/ProfileObservable.h"
 #include "observables/TunnelObservable.h"
-#include "ui/ModalConfigurationPicker.h"
-#include "ui/ConfigurationSelection.h"
+#include "ui/extensions/ModalConfigurationPicker.h"
+#include "ui/extensions/ConfigurationSelection.h"
 #include <algorithm>
 #include <cassert>
 #include <fstream>
