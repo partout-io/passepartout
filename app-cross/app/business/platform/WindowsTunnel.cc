@@ -4,7 +4,7 @@
 
 #include "WindowsTunnel.h"
 #include "partout_windows.h"
-#include "AppLogger.h"
+#include "../extensions/AppLogger.h"
 #include "../../../tunnel/Preferences.h"
 #include <partout/models/TunnelSnapshot.h>
 #include <winrt/Windows.Foundation.Collections.h>

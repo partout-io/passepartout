@@ -48,10 +48,10 @@ if(WIN32)
 
     # Compile the adapter independently of the desktop application.
     add_library(passepartout-windows-integration-check OBJECT
-        ../app/business/extensions/WindowsTunnel.cc
+        ../app/business/platform/WindowsTunnel.cc
         ../app/ui/platform/WindowsConfigurationPicker.cc
         ../app/ui/platform/WindowsFileActivation.cc
-        ../app/business/extensions/WindowsHttpClient.cc
+        ../app/business/platform/WindowsHttpClient.cc
         ../app/ui/platform/WindowsURLLauncher.cc
         ../app/ui/platform/WindowsIssueHandoff.cc)
     # Match Partout::WindowsRuntime's public requirement for C++/WinRT headers.

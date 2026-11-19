@@ -44,8 +44,8 @@ set(APP_SOURCES
 )
 if(WIN32)
     list(APPEND APP_SOURCES
-        app/business/extensions/WindowsHttpClient.cc
-        app/business/extensions/WindowsTunnel.cc
+        app/business/platform/WindowsHttpClient.cc
+        app/business/platform/WindowsTunnel.cc
         app/ui/platform/WindowsConfigurationPicker.cc
         app/ui/platform/WindowsFileActivation.cc
         app/ui/platform/WindowsIssueHandoff.cc
