@@ -80,10 +80,6 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     Move(position);
 }
 void SettingsCoordinator::SelectSection(SettingsSection section) {
-    if (section == SettingsSection::FAQ) {
-        OpenURL(this, context_.constants.websites.homeURL + "/faq");
-        return;
-    }
     if (section == SettingsSection::Update) {
         OpenURL(this, context_.version.Snapshot().release.downloadURL);
         return;

@@ -210,13 +210,10 @@ void MainView::PresentInteractiveLogin() {
     timer_.Stop();
     ThemeModal modal(this, Text(login->original.name), [&login](wxWindow *parent) {
         return new InteractiveLoginView(parent, *login);
-    }, ThemeModal::Mode::Editable, ThemeModal::Sizing::Content);
+    }, ThemeModal::Mode::Editable, ThemeModal::Sizing::Content,
+        [&login] { return login->CanSubmit(); });
     auto *connect = wxDynamicCast(modal.FindWindow(wxID_OK), wxButton);
     connect->SetLabel(Localized(StringKey::GlobalActionsConnect));
-    connect->Enable(login->CanSubmit());
-    connect->Bind(wxEVT_UPDATE_UI, [&login](wxUpdateUIEvent &event) {
-        event.Enable(login->CanSubmit());
-    });
     const auto result = modal.ShowModal();
     if (result == wxID_OK) context_.tunnel.CompleteInteractiveLogin(std::move(*login));
     timer_.Start(200);

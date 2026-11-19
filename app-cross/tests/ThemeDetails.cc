@@ -79,12 +79,16 @@ int main(int argc, char **argv) {
         }
         if (!editor || editor->GetValue() != secret || editor->IsEditable() ||
             (editor->GetWindowStyleFlag() & wxTE_PASSWORD)) return 9;
+        editor->SetSelection(0, 6);
+        content->SetContent(secret + "\nAn additional log line");
+        if (editor->GetStringSelection() != "secret") return 17;
+        content->SetContent("new");
+        if (editor->GetStringSelection() != "new" || editor->IsEditable()) return 18;
         auto *book = new wxSimplebook(&frame);
         int changes = 0;
         auto *sidebar = new Passepartout::SettingsView(&frame, "Update",
             Passepartout::SettingsSection::Preferences, [&](Passepartout::SettingsSection section) {
-                if (section == Passepartout::SettingsSection::FAQ ||
-                    section == Passepartout::SettingsSection::Update) std::exit(3);
+                if (section == Passepartout::SettingsSection::Update) std::exit(3);
                 ++changes;
                 book->DeleteAllPages();
                 auto *page = new Passepartout::ThemeDetailView(book, Passepartout::ThemeDetailView::Presentation::Plain);

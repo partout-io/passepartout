@@ -4,17 +4,16 @@
 
 #pragma once
 #include "../../observables/CreditsObservable.h"
-#include <wx/wx.h>
+#include "../theme/ThemeLongContent.h"
 
 namespace Passepartout {
-class LicenseView final : public wxPanel {
+class LicenseView final : public ThemeLongContent {
 public:
     LicenseView(wxWindow *parent, CreditsObservable &credits, std::string url, const wxString &title);
 private:
     void UpdateContent();
     CreditsObservable &credits_;
     std::string url_;
-    wxTextCtrl *content_;
     wxTimer timer_;
 };
 }

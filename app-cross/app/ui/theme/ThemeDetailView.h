@@ -50,7 +50,6 @@ private:
     wxSizerFlags SectionRowFlags(bool expand = true);
     wxFlexGridSizer *FormRows();
     wxStaticText *Value(const wxString &value, bool monospace = false);
-    wxBoxSizer *Row(const wxString &title);
     wxBoxSizer *layout_;
     Presentation presentation_;
     wxWindow *contentParent_;

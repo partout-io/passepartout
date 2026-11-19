@@ -4,17 +4,16 @@
 
 #pragma once
 #include "../../observables/DiagnosticsObservable.h"
-#include <wx/wx.h>
+#include "../theme/ThemeLongContent.h"
 
 namespace Passepartout {
-class RuntimeLogView final : public wxPanel {
+class RuntimeLogView final : public ThemeLongContent {
 public:
     RuntimeLogView(wxWindow *parent, DiagnosticsObservable &diagnostics, bool tunnel);
 private:
     void UpdateContent();
     DiagnosticsObservable &diagnostics_;
     bool tunnel_;
-    wxTextCtrl *content_;
     wxTimer timer_;
 };
 }
