@@ -268,7 +268,7 @@ private extension OpenVPNView.ConfigurationView {
                     ThemeLongContentLink(
                         Strings.Unlocalized.ca,
                         text: .constant($0.pem),
-                        preview: ""
+                        secure: true
                     )
                 }
 
@@ -277,7 +277,7 @@ private extension OpenVPNView.ConfigurationView {
                     ThemeLongContentLink(
                         Strings.Global.Nouns.certificate,
                         text: .constant($0.pem),
-                        preview: ""
+                        secure: true
                     )
                 }
 
@@ -286,7 +286,7 @@ private extension OpenVPNView.ConfigurationView {
                     ThemeLongContentLink(
                         Strings.Global.Nouns.key,
                         text: .constant($0.pem),
-                        preview: ""
+                        secure: true
                     )
                 }
 
@@ -295,7 +295,7 @@ private extension OpenVPNView.ConfigurationView {
                     ThemeLongContentLink(
                         Strings.Modules.Openvpn.tlsWrap,
                         text: .constant($0.key.hexString),
-                        preview: configuration.localizedDescription(style: .tlsWrap)
+                        secure: true
                     )
                 }
 

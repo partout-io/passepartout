@@ -119,19 +119,17 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
     }
     if (HasContent(value("ca")) || HasContent(value("clientCertificate")) || HasContent(value("clientKey")) || HasContent(value("tlsWrap"))) {
         Section(TLS);
-        Row(CA, value("ca"), true, wxString{});
-        Row(StringKey::GlobalNounsCertificate, value("clientCertificate"), true, wxString{});
-        Row(StringKey::GlobalNounsKey, value("clientKey"), true, wxString{});
+        Row(CA, value("ca"), true, std::nullopt, true);
+        Row(StringKey::GlobalNounsCertificate, value("clientCertificate"), true, std::nullopt, true);
+        Row(StringKey::GlobalNounsKey, value("clientKey"), true, std::nullopt, true);
         const auto wrap = value("tlsWrap");
         if (wrap.is_object()) {
-            const auto strategy = wrap.at("strategy");
-            const auto name = strategy == "auth" ? TLSAuth : strategy == "crypt" ? TLSCrypt : TLSCryptV2;
             const auto key = HexKey(wrap.at("key").at("data"));
             if (!key.empty()) {
                 const auto title = Localized(StringKey::ModulesOpenvpnTlsWrap);
-                LongContent(title, "--" + wxString(name), [this, title, key] {
+                LongContent(title, key, [this, title, key] {
                     openContent_(title, key);
-                });
+                }, true);
             }
         }
         Row(StringKey::ModulesOpenvpnEku, module.configuration->checksEKU.value_or(false));

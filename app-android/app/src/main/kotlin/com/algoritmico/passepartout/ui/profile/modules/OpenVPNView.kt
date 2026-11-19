@@ -13,6 +13,7 @@ import com.algoritmico.passepartout.ui.extensions.base64ToHex
 import com.algoritmico.passepartout.ui.extensions.durationText
 import com.algoritmico.passepartout.ui.extensions.hasContent
 import com.algoritmico.passepartout.ui.extensions.routeText
+import com.algoritmico.passepartout.ui.theme.ThemeLongContent
 import com.algoritmico.passepartout.ui.theme.ThemeDetailRow
 import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
@@ -101,19 +102,13 @@ internal fun OpenVPNView(
     }
     if (hasContent(c.ca, c.clientCertificate, c.clientKey, c.tlsWrap)) {
         ThemeListSectionHeader(Strings.Unlocalized.tls)
-        ThemeDetailRow(Strings.Unlocalized.ca, c.ca, onOpenContent = onOpenContent)
-        ThemeDetailRow(R.string.global_nouns_certificate, c.clientCertificate, onOpenContent = onOpenContent)
-        ThemeDetailRow(R.string.global_nouns_key, c.clientKey, onOpenContent = onOpenContent)
+        ThemeLongContent(Strings.Unlocalized.ca, c.ca.orEmpty(), onOpenContent = onOpenContent, secure = true)
+        ThemeLongContent(stringResource(R.string.global_nouns_certificate), c.clientCertificate.orEmpty(), onOpenContent = onOpenContent, secure = true)
+        ThemeLongContent(stringResource(R.string.global_nouns_key), c.clientKey.orEmpty(), onOpenContent = onOpenContent, secure = true)
         c.tlsWrap?.let { wrap ->
             val title = stringResource(R.string.modules_openvpn_tls_wrap)
-            val strategy = when (wrap.strategy) {
-                OpenVPNTLSWrapStrategy.auth -> Strings.Unlocalized.OpenVPN.tlsAuth
-                OpenVPNTLSWrapStrategy.crypt -> Strings.Unlocalized.OpenVPN.tlsCrypt
-                OpenVPNTLSWrapStrategy.cryptV2 -> Strings.Unlocalized.OpenVPN.tlsCryptV2
-            }
             wrap.key.data.base64ToHex()?.let { key ->
-                ThemeNavigatingButton(title = title, trailingText = strategy,
-                    onClick = { onOpenContent(title, key) })
+                ThemeLongContent(title, key, onOpenContent = onOpenContent, secure = true)
             }
         }
         ThemeDetailRow(R.string.modules_openvpn_eku, stringResource(if (c.checksEKU == true)
