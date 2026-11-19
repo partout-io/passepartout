@@ -127,7 +127,7 @@ void SettingsCoordinator::ReportIssue() {
         [&view](wxWindow *parent) {
             view = new IssueReportView(parent);
             return view;
-        }, ThemeModal::Mode::Editable, ThemeModal::Sizing::Content,
+        }, ThemeModal::Mode::Editable, ThemeModal::Sizing::TextInput,
         [&view] { return view && view->CanSubmit(); });
     if (modal.ShowModal() != wxID_OK) return;
     try {

@@ -11,6 +11,7 @@ IssueReportView::IssueReportView(wxWindow *parent) : ThemeDetailView(parent) {
     comment_->SetMaxLength(16000);
     comment_->SetFocus();
     Finish();
+    SetMinSize(GetSizer()->GetMinSize());
 }
 std::string IssueReportView::Comment() const {
     return comment_->GetValue().ToStdString(wxConvUTF8);

@@ -40,12 +40,16 @@ int main(int argc, char **argv) {
         Passepartout::ThemeModal reportModal(&frame, "Report", [&report](wxWindow *parent) {
             report = new Passepartout::IssueReportView(parent);
             return report;
-        }, Passepartout::ThemeModal::Mode::Editable, Passepartout::ThemeModal::Sizing::Content,
+        }, Passepartout::ThemeModal::Mode::Editable, Passepartout::ThemeModal::Sizing::TextInput,
             [&report] { return report->CanSubmit(); });
         auto *ok = reportModal.FindWindow(wxID_OK);
         auto *comment = dynamic_cast<wxTextCtrl *>(wxWindow::FindWindowByName(
             Passepartout::Localized(Passepartout::StringKey::GlobalNounsComment), report));
         if (!ok || !comment || ok->IsEnabled() || report->CanSubmit()) return 12;
+        if (comment->GetMinSize() != wxSize(report->GetCharWidth() * 40,
+            report->GetCharHeight() * 8)) return 15;
+        const auto extra = reportModal.GetSize() - reportModal.GetMinSize();
+        if (extra != wxSize(report->GetCharWidth() * 20, report->GetCharHeight() * 4)) return 16;
         comment->SetValue("A report comment");
         ok->UpdateWindowUI();
         if (!ok->IsEnabled() || report->Comment() != "A report comment") return 13;

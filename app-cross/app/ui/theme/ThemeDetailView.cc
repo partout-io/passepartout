@@ -160,12 +160,17 @@ wxButton *ThemeDetailView::ButtonRow(const wxString &title, std::function<void()
 }
 wxTextCtrl *ThemeDetailView::TextField(const wxString &title, const wxString &value, long style) {
     if (style & wxTE_MULTILINE) {
-        if (!title.empty()) section_->Add(WrappingText(title), SectionRowFlags());
+        auto *field = new wxBoxSizer(wxVERTICAL);
+        if (!title.empty()) {
+            field->Add(WrappingText(title), 0, wxEXPAND | wxBOTTOM,
+                Theme::Spacing(this, Theme::Space::SectionContent));
+        }
         auto *text = new wxTextCtrl(contentParent_, wxID_ANY, value,
             wxDefaultPosition, wxDefaultSize, style);
         text->SetName(title);
-        text->SetMinSize(wxSize(GetCharWidth() * 50, GetCharHeight() * 10));
-        section_->Add(text, SectionRowFlags().Proportion(1));
+        text->SetMinSize(wxSize(GetCharWidth() * 40, GetCharHeight() * 8));
+        field->Add(text, 1, wxEXPAND);
+        section_->Add(field, SectionRowFlags().Proportion(1));
         formRows_ = nullptr;
         return text;
     }

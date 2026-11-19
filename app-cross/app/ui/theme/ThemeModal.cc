@@ -12,7 +12,8 @@ ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
         wxDEFAULT_DIALOG_STYLE | (sizing == Sizing::FixedContent ? 0 : wxRESIZE_BORDER)) {
     Theme::Apply(this);
     auto *layout = new wxBoxSizer(wxVERTICAL);
-    layout->Add(makeContent(this), 1, wxEXPAND);
+    auto *content = makeContent(this);
+    layout->Add(content, 1, wxEXPAND);
     auto *buttons = new wxStdDialogButtonSizer;
     auto *close = new wxButton(this, wxID_CANCEL, Localized(mode == Mode::Editable ? StringKey::GlobalActionsCancel : StringKey::GlobalActionsClose));
     buttons->SetCancelButton(close);
@@ -38,8 +39,17 @@ ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
         EndModal(wxID_CANCEL);
     });
     auto size = GetBestSize();
+    const auto available = wxDisplay(this).GetClientArea().GetSize();
+    if (sizing == Sizing::TextInput) {
+        // The content's 40-character by 8-line editor minimum includes its
+        // caption and padding. Add only the editor delta for the 60-by-12 default.
+        auto minimum = size;
+        minimum.DecTo(available);
+        SetMinSize(minimum);
+        size += wxSize(content->GetCharWidth() * 20, content->GetCharHeight() * 4);
+    }
     if (sizing == Sizing::Reading) size.IncTo(wxSize(GetCharWidth() * 80, GetCharHeight() * 24));
-    size.DecTo(wxDisplay(this).GetClientArea().GetSize());
+    size.DecTo(available);
     SetSize(size);
     CentreOnParent();
 }
