@@ -31,7 +31,7 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
     Section(Localized(StringKey::ModulesWireguardInterface));
     Row(StringKey::GlobalNounsPrivateKey, local.at("privateKey"), true, std::nullopt, true);
     Row(StringKey::GlobalNounsPublicKey, keys.PublicKey(local.at("privateKey").get<std::string>()));
-    Row(StringKey::GlobalNounsAddresses, local.value("addresses", nlohmann::json()), true, entries(local.value("addresses", nlohmann::json())));
+    listRow(StringKey::GlobalNounsAddresses, local.value("addresses", nlohmann::json()));
     Row(MTU, local.value("mtu", nlohmann::json()));
     if (local.contains("dns") && local["dns"].is_object()) {
         const auto dns = local["dns"];
@@ -51,7 +51,7 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
         Row(StringKey::GlobalNounsPublicKey, peer.at("publicKey"), true);
         Row(StringKey::ModulesWireguardPresharedKey, peer.value("preSharedKey", nlohmann::json()), true, std::nullopt, true);
         Row(StringKey::GlobalNounsEndpoint, peer.value("endpoint", nlohmann::json()), true);
-        Row(StringKey::ModulesWireguardAllowedIps, peer.value("allowedIPs", nlohmann::json()), true, entries(peer.value("allowedIPs", nlohmann::json())));
+        listRow(StringKey::ModulesWireguardAllowedIps, peer.value("allowedIPs", nlohmann::json()));
         Row(StringKey::GlobalNounsKeepAlive, peer.value("keepAlive", nlohmann::json()));
     }
     Finish();
