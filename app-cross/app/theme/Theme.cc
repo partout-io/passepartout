@@ -42,8 +42,8 @@ wxIcon Theme::SettingsIcon(wxWindow *window) {
         R"svg(<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%s" fill-rule="evenodd" d="M19.500 12.000 L21.808 13.951 L21.239 15.827 L18.236 16.167 L17.303 17.303 L17.556 20.315 L15.827 21.239 L13.463 19.356 L12.000 19.500 L10.049 21.808 L8.173 21.239 L7.833 18.236 L6.697 17.303 L3.685 17.556 L2.761 15.827 L4.644 13.463 L4.500 12.000 L2.192 10.049 L2.761 8.173 L5.764 7.833 L6.697 6.697 L6.444 3.685 L8.173 2.761 L10.537 4.644 L12.000 4.500 L13.951 2.192 L15.827 2.761 L16.167 5.764 L17.303 6.697 L20.315 6.444 L21.239 8.173 L19.356 10.537 Z M16 12 A4 4 0 1 0 8 12 A4 4 0 1 0 16 12 Z"/></svg>)svg");
 }
 wxIcon Theme::ProfileIcon(wxWindow *window) {
-    return WindowIcon(window, "avatar-default",
-        R"svg(<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="%s"><circle cx="12" cy="7" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2z"/></g></svg>)svg");
+    return WindowIcon(window, wxART_NORMAL_FILE,
+        R"svg(<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="%s" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z M14 3v5h5 M8 12h8 M8 16h8"/></g></svg>)svg");
 }
 int Theme::Spacing(wxWindow *window, Space space) {
     constexpr int unit = 6;
