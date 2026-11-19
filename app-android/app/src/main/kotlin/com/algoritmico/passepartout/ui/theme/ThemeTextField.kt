@@ -21,7 +21,8 @@ fun ThemeTextField(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     secure: Boolean = false,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    readOnly: Boolean = false
 ) {
     OutlinedTextField(
         value = value,
@@ -29,6 +30,7 @@ fun ThemeTextField(
         label = { Text(label) },
         modifier = modifier.fillMaxWidth(),
         enabled = enabled,
+        readOnly = readOnly,
         singleLine = true,
         visualTransformation = if (secure) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = if (secure) keyboardOptions.copy(keyboardType = KeyboardType.Password) else keyboardOptions

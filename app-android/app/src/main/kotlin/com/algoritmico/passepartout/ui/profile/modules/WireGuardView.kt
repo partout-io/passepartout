@@ -10,6 +10,7 @@ import androidx.compose.ui.res.stringResource
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.ui.extensions.hasContent
+import com.algoritmico.passepartout.ui.theme.ThemeTextField
 import com.algoritmico.passepartout.ui.theme.ThemeDetailRow
 import com.algoritmico.passepartout.ui.theme.ThemeListSectionHeader
 import io.partout.models.WireGuardModule
@@ -24,8 +25,19 @@ internal fun WireGuardView(
     val local = configuration.`interface`
     val publicKey = remember(local.privateKey, keyGenerator) { keyGenerator.publicKey(local.privateKey) }
     ThemeListSectionHeader(stringResource(R.string.modules_wireguard_interface))
-    ThemeDetailRow(R.string.global_nouns_private_key, local.privateKey, onOpenContent = onOpenContent)
-    ThemeDetailRow(R.string.global_nouns_public_key, publicKey, onOpenContent = onOpenContent)
+    ThemeTextField(
+        value = local.privateKey,
+        onValueChange = {},
+        label = stringResource(R.string.global_nouns_private_key),
+        secure = true,
+        readOnly = true
+    )
+    ThemeTextField(
+        value = publicKey.orEmpty(),
+        onValueChange = {},
+        label = stringResource(R.string.global_nouns_public_key),
+        readOnly = true
+    )
     ThemeDetailRow(R.string.global_nouns_addresses, local.addresses, onOpenContent = onOpenContent)
     ThemeDetailRow(Strings.Unlocalized.mtu, local.mtu)
     local.dns?.takeIf { hasContent(it.servers, it.domainName, it.searchDomains) }?.let {
@@ -35,8 +47,19 @@ internal fun WireGuardView(
     }
     configuration.peers.forEachIndexed { index, peer ->
         ThemeListSectionHeader(stringResource(R.string.modules_wireguard_peer, index + 1))
-        ThemeDetailRow(R.string.global_nouns_public_key, peer.publicKey, onOpenContent = onOpenContent)
-        ThemeDetailRow(R.string.modules_wireguard_preshared_key, peer.preSharedKey, onOpenContent = onOpenContent)
+        ThemeTextField(
+            value = peer.publicKey,
+            onValueChange = {},
+            label = stringResource(R.string.global_nouns_public_key),
+            readOnly = true
+        )
+        ThemeTextField(
+            value = peer.preSharedKey.orEmpty(),
+            onValueChange = {},
+            label = stringResource(R.string.modules_wireguard_preshared_key),
+            secure = true,
+            readOnly = true
+        )
         ThemeDetailRow(R.string.global_nouns_endpoint, peer.endpoint, onOpenContent = onOpenContent)
         ThemeDetailRow(R.string.modules_wireguard_allowed_ips, peer.allowedIPs, onOpenContent = onOpenContent)
         ThemeDetailRow(R.string.global_nouns_keep_alive, peer.keepAlive)

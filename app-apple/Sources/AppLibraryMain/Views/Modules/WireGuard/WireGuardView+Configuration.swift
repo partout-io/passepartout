@@ -54,10 +54,10 @@ extension WireGuardView {
 private extension WireGuardView.ConfigurationView {
     var privateKeySection: some View {
         themeModuleSection(header: Strings.Modules.Wireguard.interface) {
-            ThemeLongContentLink(
-                Strings.Global.Nouns.privateKey,
+            ThemeSecureField(
+                title: Strings.Global.Nouns.privateKey,
                 text: $viewModel.privateKey,
-                preview: ""
+                placeholder: ""
             )
             ThemeCopiableText(
                 Strings.Global.Nouns.publicKey,
@@ -116,14 +116,15 @@ private extension WireGuardView.ConfigurationView {
         themeModuleSection(header: Strings.Modules.Wireguard.peer(index + 1)) {
             let peerBinding = peerBinding(with: publicKey)
 
-            ThemeLongContentLink(
+            ThemeTextField(
                 Strings.Global.Nouns.publicKey,
-                text: peerBinding.publicKey
+                text: peerBinding.publicKey,
+                placeholder: ""
             )
-            ThemeLongContentLink(
-                Strings.Modules.Wireguard.presharedKey,
+            ThemeSecureField(
+                title: Strings.Modules.Wireguard.presharedKey,
                 text: peerBinding.preSharedKey,
-                preview: ""
+                placeholder: ""
             )
             ThemeLongContentLink(
                 Strings.Global.Nouns.endpoint,
