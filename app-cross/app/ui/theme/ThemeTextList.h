@@ -7,8 +7,8 @@
 #include <vector>
 
 namespace Passepartout {
-class OpenVPNRemotesView final : public wxPanel {
+class ThemeTextList final : public wxPanel {
 public:
-    OpenVPNRemotesView(wxWindow *parent, const std::vector<std::string> &endpoints);
+    ThemeTextList(wxWindow *parent, const wxString &title, const std::vector<std::string> &values);
 };
 }

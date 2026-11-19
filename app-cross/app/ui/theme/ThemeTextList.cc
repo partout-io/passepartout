@@ -1,24 +1,23 @@
 // SPDX-FileCopyrightText: 2026 Davide De Rosa
 // SPDX-License-Identifier: GPL-3.0
 
-#include "OpenVPNRemotesView.h"
-#include "../theme/ThemeList.h"
-#include "../theme/Theme.h"
-#include "../../strings/Strings.h"
+#include "ThemeTextList.h"
+#include "ThemeList.h"
+#include "Theme.h"
 #include <wx/clipbrd.h>
 #include <wx/dataobj.h>
 #include <algorithm>
 
 namespace Passepartout {
-OpenVPNRemotesView::OpenVPNRemotesView(wxWindow *parent, const std::vector<std::string> &endpoints)
+ThemeTextList::ThemeTextList(wxWindow *parent, const wxString &title, const std::vector<std::string> &values)
     : wxPanel(parent) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
     auto *list = new ThemeList(this, wxDV_NO_HEADER);
-    list->SetName(Localized(StringKey::ModulesOpenvpnRemotes));
-    list->AppendTextColumn(Localized(StringKey::GlobalNounsEndpoint), wxDATAVIEW_CELL_INERT);
-    for (const auto &endpoint : endpoints) {
+    list->SetName(title);
+    list->AppendTextColumn(title, wxDATAVIEW_CELL_INERT);
+    for (const auto &value : values) {
         wxVector<wxVariant> row;
-        row.push_back(wxVariant(wxString::FromUTF8(endpoint)));
+        row.push_back(wxVariant(wxString::FromUTF8(value)));
         list->AppendItem(row);
     }
     list->Bind(wxEVT_SIZE, [list](wxSizeEvent &event) {

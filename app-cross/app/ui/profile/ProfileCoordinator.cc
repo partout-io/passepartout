@@ -7,7 +7,7 @@
 #include "ProfileModuleList.h"
 #include "OpenVPNView.h"
 #include "OpenVPNCredentialsView.h"
-#include "OpenVPNRemotesView.h"
+#include "../theme/ThemeTextList.h"
 #include "DNSView.h"
 #include "OnDemandView.h"
 #include "HTTPProxyView.h"
@@ -143,6 +143,12 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
         });
         modal.ShowModal();
     };
+    const auto openList = [this](wxString title, std::vector<std::string> values) {
+        ThemeModal modal(this, title, [title, values](wxWindow *parent) {
+            return new ThemeTextList(parent, title, values);
+        });
+        modal.ShowModal();
+    };
     wxWindow *page = std::visit([&](const auto &tagged) -> wxWindow * {
         using namespace Partout::Models;
         using Tag = std::decay_t<decltype(tagged)>;
@@ -150,7 +156,7 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
         else if constexpr (std::is_same_v<Tag, TaggedModuleOnDemand>) return new OnDemandView(pages_, tagged.value);
         else if constexpr (std::is_same_v<Tag, TaggedModuleHTTPProxy>) return new HTTPProxyView(pages_, tagged.value, openContent);
         else if constexpr (std::is_same_v<Tag, TaggedModuleIp>) return new IPView(pages_, tagged.value, openContent);
-        else if constexpr (std::is_same_v<Tag, TaggedModuleWireGuard>) return new WireGuardView(pages_, tagged.value, openContent, keys_);
+        else if constexpr (std::is_same_v<Tag, TaggedModuleWireGuard>) return new WireGuardView(pages_, tagged.value, openContent, keys_, openList);
         else if constexpr (std::is_same_v<Tag, TaggedModuleOpenVpn>) {
             return new OpenVPNView(pages_, tagged.value, openContent, [this, index] {
                 const auto module = std::get<TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
@@ -174,15 +180,11 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
                 updated.value.credentials = std::move(accepted);
                 editor_->UpdateModule(updated);
                 RefreshState();
-            }, [this, index] {
+            }, [this, index, openList] {
                 const auto draft = editor_->Snapshot().draft;
                 const auto &module = std::get<TaggedModuleOpenVpn>(draft.modules.at(index)).value;
                 if (!module.configuration || !module.configuration->remotes) return;
-                ThemeModal modal(this, Localized(StringKey::ModulesOpenvpnRemotes),
-                    [&module](wxWindow *parent) {
-                        return new OpenVPNRemotesView(parent, *module.configuration->remotes);
-                    });
-                modal.ShowModal();
+                openList(Localized(StringKey::ModulesOpenvpnRemotes), *module.configuration->remotes);
             });
         } else {
             return new ThemeDetailView(pages_);

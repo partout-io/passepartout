@@ -7,7 +7,8 @@
 #include <wx/numformatter.h>
 
 namespace Passepartout {
-WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardModule &module, OpenModuleContent openContent, const WireGuardKeyGenerator &keys)
+WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardModule &module, OpenModuleContent openContent, const WireGuardKeyGenerator &keys,
+    std::function<void(wxString, std::vector<std::string>)> openList)
     : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
     using namespace Strings::Unlocalized;
     if (!module.configuration) return;
@@ -19,6 +20,14 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
         text.Replace("%d", wxNumberFormatter::ToString(static_cast<long>(count)));
         return text;
     };
+    const auto listRow = [this, &entries, &openList](StringKey label, const nlohmann::json &values) {
+        if (!HasContent(values)) return;
+        const auto title = Localized(label);
+        const auto items = values.get<std::vector<std::string>>();
+        ContentLink(title, [openList, title, items] {
+            openList(title, items);
+        }, entries(values));
+    };
     Section(Localized(StringKey::ModulesWireguardInterface));
     Row(StringKey::GlobalNounsPrivateKey, local.at("privateKey"), true, std::nullopt, true);
     Row(StringKey::GlobalNounsPublicKey, keys.PublicKey(local.at("privateKey").get<std::string>()));
@@ -27,12 +36,12 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
     if (local.contains("dns") && local["dns"].is_object()) {
         const auto dns = local["dns"];
         Section(DNS);
-        Row(StringKey::GlobalNounsServers, dns.value("servers", nlohmann::json()), true, entries(dns.value("servers", nlohmann::json())));
+        listRow(StringKey::GlobalNounsServers, dns.value("servers", nlohmann::json()));
         nlohmann::json domains = nlohmann::json::array();
         if (dns.contains("domainName") && !dns["domainName"].is_null()) domains.push_back(dns["domainName"]);
         if (dns.contains("searchDomains") && dns["searchDomains"].is_array())
             for (const auto &domain : dns["searchDomains"]) domains.push_back(domain);
-        Row(StringKey::EntitiesDnsSearchDomains, domains, true, entries(domains));
+        listRow(StringKey::EntitiesDnsSearchDomains, domains);
     }
     unsigned index = 0;
     for (const auto &peer : c.at("peers")) {

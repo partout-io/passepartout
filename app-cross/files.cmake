@@ -18,7 +18,6 @@ set(APP_SOURCES
     app/ui/profile/ModuleDetailView.cc
     app/ui/profile/OnDemandView.cc
     app/ui/profile/OpenVPNCredentialsView.cc
-    app/ui/profile/OpenVPNRemotesView.cc
     app/ui/profile/OpenVPNView.cc
     app/ui/profile/ProfileCoordinator.cc
     app/ui/profile/ProfileModuleList.cc
@@ -41,6 +40,7 @@ set(APP_SOURCES
     app/ui/theme/ThemeLongContent.cc
     app/ui/theme/ThemeModal.cc
     app/ui/theme/ThemeSplitView.cc
+    app/ui/theme/ThemeTextList.cc
 )
 if(WIN32)
     list(APPEND APP_SOURCES
