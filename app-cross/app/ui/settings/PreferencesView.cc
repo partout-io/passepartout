@@ -11,7 +11,6 @@ PreferencesView::PreferencesView(wxWindow *parent, UserPreferencesObservable &pr
     if (preferences.HasLoadError()) Message(Localized(StringKey::ErrorsAppOther));
     auto *dns = Toggle(Localized(StringKey::ViewsPreferencesDnsFallsBack),
         Localized(StringKey::ViewsPreferencesDnsFallsBackFooter), preferences.Snapshot().dnsFallsBack);
-    Message(Localized(StringKey::ViewsPreferencesNextConnection), TextStyle::Secondary);
     dns->Bind(wxEVT_CHECKBOX, [this, dns, &preferences](wxCommandEvent &) {
         try {
             preferences.SetDNSFallback(dns->GetValue());
