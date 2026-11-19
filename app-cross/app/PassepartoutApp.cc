@@ -26,7 +26,10 @@ wxString Text(const std::string &value) {
 }
 
 bool PassepartoutApp::OnInit() {
+#ifdef __WXMSW__
+    // Windows needs an explicit opt-in; other ports follow the native theme.
     SetAppearance(Appearance::System);
+#endif
     wxUILocale::UseDefault();
     AppLogger startupLogger;
     startupLogger.Write(LogLevel::info, "core", "Start application");
