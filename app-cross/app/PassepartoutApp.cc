@@ -26,6 +26,7 @@ wxString Text(const std::string &value) {
 }
 
 bool PassepartoutApp::OnInit() {
+    SetAppearance(Appearance::System);
     wxUILocale::UseDefault();
     AppLogger startupLogger;
     startupLogger.Write(LogLevel::info, "core", "Start application");
