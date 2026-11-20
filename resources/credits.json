@@ -46,11 +46,7 @@
             "name": "url.c",
             "licenseName": "Unlicense",
             "licenseURL": "https://raw.githubusercontent.com/cozis/url.c/refs/heads/main/UNLICENSE",
-            "platforms": [
-                "apple",
-                "android",
-                "unixLike"
-            ]
+            "platforms": []
         },
         {
             "name": "Wintun",
