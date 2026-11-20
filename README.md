@@ -96,7 +96,7 @@ By contributing to this project, you are agreeing to the terms stated in the [Co
 
 ## Credits
 
-### Libraries
+### Dependencies
 
 - [fastlane][credits-fastlane] — [MIT](https://raw.githubusercontent.com/fastlane/fastlane/master/LICENSE)
 - [GenericJSON][credits-genericjson] — [MIT](https://raw.githubusercontent.com/iwill/generic-json-swift/master/LICENSE)
