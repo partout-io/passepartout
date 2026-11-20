@@ -5,11 +5,9 @@
 #include "WindowsTunnel.h"
 #include "partout_winrt.h"
 #include "../extensions/AppLogger.h"
-#include "../../../tunnel/Preferences.h"
 #include <partout/models/TunnelSnapshot.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Storage.h>
-#include <stdexcept>
 
 namespace Passepartout {
 namespace {
