@@ -32,7 +32,8 @@ struct  ConfigBundlePlatform
         // enum values
         INVALID_VALUE_OPENAPI_GENERATED = 0,
         android,
-        apple
+        apple,
+        windows
     };
 
     ConfigBundlePlatform::eConfigBundlePlatform value = ConfigBundlePlatform::eConfigBundlePlatform::INVALID_VALUE_OPENAPI_GENERATED;

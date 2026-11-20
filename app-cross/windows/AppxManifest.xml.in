@@ -2,9 +2,11 @@
 <Package
   xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
   xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   xmlns:uap10="http://schemas.microsoft.com/appx/manifest/uap/windows10/10"
-  IgnorableNamespaces="uap rescap uap10">
+  xmlns:desktop4="http://schemas.microsoft.com/appx/manifest/desktop/windows10/4"
+  IgnorableNamespaces="uap uap3 rescap uap10 desktop4">
   <Identity
     Name="@PASSEPARTOUT_PACKAGE_NAME_XML@"
     Publisher="@PASSEPARTOUT_PACKAGE_PUBLISHER_XML@"
@@ -29,9 +31,19 @@
     <Resource Language="en-us" />
   </Resources>
   <Applications>
-    <Application Id="@PASSEPARTOUT_APPLICATION_ID_XML@" Executable="@PASSEPARTOUT_FRONTEND_FILE@" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="appContainer">
+    <Application Id="@PASSEPARTOUT_APPLICATION_ID_XML@" Executable="@PASSEPARTOUT_FRONTEND_FILE@" uap10:RuntimeBehavior="packagedClassicApp" uap10:TrustLevel="appContainer" desktop4:SupportsMultipleInstances="true">
       <uap:VisualElements DisplayName="@PASSEPARTOUT_DISPLAY_NAME_XML@" Description="@PASSEPARTOUT_PACKAGE_DESCRIPTION_XML@"
         BackgroundColor="transparent" Square150x150Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" Square44x44Logo="@PASSEPARTOUT_PACKAGE_LOGO_XML@" />
+      <Extensions>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap3:FileTypeAssociation Name="vpnconfiguration" MultiSelectModel="Player">
+            <uap:SupportedFileTypes>
+              <uap:FileType>.ovpn</uap:FileType>
+              <uap:FileType>.conf</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap3:FileTypeAssociation>
+        </uap:Extension>
+      </Extensions>
     </Application>
     <Application Id="@PASSEPARTOUT_TUNNEL_NAME_XML@">
       <uap:VisualElements

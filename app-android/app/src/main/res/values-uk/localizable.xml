@@ -34,6 +34,7 @@
     <string name="views_app_profile_context_connect_to">Підключитися до</string>
     <string name="views_app_menu_items_quit">Вийти з %1$s</string>
     <string name="views_diagnostics_title">Діагностика</string>
+    <string name="views_diagnostics_runtime_unavailable">Журнали роботи недоступні.</string>
     <string name="views_diagnostics_sections_live">Живий журнал</string>
     <string name="views_diagnostics_sections_active_profiles">Активні профілі</string>
     <string name="views_diagnostics_sections_tunnel">Журнали тунелю</string>

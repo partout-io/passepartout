@@ -1,0 +1,62 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+#include "VersionChecker.h"
+#include <array>
+#include <charconv>
+#include <stdexcept>
+
+namespace Passepartout {
+namespace {
+std::optional<std::array<unsigned, 4>> Parse(const std::string &text) {
+    std::array<unsigned, 4> parts{};
+    std::size_t start = 0;
+    for (std::size_t i = 0; i < parts.size(); ++i) {
+        const auto end = text.find('.', start);
+        const auto limit = end == std::string::npos ? text.size() : end;
+        if (start == limit) return {};
+        const auto parsed = std::from_chars(text.data() + start, text.data() + limit, parts[i]);
+        if (parsed.ec != std::errc() || parsed.ptr != text.data() + limit) return {};
+        if (end == std::string::npos) return i >= 2 ? std::optional(parts) : std::nullopt;
+        start = end + 1;
+    }
+    return {};
+}
+}
+VersionChecker::VersionChecker(std::string current, std::unique_ptr<VersionStrategy> strategy,
+    std::string destination, std::int64_t rateLimitSeconds, std::optional<std::int64_t> lastChecked,
+    std::optional<std::string> cached, SaveVersion save)
+    : current_(std::move(current)), strategy_(std::move(strategy)), destination_(std::move(destination)),
+      rateLimitSeconds_(rateLimitSeconds), lastChecked_(lastChecked), cached_(std::move(cached)), save_(std::move(save)) {}
+bool VersionChecker::Available() const {
+    return strategy_ && destination_.compare(0, 8, "https://") == 0;
+}
+VersionChecker::State VersionChecker::Snapshot() const {
+    State state;
+    if (!Available() || !cached_) return state;
+    const auto current = Parse(current_);
+    const auto latest = Parse(*cached_);
+    if (current && latest && *latest > *current) {
+        state.latest = cached_;
+        state.downloadURL = destination_;
+    }
+    return state;
+}
+void VersionChecker::Check(std::int64_t now) {
+    if (!Available()) return;
+    if (lastChecked_ && now >= *lastChecked_ && (now - *lastChecked_) / 1000 < rateLimitSeconds_) return;
+    // Network failures leave the last successful result intact. Malformed
+    // releases clear it, so a stale release is never offered as a fresh result.
+    const auto latest = strategy_->LatestVersion();
+    const auto parsed = Parse(latest);
+    const std::optional<std::string> value = parsed ? std::optional(latest) : std::nullopt;
+    save_(now, value);
+    lastChecked_ = now;
+    cached_ = value;
+    if (!parsed) throw std::runtime_error("Invalid release version.");
+}
+void VersionChecker::Cancel() noexcept {
+    if (strategy_) strategy_->Cancel();
+}
+}

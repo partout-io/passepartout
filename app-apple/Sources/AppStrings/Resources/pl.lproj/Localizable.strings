@@ -335,6 +335,7 @@
 "views.diagnostics.sections.live" = "Dziennik na żywo";
 "views.diagnostics.sections.tunnel" = "Dzienniki tunelu";
 "views.diagnostics.title" = "Diagnostyka";
+"views.diagnostics.runtime_unavailable" = "Dzienniki działania są niedostępne.";
 "views.donate.alerts.thank_you.message" = "To wiele dla mnie znaczy i mam szczerą nadzieję, że będziesz nadal korzystać i promować tę aplikację.";
 "views.donate.sections.main.footer" = "Jeśli chcesz wyrazić wdzięczność za moją pracę, oto kilka kwot, które możesz natychmiast przekazać. Zostaniesz obciążony tylko raz za darowiznę, a możesz przekazać ją wielokrotnie.";
 "views.donate.title" = "Przekaż darowiznę";

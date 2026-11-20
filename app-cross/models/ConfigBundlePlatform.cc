@@ -85,6 +85,9 @@ void to_json(nlohmann::json& j, const ConfigBundlePlatform& o)
     case ConfigBundlePlatform::eConfigBundlePlatform::apple:
         j = "apple";
         break;
+    case ConfigBundlePlatform::eConfigBundlePlatform::windows:
+        j = "windows";
+        break;
     }
 }
 
@@ -98,6 +101,9 @@ void from_json(const nlohmann::json& j, ConfigBundlePlatform& o)
     }
     else if(s == "apple") {
         parsed.value = ConfigBundlePlatform::eConfigBundlePlatform::apple;
+    }
+    else if(s == "windows") {
+        parsed.value = ConfigBundlePlatform::eConfigBundlePlatform::windows;
     }  else {
         std::stringstream ss;
         ss << "Unexpected value " << s << " in json"

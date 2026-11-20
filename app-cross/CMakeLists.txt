@@ -42,6 +42,9 @@ endif()
 set(PP_BUILD_OUTPUT "${OUTPUT_DIR}")
 set(PP_BUILD_USE_OPENSSL ON)
 set(PP_BUILD_USE_MBEDTLS ON)
+if(UNIX AND NOT APPLE AND NOT ANDROID)
+    set(PP_BUILD_USE_MBEDTLS OFF)
+endif()
 set(PP_BUILD_USE_OPENVPN ON)
 set(PP_BUILD_USE_WIREGUARD ON)
 
@@ -70,9 +73,6 @@ endfunction()
 if(BUILD_APP)
     include("core.cmake")
     add_executable(passepartout ${APP_SOURCES})
-    target_include_directories(passepartout PRIVATE
-        "${CMAKE_CURRENT_SOURCE_DIR}/app/include"
-    )
     target_link_partout_runtime(passepartout)
     target_link_libraries(passepartout PRIVATE passepartout-core)
 
@@ -80,12 +80,35 @@ if(BUILD_APP)
     set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${PASSEPARTOUT_APP_ICON}")
     file(READ "${PASSEPARTOUT_APP_ICON}" APP_ICON_HEX HEX)
     string(REGEX REPLACE "(..)" "0x\\1," APP_ICON_BYTES "${APP_ICON_HEX}")
-    configure_file("${CMAKE_CURRENT_LIST_DIR}/app/theme/app_icon_resource.h.in"
-        "${CMAKE_CURRENT_BINARY_DIR}/generated/app_icon_resource.h" @ONLY)
+    configure_file("${CMAKE_CURRENT_LIST_DIR}/app/ui/theme/AppIconResource.h.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/generated/AppIconResource.h" @ONLY)
 
     # Load wxWidgets only for the desktop application.
     include("wx.cmake")
     target_precompile_headers(passepartout PRIVATE <wx/wx.h>)
+
+    option(BUILD_UI_TESTS "Build native wxWidgets presentation regression tests" OFF)
+    if(BUILD_UI_TESTS)
+        add_executable(passepartout-ui-test
+            tests/ThemeDetails.cc app/ui/settings/SettingsView.cc app/ui/settings/IssueReportView.cc
+            app/ui/theme/Theme.cc app/ui/theme/ThemeList.cc
+            app/ui/theme/ThemeDetailView.cc app/ui/theme/ThemeLongContent.cc
+            app/ui/theme/ThemeButtonRow.cc app/ui/theme/ThemeModal.cc
+            app/ui/theme/ThemeContentLink.cc app/strings/Strings.cc)
+        target_compile_features(passepartout-ui-test PRIVATE cxx_std_17)
+        if(MSVC)
+            target_compile_options(passepartout-ui-test PRIVATE /utf-8)
+        endif()
+        target_include_directories(passepartout-ui-test PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
+        if(WIN32)
+            target_link_windows_wxwidgets(passepartout-ui-test)
+        else()
+            target_link_system_wxwidgets(passepartout-ui-test)
+        endif()
+        enable_testing()
+        add_test(NAME passepartout-ui COMMAND passepartout-ui-test)
+    endif()
+
 
     if(APPLE)
         set_target_properties(passepartout PROPERTIES
@@ -112,7 +135,7 @@ endif()
 # Tunnel executable (always built)
 add_executable(passepartout-tunnel "")
 if(WIN32)
-    target_sources(passepartout-tunnel PRIVATE tunnel/windows/main.cc)
+    target_sources(passepartout-tunnel PRIVATE tunnel/windows/Main.cc)
     option(PASSEPARTOUT_WAIT_FOR_DEBUGGER "Wait up to 30 seconds for a debugger before VPN plugin initialization (Debug only)" OFF)
     if(PASSEPARTOUT_WAIT_FOR_DEBUGGER)
         target_compile_definitions(passepartout-tunnel PRIVATE $<$<CONFIG:Debug>:PASSEPARTOUT_WAIT_FOR_DEBUGGER>)

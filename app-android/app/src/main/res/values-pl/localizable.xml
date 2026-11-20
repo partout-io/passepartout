@@ -34,6 +34,7 @@
     <string name="views_app_profile_context_connect_to">Połącz z</string>
     <string name="views_app_menu_items_quit">Zamknij %1$s</string>
     <string name="views_diagnostics_title">Diagnostyka</string>
+    <string name="views_diagnostics_runtime_unavailable">Dzienniki działania są niedostępne.</string>
     <string name="views_diagnostics_sections_live">Dziennik na żywo</string>
     <string name="views_diagnostics_sections_active_profiles">Aktywne profile</string>
     <string name="views_diagnostics_sections_tunnel">Dzienniki tunelu</string>

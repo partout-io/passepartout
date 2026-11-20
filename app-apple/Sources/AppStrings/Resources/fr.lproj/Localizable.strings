@@ -335,6 +335,7 @@
 "views.diagnostics.sections.live" = "Journal en direct";
 "views.diagnostics.sections.tunnel" = "Journaux du tunnel";
 "views.diagnostics.title" = "Diagnostic";
+"views.diagnostics.runtime_unavailable" = "Les journaux d’exécution ne sont pas disponibles.";
 "views.donate.alerts.thank_you.message" = "Cela signifie beaucoup pour moi et j'espère vraiment que vous continuerez à utiliser et promouvoir cette application.";
 "views.donate.sections.main.footer" = "Si vous souhaitez exprimer votre gratitude pour mon travail, voici quelques montants que vous pouvez donner instantanément. Vous serez facturé une seule fois pour chaque don, et vous pouvez donner plusieurs fois.";
 "views.donate.title" = "Faire un don";

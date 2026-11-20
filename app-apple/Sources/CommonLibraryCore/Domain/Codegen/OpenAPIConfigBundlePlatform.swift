@@ -10,4 +10,5 @@ import Partout
 public enum OpenAPIConfigBundlePlatform: String, Sendable, Codable, CaseIterable {
     case android = "android"
     case apple = "apple"
+    case windows = "windows"
 }

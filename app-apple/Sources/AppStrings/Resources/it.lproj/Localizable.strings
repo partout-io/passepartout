@@ -335,6 +335,7 @@
 "views.diagnostics.sections.live" = "Log in tempo reale";
 "views.diagnostics.sections.tunnel" = "Log tunnel";
 "views.diagnostics.title" = "Diagnostica";
+"views.diagnostics.runtime_unavailable" = "I log di esecuzione non sono disponibili.";
 "views.donate.alerts.thank_you.message" = "Questo significa molto per me e spero davvero che tu continui a usare e promuovere questa app.";
 "views.donate.sections.main.footer" = "Se vuoi esprimere gratitudine per il mio lavoro, qui ci sono alcuni importi che puoi donare istantaneamente. Sarai addebitato una sola volta per ogni donazione e puoi donare più volte.";
 "views.donate.title" = "Fai una donazione";

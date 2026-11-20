@@ -37,6 +37,7 @@
 "views.app_menu.items.quit" = "Quit %@";
 
 "views.diagnostics.title" = "Diagnostics";
+"views.diagnostics.runtime_unavailable" = "Runtime logs are unavailable.";
 "views.diagnostics.sections.live" = "Live log";
 "views.diagnostics.sections.active_profiles" = "Active profiles";
 "views.diagnostics.sections.tunnel" = "Tunnel logs";

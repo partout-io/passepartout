@@ -103,7 +103,7 @@ def main():
     parser.add_argument('--keys-path', type=Path)
     args = parser.parse_args()
     generate(args.source_directory, args.output_path,
-             args.keys_path or args.output_path.with_name('strings_keys.h'))
+             args.keys_path or args.output_path.with_name('StringKey.h'))
 
 
 if __name__ == '__main__':

@@ -34,6 +34,7 @@
     <string name="views_app_profile_context_connect_to">Anslut till</string>
     <string name="views_app_menu_items_quit">Avsluta %1$s</string>
     <string name="views_diagnostics_title">Diagnostik</string>
+    <string name="views_diagnostics_runtime_unavailable">Körningsloggar är inte tillgängliga.</string>
     <string name="views_diagnostics_sections_live">Live-logg</string>
     <string name="views_diagnostics_sections_active_profiles">Aktiva profiler</string>
     <string name="views_diagnostics_sections_tunnel">Tunnel-loggar</string>

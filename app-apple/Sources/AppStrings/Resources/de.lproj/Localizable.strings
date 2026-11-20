@@ -335,6 +335,7 @@
 "views.diagnostics.sections.live" = "Live-Protokoll";
 "views.diagnostics.sections.tunnel" = "Tunnel-Protokolle";
 "views.diagnostics.title" = "Diagnose";
+"views.diagnostics.runtime_unavailable" = "Laufzeitprotokolle sind nicht verfügbar.";
 "views.donate.alerts.thank_you.message" = "Das bedeutet mir viel, und ich hoffe wirklich, dass du die App weiterhin nutzt und bewirbst.";
 "views.donate.sections.main.footer" = "Wenn du meine Arbeit schätzt, sind hier ein paar Beiträge, die du sofort spenden kannst. Du wirst nur einmal pro Spende berechnet und du kannst mehrere Spenden machen.";
 "views.donate.title" = "Spenden";

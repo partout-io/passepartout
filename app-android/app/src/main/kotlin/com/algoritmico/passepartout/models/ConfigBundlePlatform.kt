@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: android,apple
+ * Values: android,apple,windows
  */
 @Serializable
 enum class ConfigBundlePlatform(val value: kotlin.String) {
@@ -40,7 +40,10 @@ enum class ConfigBundlePlatform(val value: kotlin.String) {
     android("android"),
 
     @SerialName(value = "apple")
-    apple("apple");
+    apple("apple"),
+
+    @SerialName(value = "windows")
+    windows("windows");
 
     /**
      * Override [toString()] to avoid using the enum variable name as the value, and instead use

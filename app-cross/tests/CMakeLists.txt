@@ -10,17 +10,23 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
 
 # Portable test executables
-add_executable(passepartout-models-test models.cc)
+add_executable(passepartout-models-test Models.cc)
 target_link_libraries(passepartout-models-test PRIVATE passepartout-models)
-add_executable(passepartout-application-test application.cc)
+add_executable(passepartout-application-test Application.cc)
 target_link_libraries(passepartout-application-test PRIVATE passepartout-core)
-add_executable(passepartout-presentation-test presentation.cc
-    ../app/ui/extensions/app_profile.cc ../app/ui/extensions/data_helpers.cc)
+add_executable(passepartout-editor-test Editor.cc)
+target_link_libraries(passepartout-editor-test PRIVATE passepartout-core)
+add_executable(passepartout-settings-test Settings.cc)
+target_link_libraries(passepartout-settings-test PRIVATE passepartout-core)
+add_executable(passepartout-activation-test Activation.cc)
+target_link_libraries(passepartout-activation-test PRIVATE passepartout-core)
+add_executable(passepartout-presentation-test Presentation.cc
+    ../app/ui/extensions/AppProfile.cc ../app/ui/extensions/FormatDataUnit.cc)
 target_link_libraries(passepartout-presentation-test PRIVATE passepartout-core)
 
 # Keep assertions enabled in every build configuration.
 enable_testing()
-foreach(TEST_NAME IN ITEMS models application presentation)
+foreach(TEST_NAME IN ITEMS models application presentation editor settings activation)
     set(TEST_TARGET passepartout-${TEST_NAME}-test)
     if(MSVC)
         target_compile_options(${TEST_TARGET} PRIVATE /UNDEBUG /utf-8)
@@ -43,11 +49,26 @@ if(WIN32)
 
     # Compile the adapter independently of the desktop application.
     add_library(passepartout-windows-integration-check OBJECT
-        ../app/platform/windows_tunnel.cc
-        ../app/platform/windows_configuration_picker.cc)
+        ../app/business/platform/WindowsTunnel.cc
+        ../app/ui/platform/WindowsConfigurationPicker.cc
+        ../app/ui/platform/WindowsFileActivation.cc
+        ../app/business/platform/WindowsHttpClient.cc
+        ../app/ui/platform/WindowsURLLauncher.cc
+        ../app/ui/platform/WindowsIssueHandoff.cc)
     # Match Partout::WinRTRuntime's public requirement for C++/WinRT headers.
     target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)
     target_link_libraries(passepartout-windows-integration-check PRIVATE
         passepartout-core Partout::Headers partout-winrt-backend)
     target_compile_options(passepartout-windows-integration-check PRIVATE /EHsc /permissive- /utf-8 /W4)
+
+    # Native settings translation constructs WinRT values without starting a VPN.
+    add_executable(passepartout-windows-settings-test ../../partout/tests/c/windows/tun_settings.cc)
+    target_link_libraries(passepartout-windows-settings-test PRIVATE partout-winrt-backend nlohmann_json::nlohmann_json)
+    target_compile_features(passepartout-windows-settings-test PRIVATE cxx_std_20)
+    target_compile_options(passepartout-windows-settings-test PRIVATE /UNDEBUG /utf-8 /EHsc /permissive-)
+    add_test(NAME passepartout-windows-settings COMMAND passepartout-windows-settings-test)
+
+    # FIXME: ### Restore the Windows interactive-credentials test target when
+    # Partout master includes its source and implementation from 39140181.
+
 endif()

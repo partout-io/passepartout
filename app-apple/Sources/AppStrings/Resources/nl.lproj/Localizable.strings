@@ -335,6 +335,7 @@
 "views.diagnostics.sections.live" = "Live log";
 "views.diagnostics.sections.tunnel" = "Tunnel logboeken";
 "views.diagnostics.title" = "Diagnostiek";
+"views.diagnostics.runtime_unavailable" = "Uitvoeringslogboeken zijn niet beschikbaar.";
 "views.donate.alerts.thank_you.message" = "Dit betekent veel voor mij en ik hoop echt dat je deze app blijft gebruiken en promoten.";
 "views.donate.sections.main.footer" = "Als je mijn werk wilt waarderen, zijn hier een paar bedragen die je direct kunt doneren. Je wordt slechts één keer per donatie in rekening gebracht en je kunt meerdere keren doneren.";
 "views.donate.title" = "Doe een donatie";

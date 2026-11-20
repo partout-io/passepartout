@@ -23,3 +23,19 @@ fun ThemeLongContent(text: String, modifier: Modifier = Modifier) {
         )
     }
 }
+
+@Composable
+fun ThemeLongContent(
+    title: String,
+    text: String,
+    onOpenContent: (String, String) -> Unit,
+    preview: String? = null,
+    secure: Boolean = false
+) {
+    if (text.isEmpty()) return
+    ThemeNavigatingButton(
+        title = title,
+        trailingText = if (secure) null else preview,
+        onClick = { onOpenContent(title, text) }
+    )
+}

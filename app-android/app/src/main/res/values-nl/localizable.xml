@@ -34,6 +34,7 @@
     <string name="views_app_profile_context_connect_to">Verbinden met</string>
     <string name="views_app_menu_items_quit">Stop %1$s</string>
     <string name="views_diagnostics_title">Diagnostiek</string>
+    <string name="views_diagnostics_runtime_unavailable">Uitvoeringslogboeken zijn niet beschikbaar.</string>
     <string name="views_diagnostics_sections_live">Live log</string>
     <string name="views_diagnostics_sections_active_profiles">Actieve profielen</string>
     <string name="views_diagnostics_sections_tunnel">Tunnel logboeken</string>

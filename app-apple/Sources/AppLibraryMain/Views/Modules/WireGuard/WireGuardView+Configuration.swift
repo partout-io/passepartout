@@ -56,7 +56,8 @@ private extension WireGuardView.ConfigurationView {
         themeModuleSection(header: Strings.Modules.Wireguard.interface) {
             ThemeLongContentLink(
                 Strings.Global.Nouns.privateKey,
-                text: $viewModel.privateKey
+                text: $viewModel.privateKey,
+                secure: true
             )
             ThemeCopiableText(
                 Strings.Global.Nouns.publicKey,
@@ -121,7 +122,8 @@ private extension WireGuardView.ConfigurationView {
             )
             ThemeLongContentLink(
                 Strings.Modules.Wireguard.presharedKey,
-                text: peerBinding.preSharedKey
+                text: peerBinding.preSharedKey,
+                secure: true
             )
             ThemeLongContentLink(
                 Strings.Global.Nouns.endpoint,

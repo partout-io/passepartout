@@ -571,9 +571,11 @@ components:
       x-enum-varnames:
       - android
       - apple
+      - windows
       enum:
       - android
       - apple
+      - windows
     ConnectionStatus:
       type: object
     Credits:

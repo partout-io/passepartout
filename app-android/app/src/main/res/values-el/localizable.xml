@@ -34,6 +34,7 @@
     <string name="views_app_profile_context_connect_to">Σύνδεση με</string>
     <string name="views_app_menu_items_quit">Κλείσιμο %1$s</string>
     <string name="views_diagnostics_title">Διαγνωστικά</string>
+    <string name="views_diagnostics_runtime_unavailable">Τα αρχεία καταγραφής εκτέλεσης δεν είναι διαθέσιμα.</string>
     <string name="views_diagnostics_sections_live">Ζωντανό ημερολόγιο</string>
     <string name="views_diagnostics_sections_active_profiles">Ενεργά προφίλ</string>
     <string name="views_diagnostics_sections_tunnel">Ημερολόγια τούνελ</string>

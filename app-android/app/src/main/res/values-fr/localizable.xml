@@ -34,6 +34,7 @@
     <string name="views_app_profile_context_connect_to">Se connecter à</string>
     <string name="views_app_menu_items_quit">Quitter %1$s</string>
     <string name="views_diagnostics_title">Diagnostic</string>
+    <string name="views_diagnostics_runtime_unavailable">Les journaux d’exécution ne sont pas disponibles.</string>
     <string name="views_diagnostics_sections_live">Journal en direct</string>
     <string name="views_diagnostics_sections_active_profiles">Profils actifs</string>
     <string name="views_diagnostics_sections_tunnel">Journaux du tunnel</string>

@@ -34,6 +34,7 @@
     <string name="views_app_profile_context_connect_to">Conectar a</string>
     <string name="views_app_menu_items_quit">Salir de %1$s</string>
     <string name="views_diagnostics_title">Diagnóstico</string>
+    <string name="views_diagnostics_runtime_unavailable">Los registros de ejecución no están disponibles.</string>
     <string name="views_diagnostics_sections_live">Registro en vivo</string>
     <string name="views_diagnostics_sections_active_profiles">Perfiles activos</string>
     <string name="views_diagnostics_sections_tunnel">Registros del túnel</string>
