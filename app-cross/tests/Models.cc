@@ -3,6 +3,7 @@
 #include "../models/AppProfileHeader.h"
 #include "../models/AppTunnelInfo.h"
 #include "../models/Event.h"
+#include "../models/Platform.h"
 #include "../models/ProfileEventDelete.h"
 #include "../models/ProfileEventSave.h"
 #include <cassert>
@@ -14,6 +15,10 @@ int main() {
         std::vector<Partout::Models::ModuleType>>);
     static_assert(std::is_same_v<decltype(ProfileEventSave::profile),
         Partout::Models::TaggedProfile>);
+
+    const auto unixLikePlatform = Platform::FromJson("unixLike");
+    assert(unixLikePlatform.value == Platform::unixLike);
+    assert(unixLikePlatform.ToJson() == "unixLike");
 
     const auto input = nlohmann::json::parse(R"({
         "id":"example", "isEnabled":true, "status":"connected", "onDemand":false

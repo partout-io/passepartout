@@ -31,7 +31,7 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: android,apple,linux,windows
+ * Values: android,apple,unixLike,windows
  */
 @Serializable
 enum class Platform(val value: kotlin.String) {
@@ -42,8 +42,8 @@ enum class Platform(val value: kotlin.String) {
     @SerialName(value = "apple")
     apple("apple"),
 
-    @SerialName(value = "linux")
-    linux("linux"),
+    @SerialName(value = "unixLike")
+    unixLike("unixLike"),
 
     @SerialName(value = "windows")
     windows("windows");

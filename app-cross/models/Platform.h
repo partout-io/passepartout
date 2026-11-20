@@ -33,7 +33,7 @@ struct  Platform
         INVALID_VALUE_OPENAPI_GENERATED = 0,
         android,
         apple,
-        linux,
+        unixLike,
         windows
     };
 

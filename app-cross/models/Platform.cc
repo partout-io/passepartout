@@ -85,8 +85,8 @@ void to_json(nlohmann::json& j, const Platform& o)
     case Platform::ePlatform::apple:
         j = "apple";
         break;
-    case Platform::ePlatform::linux:
-        j = "linux";
+    case Platform::ePlatform::unixLike:
+        j = "unixLike";
         break;
     case Platform::ePlatform::windows:
         j = "windows";
@@ -105,8 +105,8 @@ void from_json(const nlohmann::json& j, Platform& o)
     else if(s == "apple") {
         parsed.value = Platform::ePlatform::apple;
     }
-    else if(s == "linux") {
-        parsed.value = Platform::ePlatform::linux;
+    else if(s == "unixLike") {
+        parsed.value = Platform::ePlatform::unixLike;
     }
     else if(s == "windows") {
         parsed.value = Platform::ePlatform::windows;

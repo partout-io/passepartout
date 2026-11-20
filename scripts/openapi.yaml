@@ -574,12 +574,12 @@ components:
       x-enum-varnames:
       - android
       - apple
-      - linux
+      - unixLike
       - windows
       enum:
       - android
       - apple
-      - linux
+      - unixLike
       - windows
     Credits:
       type: object

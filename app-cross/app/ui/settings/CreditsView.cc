@@ -22,7 +22,7 @@ CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsP
 #ifdef _WIN32
         const auto platform = Models::Platform::windows;
 #else
-        const auto platform = Models::Platform::linux;
+        const auto platform = Models::Platform::unixLike;
 #endif
         if (license.platforms && std::none_of(license.platforms->begin(), license.platforms->end(), [platform](const auto &value) {
             return value.value == platform;

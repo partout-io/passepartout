@@ -49,7 +49,7 @@
             "platforms": [
                 "apple",
                 "android",
-                "linux"
+                "unixLike"
             ]
         },
         {
@@ -71,7 +71,7 @@
             "licenseURL": "https://raw.githubusercontent.com/wxWidgets/wxWidgets/v3.3.2/docs/licence.txt",
             "platforms": [
                 "windows",
-                "linux"
+                "unixLike"
             ]
         },
         {
@@ -80,7 +80,7 @@
             "licenseURL": "https://raw.githubusercontent.com/nlohmann/json/v3.11.3/LICENSE.MIT",
             "platforms": [
                 "windows",
-                "linux"
+                "unixLike"
             ]
         },
         {
@@ -89,7 +89,7 @@
             "licenseURL": "https://raw.githubusercontent.com/wxWidgets/libjpeg-turbo/wx/README",
             "platforms": [
                 "windows",
-                "linux"
+                "unixLike"
             ]
         },
         {
@@ -98,7 +98,7 @@
             "licenseURL": "https://raw.githubusercontent.com/wxWidgets/libpng/wx/LICENSE",
             "platforms": [
                 "windows",
-                "linux"
+                "unixLike"
             ]
         },
         {
@@ -107,7 +107,7 @@
             "licenseURL": "https://raw.githubusercontent.com/wxWidgets/libtiff/wx/LICENSE.md",
             "platforms": [
                 "windows",
-                "linux"
+                "unixLike"
             ]
         },
         {
@@ -116,7 +116,7 @@
             "licenseURL": "https://raw.githubusercontent.com/wxWidgets/zlib/wx/README",
             "platforms": [
                 "windows",
-                "linux"
+                "unixLike"
             ]
         },
         {
@@ -125,7 +125,7 @@
             "licenseURL": "https://raw.githubusercontent.com/wxWidgets/pcre/wx/LICENCE.md",
             "platforms": [
                 "windows",
-                "linux"
+                "unixLike"
             ]
         },
         {
@@ -134,7 +134,7 @@
             "licenseURL": "https://raw.githubusercontent.com/wxWidgets/nanosvg/wx/LICENSE.txt",
             "platforms": [
                 "windows",
-                "linux"
+                "unixLike"
             ]
         }
     ],
