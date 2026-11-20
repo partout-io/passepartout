@@ -4,6 +4,7 @@ project(PassepartoutTests LANGUAGES CXX)
 
 # Dependencies: build models and application state without the VPN core library.
 set(PP_BUILD_LIBRARY OFF)
+set(PP_BUILD_MODELS ON)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
@@ -44,10 +45,9 @@ if(WIN32)
     add_library(passepartout-windows-integration-check OBJECT
         ../app/platform/windows_tunnel.cc
         ../app/platform/windows_configuration_picker.cc)
-    # Match Partout::WindowsRuntime's public requirement for C++/WinRT headers.
+    # Match Partout::WinRTRuntime's public requirement for C++/WinRT headers.
     target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)
-    target_include_directories(passepartout-windows-integration-check PRIVATE
-        ../../partout/cross/windows/include ../../partout/src)
-    target_link_libraries(passepartout-windows-integration-check PRIVATE passepartout-core windowsapp)
+    target_link_libraries(passepartout-windows-integration-check PRIVATE
+        passepartout-core Partout::Headers partout-winrt-backend)
     target_compile_options(passepartout-windows-integration-check PRIVATE /EHsc /permissive- /utf-8 /W4)
 endif()
