@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "WindowsTunnel.h"
-#include "partout_windows.h"
+#include "partout_winrt.h"
 #include "../extensions/AppLogger.h"
 #include "../../../tunnel/Preferences.h"
 #include <partout/models/TunnelSnapshot.h>

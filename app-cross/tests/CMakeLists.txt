@@ -4,6 +4,7 @@ project(PassepartoutTests LANGUAGES CXX)
 
 # Dependencies: build models and application state without the VPN core library.
 set(PP_BUILD_LIBRARY OFF)
+set(PP_BUILD_MODELS ON)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
@@ -54,16 +55,15 @@ if(WIN32)
         ../app/business/platform/WindowsHttpClient.cc
         ../app/ui/platform/WindowsURLLauncher.cc
         ../app/ui/platform/WindowsIssueHandoff.cc)
-    # Match Partout::WindowsRuntime's public requirement for C++/WinRT headers.
+    # Match Partout::WinRTRuntime's public requirement for C++/WinRT headers.
     target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)
-    target_include_directories(passepartout-windows-integration-check PRIVATE
-        ../../partout/cross/windows/include ../../partout/src)
-    target_link_libraries(passepartout-windows-integration-check PRIVATE passepartout-core windowsapp)
+    target_link_libraries(passepartout-windows-integration-check PRIVATE
+        passepartout-core Partout::Headers partout-winrt-backend)
     target_compile_options(passepartout-windows-integration-check PRIVATE /EHsc /permissive- /utf-8 /W4)
 
     # Native settings translation constructs WinRT values without starting a VPN.
     add_executable(passepartout-windows-settings-test ../../partout/tests/c/windows/tun_settings.cc)
-    target_link_libraries(passepartout-windows-settings-test PRIVATE partout-windows-backend nlohmann_json::nlohmann_json)
+    target_link_libraries(passepartout-windows-settings-test PRIVATE partout-winrt-backend nlohmann_json::nlohmann_json)
     target_compile_features(passepartout-windows-settings-test PRIVATE cxx_std_20)
     target_compile_options(passepartout-windows-settings-test PRIVATE /UNDEBUG /utf-8 /EHsc /permissive-)
     add_test(NAME passepartout-windows-settings COMMAND passepartout-windows-settings-test)
