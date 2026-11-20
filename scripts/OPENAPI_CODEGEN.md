@@ -32,7 +32,12 @@ repeatability and schema ordering, change a nested property to verify real schem
 processing, reject unsupported input, and run with legacy tools disabled.
 
 When intentionally changing the schema, review the generated code before updating
-the affected manifest hashes. Do not update hashes to hide unexplained drift.
+the affected manifest hashes. Run `scripts/gen-models.sh all --update-golden`
+to regenerate models and update both Partout's and the application's manifests.
+Use `swift`, `kotlin`, or `cpp` instead of `all` to update only that language.
+Review and commit the generated code and manifest diffs together. Ordinary
+generation and CI remain read-only with respect to the manifests.
+Do not update hashes to hide unexplained drift.
 Old generator attribution in model headers is retained solely for byte parity;
 it does not indicate a remaining dependency. See
 [Partout's generator notes](../partout/tools/OPENAPI_CODEGEN.md) for supported
