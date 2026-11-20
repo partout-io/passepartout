@@ -295,7 +295,7 @@ private extension OpenVPNView.ConfigurationView {
                     ThemeLongContentLink(
                         Strings.Modules.Openvpn.tlsWrap,
                         text: .constant($0.key.hexString),
-                        secure: true
+                        preview: configuration.localizedDescription(style: .tlsWrap)
                     )
                 }
 

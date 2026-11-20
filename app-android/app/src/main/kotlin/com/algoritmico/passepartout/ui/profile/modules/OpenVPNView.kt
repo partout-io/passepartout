@@ -107,8 +107,13 @@ internal fun OpenVPNView(
         ThemeLongContent(stringResource(R.string.global_nouns_key), c.clientKey.orEmpty(), onOpenContent = onOpenContent, secure = true)
         c.tlsWrap?.let { wrap ->
             val title = stringResource(R.string.modules_openvpn_tls_wrap)
+            val strategy = when (wrap.strategy) {
+                OpenVPNTLSWrapStrategy.auth -> Strings.Unlocalized.OpenVPN.tlsAuth
+                OpenVPNTLSWrapStrategy.crypt -> Strings.Unlocalized.OpenVPN.tlsCrypt
+                OpenVPNTLSWrapStrategy.cryptV2 -> Strings.Unlocalized.OpenVPN.tlsCryptV2
+            }
             wrap.key.data.base64ToHex()?.let { key ->
-                ThemeLongContent(title, key, onOpenContent = onOpenContent, secure = true)
+                ThemeLongContent(title, key, onOpenContent = onOpenContent, preview = strategy)
             }
         }
         ThemeDetailRow(R.string.modules_openvpn_eku, stringResource(if (c.checksEKU == true)
