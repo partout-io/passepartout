@@ -31,7 +31,7 @@ fun releaseSigningValue(name: String): String =
 
 // Apple, Android, and app-cross share these JSON resources.
 val sharedAssets = layout.buildDirectory.dir("generated/assets/shared")
-val syncSharedAssets by tasks.registering(Sync::class) {
+val syncSharedAssets = tasks.register<Sync>("syncSharedAssets") {
     from(rootProject.file("../resources")) {
         include("constants.json", "credits.json")
     }
