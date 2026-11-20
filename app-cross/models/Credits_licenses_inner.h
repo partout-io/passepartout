@@ -19,7 +19,10 @@
 #define Credits_licenses_inner_H_
 
 #include <string>
+#include "Platform.h"
+#include <vector>
 #include <partout/json.h>
+#include <optional>
 
 namespace Passepartout::Models
 {
@@ -28,6 +31,7 @@ struct  Credits_licenses_inner
 {
 
     std::string name;
+    std::optional<std::vector<Passepartout::Models::Platform>> platforms;
     std::string licenseName;
     std::string licenseURL;
 

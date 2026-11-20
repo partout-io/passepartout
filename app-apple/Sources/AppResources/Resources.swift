@@ -4,6 +4,7 @@
 
 import CommonLibrary
 import Partout
+import SharedResources
 
 public enum Resources {
     public static func newAppConfiguration(
@@ -28,9 +29,9 @@ public enum Resources {
     }
 
     // Do not expose this to views, use AppConfiguration.constants from environment
-    static let constants = Bundle.module.unsafeDecode(ABI.AppConstants.self, filename: "constants")
+    static let constants = SharedResources.bundle.unsafeDecode(ABI.AppConstants.self, filename: "constants")
 
-    public static let credits = Bundle.module.unsafeDecode(ABI.Credits.self, filename: "credits")
+    public static let credits = SharedResources.bundle.unsafeDecode(ABI.Credits.self, filename: "credits")
 
     public static let issueTemplate: String = {
         do {

@@ -35,6 +35,7 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.credits
 import com.algoritmico.passepartout.models.Credits
+import com.algoritmico.passepartout.models.Platform
 import com.algoritmico.passepartout.models.CreditsLicensesInner
 import com.algoritmico.passepartout.models.CreditsNoticesInner
 import com.algoritmico.passepartout.ui.LocalAndroidConstants
@@ -114,7 +115,7 @@ private fun CreditsListView(
     onNotice: (CreditsNoticesInner) -> Unit
 ) {
     val licenses = remember(credits) {
-        credits.licenses.sortedBy { it.name.lowercase() }
+        credits.licenses.filter { it.platforms?.contains(Platform.android) != false }.sortedBy { it.name.lowercase() }
     }
     val notices = remember(credits) {
         credits.notices.sortedBy { it.name.lowercase() }

@@ -49,6 +49,26 @@ bool Credits_licenses_inner::Validate(std::stringstream& msg, const std::string&
     bool success = true;
     const std::string _pathPrefix = pathPrefix.empty() ? "Credits_licenses_inner" : pathPrefix;
 
+    if (platforms.has_value())
+    {
+        const std::vector<Passepartout::Models::Platform>& value = platforms.value();
+        const std::string currentValuePath = _pathPrefix + ".platforms";
+
+        { // Recursive validation of array elements
+            const std::string oldValuePath = currentValuePath;
+            int i = 0;
+            for (const Passepartout::Models::Platform& value : value)
+            {
+                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
+
+        success = Partout::Models::ValidateModel(value, msg, currentValuePath) && success;
+
+                i++;
+            }
+        }
+
+    }
+
     return success;
 }
 
@@ -56,7 +76,7 @@ bool Credits_licenses_inner::operator==(const Credits_licenses_inner& other) con
 {
     return
 
-    name == other.name && licenseName == other.licenseName && licenseURL == other.licenseURL;
+    name == other.name && platforms == other.platforms && licenseName == other.licenseName && licenseURL == other.licenseURL;
 }
 
 bool Credits_licenses_inner::operator!=(const Credits_licenses_inner& other) const
@@ -69,6 +89,8 @@ void to_json(nlohmann::json& j, const Credits_licenses_inner& o)
     j = nlohmann::json::object();
 
         j["name"] = o.name;
+    if (o.platforms.has_value())
+        j["platforms"] = o.platforms.value();
 
         j["licenseName"] = o.licenseName;
 
@@ -81,6 +103,11 @@ void from_json(const nlohmann::json& j, Credits_licenses_inner& o)
     Credits_licenses_inner parsed{};
     Partout::Models::ReadJsonValue(j.at("name"), parsed.name);
 
+    if (j.find("platforms") != j.end() && !j.at("platforms").is_null()) {
+        std::vector<Passepartout::Models::Platform> temporary_platforms;
+        Partout::Models::ReadJsonValue(j.at("platforms"), temporary_platforms);
+        parsed.platforms = std::move(temporary_platforms);
+    }
     Partout::Models::ReadJsonValue(j.at("licenseName"), parsed.licenseName);
 
     Partout::Models::ReadJsonValue(j.at("licenseURL"), parsed.licenseURL);

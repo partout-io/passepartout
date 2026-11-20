@@ -560,24 +560,27 @@ components:
         platforms:
           type: array
           items:
-            "$ref": "#/components/schemas/ConfigBundle.Platform"
+            "$ref": "#/components/schemas/Platform"
         minBuild:
           type: integer
         data:
           type: object
       required:
       - rate
-    ConfigBundle.Platform:
+    ConnectionStatus:
+      type: object
+    Platform:
+      type: string
       x-enum-varnames:
       - android
       - apple
+      - unixLike
       - windows
       enum:
       - android
       - apple
+      - unixLike
       - windows
-    ConnectionStatus:
-      type: object
     Credits:
       type: object
       properties:
@@ -588,6 +591,11 @@ components:
             properties:
               name:
                 type: string
+              platforms:
+                description: Applicable platforms; omitted or null means all platforms.
+                type: array
+                items:
+                  "$ref": "#/components/schemas/Platform"
               licenseName:
                 type: string
               licenseURL:

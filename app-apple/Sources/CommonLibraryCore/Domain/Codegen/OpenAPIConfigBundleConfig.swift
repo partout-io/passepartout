@@ -10,11 +10,11 @@ import Partout
 public struct OpenAPIConfigBundleConfig: Sendable, Codable, Hashable {
 
     public var rate: Int
-    public var platforms: [OpenAPIConfigBundlePlatform]?
+    public var platforms: [OpenAPIPlatform]?
     public var minBuild: Int?
     public var data: JSON?
 
-    public init(rate: Int, platforms: [OpenAPIConfigBundlePlatform]? = nil, minBuild: Int? = nil, data: JSON? = nil) {
+    public init(rate: Int, platforms: [OpenAPIPlatform]? = nil, minBuild: Int? = nil, data: JSON? = nil) {
         self.rate = rate
         self.platforms = platforms
         self.minBuild = minBuild

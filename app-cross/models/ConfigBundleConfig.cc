@@ -51,13 +51,13 @@ bool ConfigBundleConfig::Validate(std::stringstream& msg, const std::string& pat
 
     if (platforms.has_value())
     {
-        const std::vector<Passepartout::Models::ConfigBundlePlatform>& value = platforms.value();
+        const std::vector<Passepartout::Models::Platform>& value = platforms.value();
         const std::string currentValuePath = _pathPrefix + ".platforms";
 
         { // Recursive validation of array elements
             const std::string oldValuePath = currentValuePath;
             int i = 0;
-            for (const Passepartout::Models::ConfigBundlePlatform& value : value)
+            for (const Passepartout::Models::Platform& value : value)
             {
                 const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
 
@@ -105,7 +105,7 @@ void from_json(const nlohmann::json& j, ConfigBundleConfig& o)
     Partout::Models::ReadJsonValue(j.at("rate"), parsed.rate);
 
     if (j.find("platforms") != j.end() && !j.at("platforms").is_null()) {
-        std::vector<Passepartout::Models::ConfigBundlePlatform> temporary_platforms;
+        std::vector<Passepartout::Models::Platform> temporary_platforms;
         Partout::Models::ReadJsonValue(j.at("platforms"), temporary_platforms);
         parsed.platforms = std::move(temporary_platforms);
     }

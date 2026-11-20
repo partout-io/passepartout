@@ -10,27 +10,27 @@
 * Do not edit the class manually.
 */
 
-#include "ConfigBundlePlatform.h"
+#include "Platform.h"
 #include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {
 
-nlohmann::json ConfigBundlePlatform::ToJson() const
+nlohmann::json Platform::ToJson() const
 {
     nlohmann::json j;
     ::Passepartout::Models::to_json(j, *this);
     return j;
 }
 
-ConfigBundlePlatform ConfigBundlePlatform::FromJson(const nlohmann::json& j)
+Platform Platform::FromJson(const nlohmann::json& j)
 {
-    ConfigBundlePlatform o{};
+    Platform o{};
     ::Passepartout::Models::from_json(j, o);
     return o;
 }
 
-void ConfigBundlePlatform::Validate() const
+void Platform::Validate() const
 {
     std::stringstream msg;
     if (!Validate(msg))
@@ -39,17 +39,17 @@ void ConfigBundlePlatform::Validate() const
     }
 }
 
-bool ConfigBundlePlatform::Validate(std::stringstream& msg) const
+bool Platform::Validate(std::stringstream& msg) const
 {
     return Validate(msg, "");
 }
 
-bool ConfigBundlePlatform::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool Platform::Validate(std::stringstream& msg, const std::string& pathPrefix) const
 {
     bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "ConfigBundlePlatform" : pathPrefix;
+    const std::string _pathPrefix = pathPrefix.empty() ? "Platform" : pathPrefix;
 
-    if (value == ConfigBundlePlatform::eConfigBundlePlatform::INVALID_VALUE_OPENAPI_GENERATED)
+    if (value == Platform::ePlatform::INVALID_VALUE_OPENAPI_GENERATED)
     {
         success = false;
         msg << _pathPrefix << ": has no value;";
@@ -58,57 +58,63 @@ bool ConfigBundlePlatform::Validate(std::stringstream& msg, const std::string& p
     return success;
 }
 
-bool ConfigBundlePlatform::operator==(const ConfigBundlePlatform& other) const
+bool Platform::operator==(const Platform& other) const
 {
     return
     value == other.value
     ;
 }
 
-bool ConfigBundlePlatform::operator!=(const ConfigBundlePlatform& other) const
+bool Platform::operator!=(const Platform& other) const
 {
     return !(*this == other);
 }
 
-void to_json(nlohmann::json& j, const ConfigBundlePlatform& o)
+void to_json(nlohmann::json& j, const Platform& o)
 {
     j = nlohmann::json::object();
 
     switch (o.value)
     {
-    case ConfigBundlePlatform::eConfigBundlePlatform::INVALID_VALUE_OPENAPI_GENERATED:
+    case Platform::ePlatform::INVALID_VALUE_OPENAPI_GENERATED:
         j = "INVALID_VALUE_OPENAPI_GENERATED";
         break;
-    case ConfigBundlePlatform::eConfigBundlePlatform::android:
+    case Platform::ePlatform::android:
         j = "android";
         break;
-    case ConfigBundlePlatform::eConfigBundlePlatform::apple:
+    case Platform::ePlatform::apple:
         j = "apple";
         break;
-    case ConfigBundlePlatform::eConfigBundlePlatform::windows:
+    case Platform::ePlatform::unixLike:
+        j = "unixLike";
+        break;
+    case Platform::ePlatform::windows:
         j = "windows";
         break;
     }
 }
 
-void from_json(const nlohmann::json& j, ConfigBundlePlatform& o)
+void from_json(const nlohmann::json& j, Platform& o)
 {
-    ConfigBundlePlatform parsed{};
+    Platform parsed{};
 
     auto s = j.get<std::string>();
     if(s == "android") {
-        parsed.value = ConfigBundlePlatform::eConfigBundlePlatform::android;
+        parsed.value = Platform::ePlatform::android;
     }
     else if(s == "apple") {
-        parsed.value = ConfigBundlePlatform::eConfigBundlePlatform::apple;
+        parsed.value = Platform::ePlatform::apple;
+    }
+    else if(s == "unixLike") {
+        parsed.value = Platform::ePlatform::unixLike;
     }
     else if(s == "windows") {
-        parsed.value = ConfigBundlePlatform::eConfigBundlePlatform::windows;
+        parsed.value = Platform::ePlatform::windows;
     }  else {
         std::stringstream ss;
         ss << "Unexpected value " << s << " in json"
            << " cannot be converted to enum of type"
-           << " ConfigBundlePlatform::eConfigBundlePlatform";
+           << " Platform::ePlatform";
         throw std::invalid_argument(ss.str());
     }
 

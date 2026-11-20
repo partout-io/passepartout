@@ -35,7 +35,7 @@ public struct GenericCreditsView: View {
 
     public var body: some View {
         Form {
-            if !credits.licenses.isEmpty {
+            if !sortedLicenses.isEmpty {
                 licensesSection
             }
             if !credits.notices.isEmpty {
@@ -92,7 +92,7 @@ private extension GenericCreditsView {
 
 private extension GenericCreditsView {
     var sortedLicenses: [ABI.Credits.License] {
-        credits.licenses.sorted {
+        credits.licenses.filter { $0.platforms?.contains(.apple) ?? true }.sorted {
             $0.name.lowercased() < $1.name.lowercased()
         }
     }

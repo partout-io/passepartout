@@ -122,7 +122,7 @@ function(configure_windows_targets)
     endforeach()
 
     # Generate identity headers for the host and plugin, including host-only builds.
-    set(TUNNEL_CONSTANTS_PATH "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../app-apple/Sources/AppResources/Resources/constants.json")
+    set(TUNNEL_CONSTANTS_PATH "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../resources/constants.json")
     if(NOT BUILD_APP)
         set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${TUNNEL_CONSTANTS_PATH}")
     endif()

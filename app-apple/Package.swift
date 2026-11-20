@@ -75,7 +75,10 @@ let package = Package(
         ),
         .target(
             name: "AppResources",
-            dependencies: ["CommonLibrary"],
+            dependencies: [
+                "CommonLibrary",
+                .product(name: "SharedResources", package: "resources")
+            ],
             resources: [
                 .process("Resources")
             ]
@@ -125,6 +128,7 @@ package.products.append(
 
 package.dependencies.append(contentsOf: [
     .package(path: "../partout"),
+    .package(path: "../resources"),
     .package(url: "https://github.com/apple/swift-nio", from: "2.83.0")
 ])
 

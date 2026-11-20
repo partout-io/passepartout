@@ -26,13 +26,13 @@ set_target_properties(passepartout-models PROPERTIES
 find_package(Threads REQUIRED)
 
 # Embed the shared constants and reconfigure when their source changes.
-set(APP_CONSTANTS_PATH "${CMAKE_CURRENT_LIST_DIR}/../app-apple/Sources/AppResources/Resources/constants.json")
+set(APP_CONSTANTS_PATH "${CMAKE_CURRENT_LIST_DIR}/../resources/constants.json")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${APP_CONSTANTS_PATH}")
 file(READ "${APP_CONSTANTS_PATH}" APP_CONSTANTS_JSON)
 configure_file("${CMAKE_CURRENT_LIST_DIR}/app/context/AppConstantsResource.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/generated/AppConstantsResource.h" @ONLY)
 
-set(APP_CREDITS_PATH "${CMAKE_CURRENT_LIST_DIR}/../app-apple/Sources/AppResources/Resources/credits.json")
+set(APP_CREDITS_PATH "${CMAKE_CURRENT_LIST_DIR}/../resources/credits.json")
 set(APP_CHANGELOG_PATH "${CMAKE_CURRENT_LIST_DIR}/CHANGELOG.txt")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${APP_CREDITS_PATH}" "${APP_CHANGELOG_PATH}")
 file(READ "${APP_CREDITS_PATH}" APP_CREDITS_JSON)
