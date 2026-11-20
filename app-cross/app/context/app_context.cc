@@ -12,7 +12,7 @@ namespace Passepartout {
 namespace {
 Profile ImportProfile(const std::string &text, const std::string &name) {
     std::unique_ptr<char, decltype(&std::free)> json(
-        partout_import_profile(text.c_str(), name.c_str()), &std::free);
+        partout_import_profile(text.c_str(), nullptr, name.c_str()), &std::free);
     return DecodeImportResult(json.get());
 }
 class UnavailableTunnelStrategy final : public TunnelStrategy {
