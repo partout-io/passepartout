@@ -96,25 +96,28 @@ By contributing to this project, you are agreeing to the terms stated in the [Co
 
 ## Credits
 
-### Dependencies
+### Libraries
 
-- [fastlane][credits-fastlane] — [MIT](https://raw.githubusercontent.com/fastlane/fastlane/master/LICENSE)
-- [GenericJSON][credits-genericjson] — [MIT](https://raw.githubusercontent.com/iwill/generic-json-swift/master/LICENSE)
-- [libjpeg-turbo][credits-libjpeg-turbo] — [IJG / BSD](https://raw.githubusercontent.com/wxWidgets/libjpeg-turbo/wx/README)
-- [libpng][credits-libpng] — [libpng](https://raw.githubusercontent.com/wxWidgets/libpng/wx/LICENSE)
-- [LibTIFF][credits-libtiff] — [LibTIFF](https://raw.githubusercontent.com/wxWidgets/libtiff/wx/LICENSE.md)
-- [MbedTLS][credits-mbedtls] — [Apache-2.0](https://raw.githubusercontent.com/Mbed-TLS/mbedtls/refs/heads/master/LICENSE)
-- [NanoSVG][credits-nanosvg] — [zlib](https://raw.githubusercontent.com/wxWidgets/nanosvg/wx/LICENSE.txt)
-- [nlohmann/json][credits-nljson] — [MIT](https://raw.githubusercontent.com/nlohmann/json/v3.11.3/LICENSE.MIT)
-- [OpenSSL][credits-openssl] — [OpenSSL](https://raw.githubusercontent.com/openssl/openssl/master/LICENSE.txt)
-- [PCRE2][credits-pcre2] — [BSD](https://raw.githubusercontent.com/wxWidgets/pcre/wx/LICENCE.md)
-- [SwiftGen][credits-swiftgen] — [MIT](https://raw.githubusercontent.com/SwiftGen/SwiftGen/master/LICENCE)
-- [SwiftLint][credits-swiftlint] — [MIT](https://raw.githubusercontent.com/realm/SwiftLint/master/LICENSE)
-- [url.c][credits-url.c] — [Unlicense](https://raw.githubusercontent.com/cozis/url.c/refs/heads/main/UNLICENSE)
-- [Wintun][credits-wintun] — [Wintun](https://raw.githubusercontent.com/WireGuard/wintun/refs/heads/master/prebuilt-binaries-license.txt)
-- [WireGuard (Go)][credits-wireguard-go] — [MIT](https://raw.githubusercontent.com/WireGuard/wireguard-go/refs/heads/master/LICENSE)
-- [wxWidgets][credits-wxwidgets] — [wxWindows](https://raw.githubusercontent.com/wxWidgets/wxWidgets/v3.3.2/docs/licence.txt)
-- [zlib][credits-zlib] — [zlib](https://raw.githubusercontent.com/wxWidgets/zlib/wx/README)
+- [GenericJSON][credits-genericjson]
+- [libjpeg-turbo][credits-libjpeg-turbo]
+- [libpng][credits-libpng]
+- [LibTIFF][credits-libtiff]
+- [MbedTLS][credits-mbedtls]
+- [NanoSVG][credits-nanosvg]
+- [nlohmann/json][credits-nljson]
+- [OpenSSL][credits-openssl]
+- [PCRE2][credits-pcre2]
+- [url.c][credits-url.c]
+- [Wintun][credits-wintun]
+- [WireGuard (Go)][credits-wireguard-go]
+- [wxWidgets][credits-wxwidgets]
+- [zlib][credits-zlib]
+
+### Tools
+
+- [fastlane][credits-fastlane]
+- [SwiftGen][credits-swiftgen]
+- [SwiftLint][credits-swiftlint]
 
 ### Contributors
 
