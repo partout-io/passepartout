@@ -92,7 +92,7 @@ android {
         compose = true
     }
     sourceSets.named("main") {
-        assets.srcDir(sharedAssets)
+        assets.directories.add(sharedAssets.get().asFile.absolutePath)
     }
     ndkVersion = "30.0.16138531"
     buildToolsVersion = "36.0.0"
