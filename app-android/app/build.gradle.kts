@@ -29,6 +29,15 @@ fun releaseSigningValue(name: String): String =
     releaseSigning.getProperty(name)?.takeIf { it.isNotBlank() }
         ?: error("Missing Android release signing property: $name")
 
+// Apple, Android, and app-cross share these JSON resources.
+val sharedAssets = layout.buildDirectory.dir("generated/assets/shared")
+val syncSharedAssets by tasks.registering(Sync::class) {
+    from(rootProject.file("../resources")) {
+        include("constants.json", "credits.json")
+    }
+    into(sharedAssets)
+}
+
 android {
     namespace = "com.algoritmico.passepartout"
     compileSdk = 36
@@ -82,8 +91,15 @@ android {
     buildFeatures {
         compose = true
     }
+    sourceSets.named("main") {
+        assets.srcDir(sharedAssets)
+    }
     ndkVersion = "30.0.16138531"
     buildToolsVersion = "36.0.0"
+}
+
+tasks.named("preBuild") {
+    dependsOn(syncSharedAssets)
 }
 
 play {
