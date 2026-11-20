@@ -96,17 +96,30 @@ By contributing to this project, you are agreeing to the terms stated in the [Co
 
 ## Credits
 
-- [fastlane][credits-fastlane]
-- [GenericJSON][credits-genericjson]
-- [MbedTLS][credits-mbedtls]
-- [nlohmann_json][credits-nljson]
-- [OpenSSL][credits-openssl]
-- [SwiftGen][credits-swiftgen]
-- [SwiftLint][credits-swiftlint]
+### Libraries
+
+- [fastlane][credits-fastlane] — [MIT](https://raw.githubusercontent.com/fastlane/fastlane/master/LICENSE)
+- [GenericJSON][credits-genericjson] — [MIT](https://raw.githubusercontent.com/iwill/generic-json-swift/master/LICENSE)
+- [libjpeg-turbo][credits-libjpeg-turbo] — [IJG / BSD](https://raw.githubusercontent.com/wxWidgets/libjpeg-turbo/wx/README)
+- [libpng][credits-libpng] — [libpng](https://raw.githubusercontent.com/wxWidgets/libpng/wx/LICENSE)
+- [LibTIFF][credits-libtiff] — [LibTIFF](https://raw.githubusercontent.com/wxWidgets/libtiff/wx/LICENSE.md)
+- [MbedTLS][credits-mbedtls] — [Apache-2.0](https://raw.githubusercontent.com/Mbed-TLS/mbedtls/refs/heads/master/LICENSE)
+- [NanoSVG][credits-nanosvg] — [zlib](https://raw.githubusercontent.com/wxWidgets/nanosvg/wx/LICENSE.txt)
+- [nlohmann/json][credits-nljson] — [MIT](https://raw.githubusercontent.com/nlohmann/json/v3.11.3/LICENSE.MIT)
+- [OpenSSL][credits-openssl] — [OpenSSL](https://raw.githubusercontent.com/openssl/openssl/master/LICENSE.txt)
+- [PCRE2][credits-pcre2] — [BSD](https://raw.githubusercontent.com/wxWidgets/pcre/wx/LICENCE.md)
+- [SwiftGen][credits-swiftgen] — [MIT](https://raw.githubusercontent.com/SwiftGen/SwiftGen/master/LICENCE)
+- [SwiftLint][credits-swiftlint] — [MIT](https://raw.githubusercontent.com/realm/SwiftLint/master/LICENSE)
+- [url.c][credits-url.c] — [Unlicense](https://raw.githubusercontent.com/cozis/url.c/refs/heads/main/UNLICENSE)
+- [Wintun][credits-wintun] — [Wintun](https://raw.githubusercontent.com/WireGuard/wintun/refs/heads/master/prebuilt-binaries-license.txt)
+- [WireGuard (Go)][credits-wireguard-go] — [MIT](https://raw.githubusercontent.com/WireGuard/wireguard-go/refs/heads/master/LICENSE)
+- [wxWidgets][credits-wxwidgets] — [wxWindows](https://raw.githubusercontent.com/wxWidgets/wxWidgets/v3.3.2/docs/licence.txt)
+- [zlib][credits-zlib] — [zlib](https://raw.githubusercontent.com/wxWidgets/zlib/wx/README)
+
+### Contributors
+
 - [Tejas Mehta][credits-tmthecoder] for the implementation of the [OpenVPN XOR patch][credits-tmthecoder-xor]
-- [url.c][credits-url.c]
 - [vaygr][credits-vaygr] for adding Passepartout to [Homebrew Cask][credits-vaygr-cask]
-- [WireGuard (Go)][credits-wireguard-go]
 
 The logo is taken from the awesome Circle Icons set by Nick Roach.
 
@@ -175,17 +188,25 @@ Website: [partout.io/passepartout][web-home] ([FAQ][web-faq])
 [credits-chatgpt]: https://chatgpt.com/
 [credits-fastlane]: https://github.com/fastlane/fastlane
 [credits-genericjson]: https://github.com/iwill/generic-json-swift
+[credits-libjpeg-turbo]: https://github.com/wxWidgets/libjpeg-turbo
+[credits-libpng]: https://github.com/wxWidgets/libpng
+[credits-libtiff]: https://github.com/wxWidgets/libtiff
 [credits-mbedtls]: https://github.com/Mbed-TLS/mbedtls
+[credits-nanosvg]: https://github.com/wxWidgets/nanosvg
 [credits-nljson]: https://github.com/nlohmann/json
 [credits-openssl]: https://github.com/openssl/openssl
+[credits-pcre2]: https://github.com/wxWidgets/pcre
 [credits-swiftgen]: https://github.com/SwiftGen/SwiftGen
 [credits-swiftlint]: https://github.com/realm/SwiftLint
-[credits-tmthecoder]: https://github.com/tmthecoder
 [credits-tmthecoder-xor]: https://github.com/partout-io/tunnelkit/pull/255
+[credits-tmthecoder]: https://github.com/tmthecoder
 [credits-url.c]: https://github.com/cozis/url.c
-[credits-vaygr]: https://github.com/vaygr
 [credits-vaygr-cask]: https://github.com/Homebrew/homebrew-cask/pull/214696
+[credits-vaygr]: https://github.com/vaygr
+[credits-wintun]: https://github.com/WireGuard/wintun
 [credits-wireguard-go]: https://github.com/wireguard/wireguard-go
+[credits-wxwidgets]: https://github.com/wxWidgets/wxWidgets
+[credits-zlib]: https://github.com/wxWidgets/zlib
 
 [web-home]: https://partout.io/passepartout
 [web-blog]: https://partout.io/passepartout/blog/
