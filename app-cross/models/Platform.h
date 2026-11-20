@@ -10,36 +10,37 @@
 * Do not edit the class manually.
 */
 /*
- * ConfigBundlePlatform.h
+ * Platform.h
  *
  *
  */
 
-#ifndef ConfigBundlePlatform_H_
-#define ConfigBundlePlatform_H_
+#ifndef Platform_H_
+#define Platform_H_
 
 #include <partout/json.h>
 
 namespace Passepartout::Models
 {
 
-struct  ConfigBundlePlatform
+struct  Platform
 {
 
-    enum eConfigBundlePlatform {
+    enum ePlatform {
         // To have a valid default value.
         // Avoiding name clashes with user defined
         // enum values
         INVALID_VALUE_OPENAPI_GENERATED = 0,
-        android,
         apple,
-        windows
+        android,
+        windows,
+        linux
     };
 
-    ConfigBundlePlatform::eConfigBundlePlatform value = ConfigBundlePlatform::eConfigBundlePlatform::INVALID_VALUE_OPENAPI_GENERATED;
+    Platform::ePlatform value = Platform::ePlatform::INVALID_VALUE_OPENAPI_GENERATED;
 
-    bool operator==(const ConfigBundlePlatform& other) const;
-    bool operator!=(const ConfigBundlePlatform& other) const;
+    bool operator==(const Platform& other) const;
+    bool operator!=(const Platform& other) const;
 
     /// <summary>
     /// Validate the current data in the model. Throws a ValidationException on failure.
@@ -59,12 +60,12 @@ struct  ConfigBundlePlatform
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
     nlohmann::json ToJson() const;
-    static ConfigBundlePlatform FromJson(const nlohmann::json& j);
+    static Platform FromJson(const nlohmann::json& j);
 };
 
- void to_json(nlohmann::json& j, const ConfigBundlePlatform& o);
- void from_json(const nlohmann::json& j, ConfigBundlePlatform& o);
+ void to_json(nlohmann::json& j, const Platform& o);
+ void from_json(const nlohmann::json& j, Platform& o);
 
 } // namespace Passepartout::Models
 
-#endif /* ConfigBundlePlatform_H_ */
+#endif /* Platform_H_ */

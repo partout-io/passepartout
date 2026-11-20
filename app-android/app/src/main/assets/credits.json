@@ -1,1 +1,207 @@
-../../../../../app-apple/Sources/AppResources/Resources/credits.json
+{
+    "licenses": [
+        {
+            "name": "fastlane",
+            "licenseName": "MIT",
+            "licenseURL": "https://raw.githubusercontent.com/fastlane/fastlane/master/LICENSE",
+            "platforms": [
+                "apple"
+            ]
+        },
+        {
+            "name": "GenericJSON",
+            "licenseName": "MIT",
+            "licenseURL": "https://raw.githubusercontent.com/iwill/generic-json-swift/master/LICENSE",
+            "platforms": [
+                "apple"
+            ]
+        },
+        {
+            "name": "MbedTLS",
+            "licenseName": "Apache-2.0",
+            "licenseURL": "https://raw.githubusercontent.com/Mbed-TLS/mbedtls/refs/heads/master/LICENSE"
+        },
+        {
+            "name": "OpenSSL",
+            "licenseName": "OpenSSL",
+            "licenseURL": "https://raw.githubusercontent.com/openssl/openssl/master/LICENSE.txt"
+        },
+        {
+            "name": "SwiftGen",
+            "licenseName": "MIT",
+            "licenseURL": "https://raw.githubusercontent.com/SwiftGen/SwiftGen/master/LICENCE",
+            "platforms": [
+                "apple"
+            ]
+        },
+        {
+            "name": "SwiftLint",
+            "licenseName": "MIT",
+            "licenseURL": "https://raw.githubusercontent.com/realm/SwiftLint/master/LICENSE",
+            "platforms": [
+                "apple"
+            ]
+        },
+        {
+            "name": "url.c",
+            "licenseName": "Unlicense",
+            "licenseURL": "https://raw.githubusercontent.com/cozis/url.c/refs/heads/main/UNLICENSE",
+            "platforms": [
+                "apple",
+                "android",
+                "linux"
+            ]
+        },
+        {
+            "name": "Wintun",
+            "licenseName": "Wintun",
+            "licenseURL": "https://raw.githubusercontent.com/WireGuard/wintun/refs/heads/master/prebuilt-binaries-license.txt",
+            "platforms": [
+                "windows"
+            ]
+        },
+        {
+            "name": "WireGuard (Go)",
+            "licenseName": "MIT",
+            "licenseURL": "https://raw.githubusercontent.com/WireGuard/wireguard-go/refs/heads/master/LICENSE"
+        },
+        {
+            "name": "wxWidgets",
+            "licenseName": "wxWindows",
+            "licenseURL": "https://raw.githubusercontent.com/wxWidgets/wxWidgets/v3.3.2/docs/licence.txt",
+            "platforms": [
+                "windows",
+                "linux"
+            ]
+        },
+        {
+            "name": "nlohmann/json",
+            "licenseName": "MIT",
+            "licenseURL": "https://raw.githubusercontent.com/nlohmann/json/v3.11.3/LICENSE.MIT",
+            "platforms": [
+                "windows",
+                "linux"
+            ]
+        },
+        {
+            "name": "libjpeg-turbo",
+            "licenseName": "IJG / BSD",
+            "licenseURL": "https://raw.githubusercontent.com/wxWidgets/libjpeg-turbo/wx/README",
+            "platforms": [
+                "windows",
+                "linux"
+            ]
+        },
+        {
+            "name": "libpng",
+            "licenseName": "libpng",
+            "licenseURL": "https://raw.githubusercontent.com/wxWidgets/libpng/wx/LICENSE",
+            "platforms": [
+                "windows",
+                "linux"
+            ]
+        },
+        {
+            "name": "LibTIFF",
+            "licenseName": "LibTIFF",
+            "licenseURL": "https://raw.githubusercontent.com/wxWidgets/libtiff/wx/LICENSE.md",
+            "platforms": [
+                "windows",
+                "linux"
+            ]
+        },
+        {
+            "name": "zlib",
+            "licenseName": "zlib",
+            "licenseURL": "https://raw.githubusercontent.com/wxWidgets/zlib/wx/README",
+            "platforms": [
+                "windows",
+                "linux"
+            ]
+        },
+        {
+            "name": "PCRE2",
+            "licenseName": "BSD",
+            "licenseURL": "https://raw.githubusercontent.com/wxWidgets/pcre/wx/LICENCE.md",
+            "platforms": [
+                "windows",
+                "linux"
+            ]
+        },
+        {
+            "name": "NanoSVG",
+            "licenseName": "zlib",
+            "licenseURL": "https://raw.githubusercontent.com/wxWidgets/nanosvg/wx/LICENSE.txt",
+            "platforms": [
+                "windows",
+                "linux"
+            ]
+        }
+    ],
+    "notices": [
+        {
+            "name": "Circle Icons",
+            "message": "The logo is taken from the awesome Circle Icons set by Nick Roach."
+        },
+        {
+            "name": "OpenVPN",
+            "message": "© Copyright 2024 OpenVPN | OpenVPN is a registered trademark of OpenVPN, Inc."
+        },
+        {
+            "name": "WireGuard",
+            "message": "© Copyright 2015-2024 Jason A. Donenfeld. All Rights Reserved. \"WireGuard\" and the \"WireGuard\" logo are registered trademarks of Jason A. Donenfeld."
+        },
+        {
+            "name": "Tejas Mehta",
+            "message": "For the implementation of the OpenVPN XOR patch."
+        },
+        {
+            "name": "vaygr",
+            "message": "For adding Passepartout to Homebrew Cask."
+        }
+    ],
+    "translations": {
+        "de": [
+            "Christian Lederer",
+            "Philipp Reynders",
+            "Theodor Tietze"
+        ],
+        "el": [
+            "Konstantinos Koukoulakis"
+        ],
+        "en-US": [
+            "Davide De Rosa"
+        ],
+        "es": [
+            "Davide De Rosa",
+            "Elena Vivó"
+        ],
+        "fr-FR": [
+            "Julien Laniel"
+        ],
+        "it": [
+            "Davide De Rosa"
+        ],
+        "nl": [
+            "Norbert de Vreede"
+        ],
+        "pl": [
+            "Piotr Książek"
+        ],
+        "pt-BR": [
+            "Helder Santana"
+        ],
+        "ru": [
+            "Alexander Korobynikov"
+        ],
+        "sv": [
+            "Henry Gross-Hellsen"
+        ],
+        "uk": [
+            "Dmytro Chyrkin"
+        ],
+        "zh-Hans": [
+            "OnlyThen"
+        ]
+    }
+}

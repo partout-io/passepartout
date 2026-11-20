@@ -10,7 +10,7 @@ import com.algoritmico.passepartout.context.AndroidConstants
 import com.algoritmico.passepartout.context.AppLog
 import com.algoritmico.passepartout.context.newEventFlow
 import com.algoritmico.passepartout.models.ConfigBundleConfig
-import com.algoritmico.passepartout.models.ConfigBundlePlatform
+import com.algoritmico.passepartout.models.Platform
 import com.algoritmico.passepartout.models.ConfigEventRefresh
 import com.algoritmico.passepartout.models.ConfigFlag
 import com.algoritmico.passepartout.models.Event
@@ -147,7 +147,7 @@ private fun ConfigBundleConfig.isActive(buildNumber: Int): Boolean {
         return false
     }
     if (platforms != null) {
-        return platforms.contains(ConfigBundlePlatform.android)
+        return platforms.contains(Platform.android)
     }
     return true
 }

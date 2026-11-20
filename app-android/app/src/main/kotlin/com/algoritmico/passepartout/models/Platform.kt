@@ -31,19 +31,22 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: android,apple,windows
+ * Values: apple,android,windows,linux
  */
 @Serializable
-enum class ConfigBundlePlatform(val value: kotlin.String) {
-
-    @SerialName(value = "android")
-    android("android"),
+enum class Platform(val value: kotlin.String) {
 
     @SerialName(value = "apple")
     apple("apple"),
 
+    @SerialName(value = "android")
+    android("android"),
+
     @SerialName(value = "windows")
-    windows("windows");
+    windows("windows"),
+
+    @SerialName(value = "linux")
+    linux("linux");
 
     /**
      * Override [toString()] to avoid using the enum variable name as the value, and instead use
@@ -58,12 +61,12 @@ enum class ConfigBundlePlatform(val value: kotlin.String) {
         /**
          * Converts the provided [data] to a [String] on success, null otherwise.
          */
-        fun encode(data: kotlin.Any?): kotlin.String? = if (data is ConfigBundlePlatform) "$data" else null
+        fun encode(data: kotlin.Any?): kotlin.String? = if (data is Platform) "$data" else null
 
         /**
-         * Returns a valid [ConfigBundlePlatform] for [data], null otherwise.
+         * Returns a valid [Platform] for [data], null otherwise.
          */
-        fun decode(data: kotlin.Any?): ConfigBundlePlatform? = data?.let {
+        fun decode(data: kotlin.Any?): Platform? = data?.let {
           val normalizedData = "$it".lowercase()
           entries.firstOrNull { value ->
             it == value || normalizedData == "$value".lowercase()

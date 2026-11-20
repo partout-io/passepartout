@@ -10,17 +10,21 @@ import Partout
 public struct OpenAPICreditsLicensesInner: Sendable, Codable, Hashable {
 
     public var name: String
+    /** Applicable platforms; omitted or null means all platforms. */
+    public var platforms: [OpenAPIPlatform]?
     public var licenseName: String
     public var licenseURL: URL
 
-    public init(name: String, licenseName: String, licenseURL: URL) {
+    public init(name: String, platforms: [OpenAPIPlatform]? = nil, licenseName: String, licenseURL: URL) {
         self.name = name
+        self.platforms = platforms
         self.licenseName = licenseName
         self.licenseURL = licenseURL
     }
 
     public enum CodingKeys: String, CodingKey, CaseIterable {
         case name
+        case platforms
         case licenseName
         case licenseURL
     }
@@ -30,6 +34,7 @@ public struct OpenAPICreditsLicensesInner: Sendable, Codable, Hashable {
     public func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
+        try container.encodeIfPresent(platforms, forKey: .platforms)
         try container.encode(licenseName, forKey: .licenseName)
         try container.encode(licenseURL, forKey: .licenseURL)
     }

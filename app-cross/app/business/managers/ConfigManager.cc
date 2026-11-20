@@ -28,7 +28,7 @@ bool ConfigManager::Refresh() {
         const auto config = Models::ConfigBundleConfig::FromJson(entry.value());
         if (config.rate != 100 || (config.minBuild && *config.minBuild > build_)) continue;
         if (config.platforms && std::none_of(config.platforms->begin(), config.platforms->end(), [](const auto &platform) {
-            return platform.value == Models::ConfigBundlePlatform::windows;
+            return platform.value == Models::Platform::windows;
         })) continue;
         flags.emplace(flag, config.data.value_or(nlohmann::json()));
     }

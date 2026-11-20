@@ -13,6 +13,7 @@
 #include "observables/CreditsObservable.h"
 #include "context/LoadAppConstants.h"
 #include "SettingsResources.h"
+#include <algorithm>
 #include <cassert>
 #include <fstream>
 #include <iostream>

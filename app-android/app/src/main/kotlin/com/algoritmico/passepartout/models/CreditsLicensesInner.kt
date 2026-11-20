@@ -23,6 +23,7 @@
 
 package com.algoritmico.passepartout.models
 
+import com.algoritmico.passepartout.models.Platform
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -34,6 +35,7 @@ import kotlinx.serialization.Contextual
  * @param name 
  * @param licenseName 
  * @param licenseURL 
+ * @param platforms Applicable platforms; omitted or null means all platforms.
  */
 @Serializable
 
@@ -46,7 +48,11 @@ data class CreditsLicensesInner (
     val licenseName: kotlin.String,
 
     @SerialName(value = "licenseURL")
-    val licenseURL: kotlin.String
+    val licenseURL: kotlin.String,
+
+    /* Applicable platforms; omitted or null means all platforms. */
+    @SerialName(value = "platforms")
+    val platforms: kotlin.collections.List<@Contextual Platform>? = null
 
 ) {
 

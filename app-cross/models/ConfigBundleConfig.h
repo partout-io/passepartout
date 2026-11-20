@@ -19,7 +19,7 @@
 #define ConfigBundleConfig_H_
 
 #include <partout/json.h>
-#include "ConfigBundlePlatform.h"
+#include "Platform.h"
 #include <vector>
 #include <partout/json.h>
 #include <optional>
@@ -31,7 +31,7 @@ struct  ConfigBundleConfig
 {
 
     int32_t rate;
-    std::optional<std::vector<Passepartout::Models::ConfigBundlePlatform>> platforms;
+    std::optional<std::vector<Passepartout::Models::Platform>> platforms;
     std::optional<int32_t> minBuild;
     std::optional<nlohmann::json> data;
 
