@@ -175,8 +175,8 @@ int main() {
         assert(!stored && !version.Snapshot().latest);
 
         CreditsObservable credits(creditsResource, std::make_unique<FakeHttp>());
-        assert(!credits.HasLoadError() && credits.Snapshot().licenses.size() >= 10);
-        for (const auto &license : credits.Snapshot().licenses) assert(license.name != "OpenSSL" && license.name != "Wintun");
+        assert(!credits.HasLoadError());
+        assert(credits.Snapshot().licenses.size() == nlohmann::json::parse(creditsResource).at("licenses").size());
         AppLogger logger;
         AppLogger::SetPrivateData(false);
         logger.Write(LogLevel::info, "test", "public marker");

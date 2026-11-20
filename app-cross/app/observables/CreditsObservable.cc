@@ -12,15 +12,6 @@ CreditsObservable::CreditsObservable(std::string resource, std::unique_ptr<HttpC
     }) {
     try {
         auto json = nlohmann::json::parse(resource);
-        // Applicability is resource metadata, not a second inventory in code.
-        for (const auto *group : {"licenses", "notices"}) {
-            auto selected = nlohmann::json::array();
-            for (const auto &entry : json.at(group)) {
-                if (entry.value("windows", true)) selected.push_back(entry);
-            }
-            for (const auto &entry : json.at("windows").at(group)) selected.push_back(entry);
-            json[group] = std::move(selected);
-        }
         credits_ = Models::Credits::FromJson(json);
         std::sort(credits_.licenses.begin(), credits_.licenses.end(), [](const auto &a, const auto &b) {
             return a.name < b.name;
