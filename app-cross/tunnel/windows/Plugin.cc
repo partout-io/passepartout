@@ -25,7 +25,7 @@
 #include <winrt/base.h>
 
 #include "partout.h"
-#include "partout_windows.h"
+#include "partout_winrt.h"
 
 using namespace winrt;
 using namespace winrt::Windows::ApplicationModel::Background;
