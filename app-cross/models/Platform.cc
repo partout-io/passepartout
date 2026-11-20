@@ -79,17 +79,17 @@ void to_json(nlohmann::json& j, const Platform& o)
     case Platform::ePlatform::INVALID_VALUE_OPENAPI_GENERATED:
         j = "INVALID_VALUE_OPENAPI_GENERATED";
         break;
-    case Platform::ePlatform::apple:
-        j = "apple";
-        break;
     case Platform::ePlatform::android:
         j = "android";
         break;
-    case Platform::ePlatform::windows:
-        j = "windows";
+    case Platform::ePlatform::apple:
+        j = "apple";
         break;
     case Platform::ePlatform::linux:
         j = "linux";
+        break;
+    case Platform::ePlatform::windows:
+        j = "windows";
         break;
     }
 }
@@ -99,17 +99,17 @@ void from_json(const nlohmann::json& j, Platform& o)
     Platform parsed{};
 
     auto s = j.get<std::string>();
-    if(s == "apple") {
-        parsed.value = Platform::ePlatform::apple;
-    }
-    else if(s == "android") {
+    if(s == "android") {
         parsed.value = Platform::ePlatform::android;
     }
-    else if(s == "windows") {
-        parsed.value = Platform::ePlatform::windows;
+    else if(s == "apple") {
+        parsed.value = Platform::ePlatform::apple;
     }
     else if(s == "linux") {
         parsed.value = Platform::ePlatform::linux;
+    }
+    else if(s == "windows") {
+        parsed.value = Platform::ePlatform::windows;
     }  else {
         std::stringstream ss;
         ss << "Unexpected value " << s << " in json"

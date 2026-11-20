@@ -31,22 +31,22 @@ import kotlinx.serialization.Serializable
 /**
  * 
  *
- * Values: apple,android,windows,linux
+ * Values: android,apple,linux,windows
  */
 @Serializable
 enum class Platform(val value: kotlin.String) {
 
-    @SerialName(value = "apple")
-    apple("apple"),
-
     @SerialName(value = "android")
     android("android"),
 
-    @SerialName(value = "windows")
-    windows("windows"),
+    @SerialName(value = "apple")
+    apple("apple"),
 
     @SerialName(value = "linux")
-    linux("linux");
+    linux("linux"),
+
+    @SerialName(value = "windows")
+    windows("windows");
 
     /**
      * Override [toString()] to avoid using the enum variable name as the value, and instead use

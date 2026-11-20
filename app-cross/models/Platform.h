@@ -31,10 +31,10 @@ struct  Platform
         // Avoiding name clashes with user defined
         // enum values
         INVALID_VALUE_OPENAPI_GENERATED = 0,
-        apple,
         android,
-        windows,
-        linux
+        apple,
+        linux,
+        windows
     };
 
     Platform::ePlatform value = Platform::ePlatform::INVALID_VALUE_OPENAPI_GENERATED;

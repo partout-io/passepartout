@@ -8,8 +8,8 @@
 import Partout
 
 public enum OpenAPIPlatform: String, Sendable, Codable, CaseIterable {
-    case apple = "apple"
     case android = "android"
-    case windows = "windows"
+    case apple = "apple"
     case linux = "linux"
+    case windows = "windows"
 }
