@@ -64,7 +64,7 @@ function(target_link_partout_runtime target)
     if(WIN32)
         target_link_libraries(${target} PRIVATE Partout::WindowsRuntime)
     else()
-        target_link_libraries(${target} PRIVATE Partout::PosixRuntime)
+        target_link_libraries(${target} PRIVATE Partout::POSIXRuntime)
     endif()
     if(LINUX)
         target_link_options(${target} PRIVATE
