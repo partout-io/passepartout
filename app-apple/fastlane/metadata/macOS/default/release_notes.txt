@@ -1,1 +1,2 @@
-* Clean up overall software design
+* Core: Organize shared resources and licenses by platform (#1997)
+* Core: Update OpenAPI golden JSON (#1996)
