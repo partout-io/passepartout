@@ -1,0 +1,44 @@
+name: "Windows: Package app"
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: Three-part release version (the Store revision is zero)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: pwsh
+    working-directory: app-cross
+
+jobs:
+  build:
+    name: Package ${{ matrix.architecture }}
+    runs-on: windows-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture: [x64, arm64]
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - uses: partout-io/setup-zig@main
+        with:
+          cache-key: windows-${{ matrix.architecture }}
+      - uses: actions/setup-go@v7
+        with:
+          go-version: 1.25
+          cache-dependency-path: partout/src/**/go.sum
+      - name: Package MSIX
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+          PACKAGE_ARCHITECTURE: ${{ matrix.architecture }}
+        run: |
+          ./ci/package.ps1 msix "$env:RUNNER_TEMP/packages" $env:PACKAGE_ARCHITECTURE -Version "$env:RELEASE_VERSION.0"
