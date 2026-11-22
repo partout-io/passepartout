@@ -62,7 +62,7 @@ if(WIN32)
     target_compile_options(passepartout-windows-integration-check PRIVATE /EHsc /permissive- /utf-8 /W4)
 
     # Native settings translation constructs WinRT values without starting a VPN.
-    add_executable(passepartout-windows-settings-test ../../partout/tests/c/windows/tun_settings.cc)
+    add_executable(passepartout-windows-settings-test ../../partout/tests/c/windows/winrt/TunSettingsTests.cc)
     target_link_libraries(passepartout-windows-settings-test PRIVATE partout-winrt-backend nlohmann_json::nlohmann_json)
     target_compile_features(passepartout-windows-settings-test PRIVATE cxx_std_20)
     target_compile_options(passepartout-windows-settings-test PRIVATE /UNDEBUG /utf-8 /EHsc /permissive-)
