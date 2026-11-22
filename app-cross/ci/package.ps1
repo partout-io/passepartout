@@ -43,10 +43,10 @@ if ($packageVersion.Major -lt 1 -or $packageVersion.Major -gt 65535 -or
     throw 'Store version components must be at most 65535, with a nonzero major.'
 }
 
-function InvokeCMake {
-    param([string[]]$Arguments)
-    & $cmake @Arguments
-    if ($LASTEXITCODE -ne 0) { throw "CMake failed with exit code $LASTEXITCODE." }
+function InvokeTool {
+    param([string]$Path, [string[]]$Arguments)
+    & $Path @Arguments
+    if ($LASTEXITCODE -ne 0) { throw "$Path failed with exit code $LASTEXITCODE." }
 }
 
 $output = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($OutputDirectory)
@@ -65,23 +65,18 @@ Enter-VsDevShell -VsInstallPath $visualStudio -SkipAutomaticLocation -DevCmdArgu
 $makeAppx = Join-Path $env:WindowsSdkDir "bin/$($env:WindowsSDKVersion.TrimEnd('\'))/$hostArchitecture/makeappx.exe"
 if (-not (Test-Path -LiteralPath $makeAppx)) { throw 'Windows SDK MakeAppx.exe was not found.' }
 
-Push-Location $source
-try {
-    InvokeCMake -Arguments @('--fresh', '--preset', "windows-$Architecture", '-B', $build,
-        "-DCMAKE_INSTALL_PREFIX=$stage", "-DPASSEPARTOUT_PACKAGE_VERSION=$packageVersion",
-        "-DPASSEPARTOUT_PACKAGE_NAME=$packageName",
-        "-DPASSEPARTOUT_PACKAGE_PUBLISHER=$packagePublisher",
-        "-DPASSEPARTOUT_PUBLISHER_DISPLAY_NAME=$publisherDisplayName")
-    InvokeCMake -Arguments @('--build', $build, '--config', 'Release', '--parallel', '2')
-    InvokeCMake -Arguments @('--install', $build, '--config', 'Release', '--prefix', $stage)
-    New-Item -ItemType Directory -Force -Path $output | Out-Null
-    $package = Join-Path $output "Passepartout.$Architecture.msix"
-    & $makeAppx pack /o /d $stage /p $package
-    if ($LASTEXITCODE -ne 0) { throw "MakeAppx failed with exit code $LASTEXITCODE." }
-    if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
-        throw "Expected package was not produced: $package"
-    }
-    Write-Host "Package ready: $package"
-} finally {
-    Pop-Location
+InvokeTool $cmake @('--fresh', '-S', $source, '--preset', "windows-$Architecture", '-B', $build,
+    "-DCMAKE_INSTALL_PREFIX=$stage", "-DPASSEPARTOUT_PACKAGE_VERSION=$packageVersion",
+    "-DPASSEPARTOUT_PACKAGE_NAME=$packageName",
+    "-DPASSEPARTOUT_PACKAGE_PUBLISHER=$packagePublisher",
+    "-DPASSEPARTOUT_PUBLISHER_DISPLAY_NAME=$publisherDisplayName")
+InvokeTool $cmake @('--build', $build, '--config', 'Release', '--parallel', '2')
+InvokeTool $cmake @('--install', $build, '--config', 'Release')
+
+New-Item -ItemType Directory -Force -Path $output | Out-Null
+$package = Join-Path $output "Passepartout.$Architecture.msix"
+InvokeTool $makeAppx @('pack', '/o', '/d', $stage, '/p', $package)
+if (-not (Test-Path -LiteralPath $package -PathType Leaf)) {
+    throw "Expected package was not produced: $package"
 }
+Write-Host "Package ready: $package"
