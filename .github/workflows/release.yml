@@ -13,6 +13,7 @@ on:
         options:
           - apple
           - android
+          - windows
       run_checks:
         description: Run the initial checks
         required: true
@@ -73,6 +74,14 @@ jobs:
     if: ${{ github.event_name == 'push' || inputs.platform == 'android' }}
     uses: ./.github/workflows/package_android.yml
     secrets: inherit
+
+  package_windows:
+    name: Package Windows app
+    needs: release_info
+    if: ${{ github.event_name == 'push' || inputs.platform == 'windows' }}
+    uses: ./.github/workflows/package_windows.yml
+    with:
+      version: ${{ needs.release_info.outputs.version }}
 
   distribute_apple:
     name: Distribute Apple apps
