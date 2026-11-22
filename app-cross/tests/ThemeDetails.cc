@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "../app/ui/theme/ThemeDetailView.h"
+#include "../app/ui/profile/DNSView.h"
+#include "../app/ui/profile/OpenVPNView.h"
 #include "../app/ui/theme/ThemeLongContent.h"
 #include "../app/strings/Strings.h"
 #include "../app/ui/settings/SettingsView.h"
@@ -36,6 +38,49 @@ int main(int argc, char **argv) {
     }
     {
         wxFrame frame(nullptr, wxID_ANY, "Presentation regression");
+        using namespace Passepartout;
+        auto *typed = new ModuleDetailView(&frame, [](wxString, wxString) {});
+        typed->Section("Typed values");
+        typed->Row("Missing", std::optional<std::string>{});
+        typed->Row("Empty", std::optional<std::vector<std::string>>{{}});
+        typed->Row("False", std::optional<bool>{false});
+        typed->Row("Zero", std::optional<int>{0});
+        typed->Row("Secret", std::optional<std::string>{"typed-secret"}, true, std::nullopt, true);
+        typed->IP("Additional routes", std::nullopt,
+            std::vector<Partout::Models::Route>{{std::string("10.0.0.0/8"), std::nullopt}}, true);
+        typed->Finish();
+        if (wxWindow::FindWindowByLabel("Missing", typed) ||
+            wxWindow::FindWindowByLabel("Empty", typed) ||
+            wxWindow::FindWindowByLabel("typed-secret", typed)) return 19;
+        if (!wxWindow::FindWindowByLabel("False", typed) ||
+            !wxWindow::FindWindowByLabel("Zero", typed) ||
+            !wxWindow::FindWindowByLabel(Localized(StringKey::GlobalNounsDestination), typed)) return 20;
+        for (const auto &protocol : std::vector<Partout::Models::DNSModuleProtocolType>{
+            Partout::Models::DNSModuleProtocolTypeCleartext{},
+            Partout::Models::DNSModuleProtocolTypeHttps{"https", "https://example.com/dns-query"},
+            Partout::Models::DNSModuleProtocolTypeTls{"tls", "dns.example.com"}}) {
+            Partout::Models::DNSModule module{};
+            module.protocolType = protocol;
+            module.domainName = "example.com";
+            auto *view = new DNSView(&frame, module, [](wxString, wxString) {});
+            const bool cleartext = std::holds_alternative<Partout::Models::DNSModuleProtocolTypeCleartext>(protocol);
+            if (bool(wxWindow::FindWindowByLabel(Localized(StringKey::EntitiesDnsDomains), view)) != cleartext) return 21;
+        }
+        for (const auto &method : std::vector<Partout::Models::OpenVpnObfuscationMethod>{
+            Partout::Models::OpenVpnObfuscationMethodObfuscate{"obfuscate", "AQI="},
+            Partout::Models::OpenVpnObfuscationMethodXormask{"xormask", "AQI="},
+            Partout::Models::OpenVpnObfuscationMethodReverse{},
+            Partout::Models::OpenVpnObfuscationMethodXorptrpos{}}) {
+            Partout::Models::OpenVPNModule module{};
+            module.configuration = Partout::Models::OpenVpnConfiguration{};
+            module.configuration->xorMethod = method;
+            module.configuration->randomizeEndpoint = false;
+            module.configuration->keepAliveInterval = 0;
+            auto *view = new OpenVPNView(&frame, module, [](wxString, wxString) {}, [] {}, [] {});
+            if (!wxWindow::FindWindowByLabel("XOR", view) ||
+                !wxWindow::FindWindowByLabel(Localized(StringKey::ModulesOpenvpnRandomizeEndpoint), view) ||
+                !wxWindow::FindWindowByLabel(Localized(StringKey::GlobalNounsInterval), view)) return 22;
+        }
         Passepartout::IssueReportView *report = nullptr;
         Passepartout::ThemeModal reportModal(&frame, "Report", [&report](wxWindow *parent) {
             report = new Passepartout::IssueReportView(parent);

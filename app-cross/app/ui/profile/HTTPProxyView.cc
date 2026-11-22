@@ -9,11 +9,11 @@ namespace Passepartout {
 HTTPProxyView::HTTPProxyView(wxWindow *parent, const Partout::Models::HTTPProxyModule &module, OpenModuleContent openContent)
     : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
     using namespace Strings::Unlocalized;
-    const auto c = module.ToJson();
-    auto endpoint = [this](const wxString &title, const nlohmann::json &value) {
+    const auto &c = module;
+    auto endpoint = [this](const wxString &title, const std::optional<std::string> &value) {
         if (!HasContent(value)) return;
         Section(title);
-        const auto text = value.get<std::string>();
+        const auto text = *value;
         const auto separator = text.rfind(':');
         long port = 0;
         if (separator != std::string::npos && separator > 0 &&
@@ -22,13 +22,13 @@ HTTPProxyView::HTTPProxyView(wxWindow *parent, const Partout::Models::HTTPProxyM
             Row(StringKey::GlobalNounsPort, port);
         } else Row(StringKey::GlobalNounsAddress, text);
     };
-    endpoint(HTTP, c.value("proxy", nlohmann::json()));
-    endpoint(HTTPS, c.value("secureProxy", nlohmann::json()));
-    if (HasContent(c.value("pacURL", nlohmann::json()))) {
+    endpoint(HTTP, c.proxy);
+    endpoint(HTTPS, c.secureProxy);
+    if (HasContent(c.pacURL)) {
         Section(PAC);
-        Row(URL, c.at("pacURL"));
+        Row(URL, c.pacURL);
     }
-    Row(StringKey::EntitiesHttpProxyBypassDomains, c.value("bypassDomains", nlohmann::json()));
+    Row(StringKey::EntitiesHttpProxyBypassDomains, c.bypassDomains);
     Finish();
 }
 }

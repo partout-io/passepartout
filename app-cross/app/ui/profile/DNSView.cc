@@ -9,27 +9,34 @@ namespace Passepartout {
 DNSView::DNSView(wxWindow *parent, const Partout::Models::DNSModule &module, OpenModuleContent openContent)
     : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
     using namespace Strings::Unlocalized;
-    const auto c = module.ToJson();
-    const auto protocol = c.at("protocolType");
-    const auto type = protocol.at("type").get<std::string>();
+    const auto &c = module;
+    const bool cleartext = std::holds_alternative<Partout::Models::DNSModuleProtocolTypeCleartext>(c.protocolType);
     Section({});
     Row(StringKey::ModulesDnsPolicyInheritsVpn, module.inheritsVPN.value_or(false));
     if (module.routesThroughVPN) Row(StringKey::ModulesDnsPolicyRouteThroughVpn, *module.routesThroughVPN);
     else Field(Localized(StringKey::ModulesDnsPolicyRouteThroughVpn), Localized(StringKey::GlobalNounsDefault));
-    Row(StringKey::ModulesDnsPolicyUseOnly, (module.inheritsVPN.value_or(false) || type == "cleartext") &&
-        module.domainPolicy && module.domainPolicy->ToJson() == "matchAndSearch");
+    Row(StringKey::ModulesDnsPolicyUseOnly, (module.inheritsVPN.value_or(false) || cleartext) &&
+        module.domainPolicy && module.domainPolicy->value == Partout::Models::DNSModuleDomainPolicy::matchAndSearch);
     if (module.inheritsVPN.value_or(false)) {
         Finish();
         return;
     }
     Section(Localized(StringKey::ModulesDnsCustomSettingsHeader));
-    Field(Localized(StringKey::GlobalNounsProtocol), Localized(type == "https" ? StringKey::EntitiesDnsProtocolHttps :
-        type == "tls" ? StringKey::EntitiesDnsProtocolTls : StringKey::EntitiesDnsProtocolCleartext));
-    Row(URL, protocol.value("url", nlohmann::json()));
-    Row(StringKey::GlobalNounsHostname, protocol.value("hostname", nlohmann::json()));
-    Row(StringKey::EntitiesDnsServers, c.at("servers"));
-    if (type == "cleartext") {
-        nlohmann::json domains = nlohmann::json::array();
+    std::visit([this](const auto &protocol) {
+        using T = std::decay_t<decltype(protocol)>;
+        if constexpr (std::is_same_v<T, Partout::Models::DNSModuleProtocolTypeHttps>) {
+            Field(Localized(StringKey::GlobalNounsProtocol), Localized(StringKey::EntitiesDnsProtocolHttps));
+            Row(URL, protocol.url);
+        } else if constexpr (std::is_same_v<T, Partout::Models::DNSModuleProtocolTypeTls>) {
+            Field(Localized(StringKey::GlobalNounsProtocol), Localized(StringKey::EntitiesDnsProtocolTls));
+            Row(StringKey::GlobalNounsHostname, protocol.hostname);
+        } else {
+            Field(Localized(StringKey::GlobalNounsProtocol), Localized(StringKey::EntitiesDnsProtocolCleartext));
+        }
+    }, c.protocolType);
+    Row(StringKey::EntitiesDnsServers, c.servers);
+    if (cleartext) {
+        std::vector<std::string> domains;
         if (module.domainName) domains.push_back(*module.domainName);
         if (module.searchDomains) for (const auto &domain : *module.searchDomains) domains.push_back(domain);
         Row(StringKey::EntitiesDnsDomains, domains);

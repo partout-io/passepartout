@@ -81,6 +81,14 @@ unrelated refactoring; keep changes within the task's scope.
 - Use the same domain names and meanings across frontends. The shared application
   schema is `scripts/openapi.yaml`; update generated models through the generation
   workflow rather than editing them manually.
+- Use generated, strongly typed models throughout application logic and presentation.
+  Access fields directly and branch on typed enums or variants; never serialize a
+  model to JSON to read fields by string key or compare serialized discriminator
+  values. Presentation helpers must accept typed values rather than JSON objects.
+  Keep JSON parsing and construction at persistence, transport, and resource
+  boundaries. Reuse existing model codecs there; handwritten keys are reserved
+  for boundary formats without a generated model. Generated scalar enum codecs
+  may supply canonical protocol spellings for display, never control flow.
 - Keep responsibilities separated: domain models define contracts; managers own
   business rules; repositories and strategies provide replaceable mechanisms;
   observables expose UI state and actions; context assembles dependencies; Theme
