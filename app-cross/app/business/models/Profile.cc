@@ -59,14 +59,14 @@ std::wstring LowerName(const std::string &name) {
 #endif
 }
 double LastUpdate(const Profile &profile) {
-    if (profile.userInfo && profile.userInfo->is_object()) {
-        const auto value = profile.userInfo->find("lastUpdate");
-        if (value != profile.userInfo->end()) {
-            if (value->is_number()) return value->get<double>();
-            if (value->is_string()) {
+    if (profile.userInfo && profile.userInfo->IsObject()) {
+        const auto value = profile.userInfo->Find("lastUpdate");
+        if (value) {
+            if (value->IsNumber()) return value->Get<double>();
+            if (value->IsString()) {
                 try {
                     std::size_t length;
-                    const auto text = value->get<std::string>();
+                    const auto text = value->Get<std::string>();
                     const auto number = std::stod(text, &length);
                     if (length == text.size() && std::isfinite(number)) return number;
                 } catch (...) {}

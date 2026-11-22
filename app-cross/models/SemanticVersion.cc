@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json SemanticVersion::ToJson() const
+::Partout::Models::Json SemanticVersion::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-SemanticVersion SemanticVersion::FromJson(const nlohmann::json& j)
+SemanticVersion SemanticVersion::FromJson(const ::Partout::Models::Json& j)
 {
-    SemanticVersion o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<SemanticVersion>();
 }
 
 void SemanticVersion::Validate() const

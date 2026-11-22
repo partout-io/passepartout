@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppUserLevel::ToJson() const
+::Partout::Models::Json AppUserLevel::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-AppUserLevel AppUserLevel::FromJson(const nlohmann::json& j)
+AppUserLevel AppUserLevel::FromJson(const ::Partout::Models::Json& j)
 {
-    AppUserLevel o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppUserLevel>();
 }
 
 void AppUserLevel::Validate() const
@@ -68,6 +64,17 @@ bool AppUserLevel::operator==(const AppUserLevel& other) const
 bool AppUserLevel::operator!=(const AppUserLevel& other) const
 {
     return !(*this == other);
+}
+
+std::string AppUserLevel::ToString() const {
+    switch (value) {
+        case AppUserLevel::undefined: return "undefined";
+        case AppUserLevel::freemium: return "freemium";
+        case AppUserLevel::beta: return "beta";
+        case AppUserLevel::essentials: return "essentials";
+        case AppUserLevel::complete: return "complete";
+        default: throw std::invalid_argument("Invalid string enum value");
+    }
 }
 
 void to_json(nlohmann::json& j, const AppUserLevel& o)

@@ -51,8 +51,8 @@ struct  WebsiteWithPasscode
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static WebsiteWithPasscode FromJson(const nlohmann::json& j);
+    ::Partout::Models::Json ToJson() const;
+    static WebsiteWithPasscode FromJson(const ::Partout::Models::Json& j);
 };
 
  void to_json(nlohmann::json& j, const WebsiteWithPasscode& o);

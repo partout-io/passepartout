@@ -50,8 +50,8 @@ struct  AppConstants_emails_recipients
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static AppConstants_emails_recipients FromJson(const nlohmann::json& j);
+    ::Partout::Models::Json ToJson() const;
+    static AppConstants_emails_recipients FromJson(const ::Partout::Models::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppConstants_emails_recipients& o);

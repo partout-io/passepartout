@@ -31,7 +31,7 @@ std::vector<Profile> FileProfileRepository::ReadObjects() {
         if (!entry.is_regular_file() || entry.is_symlink())
             throw std::runtime_error("Invalid entry in the profile store.");
         try {
-            auto profile = Profile::FromJson(nlohmann::json::parse(ReadConfiguration(entry.path())));
+            auto profile = Profile::FromJson(Partout::Models::Json::Parse(ReadConfiguration(entry.path())));
             ValidateProfileIdentity(profile);
             const auto destination = ObjectPath(profile.id);
             if (destination.filename() != entry.path().filename())
@@ -49,23 +49,23 @@ std::vector<Profile> FileProfileRepository::ReadObjects() {
 }
 
 void FileProfileRepository::PersistIndex(const std::vector<Profile> &profiles) {
-    auto entries = nlohmann::json::array();
+    auto entries = Partout::Models::Json::Array();
     for (const auto &profile : profiles) {
-        nlohmann::json entry = {{"id", profile.id}, {"name", profile.name}};
-        if (profile.userInfo && profile.userInfo->is_object()) {
+        Partout::Models::Json entry = {{"id", profile.id}, {"name", profile.name}};
+        if (profile.userInfo && profile.userInfo->IsObject()) {
             for (const auto *key : {"lastUpdate", "fingerprint"}) {
-                const auto value = profile.userInfo->find(key);
-                if (value == profile.userInfo->end() || value->is_null()) continue;
+                const auto value = profile.userInfo->Find(key);
+                if (!value || value->IsNull()) continue;
                 if (std::string(key) == "fingerprint") {
-                    if (value->is_primitive()) entry[key] = value->is_string() ? value->get<std::string>() : value->dump();
+                    if (value->IsPrimitive()) entry.Set(key, value->IsString() ? value->Get<std::string>() : value->Encode());
                 } else {
-                    entry[key] = *value;
+                    entry.Set(key, *value);
                 }
             }
         }
-        entries.push_back(std::move(entry));
+        entries.Append(std::move(entry));
     }
-    WriteAtomicFile(root_ / "index.json", nlohmann::json{{"version", 1}, {"profiles", entries}}.dump());
+    WriteAtomicFile(root_ / "index.json", Partout::Models::Json{{"version", 1}, {"profiles", entries}}.Encode());
 }
 
 std::vector<Profile> FileProfileRepository::Fetch() {
@@ -73,12 +73,12 @@ std::vector<Profile> FileProfileRepository::Fetch() {
     std::vector<std::string> orderedIds;
     bool rebuild = false;
     try {
-        const auto index = nlohmann::json::parse(ReadConfiguration(root_ / "index.json"));
-        if (index.at("version") != 1 || !index.at("profiles").is_array()) throw std::runtime_error("Invalid index");
+        const auto index = Partout::Models::Json::Parse(ReadConfiguration(root_ / "index.json"));
+        if (index.At("version") != 1 || !index.At("profiles").IsArray()) throw std::runtime_error("Invalid index");
         std::set<std::string> seen;
-        for (const auto &entry : index.at("profiles")) {
-            auto id = entry.at("id").get<std::string>();
-            entry.at("name").get<std::string>();
+        for (const auto &entry : index.At("profiles").Elements()) {
+            auto id = entry.At("id").Get<std::string>();
+            entry.At("name").Get<std::string>();
             if (!IsSafeProfileId(id) || !seen.insert(id).second) throw std::runtime_error("Invalid index identity");
             orderedIds.push_back(std::move(id));
         }
@@ -107,13 +107,13 @@ void FileProfileRepository::Save(const Profile &profile) {
     const auto path = ObjectPath(profile.id);
     if (std::filesystem::exists(path)) {
         try {
-            const auto previous = Profile::FromJson(nlohmann::json::parse(ReadConfiguration(path)));
+            const auto previous = Profile::FromJson(Partout::Models::Json::Parse(ReadConfiguration(path)));
             if (previous.id != profile.id) throw std::runtime_error("Conflicting profile identity");
         } catch (...) {
             throw std::runtime_error("The existing profile cannot be safely replaced.");
         }
     }
-    const auto content = profile.ToJson().dump();
+    const auto content = profile.ToJson().Encode();
     if (content.size() > MaxConfigurationBytes)
         throw std::runtime_error("The saved profile exceeds 1 MiB.");
     WriteAtomicFile(path, content);

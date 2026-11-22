@@ -18,6 +18,7 @@
 #ifndef Platform_H_
 #define Platform_H_
 
+#include <string>
 #include <partout/json.h>
 
 namespace Passepartout::Models
@@ -39,6 +40,9 @@ struct  Platform
 
     Platform::ePlatform value = Platform::ePlatform::INVALID_VALUE_OPENAPI_GENERATED;
 
+    // Canonical schema token, independent of the JSON representation.
+    std::string ToString() const;
+
     bool operator==(const Platform& other) const;
     bool operator!=(const Platform& other) const;
 
@@ -59,8 +63,8 @@ struct  Platform
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static Platform FromJson(const nlohmann::json& j);
+    ::Partout::Models::Json ToJson() const;
+    static Platform FromJson(const ::Partout::Models::Json& j);
 };
 
  void to_json(nlohmann::json& j, const Platform& o);

@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json ProfileSharingFlag::ToJson() const
+::Partout::Models::Json ProfileSharingFlag::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-ProfileSharingFlag ProfileSharingFlag::FromJson(const nlohmann::json& j)
+ProfileSharingFlag ProfileSharingFlag::FromJson(const ::Partout::Models::Json& j)
 {
-    ProfileSharingFlag o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<ProfileSharingFlag>();
 }
 
 void ProfileSharingFlag::Validate() const
@@ -68,6 +64,14 @@ bool ProfileSharingFlag::operator==(const ProfileSharingFlag& other) const
 bool ProfileSharingFlag::operator!=(const ProfileSharingFlag& other) const
 {
     return !(*this == other);
+}
+
+std::string ProfileSharingFlag::ToString() const {
+    switch (value) {
+        case ProfileSharingFlag::shared: return "shared";
+        case ProfileSharingFlag::tv: return "tv";
+        default: throw std::invalid_argument("Invalid string enum value");
+    }
 }
 
 void to_json(nlohmann::json& j, const ProfileSharingFlag& o)

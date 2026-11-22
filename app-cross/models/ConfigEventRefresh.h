@@ -31,7 +31,7 @@ struct  ConfigEventRefresh
 {
 
     std::vector<Passepartout::Models::ConfigFlag> flags;
-    nlohmann::json data;
+    ::Partout::Models::Json data;
     std::string type = "ConfigEventRefresh";
 
     bool operator==(const ConfigEventRefresh& other) const;
@@ -54,8 +54,8 @@ struct  ConfigEventRefresh
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static ConfigEventRefresh FromJson(const nlohmann::json& j);
+    ::Partout::Models::Json ToJson() const;
+    static ConfigEventRefresh FromJson(const ::Partout::Models::Json& j);
 };
 
  void to_json(nlohmann::json& j, const ConfigEventRefresh& o);

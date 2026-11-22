@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json ProfileTransfer::ToJson() const
+::Partout::Models::Json ProfileTransfer::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-ProfileTransfer ProfileTransfer::FromJson(const nlohmann::json& j)
+ProfileTransfer ProfileTransfer::FromJson(const ::Partout::Models::Json& j)
 {
-    ProfileTransfer o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<ProfileTransfer>();
 }
 
 void ProfileTransfer::Validate() const

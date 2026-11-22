@@ -11,6 +11,7 @@
 
 int main() {
     using namespace Passepartout::Models;
+    using Partout::Models::Json;
     static_assert(std::is_same_v<decltype(AppProfileHeader::moduleTypes),
         std::vector<Partout::Models::ModuleType>>);
     static_assert(std::is_same_v<decltype(ProfileEventSave::profile),
@@ -20,7 +21,7 @@ int main() {
     assert(unixLikePlatform.value == Platform::unixLike);
     assert(unixLikePlatform.ToJson() == "unixLike");
 
-    const auto input = nlohmann::json::parse(R"({
+    const auto input = Json::Parse(R"({
         "id":"example", "isEnabled":true, "status":"connected", "onDemand":false
     })");
     auto info = AppTunnelInfo::FromJson(input);
@@ -29,19 +30,19 @@ int main() {
     assert(!info.lastErrorCode.has_value());
 
     auto with_null = input;
-    with_null["lastErrorCode"] = nullptr;
+    with_null.Set("lastErrorCode", nullptr);
     assert(!AppTunnelInfo::FromJson(with_null).lastErrorCode.has_value());
 
     const auto event = ProfileEventDelete::FromJson(
-        {{"type", "ProfileEventDelete"}, {"ids", {"example"}}});
+        {{"type", "ProfileEventDelete"}, {"ids", std::vector<std::string>{"example"}}});
     assert(event.ids == std::vector<std::string>{"example"});
-    assert(event.ToJson().at("type") == "ProfileEventDelete");
-    const auto decoded = event.ToJson().get<Event>();
+    assert(event.ToJson().At("type") == "ProfileEventDelete");
+    const auto decoded = event.ToJson().Get<Event>();
     assert(std::holds_alternative<ProfileEventDelete>(decoded));
-    assert(nlohmann::json(decoded) == event.ToJson());
+    assert(Json(decoded) == event.ToJson());
     bool rejected = false;
     try {
-        ProfileEventDelete::FromJson({{"type", "WrongEvent"}, {"ids", {"example"}}});
+        ProfileEventDelete::FromJson({{"type", "WrongEvent"}, {"ids", std::vector<std::string>{"example"}}});
     } catch (const std::exception &) {
         rejected = true;
     }

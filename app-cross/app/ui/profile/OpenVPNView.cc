@@ -81,17 +81,17 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
     }
     if (HasContent(c.dataCiphers) || c.cipher.has_value() || c.digest.has_value() || c.xorMethod.has_value()) {
         Section(Localized(StringKey::ModulesOpenvpnCommunication));
-        // Generated scalar codecs own the canonical protocol spellings.
+        // The models API supplies canonical protocol spellings.
         if (c.dataCiphers.has_value()) {
             std::string ciphers;
             for (const auto &cipher : *c.dataCiphers) {
                 if (!ciphers.empty()) ciphers += ':';
-                ciphers += cipher.ToJson().get<std::string>();
+                ciphers += cipher.ToString();
             }
             Row(StringKey::ModulesOpenvpnDataCiphers, ciphers, true);
         }
-        Field(Localized(StringKey::ModulesOpenvpnCipher), c.cipher ? ValueText(c.cipher->ToJson().get<std::string>()) : wxString{});
-        Field(Localized(StringKey::ModulesOpenvpnDigest), c.digest ? ValueText(c.digest->ToJson().get<std::string>()) : wxString{});
+        Field(Localized(StringKey::ModulesOpenvpnCipher), c.cipher ? ValueText(c.cipher->ToString()) : wxString{});
+        Field(Localized(StringKey::ModulesOpenvpnDigest), c.digest ? ValueText(c.digest->ToString()) : wxString{});
         if (c.xorMethod) {
             std::visit([this](const auto &method) {
                 using T = std::decay_t<decltype(method)>;

@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json LocalLoggerOptions::ToJson() const
+::Partout::Models::Json LocalLoggerOptions::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-LocalLoggerOptions LocalLoggerOptions::FromJson(const nlohmann::json& j)
+LocalLoggerOptions LocalLoggerOptions::FromJson(const ::Partout::Models::Json& j)
 {
-    LocalLoggerOptions o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<LocalLoggerOptions>();
 }
 
 void LocalLoggerOptions::Validate() const

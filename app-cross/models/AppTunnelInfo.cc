@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppTunnelInfo::ToJson() const
+::Partout::Models::Json AppTunnelInfo::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-AppTunnelInfo AppTunnelInfo::FromJson(const nlohmann::json& j)
+AppTunnelInfo AppTunnelInfo::FromJson(const ::Partout::Models::Json& j)
 {
-    AppTunnelInfo o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppTunnelInfo>();
 }
 
 void AppTunnelInfo::Validate() const

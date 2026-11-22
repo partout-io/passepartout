@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json ProfileEventDelete::ToJson() const
+::Partout::Models::Json ProfileEventDelete::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-ProfileEventDelete ProfileEventDelete::FromJson(const nlohmann::json& j)
+ProfileEventDelete ProfileEventDelete::FromJson(const ::Partout::Models::Json& j)
 {
-    ProfileEventDelete o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<ProfileEventDelete>();
 }
 
 void ProfileEventDelete::Validate() const

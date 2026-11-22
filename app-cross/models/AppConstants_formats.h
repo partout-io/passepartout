@@ -49,8 +49,8 @@ struct  AppConstants_formats
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static AppConstants_formats FromJson(const nlohmann::json& j);
+    ::Partout::Models::Json ToJson() const;
+    static AppConstants_formats FromJson(const ::Partout::Models::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppConstants_formats& o);

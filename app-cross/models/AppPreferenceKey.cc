@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppPreferenceKey::ToJson() const
+::Partout::Models::Json AppPreferenceKey::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-AppPreferenceKey AppPreferenceKey::FromJson(const nlohmann::json& j)
+AppPreferenceKey AppPreferenceKey::FromJson(const ::Partout::Models::Json& j)
 {
-    AppPreferenceKey o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppPreferenceKey>();
 }
 
 void AppPreferenceKey::Validate() const
@@ -68,6 +64,23 @@ bool AppPreferenceKey::operator==(const AppPreferenceKey& other) const
 bool AppPreferenceKey::operator!=(const AppPreferenceKey& other) const
 {
     return !(*this == other);
+}
+
+std::string AppPreferenceKey::ToString() const {
+    switch (value) {
+        case AppPreferenceKey::configFlags: return "configFlags";
+        case AppPreferenceKey::cryptoBackend: return "cryptoBackend";
+        case AppPreferenceKey::deviceId: return "deviceId";
+        case AppPreferenceKey::dnsFallsBack: return "dnsFallsBack";
+        case AppPreferenceKey::experimental: return "experimental";
+        case AppPreferenceKey::extensiveLogging: return "extensiveLogging";
+        case AppPreferenceKey::lastCheckedVersion: return "lastCheckedVersion";
+        case AppPreferenceKey::lastCheckedVersionDate: return "lastCheckedVersionDate";
+        case AppPreferenceKey::lastUsedProfileId: return "lastUsedProfileId";
+        case AppPreferenceKey::logsPrivateData: return "logsPrivateData";
+        case AppPreferenceKey::skipsPurchases: return "skipsPurchases";
+        default: throw std::invalid_argument("Invalid string enum value");
+    }
 }
 
 void to_json(nlohmann::json& j, const AppPreferenceKey& o)

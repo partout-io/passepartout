@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json OriginalPurchase::ToJson() const
+::Partout::Models::Json OriginalPurchase::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-OriginalPurchase OriginalPurchase::FromJson(const nlohmann::json& j)
+OriginalPurchase OriginalPurchase::FromJson(const ::Partout::Models::Json& j)
 {
-    OriginalPurchase o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<OriginalPurchase>();
 }
 
 void OriginalPurchase::Validate() const

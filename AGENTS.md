@@ -87,8 +87,15 @@ unrelated refactoring; keep changes within the task's scope.
   values. Presentation helpers must accept typed values rather than JSON objects.
   Keep JSON parsing and construction at persistence, transport, and resource
   boundaries. Reuse existing model codecs there; handwritten keys are reserved
-  for boundary formats without a generated model. Generated scalar enum codecs
-  may supply canonical protocol spellings for display, never control flow.
+  for boundary formats without a generated model. UI code must use only typed
+  model APIs and must not reference JSON libraries, JSON value types, or model
+  JSON codecs, including for scalar display formatting. Expose canonical protocol
+  spellings through the models API (such as enum `ToString()`); keep the underlying
+  serialization dependency inside the model implementation. Application boundaries
+  must use `Partout::Models::Json` for parsing, encoding, and opaque JSON payloads;
+  never reference `nlohmann` types, operations, or exceptions from application code.
+  Extend the shared wrapper or generated model API when an operation is missing,
+  rather than exposing the serialization backend or adding application aliases.
 - Keep responsibilities separated: domain models define contracts; managers own
   business rules; repositories and strategies provide replaceable mechanisms;
   observables expose UI state and actions; context assembles dependencies; Theme

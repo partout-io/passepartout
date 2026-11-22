@@ -18,6 +18,7 @@
 #ifndef ConfigFlag_H_
 #define ConfigFlag_H_
 
+#include <string>
 #include <partout/json.h>
 
 namespace Passepartout::Models
@@ -36,6 +37,9 @@ struct  ConfigFlag
     };
 
     ConfigFlag::eConfigFlag value = ConfigFlag::eConfigFlag::INVALID_VALUE_OPENAPI_GENERATED;
+
+    // Canonical schema token, independent of the JSON representation.
+    std::string ToString() const;
 
     bool operator==(const ConfigFlag& other) const;
     bool operator!=(const ConfigFlag& other) const;
@@ -57,8 +61,8 @@ struct  ConfigFlag
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static ConfigFlag FromJson(const nlohmann::json& j);
+    ::Partout::Models::Json ToJson() const;
+    static ConfigFlag FromJson(const ::Partout::Models::Json& j);
 };
 
  void to_json(nlohmann::json& j, const ConfigFlag& o);

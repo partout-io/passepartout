@@ -33,7 +33,7 @@ struct  ConfigBundleConfig
     int32_t rate;
     std::optional<std::vector<Passepartout::Models::Platform>> platforms;
     std::optional<int32_t> minBuild;
-    std::optional<nlohmann::json> data;
+    std::optional<::Partout::Models::Json> data;
 
     bool operator==(const ConfigBundleConfig& other) const;
     bool operator!=(const ConfigBundleConfig& other) const;
@@ -55,8 +55,8 @@ struct  ConfigBundleConfig
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static ConfigBundleConfig FromJson(const nlohmann::json& j);
+    ::Partout::Models::Json ToJson() const;
+    static ConfigBundleConfig FromJson(const ::Partout::Models::Json& j);
 };
 
  void to_json(nlohmann::json& j, const ConfigBundleConfig& o);

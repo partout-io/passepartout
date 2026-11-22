@@ -49,8 +49,8 @@ struct  WebReceiverEventStop
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static WebReceiverEventStop FromJson(const nlohmann::json& j);
+    ::Partout::Models::Json ToJson() const;
+    static WebReceiverEventStop FromJson(const ::Partout::Models::Json& j);
 };
 
  void to_json(nlohmann::json& j, const WebReceiverEventStop& o);

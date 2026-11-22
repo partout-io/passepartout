@@ -135,7 +135,7 @@ int main() {
         remote->response = R"({"futureFlag": {}, "appNotWorking": {"rate":100,"minBuild":7,"platforms":["windows"],"data":{"reason":"test"}}})";
         ConfigManager config(std::move(http), "https://example.invalid", 7, std::chrono::seconds(0));
         assert(config.Refresh());
-        assert(config.ActiveFlags().at(Models::ConfigFlag::appNotWorking).at("reason") == "test");
+        assert(config.ActiveFlags().at(Models::ConfigFlag::appNotWorking).At("reason") == "test");
         remote->fails = true;
         Fails([&] { config.Refresh(); });
         assert(config.ActiveFlags().size() == 1);
@@ -177,7 +177,7 @@ int main() {
 
         CreditsObservable credits(creditsResource, std::make_unique<FakeHttp>());
         assert(!credits.HasLoadError());
-        assert(credits.Snapshot().licenses.size() == nlohmann::json::parse(creditsResource).at("licenses").size());
+        assert(credits.Snapshot().licenses.size() == Partout::Models::Json::Parse(creditsResource).At("licenses").Size());
         AppLogger logger;
         AppLogger::SetPrivateData(false);
         logger.Write(LogLevel::info, "test", "public marker");

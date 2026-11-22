@@ -50,8 +50,8 @@ struct  Credits_notices_inner
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static Credits_notices_inner FromJson(const nlohmann::json& j);
+    ::Partout::Models::Json ToJson() const;
+    static Credits_notices_inner FromJson(const ::Partout::Models::Json& j);
 };
 
  void to_json(nlohmann::json& j, const Credits_notices_inner& o);

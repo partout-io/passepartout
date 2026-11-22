@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json Credits_licenses_inner::ToJson() const
+::Partout::Models::Json Credits_licenses_inner::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-Credits_licenses_inner Credits_licenses_inner::FromJson(const nlohmann::json& j)
+Credits_licenses_inner Credits_licenses_inner::FromJson(const ::Partout::Models::Json& j)
 {
-    Credits_licenses_inner o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<Credits_licenses_inner>();
 }
 
 void Credits_licenses_inner::Validate() const

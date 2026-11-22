@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json ProfileEventLocalProfiles::ToJson() const
+::Partout::Models::Json ProfileEventLocalProfiles::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-ProfileEventLocalProfiles ProfileEventLocalProfiles::FromJson(const nlohmann::json& j)
+ProfileEventLocalProfiles ProfileEventLocalProfiles::FromJson(const ::Partout::Models::Json& j)
 {
-    ProfileEventLocalProfiles o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<ProfileEventLocalProfiles>();
 }
 
 void ProfileEventLocalProfiles::Validate() const

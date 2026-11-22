@@ -18,6 +18,7 @@
 #ifndef AppFeature_H_
 #define AppFeature_H_
 
+#include <string>
 #include <partout/json.h>
 
 namespace Passepartout::Models
@@ -42,6 +43,9 @@ struct  AppFeature
 
     AppFeature::eAppFeature value = AppFeature::eAppFeature::INVALID_VALUE_OPENAPI_GENERATED;
 
+    // Canonical schema token, independent of the JSON representation.
+    std::string ToString() const;
+
     bool operator==(const AppFeature& other) const;
     bool operator!=(const AppFeature& other) const;
 
@@ -62,8 +66,8 @@ struct  AppFeature
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static AppFeature FromJson(const nlohmann::json& j);
+    ::Partout::Models::Json ToJson() const;
+    static AppFeature FromJson(const ::Partout::Models::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppFeature& o);

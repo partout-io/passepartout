@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json Issue::ToJson() const
+::Partout::Models::Json Issue::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-Issue Issue::FromJson(const nlohmann::json& j)
+Issue Issue::FromJson(const ::Partout::Models::Json& j)
 {
-    Issue o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<Issue>();
 }
 
 void Issue::Validate() const

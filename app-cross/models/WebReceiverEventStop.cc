@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json WebReceiverEventStop::ToJson() const
+::Partout::Models::Json WebReceiverEventStop::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-WebReceiverEventStop WebReceiverEventStop::FromJson(const nlohmann::json& j)
+WebReceiverEventStop WebReceiverEventStop::FromJson(const ::Partout::Models::Json& j)
 {
-    WebReceiverEventStop o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<WebReceiverEventStop>();
 }
 
 void WebReceiverEventStop::Validate() const

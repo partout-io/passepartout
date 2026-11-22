@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json ExperimentalPreferences::ToJson() const
+::Partout::Models::Json ExperimentalPreferences::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-ExperimentalPreferences ExperimentalPreferences::FromJson(const nlohmann::json& j)
+ExperimentalPreferences ExperimentalPreferences::FromJson(const ::Partout::Models::Json& j)
 {
-    ExperimentalPreferences o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<ExperimentalPreferences>();
 }
 
 void ExperimentalPreferences::Validate() const

@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json ProfileEventRefresh::ToJson() const
+::Partout::Models::Json ProfileEventRefresh::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Models::Json(*this);
 }
 
-ProfileEventRefresh ProfileEventRefresh::FromJson(const nlohmann::json& j)
+ProfileEventRefresh ProfileEventRefresh::FromJson(const ::Partout::Models::Json& j)
 {
-    ProfileEventRefresh o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<ProfileEventRefresh>();
 }
 
 void ProfileEventRefresh::Validate() const

@@ -154,10 +154,10 @@ void AppSession::Publish() {
         header.id = profile.id;
         header.name = profile.name;
         header.fingerprint = profile.id;
-        if (profile.userInfo && profile.userInfo->is_object()) {
-            const auto fingerprint = profile.userInfo->find("fingerprint");
-            if (fingerprint != profile.userInfo->end() && fingerprint->is_string())
-                header.fingerprint = fingerprint->get<std::string>();
+        if (profile.userInfo && profile.userInfo->IsObject()) {
+            const auto fingerprint = profile.userInfo->Find("fingerprint");
+            if (fingerprint && fingerprint->IsString())
+                header.fingerprint = fingerprint->Get<std::string>();
         }
         for (const auto &module : profile.modules) {
             std::visit([&](const auto &value) {
@@ -165,9 +165,9 @@ void AppSession::Publish() {
                 std::string id;
                 if constexpr (std::is_same_v<std::decay_t<decltype(value)>, Partout::Models::TaggedModuleCustom>) {
                     type = value.value.innerType;
-                    if (value.value.json.is_object()) {
-                        const auto field = value.value.json.find("id");
-                        if (field != value.value.json.end() && field->is_string()) id = field->template get<std::string>();
+                    if (value.value.json.IsObject()) {
+                        const auto field = value.value.json.Find("id");
+                        if (field && field->IsString()) id = field->template Get<std::string>();
                     }
                 } else {
                     type = Partout::Models::ModuleType::FromJson(value.type);
@@ -235,7 +235,7 @@ void AppSession::Publish() {
             return value.id == tunnel.id;
         });
         if (old == previous.tunnels.end() || old->status != tunnel.status)
-            logger_->Write(LogLevel::info, "tunnel", "Profile " + tunnel.id + " status: " + tunnel.status.ToJson().dump());
+            logger_->Write(LogLevel::info, "tunnel", "Profile " + tunnel.id + " status: " + tunnel.status.ToJson().Encode());
     }
     std::lock_guard lock(mutex_);
     snapshot_.tunnels = std::move(tunnels);
