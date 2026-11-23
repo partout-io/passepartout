@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json ConfigFlag::ToJson() const
+::Partout::Json ConfigFlag::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-ConfigFlag ConfigFlag::FromJson(const nlohmann::json& j)
+ConfigFlag ConfigFlag::FromJson(const ::Partout::Json& j)
 {
-    ConfigFlag o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<ConfigFlag>();
 }
 
 void ConfigFlag::Validate() const
@@ -68,6 +64,14 @@ bool ConfigFlag::operator==(const ConfigFlag& other) const
 bool ConfigFlag::operator!=(const ConfigFlag& other) const
 {
     return !(*this == other);
+}
+
+std::string ConfigFlag::ToString() const {
+    switch (value) {
+        case ConfigFlag::appNotWorking: return "appNotWorking";
+        case ConfigFlag::unknown: return "unknown";
+        default: throw std::invalid_argument("Invalid string enum value");
+    }
 }
 
 void to_json(nlohmann::json& j, const ConfigFlag& o)

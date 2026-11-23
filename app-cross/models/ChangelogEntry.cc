@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json ChangelogEntry::ToJson() const
+::Partout::Json ChangelogEntry::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-ChangelogEntry ChangelogEntry::FromJson(const nlohmann::json& j)
+ChangelogEntry ChangelogEntry::FromJson(const ::Partout::Json& j)
 {
-    ChangelogEntry o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<ChangelogEntry>();
 }
 
 void ChangelogEntry::Validate() const

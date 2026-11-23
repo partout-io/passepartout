@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppConfiguration::ToJson() const
+::Partout::Json AppConfiguration::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-AppConfiguration AppConfiguration::FromJson(const nlohmann::json& j)
+AppConfiguration AppConfiguration::FromJson(const ::Partout::Json& j)
 {
-    AppConfiguration o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppConfiguration>();
 }
 
 void AppConfiguration::Validate() const

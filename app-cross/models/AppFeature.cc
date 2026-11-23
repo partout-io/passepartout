@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppFeature::ToJson() const
+::Partout::Json AppFeature::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-AppFeature AppFeature::FromJson(const nlohmann::json& j)
+AppFeature AppFeature::FromJson(const ::Partout::Json& j)
 {
-    AppFeature o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppFeature>();
 }
 
 void AppFeature::Validate() const
@@ -68,6 +64,19 @@ bool AppFeature::operator==(const AppFeature& other) const
 bool AppFeature::operator!=(const AppFeature& other) const
 {
     return !(*this == other);
+}
+
+std::string AppFeature::ToString() const {
+    switch (value) {
+        case AppFeature::appleTV: return "appleTV";
+        case AppFeature::dns: return "dns";
+        case AppFeature::httpProxy: return "httpProxy";
+        case AppFeature::onDemand: return "onDemand";
+        case AppFeature::otp: return "otp";
+        case AppFeature::routing: return "routing";
+        case AppFeature::sharing: return "sharing";
+        default: throw std::invalid_argument("Invalid string enum value");
+    }
 }
 
 void to_json(nlohmann::json& j, const AppFeature& o)

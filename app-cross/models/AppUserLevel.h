@@ -18,7 +18,8 @@
 #ifndef AppUserLevel_H_
 #define AppUserLevel_H_
 
-#include <partout/json.h>
+#include <string>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -40,6 +41,9 @@ struct  AppUserLevel
 
     AppUserLevel::eAppUserLevel value = AppUserLevel::eAppUserLevel::INVALID_VALUE_OPENAPI_GENERATED;
 
+    // Canonical schema token, independent of the JSON representation.
+    std::string ToString() const;
+
     bool operator==(const AppUserLevel& other) const;
     bool operator!=(const AppUserLevel& other) const;
 
@@ -60,8 +64,8 @@ struct  AppUserLevel
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static AppUserLevel FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static AppUserLevel FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppUserLevel& o);

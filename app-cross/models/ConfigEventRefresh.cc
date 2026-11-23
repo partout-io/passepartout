@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json ConfigEventRefresh::ToJson() const
+::Partout::Json ConfigEventRefresh::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-ConfigEventRefresh ConfigEventRefresh::FromJson(const nlohmann::json& j)
+ConfigEventRefresh ConfigEventRefresh::FromJson(const ::Partout::Json& j)
 {
-    ConfigEventRefresh o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<ConfigEventRefresh>();
 }
 
 void ConfigEventRefresh::Validate() const

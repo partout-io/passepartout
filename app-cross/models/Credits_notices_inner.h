@@ -19,7 +19,7 @@
 #define Credits_notices_inner_H_
 
 #include <string>
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -50,8 +50,8 @@ struct  Credits_notices_inner
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static Credits_notices_inner FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static Credits_notices_inner FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const Credits_notices_inner& o);

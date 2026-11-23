@@ -13,15 +13,15 @@ FilePreferencesRepository::FilePreferencesRepository(std::filesystem::path path)
 Models::AppPreferences FilePreferencesRepository::Fetch() {
     auto defaults = DefaultPreferences();
     if (!std::filesystem::exists(path_)) return defaults;
-    const auto data = nlohmann::json::parse(ReadConfiguration(path_));
-    if (!data.is_object()) throw std::runtime_error("Invalid preferences.");
+    const auto data = Partout::Json::Parse(ReadConfiguration(path_));
+    if (!data.IsObject()) throw std::runtime_error("Invalid preferences.");
     auto merged = defaults.ToJson();
-    merged.update(data);
+    merged.Merge(data);
     auto preferences = Models::AppPreferences::FromJson(merged);
     preferences.cryptoBackend = defaults.cryptoBackend;
     return preferences;
 }
 void FilePreferencesRepository::Save(const Models::AppPreferences &preferences) {
-    WriteAtomicFile(path_, preferences.ToJson().dump());
+    WriteAtomicFile(path_, preferences.ToJson().Encode());
 }
 }

@@ -34,7 +34,7 @@ Profile Example() {
     profile.modules.push_back(openvpn);
     Partout::Models::TaggedModuleCustom custom{};
     custom.value.innerType.value = Partout::Models::ModuleType::Provider;
-    custom.value.json = {{"id", "hidden"}, {"opaque", {1, 2, 3}}};
+    custom.value.json = {{"id", "hidden"}, {"opaque", std::vector<int>{1, 2, 3}}};
     profile.modules.push_back(custom);
     profile.activeModulesIds = {"openvpn-id", "hidden"};
     profile.userInfo = {{"unknown-metadata", "keep"}};

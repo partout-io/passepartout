@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppBundle::ToJson() const
+::Partout::Json AppBundle::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-AppBundle AppBundle::FromJson(const nlohmann::json& j)
+AppBundle AppBundle::FromJson(const ::Partout::Json& j)
 {
-    AppBundle o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppBundle>();
 }
 
 void AppBundle::Validate() const

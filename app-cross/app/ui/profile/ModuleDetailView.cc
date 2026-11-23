@@ -8,98 +8,60 @@
 namespace Passepartout {
 ModuleDetailView::ModuleDetailView(wxWindow *parent, OpenModuleContent openContent, Presentation presentation)
     : ThemeDetailView(parent, presentation), openContent_(std::move(openContent)) {}
-bool ModuleDetailView::HasContent(const nlohmann::json &value) {
-    return !value.is_null() && (!value.is_structured() || !value.empty()) &&
-        (!value.is_string() || !value.get<std::string>().empty());
-}
-wxString ModuleDetailView::ValueText(const nlohmann::json &value) {
-    if (!HasContent(value)) return {};
-    if (value.is_string()) return wxString::FromUTF8(value.get<std::string>());
-    if (value.is_boolean()) return Localized(value.get<bool>() ? StringKey::GlobalNounsEnabled : StringKey::GlobalNounsDisabled);
-    // Ports and MTUs remain copyable protocol values without grouping separators.
-    if (value.is_number_integer()) return wxNumberFormatter::ToString(value.get<long long>(), wxNumberFormatter::Style_None);
-    if (value.is_number()) return wxNumberFormatter::ToString(value.get<double>(), 2, wxNumberFormatter::Style_NoTrailingZeroes);
-    if (value.is_array()) {
-        wxString text;
-        for (const auto &item : value) {
-            const auto part = ValueText(item);
-            if (part.empty()) continue;
-            if (!text.empty()) text += "\n";
-            text += part;
-        }
-        return text;
-    }
-    return wxString::FromUTF8(value.dump(2));
-}
-void ModuleDetailView::Row(const wxString &title, const nlohmann::json &value, bool longContent,
+void ModuleDetailView::Row(const wxString &title, const std::vector<std::string> &values, bool longContent,
     const std::optional<wxString> &preview, bool secure) {
-    const auto text = ValueText(value);
-    if (text.empty()) return;
-    if (IsForm() && value.is_array() && !longContent) {
-        std::vector<wxString> items;
-        for (const auto &item : value) {
-            const auto content = ValueText(item);
-            if (!content.empty()) items.push_back(content);
-        }
-        Items(title, items);
-        return;
+    std::vector<wxString> items;
+    wxString text;
+    for (const auto &value : values) {
+        if (value.empty()) continue;
+        const auto item = ValueText(value);
+        items.push_back(item);
+        if (!text.empty()) text += "\n";
+        text += item;
     }
-    if (longContent) {
-        LongContent(title, preview.value_or(text), [this, title, text] {
-            openContent_(title, text);
-        }, secure);
-    } else if (value.is_boolean()) Field(title, text);
-    else CopiableField(title, text);
+    if (items.empty()) return;
+    if (IsForm() && !longContent) Items(title, items);
+    else Row(title, text.ToStdString(wxConvUTF8), longContent, preview, secure);
 }
-void ModuleDetailView::Row(StringKey title, const nlohmann::json &value, bool longContent,
-    const std::optional<wxString> &preview, bool secure) {
-    Row(Localized(title), value, longContent, preview, secure);
-}
-void ModuleDetailView::Duration(StringKey title, const nlohmann::json &value) {
-    if (!value.is_number()) return;
+void ModuleDetailView::Duration(StringKey title, const std::optional<double> &value) {
+    if (!value) return;
     auto text = Localized(StringKey::GlobalNounsNSeconds);
     // The Apple catalog uses %@ for a preformatted duration quantity.
-    text.Replace("%@", ValueText(value));
-    text.Replace("%d", ValueText(value));
+    const auto quantity = wxNumberFormatter::ToString(*value, 2,
+        wxNumberFormatter::Style_WithThousandsSep | wxNumberFormatter::Style_NoTrailingZeroes);
+    text.Replace("%@", quantity);
+    text.Replace("%d", quantity);
     Field(Localized(title), text);
 }
-void ModuleDetailView::IP(const wxString &title, const nlohmann::json &settings,
-    const nlohmann::json &additionalRoutes, bool openVPN) {
-    const auto ip = settings.is_object() ? settings : nlohmann::json::object();
-    auto included = ip.value("includedRoutes", nlohmann::json::array());
-    if (!included.is_array()) included = nlohmann::json::array();
-    if (additionalRoutes.is_array()) {
-        for (const auto &route : additionalRoutes) included.push_back(route);
-    }
-    const auto excluded = ip.value("excludedRoutes", nlohmann::json());
-    auto address = ip.value("subnets", nlohmann::json());
-    if (!HasContent(address) && !HasContent(included) && !HasContent(excluded)) return;
+void ModuleDetailView::IP(const wxString &title, const std::optional<Partout::Models::IPSettings> &settings,
+    const std::optional<std::vector<Partout::Models::Route>> &additionalRoutes, bool openVPN) {
+    const auto &ip = settings.value_or(Partout::Models::IPSettings{});
+    auto included = ip.includedRoutes;
+    if (additionalRoutes) included.insert(included.end(), additionalRoutes->begin(), additionalRoutes->end());
+    if (ip.subnets.empty() && included.empty() && ip.excludedRoutes.empty()) return;
     Section(title);
-    if (openVPN && address.is_array() && !address.empty()) {
-        auto host = address.front().get<std::string>();
-        address = host.substr(0, host.find('/'));
-    }
-    Row(StringKey::GlobalNounsAddress, address);
+    if (openVPN && !ip.subnets.empty()) {
+        const auto &host = ip.subnets.front();
+        Row(StringKey::GlobalNounsAddress, host.substr(0, host.find('/')));
+    } else Row(StringKey::GlobalNounsAddress, ip.subnets);
     if (openVPN) {
-        const auto routes = ip.value("includedRoutes", nlohmann::json::array());
-        for (const auto &route : routes) {
-            if (route.value("destination", nlohmann::json()).is_null()) {
-                Row(StringKey::GlobalNounsGateway, route.value("gateway", nlohmann::json()));
+        for (const auto &route : ip.includedRoutes) {
+            if (!route.destination) {
+                Row(StringKey::GlobalNounsGateway, route.gateway);
                 break;
             }
         }
     }
-    auto routes = [this](StringKey label, const nlohmann::json &values) {
-        if (!values.is_array() || values.empty()) return;
+    auto routes = [this](StringKey label, const std::vector<Partout::Models::Route> &values) {
+        if (values.empty()) return;
         Section(Localized(label));
         for (const auto &route : values) {
-            const auto destination = route.value("destination", nlohmann::json());
-            if (destination.is_null()) Field(Localized(StringKey::GlobalNounsDestination), Localized(StringKey::GlobalNounsDefault));
-            else Row(StringKey::GlobalNounsDestination, destination);
-            Row(StringKey::GlobalNounsGateway, route.value("gateway", nlohmann::json()));
+            if (!route.destination) Field(Localized(StringKey::GlobalNounsDestination), Localized(StringKey::GlobalNounsDefault));
+            else Row(StringKey::GlobalNounsDestination, route.destination);
+            Row(StringKey::GlobalNounsGateway, route.gateway);
         }
     };
     routes(StringKey::ModulesIpRoutesIncluded, included);
-    routes(StringKey::ModulesIpRoutesExcluded, excluded);
+    routes(StringKey::ModulesIpRoutesExcluded, ip.excludedRoutes);
 }
 }

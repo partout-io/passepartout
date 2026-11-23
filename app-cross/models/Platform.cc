@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json Platform::ToJson() const
+::Partout::Json Platform::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-Platform Platform::FromJson(const nlohmann::json& j)
+Platform Platform::FromJson(const ::Partout::Json& j)
 {
-    Platform o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<Platform>();
 }
 
 void Platform::Validate() const
@@ -68,6 +64,16 @@ bool Platform::operator==(const Platform& other) const
 bool Platform::operator!=(const Platform& other) const
 {
     return !(*this == other);
+}
+
+std::string Platform::ToString() const {
+    switch (value) {
+        case Platform::android: return "android";
+        case Platform::apple: return "apple";
+        case Platform::unixLike: return "unixLike";
+        case Platform::windows: return "windows";
+        default: throw std::invalid_argument("Invalid string enum value");
+    }
 }
 
 void to_json(nlohmann::json& j, const Platform& o)

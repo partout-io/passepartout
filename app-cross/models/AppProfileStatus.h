@@ -18,7 +18,8 @@
 #ifndef AppProfileStatus_H_
 #define AppProfileStatus_H_
 
-#include <partout/json.h>
+#include <string>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -38,6 +39,9 @@ struct  AppProfileStatus
     };
 
     AppProfileStatus::eAppProfileStatus value = AppProfileStatus::eAppProfileStatus::INVALID_VALUE_OPENAPI_GENERATED;
+
+    // Canonical schema token, independent of the JSON representation.
+    std::string ToString() const;
 
     bool operator==(const AppProfileStatus& other) const;
     bool operator!=(const AppProfileStatus& other) const;
@@ -59,8 +63,8 @@ struct  AppProfileStatus
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static AppProfileStatus FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static AppProfileStatus FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppProfileStatus& o);

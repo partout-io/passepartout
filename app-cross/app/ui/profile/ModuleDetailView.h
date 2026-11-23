@@ -5,7 +5,9 @@
 #pragma once
 #include "../theme/ThemeDetailView.h"
 #include "../../strings/Strings.h"
-#include <partout/json.h>
+#include <partout/models/IPSettings.h>
+#include <wx/numformatter.h>
+#include <type_traits>
 #include <optional>
 
 namespace Passepartout {
@@ -14,15 +16,63 @@ class ModuleDetailView : public ThemeDetailView {
 public:
     ModuleDetailView(wxWindow *parent, OpenModuleContent openContent,
         Presentation presentation = Presentation::Form);
-    void Row(const wxString &title, const nlohmann::json &value, bool longContent = false,
+    template<typename T>
+    void Row(StringKey title, const T &value, bool longContent = false,
+        const std::optional<wxString> &preview = std::nullopt, bool secure = false) {
+        Row(Localized(title), value, longContent, preview, secure);
+    }
+    template<typename T>
+    void Row(const wxString &title, const std::optional<T> &value, bool longContent = false,
+        const std::optional<wxString> &preview = std::nullopt, bool secure = false) {
+        if (value) Row(title, *value, longContent, preview, secure);
+    }
+    template<typename T>
+    void Row(const wxString &title, const T &value, bool longContent = false,
+        const std::optional<wxString> &preview = std::nullopt, bool secure = false) {
+        const auto text = ValueText(value);
+        if (text.empty()) return;
+        if (longContent) {
+            LongContent(title, preview.value_or(text), [this, title, text] {
+                openContent_(title, text);
+            }, secure);
+        } else if constexpr (std::is_same_v<T, bool>) Field(title, text);
+        else CopiableField(title, text);
+    }
+    void Row(const wxString &title, const std::vector<std::string> &values, bool longContent = false,
         const std::optional<wxString> &preview = std::nullopt, bool secure = false);
-    void Row(StringKey title, const nlohmann::json &value, bool longContent = false,
-        const std::optional<wxString> &preview = std::nullopt, bool secure = false);
-    void Duration(StringKey title, const nlohmann::json &value);
-    void IP(const wxString &title, const nlohmann::json &settings,
-        const nlohmann::json &additionalRoutes = nullptr, bool openVPN = false);
-    static wxString ValueText(const nlohmann::json &value);
-    static bool HasContent(const nlohmann::json &value);
+    void Duration(StringKey title, const std::optional<double> &value);
+    void IP(const wxString &title, const std::optional<Partout::Models::IPSettings> &settings,
+        const std::optional<std::vector<Partout::Models::Route>> &additionalRoutes = std::nullopt, bool openVPN = false);
+    static wxString ValueText(const std::string &value) {
+        return wxString::FromUTF8(value);
+    }
+    static wxString ValueText(bool value) {
+        return Localized(value ? StringKey::GlobalNounsEnabled : StringKey::GlobalNounsDisabled);
+    }
+    template<typename T, std::enable_if_t<std::is_arithmetic_v<T>, int> = 0>
+    static wxString ValueText(T value) {
+        // Ports and MTUs remain copyable protocol values without grouping separators.
+        if constexpr (std::is_integral_v<T>) {
+            return wxNumberFormatter::ToString(static_cast<long long>(value), wxNumberFormatter::Style_None);
+        } else {
+            return wxNumberFormatter::ToString(static_cast<double>(value), 2, wxNumberFormatter::Style_NoTrailingZeroes);
+        }
+    }
+    template<typename T>
+    static bool HasContent(const std::optional<T> &value) {
+        return value && HasContent(*value);
+    }
+    template<typename T, std::enable_if_t<std::is_arithmetic_v<T>, int> = 0>
+    static bool HasContent(T) {
+        return true;
+    }
+    static bool HasContent(const std::string &value) {
+        return !value.empty();
+    }
+    template<typename T>
+    static bool HasContent(const std::vector<T> &value) {
+        return !value.empty();
+    }
 protected:
     OpenModuleContent openContent_;
 };

@@ -9,9 +9,9 @@ namespace Passepartout {
 IPView::IPView(wxWindow *parent, const Partout::Models::IPModule &module, OpenModuleContent openContent)
     : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
     using namespace Strings::Unlocalized;
-    const auto c = module.ToJson();
-    IP(IPv4, c.value("ipv4", nlohmann::json()));
-    IP(IPv6, c.value("ipv6", nlohmann::json()));
+    const auto &c = module;
+    IP(IPv4, c.ipv4);
+    IP(IPv6, c.ipv6);
     if (module.mtu) {
         Section(Localized(StringKey::GlobalNounsInterface));
         Row(MTU, *module.mtu);

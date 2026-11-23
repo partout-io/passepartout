@@ -22,7 +22,7 @@
 #include "AppConstants_log_formatter.h"
 #include <string>
 #include "LocalLoggerOptions.h"
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -56,8 +56,8 @@ struct  AppConstants_log
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static AppConstants_log FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static AppConstants_log FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppConstants_log& o);

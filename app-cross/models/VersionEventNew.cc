@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json VersionEventNew::ToJson() const
+::Partout::Json VersionEventNew::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-VersionEventNew VersionEventNew::FromJson(const nlohmann::json& j)
+VersionEventNew VersionEventNew::FromJson(const ::Partout::Json& j)
 {
-    VersionEventNew o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<VersionEventNew>();
 }
 
 void VersionEventNew::Validate() const

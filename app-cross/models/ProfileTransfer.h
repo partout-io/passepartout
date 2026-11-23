@@ -18,7 +18,7 @@
 #ifndef ProfileTransfer_H_
 #define ProfileTransfer_H_
 
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -49,8 +49,8 @@ struct  ProfileTransfer
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static ProfileTransfer FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static ProfileTransfer FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const ProfileTransfer& o);

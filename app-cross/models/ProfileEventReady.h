@@ -19,7 +19,7 @@
 #define ProfileEventReady_H_
 
 #include <string>
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -49,8 +49,8 @@ struct  ProfileEventReady
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static ProfileEventReady FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static ProfileEventReady FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const ProfileEventReady& o);

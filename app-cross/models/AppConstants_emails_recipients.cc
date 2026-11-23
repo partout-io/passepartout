@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppConstants_emails_recipients::ToJson() const
+::Partout::Json AppConstants_emails_recipients::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-AppConstants_emails_recipients AppConstants_emails_recipients::FromJson(const nlohmann::json& j)
+AppConstants_emails_recipients AppConstants_emails_recipients::FromJson(const ::Partout::Json& j)
 {
-    AppConstants_emails_recipients o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppConstants_emails_recipients>();
 }
 
 void AppConstants_emails_recipients::Validate() const

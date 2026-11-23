@@ -69,13 +69,13 @@ public:
                 winrt::uninit_apartment();
             }
         } apartment;
-        const nlohmann::json value = {
+        const Partout::Json value = {
             {"dnsFallbackServers", preferences.dnsFallsBack ? dnsFallbackServers_ : std::vector<std::string>{}},
             {"logsPrivateData", preferences.logsPrivateData}
         };
         // One atomic package setting is read by the host at the next activation.
         winrt::Windows::Storage::ApplicationData::Current().LocalSettings().Values().Insert(
-            tunnelPreferencesKey, winrt::box_value(winrt::to_hstring(value.dump())));
+            tunnelPreferencesKey, winrt::box_value(winrt::to_hstring(value.Encode())));
         partout_init_args init{};
         init.log_level = PartoutLogLevelDebug;
         init.logs_private_data = preferences.logsPrivateData;

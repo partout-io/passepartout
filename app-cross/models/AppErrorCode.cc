@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppErrorCode::ToJson() const
+::Partout::Json AppErrorCode::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-AppErrorCode AppErrorCode::FromJson(const nlohmann::json& j)
+AppErrorCode AppErrorCode::FromJson(const ::Partout::Json& j)
 {
-    AppErrorCode o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppErrorCode>();
 }
 
 void AppErrorCode::Validate() const
@@ -68,6 +64,43 @@ bool AppErrorCode::operator==(const AppErrorCode& other) const
 bool AppErrorCode::operator!=(const AppErrorCode& other) const
 {
     return !(*this == other);
+}
+
+std::string AppErrorCode::ToString() const {
+    switch (value) {
+        case AppErrorCode::binaryFile: return "binaryFile";
+        case AppErrorCode::corruptProviderModule: return "corruptProviderModule";
+        case AppErrorCode::couldNotLaunch: return "couldNotLaunch";
+        case AppErrorCode::emptyProducts: return "emptyProducts";
+        case AppErrorCode::emptyProfileName: return "emptyProfileName";
+        case AppErrorCode::encoding: return "encoding";
+        case AppErrorCode::importError: return "importError";
+        case AppErrorCode::incompatibleModules: return "incompatibleModules";
+        case AppErrorCode::incompleteModule: return "incompleteModule";
+        case AppErrorCode::ineligibleProfile: return "ineligibleProfile";
+        case AppErrorCode::interactiveLogin: return "interactiveLogin";
+        case AppErrorCode::invalidField: return "invalidField";
+        case AppErrorCode::malformedModule: return "malformedModule";
+        case AppErrorCode::moduleRequiresConnection: return "moduleRequiresConnection";
+        case AppErrorCode::multipleTunnels: return "multipleTunnels";
+        case AppErrorCode::noActiveModules: return "noActiveModules";
+        case AppErrorCode::notFound: return "notFound";
+        case AppErrorCode::other: return "other";
+        case AppErrorCode::partout: return "partout";
+        case AppErrorCode::permissionDenied: return "permissionDenied";
+        case AppErrorCode::providersRemoved: return "providersRemoved";
+        case AppErrorCode::rateLimit: return "rateLimit";
+        case AppErrorCode::systemExtension: return "systemExtension";
+        case AppErrorCode::timeout: return "timeout";
+        case AppErrorCode::unexpectedResponse: return "unexpectedResponse";
+        case AppErrorCode::urlRequestFailed: return "urlRequestFailed";
+        case AppErrorCode::urlRequestUnavailable: return "urlRequestUnavailable";
+        case AppErrorCode::verificationReceiptIsLoading: return "verificationReceiptIsLoading";
+        case AppErrorCode::verificationRequiredFeatures: return "verificationRequiredFeatures";
+        case AppErrorCode::webReceiver: return "webReceiver";
+        case AppErrorCode::webUploader: return "webUploader";
+        default: throw std::invalid_argument("Invalid string enum value");
+    }
 }
 
 void to_json(nlohmann::json& j, const AppErrorCode& o)

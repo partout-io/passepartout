@@ -18,7 +18,8 @@
 #ifndef AppErrorCode_H_
 #define AppErrorCode_H_
 
-#include <partout/json.h>
+#include <string>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -66,6 +67,9 @@ struct  AppErrorCode
 
     AppErrorCode::eAppErrorCode value = AppErrorCode::eAppErrorCode::INVALID_VALUE_OPENAPI_GENERATED;
 
+    // Canonical schema token, independent of the JSON representation.
+    std::string ToString() const;
+
     bool operator==(const AppErrorCode& other) const;
     bool operator!=(const AppErrorCode& other) const;
 
@@ -86,8 +90,8 @@ struct  AppErrorCode
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static AppErrorCode FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static AppErrorCode FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppErrorCode& o);

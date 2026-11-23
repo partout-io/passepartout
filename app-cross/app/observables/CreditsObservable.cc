@@ -11,7 +11,7 @@ CreditsObservable::CreditsObservable(std::string resource, std::unique_ptr<HttpC
         client_->Cancel();
     }) {
     try {
-        auto json = nlohmann::json::parse(resource);
+        auto json = Partout::Json::Parse(resource);
         credits_ = Models::Credits::FromJson(json);
         std::sort(credits_.licenses.begin(), credits_.licenses.end(), [](const auto &a, const auto &b) {
             return a.name < b.name;

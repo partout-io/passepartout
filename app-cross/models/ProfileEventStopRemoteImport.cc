@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json ProfileEventStopRemoteImport::ToJson() const
+::Partout::Json ProfileEventStopRemoteImport::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-ProfileEventStopRemoteImport ProfileEventStopRemoteImport::FromJson(const nlohmann::json& j)
+ProfileEventStopRemoteImport ProfileEventStopRemoteImport::FromJson(const ::Partout::Json& j)
 {
-    ProfileEventStopRemoteImport o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<ProfileEventStopRemoteImport>();
 }
 
 void ProfileEventStopRemoteImport::Validate() const

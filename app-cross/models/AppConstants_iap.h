@@ -18,7 +18,7 @@
 #ifndef AppConstants_iap_H_
 #define AppConstants_iap_H_
 
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -49,8 +49,8 @@ struct  AppConstants_iap
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static AppConstants_iap FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static AppConstants_iap FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppConstants_iap& o);

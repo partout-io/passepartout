@@ -18,7 +18,8 @@
 #ifndef DistributionTarget_H_
 #define DistributionTarget_H_
 
-#include <partout/json.h>
+#include <string>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -37,6 +38,9 @@ struct  DistributionTarget
     };
 
     DistributionTarget::eDistributionTarget value = DistributionTarget::eDistributionTarget::INVALID_VALUE_OPENAPI_GENERATED;
+
+    // Canonical schema token, independent of the JSON representation.
+    std::string ToString() const;
 
     bool operator==(const DistributionTarget& other) const;
     bool operator!=(const DistributionTarget& other) const;
@@ -58,8 +62,8 @@ struct  DistributionTarget
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static DistributionTarget FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static DistributionTarget FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const DistributionTarget& o);

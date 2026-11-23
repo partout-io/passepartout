@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppPreferences::ToJson() const
+::Partout::Json AppPreferences::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-AppPreferences AppPreferences::FromJson(const nlohmann::json& j)
+AppPreferences AppPreferences::FromJson(const ::Partout::Json& j)
 {
-    AppPreferences o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppPreferences>();
 }
 
 void AppPreferences::Validate() const

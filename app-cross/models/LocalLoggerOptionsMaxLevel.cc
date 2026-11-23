@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json LocalLoggerOptionsMaxLevel::ToJson() const
+::Partout::Json LocalLoggerOptionsMaxLevel::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-LocalLoggerOptionsMaxLevel LocalLoggerOptionsMaxLevel::FromJson(const nlohmann::json& j)
+LocalLoggerOptionsMaxLevel LocalLoggerOptionsMaxLevel::FromJson(const ::Partout::Json& j)
 {
-    LocalLoggerOptionsMaxLevel o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<LocalLoggerOptionsMaxLevel>();
 }
 
 void LocalLoggerOptionsMaxLevel::Validate() const

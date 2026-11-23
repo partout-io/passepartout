@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppConstants_tunnel_verification::ToJson() const
+::Partout::Json AppConstants_tunnel_verification::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-AppConstants_tunnel_verification AppConstants_tunnel_verification::FromJson(const nlohmann::json& j)
+AppConstants_tunnel_verification AppConstants_tunnel_verification::FromJson(const ::Partout::Json& j)
 {
-    AppConstants_tunnel_verification o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppConstants_tunnel_verification>();
 }
 
 void AppConstants_tunnel_verification::Validate() const

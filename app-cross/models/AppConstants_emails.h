@@ -20,7 +20,7 @@
 
 #include <string>
 #include "AppConstants_emails_recipients.h"
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -51,8 +51,8 @@ struct  AppConstants_emails
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static AppConstants_emails FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static AppConstants_emails FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppConstants_emails& o);

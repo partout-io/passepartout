@@ -91,11 +91,15 @@ if(BUILD_APP)
     if(BUILD_UI_TESTS)
         add_executable(passepartout-ui-test
             tests/ThemeDetails.cc app/ui/settings/SettingsView.cc app/ui/settings/IssueReportView.cc
+            app/ui/profile/ModuleDetailView.cc app/ui/profile/DNSView.cc
+            app/ui/profile/IPView.cc app/ui/profile/HTTPProxyView.cc
+            app/ui/profile/OpenVPNView.cc app/ui/profile/WireGuardView.cc
             app/ui/theme/Theme.cc app/ui/theme/ThemeList.cc
             app/ui/theme/ThemeDetailView.cc app/ui/theme/ThemeLongContent.cc
             app/ui/theme/ThemeButtonRow.cc app/ui/theme/ThemeModal.cc
             app/ui/theme/ThemeContentLink.cc app/strings/Strings.cc)
         target_compile_features(passepartout-ui-test PRIVATE cxx_std_17)
+        target_link_libraries(passepartout-ui-test PRIVATE Partout::Models)
         if(MSVC)
             target_compile_options(passepartout-ui-test PRIVATE /utf-8)
         endif()

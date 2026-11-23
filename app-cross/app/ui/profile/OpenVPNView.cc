@@ -4,14 +4,14 @@
 
 #include "OpenVPNView.h"
 #include "../../strings/Unlocalized.h"
+#include <algorithm>
 #include <wx/base64.h>
 #include <wx/numformatter.h>
 
 namespace Passepartout {
 namespace {
-wxString HexKey(const nlohmann::json &value) {
-    if (!value.is_string()) return {};
-    const auto decoded = wxBase64Decode(wxString::FromUTF8(value.get<std::string>()));
+wxString HexKey(const std::string &value) {
+    const auto decoded = wxBase64Decode(wxString::FromUTF8(value));
     const auto *bytes = static_cast<const unsigned char *>(decoded.GetData());
     wxString text;
     constexpr char hex[] = "0123456789abcdef";
@@ -27,11 +27,8 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
     : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
     using namespace Strings::Unlocalized;
     if (!module.configuration) return;
-    const auto c = module.configuration->ToJson();
-    auto value = [&](const char *name) {
-        return c.value(name, nlohmann::json());
-    };
-    if (HasContent(value("remotes"))) {
+    const auto &c = *module.configuration;
+    if (HasContent(c.remotes)) {
         Section(Localized(StringKey::GlobalNounsConnection));
         const auto count = module.configuration->remotes->size();
         auto summary = Localized(count == 1 ? StringKey::GlobalNounsEntriesOne : StringKey::GlobalNounsEntriesN);
@@ -42,65 +39,73 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
         Section(Localized(StringKey::GlobalNounsAccount));
         ContentLink(Localized(StringKey::ModulesOpenvpnCredentials), std::move(openCredentials));
     }
-    const auto noPull = value("noPullMask");
+    using PullMask = Partout::Models::OpenVpnPullMask;
     std::vector<wxString> pulled;
-    for (const auto &entry : std::vector<std::pair<std::string, wxString>>{
-        {"routes", Localized(StringKey::GlobalNounsRoutes)}, {"dns", DNS}, {"proxy", Proxy}}) {
-        if (!noPull.is_array() || std::find(noPull.begin(), noPull.end(), entry.first) == noPull.end())
-            pulled.push_back(entry.second);
+    for (const auto &entry : std::vector<std::pair<PullMask::eOpenVpnPullMask, wxString>>{
+        {PullMask::routes, Localized(StringKey::GlobalNounsRoutes)}, {PullMask::dns, DNS}, {PullMask::proxy, Proxy}}) {
+        if (!c.noPullMask || std::none_of(c.noPullMask->begin(), c.noPullMask->end(), [&](const auto &mask) {
+            return mask.value == entry.first;
+        })) pulled.push_back(entry.second);
     }
     if (!pulled.empty()) {
         Section(Localized(StringKey::ModulesOpenvpnPull));
         std::sort(pulled.begin(), pulled.end());
         for (const auto &title : pulled) Field(title, Localized(StringKey::GlobalNounsEnabled));
     }
-    const auto policies = value("routingPolicies");
-    if (policies.is_array() && std::any_of(policies.begin(), policies.end(), [](const auto &policy) {
-        return policy == "IPv4" || policy == "IPv6";
-    })) {
+    using RoutingPolicy = Partout::Models::OpenVpnRoutingPolicy;
+    const auto hasPolicy = [&](RoutingPolicy::eOpenVpnRoutingPolicy policy) {
+        return c.routingPolicies && std::any_of(c.routingPolicies->begin(), c.routingPolicies->end(), [&](const auto &item) {
+            return item.value == policy;
+        });
+    };
+    if (hasPolicy(RoutingPolicy::IPv4) || hasPolicy(RoutingPolicy::IPv6)) {
         Section(Localized(StringKey::ModulesOpenvpnRedirectGateway));
-        for (const auto *family : {IPv4, IPv6}) {
-            if (std::find(policies.begin(), policies.end(), family) != policies.end())
-                Field(family, Localized(StringKey::GlobalNounsEnabled));
-        }
+        if (hasPolicy(RoutingPolicy::IPv4)) Field(IPv4, Localized(StringKey::GlobalNounsEnabled));
+        if (hasPolicy(RoutingPolicy::IPv6)) Field(IPv6, Localized(StringKey::GlobalNounsEnabled));
     }
-    IP(IPv4, value("ipv4"), value("routes4"), true);
-    IP(IPv6, value("ipv6"), value("routes6"), true);
-    if (HasContent(value("dnsServers")) || HasContent(value("dnsDomain")) || HasContent(value("searchDomains"))) {
+    IP(IPv4, c.ipv4, c.routes4, true);
+    IP(IPv6, c.ipv6, c.routes6, true);
+    if (HasContent(c.dnsServers) || HasContent(c.dnsDomain) || HasContent(c.searchDomains)) {
         Section(DNS);
-        Row(StringKey::GlobalNounsServers, value("dnsServers"));
-        Row(StringKey::GlobalNounsDomain, value("dnsDomain"));
-        Row(StringKey::EntitiesDnsSearchDomains, value("searchDomains"));
+        Row(StringKey::GlobalNounsServers, c.dnsServers);
+        Row(StringKey::GlobalNounsDomain, c.dnsDomain);
+        Row(StringKey::EntitiesDnsSearchDomains, c.searchDomains);
     }
-    if (HasContent(value("httpProxy")) || HasContent(value("httpsProxy")) ||
-        HasContent(value("proxyAutoConfigurationURL")) || HasContent(value("proxyBypassDomains"))) {
+    if (HasContent(c.httpProxy) || HasContent(c.httpsProxy) ||
+        HasContent(c.proxyAutoConfigurationURL) || HasContent(c.proxyBypassDomains)) {
         Section(Proxy);
-        Row(HTTP, value("httpProxy"));
-        Row(HTTPS, value("httpsProxy"));
-        Row(PAC, value("proxyAutoConfigurationURL"));
-        Row(StringKey::EntitiesHttpProxyBypassDomains, value("proxyBypassDomains"));
+        Row(HTTP, c.httpProxy);
+        Row(HTTPS, c.httpsProxy);
+        Row(PAC, c.proxyAutoConfigurationURL);
+        Row(StringKey::EntitiesHttpProxyBypassDomains, c.proxyBypassDomains);
     }
-    if (HasContent(value("dataCiphers")) || HasContent(value("cipher")) || HasContent(value("digest")) || HasContent(value("xorMethod"))) {
+    if (HasContent(c.dataCiphers) || c.cipher.has_value() || c.digest.has_value() || c.xorMethod.has_value()) {
         Section(Localized(StringKey::ModulesOpenvpnCommunication));
-        if (value("dataCiphers").is_array()) {
+        // The models API supplies canonical protocol spellings.
+        if (c.dataCiphers.has_value()) {
             std::string ciphers;
-            for (const auto &cipher : value("dataCiphers")) {
+            for (const auto &cipher : *c.dataCiphers) {
                 if (!ciphers.empty()) ciphers += ':';
-                ciphers += cipher.get<std::string>();
+                ciphers += cipher.ToString();
             }
             Row(StringKey::ModulesOpenvpnDataCiphers, ciphers, true);
         }
-        Field(Localized(StringKey::ModulesOpenvpnCipher), ValueText(value("cipher")));
-        Field(Localized(StringKey::ModulesOpenvpnDigest), ValueText(value("digest")));
-        const auto xorMethod = value("xorMethod");
-        if (xorMethod.is_object()) {
-            auto text = ValueText(xorMethod.at("type"));
-            const auto mask = HexKey(xorMethod.value("mask", nlohmann::json()));
-            if (!mask.empty()) text += " " + mask;
-            Row(XOR, text.ToStdString(wxConvUTF8), true, ValueText(xorMethod.at("type")));
+        Field(Localized(StringKey::ModulesOpenvpnCipher), c.cipher ? ValueText(c.cipher->ToString()) : wxString{});
+        Field(Localized(StringKey::ModulesOpenvpnDigest), c.digest ? ValueText(c.digest->ToString()) : wxString{});
+        if (c.xorMethod) {
+            std::visit([this](const auto &method) {
+                using T = std::decay_t<decltype(method)>;
+                auto text = ValueText(method.type);
+                if constexpr (std::is_same_v<T, Partout::Models::OpenVpnObfuscationMethodObfuscate> ||
+                    std::is_same_v<T, Partout::Models::OpenVpnObfuscationMethodXormask>) {
+                    const auto mask = HexKey(method.mask);
+                    if (!mask.empty()) text += " " + mask;
+                }
+                Row(XOR, text.ToStdString(wxConvUTF8), true, ValueText(method.type));
+            }, *c.xorMethod);
         }
     }
-    if (HasContent(value("compressionFraming")) || HasContent(value("compressionAlgorithm"))) {
+    if (c.compressionFraming.has_value() || c.compressionAlgorithm.has_value()) {
         Section(Localized(StringKey::ModulesOpenvpnCompression));
         // These enums serialize as integers; presentation follows the typed values.
         if (const auto framing = module.configuration->compressionFraming) {
@@ -117,14 +122,13 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
                         ? wxString(LZO) : Localized(StringKey::EntitiesOpenvpnCompressionAlgorithmOther));
         }
     }
-    if (HasContent(value("ca")) || HasContent(value("clientCertificate")) || HasContent(value("clientKey")) || HasContent(value("tlsWrap"))) {
+    if (HasContent(c.ca) || HasContent(c.clientCertificate) || HasContent(c.clientKey) || c.tlsWrap.has_value()) {
         Section(TLS);
-        Row(CA, value("ca"), true, std::nullopt, true);
-        Row(StringKey::GlobalNounsCertificate, value("clientCertificate"), true, std::nullopt, true);
-        Row(StringKey::GlobalNounsKey, value("clientKey"), true, std::nullopt, true);
-        const auto wrap = value("tlsWrap");
-        if (wrap.is_object()) {
-            const auto key = HexKey(wrap.at("key").at("data"));
+        Row(CA, c.ca, true, std::nullopt, true);
+        Row(StringKey::GlobalNounsCertificate, c.clientCertificate, true, std::nullopt, true);
+        Row(StringKey::GlobalNounsKey, c.clientKey, true, std::nullopt, true);
+        if (c.tlsWrap) {
+            const auto key = HexKey(c.tlsWrap->key.data);
             if (!key.empty()) {
                 const auto title = Localized(StringKey::ModulesOpenvpnTlsWrap);
                 LongContent(title, key, [this, title, key] {
@@ -134,16 +138,16 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
         }
         Row(StringKey::ModulesOpenvpnEku, module.configuration->checksEKU.value_or(false));
     }
-    if (HasContent(value("keepAliveInterval")) || HasContent(value("keepAliveTimeout"))) {
+    if (HasContent(c.keepAliveInterval) || HasContent(c.keepAliveTimeout)) {
         Section(Localized(StringKey::GlobalNounsKeepAlive));
-        Duration(StringKey::GlobalNounsInterval, value("keepAliveInterval"));
-        Duration(StringKey::GlobalNounsTimeout, value("keepAliveTimeout"));
+        Duration(StringKey::GlobalNounsInterval, c.keepAliveInterval);
+        Duration(StringKey::GlobalNounsTimeout, c.keepAliveTimeout);
     }
-    if (HasContent(value("renegotiatesAfter")) || HasContent(value("randomizeEndpoint")) || HasContent(value("randomizeHostnames"))) {
+    if (HasContent(c.renegotiatesAfter) || HasContent(c.randomizeEndpoint) || HasContent(c.randomizeHostnames)) {
         Section(Localized(StringKey::GlobalNounsOther));
-        Duration(StringKey::ModulesOpenvpnRenegotiation, value("renegotiatesAfter"));
-        Row(StringKey::ModulesOpenvpnRandomizeEndpoint, value("randomizeEndpoint"));
-        Row(StringKey::ModulesOpenvpnRandomizeHostname, value("randomizeHostnames"));
+        Duration(StringKey::ModulesOpenvpnRenegotiation, c.renegotiatesAfter);
+        Row(StringKey::ModulesOpenvpnRandomizeEndpoint, c.randomizeEndpoint);
+        Row(StringKey::ModulesOpenvpnRandomizeHostname, c.randomizeHostnames);
     }
     Finish();
 }

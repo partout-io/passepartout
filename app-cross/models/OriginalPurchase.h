@@ -18,7 +18,7 @@
 #ifndef OriginalPurchase_H_
 #define OriginalPurchase_H_
 
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -49,8 +49,8 @@ struct  OriginalPurchase
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static OriginalPurchase FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static OriginalPurchase FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const OriginalPurchase& o);

@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppConstants_webReceiver::ToJson() const
+::Partout::Json AppConstants_webReceiver::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-AppConstants_webReceiver AppConstants_webReceiver::FromJson(const nlohmann::json& j)
+AppConstants_webReceiver AppConstants_webReceiver::FromJson(const ::Partout::Json& j)
 {
-    AppConstants_webReceiver o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppConstants_webReceiver>();
 }
 
 void AppConstants_webReceiver::Validate() const

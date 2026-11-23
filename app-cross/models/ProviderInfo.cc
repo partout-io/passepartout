@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json ProviderInfo::ToJson() const
+::Partout::Json ProviderInfo::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-ProviderInfo ProviderInfo::FromJson(const nlohmann::json& j)
+ProviderInfo ProviderInfo::FromJson(const ::Partout::Json& j)
 {
-    ProviderInfo o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<ProviderInfo>();
 }
 
 void ProviderInfo::Validate() const

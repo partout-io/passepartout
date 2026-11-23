@@ -19,7 +19,7 @@
 #define AppConstants_tunnel_verification_H_
 
 #include "AppConstantsTunnelVerificationParameters.h"
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -50,8 +50,8 @@ struct  AppConstants_tunnel_verification
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static AppConstants_tunnel_verification FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static AppConstants_tunnel_verification FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppConstants_tunnel_verification& o);

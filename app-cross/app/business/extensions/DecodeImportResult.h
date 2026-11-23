@@ -11,7 +11,7 @@ namespace Passepartout {
 inline Profile DecodeImportResult(const char *json) {
     if (!json) throw std::runtime_error("Partout could not import this configuration.");
     try {
-        const auto envelope = Partout::Models::ABIEnvelope::FromJson(nlohmann::json::parse(json));
+        const auto envelope = Partout::Models::ABIEnvelope::FromJson(Partout::Json::Parse(json));
         if (envelope.code || !envelope.payload)
             throw std::runtime_error("Import failed");
         return Profile::FromJson(*envelope.payload);

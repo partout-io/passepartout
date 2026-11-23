@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json MixedEventShouldReconnect::ToJson() const
+::Partout::Json MixedEventShouldReconnect::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-MixedEventShouldReconnect MixedEventShouldReconnect::FromJson(const nlohmann::json& j)
+MixedEventShouldReconnect MixedEventShouldReconnect::FromJson(const ::Partout::Json& j)
 {
-    MixedEventShouldReconnect o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<MixedEventShouldReconnect>();
 }
 
 void MixedEventShouldReconnect::Validate() const

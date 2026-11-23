@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json WebsiteWithPasscode::ToJson() const
+::Partout::Json WebsiteWithPasscode::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-WebsiteWithPasscode WebsiteWithPasscode::FromJson(const nlohmann::json& j)
+WebsiteWithPasscode WebsiteWithPasscode::FromJson(const ::Partout::Json& j)
 {
-    WebsiteWithPasscode o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<WebsiteWithPasscode>();
 }
 
 void WebsiteWithPasscode::Validate() const

@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppProfileHeader::ToJson() const
+::Partout::Json AppProfileHeader::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-AppProfileHeader AppProfileHeader::FromJson(const nlohmann::json& j)
+AppProfileHeader AppProfileHeader::FromJson(const ::Partout::Json& j)
 {
-    AppProfileHeader o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppProfileHeader>();
 }
 
 void AppProfileHeader::Validate() const

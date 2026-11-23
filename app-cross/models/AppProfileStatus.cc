@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppProfileStatus::ToJson() const
+::Partout::Json AppProfileStatus::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-AppProfileStatus AppProfileStatus::FromJson(const nlohmann::json& j)
+AppProfileStatus AppProfileStatus::FromJson(const ::Partout::Json& j)
 {
-    AppProfileStatus o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppProfileStatus>();
 }
 
 void AppProfileStatus::Validate() const
@@ -68,6 +64,16 @@ bool AppProfileStatus::operator==(const AppProfileStatus& other) const
 bool AppProfileStatus::operator!=(const AppProfileStatus& other) const
 {
     return !(*this == other);
+}
+
+std::string AppProfileStatus::ToString() const {
+    switch (value) {
+        case AppProfileStatus::disconnected: return "disconnected";
+        case AppProfileStatus::connecting: return "connecting";
+        case AppProfileStatus::connected: return "connected";
+        case AppProfileStatus::disconnecting: return "disconnecting";
+        default: throw std::invalid_argument("Invalid string enum value");
+    }
 }
 
 void to_json(nlohmann::json& j, const AppProfileStatus& o)

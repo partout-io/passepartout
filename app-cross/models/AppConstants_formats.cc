@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json AppConstants_formats::ToJson() const
+::Partout::Json AppConstants_formats::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-AppConstants_formats AppConstants_formats::FromJson(const nlohmann::json& j)
+AppConstants_formats AppConstants_formats::FromJson(const ::Partout::Json& j)
 {
-    AppConstants_formats o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<AppConstants_formats>();
 }
 
 void AppConstants_formats::Validate() const

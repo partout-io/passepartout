@@ -25,14 +25,14 @@ std::vector<ProfileTransaction> FileProfileJournal::Fetch() {
         if (!entry.is_regular_file() || entry.is_symlink())
             throw std::runtime_error("Invalid transaction file.");
         try {
-            const auto json = nlohmann::json::parse(ReadConfiguration(entry.path()));
-            if (json.at("version") != 1) throw std::runtime_error("Invalid transaction version.");
-            if (json.value("committed", false)) continue;
+            const auto json = Partout::Json::Parse(ReadConfiguration(entry.path()));
+            if (json.At("version") != 1) throw std::runtime_error("Invalid transaction version.");
+            if (json.Value("committed", false)) continue;
             ProfileTransaction transaction;
-            transaction.id = json.at("id").get<std::string>();
-            transaction.removal = json.at("removal").get<bool>();
-            if (!json.at("previous").is_null()) {
-                transaction.previous = Profile::FromJson(json.at("previous"));
+            transaction.id = json.At("id").Get<std::string>();
+            transaction.removal = json.At("removal").Get<bool>();
+            if (!json.At("previous").IsNull()) {
+                transaction.previous = Profile::FromJson(json.At("previous"));
                 ValidateProfileIdentity(*transaction.previous);
                 if (transaction.previous->id != transaction.id)
                     throw std::runtime_error("Conflicting transaction identity.");
@@ -47,17 +47,17 @@ std::vector<ProfileTransaction> FileProfileJournal::Fetch() {
     return result;
 }
 void FileProfileJournal::Save(const ProfileTransaction &transaction) {
-    nlohmann::json json = {{"version", 1}, {"id", transaction.id},
+    Partout::Json json = {{"version", 1}, {"id", transaction.id},
         {"removal", transaction.removal}, {"previous", nullptr}};
-    if (transaction.previous) json["previous"] = transaction.previous->ToJson();
-    const auto text = json.dump();
+    if (transaction.previous) json.Set("previous", transaction.previous->ToJson());
+    const auto text = json.Encode();
     if (text.size() > MaxConfigurationBytes) throw std::runtime_error("Profile recovery data exceeds 1 MiB.");
     WriteAtomicFile(Path(transaction.id), text);
 }
 void FileProfileJournal::Remove(const std::string &id) {
     // Persist completion before deleting the record. If deletion is interrupted,
     // a completed update must never be mistaken for work requiring rollback.
-    WriteAtomicFile(Path(id), nlohmann::json{{"version", 1}, {"committed", true}}.dump());
+    WriteAtomicFile(Path(id), Partout::Json{{"version", 1}, {"committed", true}}.Encode());
     std::error_code ignored;
     std::filesystem::remove(Path(id), ignored);
 }

@@ -497,18 +497,18 @@ int main() {
     constants.containers.local = "../outside";
     Rejects([&] { ProfileDirectory("root", constants, frontendConstants, false); });
     const auto imported = Example();
-    const auto success = nlohmann::json{{"payload", imported.ToJson()}};
-    assert(DecodeImportResult(success.dump().c_str()) == imported);
+    const auto success = Partout::Json{{"payload", imported.ToJson()}};
+    assert(DecodeImportResult(success.Encode().c_str()) == imported);
     auto explicitSuccess = success;
-    explicitSuccess["code"] = nullptr;
-    assert(DecodeImportResult(explicitSuccess.dump().c_str()) == imported);
+    explicitSuccess.Set("code", nullptr);
+    assert(DecodeImportResult(explicitSuccess.Encode().c_str()) == imported);
     auto failure = success;
-    failure["code"] = "parsing";
-    Rejects([&] { DecodeImportResult(failure.dump().c_str()); });
+    failure.Set("code", "parsing");
+    Rejects([&] { DecodeImportResult(failure.Encode().c_str()); });
     Rejects([] { DecodeImportResult(nullptr); });
     Rejects([] { DecodeImportResult("not JSON"); });
     Rejects([] { DecodeImportResult("{}"); });
-    Rejects([&] { DecodeImportResult(imported.ToJson().dump().c_str()); });
+    Rejects([&] { DecodeImportResult(imported.ToJson().Encode().c_str()); });
     const auto root = std::filesystem::temp_directory_path() /
         ("passepartout-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     std::filesystem::create_directories(root);
@@ -528,7 +528,7 @@ int main() {
         const auto storageRoot = root / "layout";
         FileProfileRepository storage(storageRoot);
         assert(storage.Fetch().empty());
-        assert(nlohmann::json::parse(ReadConfiguration(storageRoot / "index.json")).at("version") == 1);
+        assert(Partout::Json::Parse(ReadConfiguration(storageRoot / "index.json")).At("version") == 1);
         auto earlier = Example("earlier", "ALPHA");
         earlier.userInfo = {{"lastUpdate", 1}, {"fingerprint", "first"}};
         auto later = Example("later", "alpha");
@@ -538,19 +538,21 @@ int main() {
         storage.Save(later);
         assert(std::filesystem::exists(storageRoot / "objects" / "later.json"));
         assert(storage.Fetch().at(0).id == "later");
-        auto index = nlohmann::json::parse(ReadConfiguration(storageRoot / "index.json"));
-        assert(index.at("profiles").at(0).at("fingerprint") == "second");
-        assert(index.at("profiles").at(0).at("lastUpdate") == "2");
+        auto index = Partout::Json::Parse(ReadConfiguration(storageRoot / "index.json"));
+        assert(index.At("profiles").Elements().at(0).At("fingerprint") == "second");
+        assert(index.At("profiles").Elements().at(0).At("lastUpdate") == "2");
         // A valid index defines fetch order, as on Android.
-        std::reverse(index["profiles"].begin(), index["profiles"].end());
-        std::ofstream(storageRoot / "index.json") << index.dump();
+        auto entries = index.At("profiles").Elements();
+        std::reverse(entries.begin(), entries.end());
+        index.Set("profiles", entries);
+        std::ofstream(storageRoot / "index.json") << index.Encode();
         assert(storage.Fetch().at(0).id == "zulu");
         // Interrupted index writes and missing indexes recover from objects.
         std::ofstream(storageRoot / "index.json") << "broken index";
         assert(storage.Fetch().at(0).id == "later");
         std::filesystem::remove(storageRoot / "index.json");
         assert(storage.Fetch().size() == 3);
-        std::ofstream(storageRoot / "objects" / "unindexed.json") << Example("unindexed", "Beta").ToJson().dump();
+        std::ofstream(storageRoot / "objects" / "unindexed.json") << Example("unindexed", "Beta").ToJson().Encode();
         assert(storage.Fetch().size() == 4);
         // Missing indexed objects must not be silently treated as deletion.
         std::filesystem::remove(storageRoot / "objects" / "unindexed.json");

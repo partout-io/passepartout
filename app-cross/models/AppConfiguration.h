@@ -20,7 +20,7 @@
 
 #include "AppConstants.h"
 #include "AppBundle.h"
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -51,8 +51,8 @@ struct  AppConfiguration
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static AppConfiguration FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static AppConfiguration FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppConfiguration& o);

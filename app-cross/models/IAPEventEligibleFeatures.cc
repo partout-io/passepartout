@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json IAPEventEligibleFeatures::ToJson() const
+::Partout::Json IAPEventEligibleFeatures::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-IAPEventEligibleFeatures IAPEventEligibleFeatures::FromJson(const nlohmann::json& j)
+IAPEventEligibleFeatures IAPEventEligibleFeatures::FromJson(const ::Partout::Json& j)
 {
-    IAPEventEligibleFeatures o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<IAPEventEligibleFeatures>();
 }
 
 void IAPEventEligibleFeatures::Validate() const

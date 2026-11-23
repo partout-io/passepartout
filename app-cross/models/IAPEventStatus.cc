@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json IAPEventStatus::ToJson() const
+::Partout::Json IAPEventStatus::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-IAPEventStatus IAPEventStatus::FromJson(const nlohmann::json& j)
+IAPEventStatus IAPEventStatus::FromJson(const ::Partout::Json& j)
 {
-    IAPEventStatus o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<IAPEventStatus>();
 }
 
 void IAPEventStatus::Validate() const

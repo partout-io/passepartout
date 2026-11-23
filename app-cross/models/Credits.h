@@ -23,7 +23,7 @@
 #include <map>
 #include "Credits_notices_inner.h"
 #include <vector>
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -55,8 +55,8 @@ struct  Credits
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static Credits FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static Credits FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const Credits& o);

@@ -18,7 +18,8 @@
 #ifndef ProfileSharingFlag_H_
 #define ProfileSharingFlag_H_
 
-#include <partout/json.h>
+#include <string>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -36,6 +37,9 @@ struct  ProfileSharingFlag
     };
 
     ProfileSharingFlag::eProfileSharingFlag value = ProfileSharingFlag::eProfileSharingFlag::INVALID_VALUE_OPENAPI_GENERATED;
+
+    // Canonical schema token, independent of the JSON representation.
+    std::string ToString() const;
 
     bool operator==(const ProfileSharingFlag& other) const;
     bool operator!=(const ProfileSharingFlag& other) const;
@@ -57,8 +61,8 @@ struct  ProfileSharingFlag
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    nlohmann::json ToJson() const;
-    static ProfileSharingFlag FromJson(const nlohmann::json& j);
+    ::Partout::Json ToJson() const;
+    static ProfileSharingFlag FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const ProfileSharingFlag& o);

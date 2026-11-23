@@ -16,18 +16,14 @@
 namespace Passepartout::Models
 {
 
-nlohmann::json DistributionTarget::ToJson() const
+::Partout::Json DistributionTarget::ToJson() const
 {
-    nlohmann::json j;
-    ::Passepartout::Models::to_json(j, *this);
-    return j;
+    return ::Partout::Json(*this);
 }
 
-DistributionTarget DistributionTarget::FromJson(const nlohmann::json& j)
+DistributionTarget DistributionTarget::FromJson(const ::Partout::Json& j)
 {
-    DistributionTarget o{};
-    ::Passepartout::Models::from_json(j, o);
-    return o;
+    return j.Get<DistributionTarget>();
 }
 
 void DistributionTarget::Validate() const
@@ -68,6 +64,15 @@ bool DistributionTarget::operator==(const DistributionTarget& other) const
 bool DistributionTarget::operator!=(const DistributionTarget& other) const
 {
     return !(*this == other);
+}
+
+std::string DistributionTarget::ToString() const {
+    switch (value) {
+        case DistributionTarget::appStore: return "appStore";
+        case DistributionTarget::developerID: return "developerID";
+        case DistributionTarget::enterprise: return "enterprise";
+        default: throw std::invalid_argument("Invalid string enum value");
+    }
 }
 
 void to_json(nlohmann::json& j, const DistributionTarget& o)
