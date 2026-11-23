@@ -8,23 +8,23 @@
 #include "ui/extensions/FilePath.h"
 #include "strings/Strings.h"
 #include "partout.h"
-#include <exception>
 #include <wx/stdpaths.h>
 #include <wx/weakref.h>
 #include <wx/uilocale.h>
 
-using namespace Passepartout;
 namespace {
-wxString Text(const std::string &value) {
-    return wxString::FromUTF8(value);
+    wxString Text(const std::string &value) {
+        return wxString::FromUTF8(value);
+    }
+    std::string SingleInstanceKey(bool demo) {
+        // Scope both the instance lock and activation channel to the user and mode.
+        auto key = Passepartout::defaultCrossConstants.tags.app + "-" + wxGetUserId().ToStdString(wxConvUTF8);
+        if (demo) key += Passepartout::defaultCrossConstants.commandLine.demoArgument;
+        return key;
+    }
 }
-std::string SingleInstanceKey(bool demo) {
-    // Scope both the instance lock and activation channel to the user and mode.
-    auto key = defaultCrossConstants.tags.app + "-" + wxGetUserId().ToStdString(wxConvUTF8);
-    if (demo) key += defaultCrossConstants.commandLine.demoArgument;
-    return key;
-}
-}
+
+using namespace Passepartout;
 
 bool PassepartoutApp::OnInit() {
     // Configure native appearance, localization, and application identity.
@@ -50,12 +50,8 @@ bool PassepartoutApp::OnInit() {
     std::shared_ptr<const ConfigurationFiles> activationFiles;
     try {
         activationFiles = FileActivation::ReadFiles();
-    } catch (const std::exception &error) {
-        startupLogger.Write(LogLevel::error, LogCategory::core,
-            std::string("Unable to read activation files: ") + error.what());
-        activationFiles = std::make_shared<ConfigurationFiles>(std::vector<std::filesystem::path>{}, 1);
     } catch (...) {
-        startupLogger.Write(LogLevel::error, LogCategory::core, "Unable to read activation files: unknown exception");
+        startupLogger.Write(LogLevel::error, LogCategory::core, "Unable to read activation files");
         activationFiles = std::make_shared<ConfigurationFiles>(std::vector<std::filesystem::path>{}, 1);
     }
     if (!activationFiles) activationFiles = std::make_shared<ConfigurationFiles>(files);
@@ -114,12 +110,9 @@ bool PassepartoutApp::OnInit() {
         view->Show();
         startupLogger.Write(LogLevel::info, LogCategory::core, "Main window shown");
         return true;
-    } catch (const std::exception &error) {
-        startupLogger.Write(LogLevel::error, LogCategory::core,
-            std::string("Application startup failed while ") + stage + ": " + error.what());
     } catch (...) {
         startupLogger.Write(LogLevel::error, LogCategory::core,
-            std::string("Application startup failed while ") + stage + ": unknown exception");
+            std::string("Application startup failed while ") + stage);
     }
     wxMessageBox(Localized(StringKey::ErrorsAppOther), wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
     return false;
