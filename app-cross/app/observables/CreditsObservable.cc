@@ -6,13 +6,15 @@
 #include <algorithm>
 
 namespace Passepartout {
-CreditsObservable::CreditsObservable(std::string resource, std::unique_ptr<HttpClient> client)
+CreditsObservable::CreditsObservable(std::string resource, std::unique_ptr<HttpClient> client,
+                                     Models::Platform::ePlatform platform)
     : client_(std::move(client)), worker_([this] {
         client_->Cancel();
     }) {
     try {
         auto json = Partout::Json::Parse(resource);
         credits_ = Models::Credits::FromJson(json);
+        FilterCredits(credits_, platform);
         std::sort(credits_.licenses.begin(), credits_.licenses.end(), [](const auto &a, const auto &b) {
             return a.name < b.name;
         });

@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "FileActivation.h"
+#include "FileActivationInbox.h"
 #include <partout/Json.h>
 #include <stdexcept>
 
 namespace Passepartout {
-std::string FileActivation::Encode(const std::string &id, const ConfigurationFiles &files) {
+std::string FileActivationInbox::Encode(const std::string &id, const ConfigurationFiles &files) {
     if (files.Count() > 64) throw std::runtime_error("Too many activation files.");
     auto sources = Partout::Json::Array();
     std::size_t failures = files.selectionFailures;
@@ -30,7 +30,7 @@ std::string FileActivation::Encode(const std::string &id, const ConfigurationFil
     if (result.size() > MaximumBytes) throw std::runtime_error("Activation is too large.");
     return result;
 }
-bool FileActivation::Accept(const std::string &message, const Handler &handler) {
+bool FileActivationInbox::Accept(const std::string &message, const Handler &handler) {
     if (message.size() > MaximumBytes) return false;
     try {
         const auto json = Partout::Json::Parse(message);

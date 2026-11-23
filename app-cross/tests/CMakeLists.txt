@@ -51,7 +51,7 @@ if(WIN32)
     add_library(passepartout-windows-integration-check OBJECT
         ../app/business/platform/WindowsTunnel.cc
         ../app/ui/platform/WindowsConfigurationPicker.cc
-        ../app/ui/platform/WindowsFileActivation.cc
+        ../app/ui/platform/FileActivation.cc
         ../app/business/platform/WindowsHttpClient.cc
         ../app/ui/platform/WindowsURLLauncher.cc
         ../app/ui/platform/WindowsIssueHandoff.cc)

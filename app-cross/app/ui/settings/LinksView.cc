@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "LinksView.h"
-#include "../extensions/Presentation.h"
+#include "../platform/Presentation.h"
 #include "../../strings/Unlocalized.h"
 
 namespace Passepartout {

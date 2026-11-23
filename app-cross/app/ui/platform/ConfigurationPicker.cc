@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Davide De Rosa
 // SPDX-License-Identifier: GPL-3.0
 
-#include "ConfigurationPickerFactory.h"
+#include "../extensions/ConfigurationPickerFactory.h"
 #ifdef _WIN32
-#include "../platform/WindowsConfigurationPicker.h"
+#include "WindowsConfigurationPicker.h"
 #include <wx/window.h>
 
 namespace Passepartout {
@@ -12,7 +12,8 @@ std::unique_ptr<ConfigurationPicker> MakeConfigurationPicker(wxWindow &owner) {
 }
 }
 #else
-#include "ModalConfigurationPicker.h"
+#include "../extensions/ModalConfigurationPicker.h"
+#include "../extensions/FilePath.h"
 #include "../../strings/Strings.h"
 #include <wx/filedlg.h>
 
@@ -25,7 +26,7 @@ std::unique_ptr<ConfigurationPicker> MakeConfigurationPicker(wxWindow &owner) {
         wxArrayString selected;
         dialog.GetPaths(selected);
         std::vector<std::filesystem::path> paths;
-        for (const auto &path : selected) paths.push_back(std::filesystem::u8path(path.ToStdString(wxConvUTF8)));
+        for (const auto &path : selected) paths.push_back(FilePath(path));
         return {std::make_shared<ConfigurationFiles>(std::move(paths)), false};
     });
 }

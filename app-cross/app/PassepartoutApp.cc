@@ -5,6 +5,7 @@
 #include "PassepartoutApp.h"
 #include "business/extensions/AppLogger.h"
 #include "ui/app/MainView.h"
+#include "ui/extensions/FilePath.h"
 #include "strings/Strings.h"
 #include "partout.h"
 #include <wx/stdpaths.h>
@@ -13,13 +14,6 @@
 
 using namespace Passepartout;
 namespace {
-std::filesystem::path FilePath(const wxString &value) {
-#ifdef _WIN32
-    return std::filesystem::path(value.ToStdWstring());
-#else
-    return std::filesystem::u8path(value.ToStdString(wxConvUTF8));
-#endif
-}
 wxString Text(const std::string &value) {
     return wxString::FromUTF8(value);
 }
@@ -42,23 +36,18 @@ bool PassepartoutApp::OnInit() {
         else files.push_back(FilePath(arg));
     }
     std::shared_ptr<const ConfigurationFiles> activationFiles;
-#ifdef _WIN32
     try {
-        activationFiles = ReadWindowsActivationFiles();
+        activationFiles = FileActivation::ReadFiles();
     } catch (...) {
         activationFiles = std::make_shared<ConfigurationFiles>(std::vector<std::filesystem::path>{}, 1);
     }
-    if (activationFiles) files.clear();
-#endif
     if (!activationFiles) activationFiles = std::make_shared<ConfigurationFiles>(files);
     const auto dataRoot = FilePath(wxStandardPaths::Get().GetUserLocalDataDir());
     const auto instanceName = Text(defaultCrossConstants.tags.app) + "-" + wxGetUserId() +
         (demo ? Text(defaultCrossConstants.commandLine.demoArgument) : wxString());
     instance_ = std::make_unique<wxSingleInstanceChecker>(instanceName);
     if (instance_->IsAnotherRunning()) {
-#ifdef _WIN32
-        if (WindowsFileActivation::Forward(instanceName.ToStdWstring(), activationFiles)) return false;
-#endif
+        if (FileActivation::Forward(instanceName.ToStdString(wxConvUTF8), activationFiles)) return false;
         startupLogger.Write(LogLevel::error, LogCategory::core, "Application startup rejected: another instance is running");
         wxMessageBox(Localized(StringKey::ErrorsAppOther),
                      wxTheApp->GetAppName(), wxOK | wxICON_INFORMATION);
@@ -76,14 +65,12 @@ bool PassepartoutApp::OnInit() {
         startupLogger.Write(LogLevel::debug, LogCategory::core, "Create main window");
         auto *view = new MainView(*context_, demo, MakeConfigurationPicker);
         SetTopWindow(view);
-#ifdef _WIN32
         const wxWeakRef<MainView> target(view);
-        activation_ = std::make_unique<WindowsFileActivation>(instanceName.ToStdWstring(), [target](auto files) {
+        activation_ = std::make_unique<FileActivation>(instanceName.ToStdString(wxConvUTF8), [target](auto files) {
             if (!target || target->IsBeingDeleted()) return false;
             target->Activate(std::move(files));
             return true;
         });
-#endif
         view->Activate(std::move(activationFiles));
         Bind(wxEVT_ACTIVATE_APP, [this](wxActivateEvent &event) {
             if (event.GetActive()) {
@@ -104,9 +91,7 @@ bool PassepartoutApp::OnInit() {
     return false;
 }
 int PassepartoutApp::OnExit() {
-#ifdef _WIN32
     activation_.reset();
-#endif
     context_.reset();
     instance_.reset();
     return wxApp::OnExit();

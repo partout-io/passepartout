@@ -6,9 +6,7 @@
 #include <wx/wx.h>
 #include <wx/snglinst.h>
 #include "context/AppContext.h"
-#ifdef _WIN32
-#include "ui/platform/WindowsFileActivation.h"
-#endif
+#include "ui/platform/FileActivation.h"
 
 class PassepartoutApp : public wxApp {
 public:
@@ -17,7 +15,5 @@ public:
 private:
     std::unique_ptr<wxSingleInstanceChecker> instance_;
     std::unique_ptr<Passepartout::AppContext> context_;
-#ifdef _WIN32
-    std::unique_ptr<Passepartout::WindowsFileActivation> activation_;
-#endif
+    std::unique_ptr<Passepartout::FileActivation> activation_;
 };

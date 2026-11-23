@@ -123,6 +123,14 @@ unrelated refactoring; keep changes within the task's scope.
   newer actions, and give subscriptions and cross-domain effects clear owners.
 - Keep platform integration behind explicit boundaries. Adapt navigation to the
   form factor while keeping business rules independent of the UI toolkit.
+- Resolve platform differences below the view layer, in business managers,
+  extensions, or platform adapters exposed through shared interfaces. Views must
+  not branch on operating systems or choose platform-specific types, APIs, path
+  constructors, or encodings. Expose ready-to-render state through observables
+  and shared actions through presentation helpers. Keep native UI integration
+  in toolkit-specific adapters rather than introducing UI dependencies into
+  business code. Provide no-op implementations where a platform has no equivalent
+  behavior, so callers can use the same interface without platform checks.
 - Windows and Linux must maximize their shared wxWidgets look and feel. Reuse
   stock wxWidgets controls, Theme components, layouts, and interactions. Minimize
   platform-specific UI elements; introduce an exception only for a concrete

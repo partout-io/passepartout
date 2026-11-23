@@ -5,7 +5,7 @@
 #include "Presentation.h"
 #include <wx/weakref.h>
 #ifdef _WIN32
-#include "../platform/WindowsURLLauncher.h"
+#include "WindowsURLLauncher.h"
 #endif
 
 namespace Passepartout {

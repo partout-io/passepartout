@@ -7,7 +7,7 @@
 #include "LinksView.h"
 #include "DiagnosticsView.h"
 #include "IssueReportView.h"
-#include "../extensions/Presentation.h"
+#include "../platform/Presentation.h"
 #include "../theme/ThemeSplitView.h"
 #include "../theme/ThemeModal.h"
 #include <wx/display.h>

@@ -4,7 +4,7 @@
 
 #include "DiagnosticsView.h"
 #include "RuntimeLogView.h"
-#include "../extensions/Presentation.h"
+#include "../platform/Presentation.h"
 
 namespace Passepartout {
 DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagnostics,

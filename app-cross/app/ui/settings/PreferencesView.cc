@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "PreferencesView.h"
-#include "../extensions/Presentation.h"
+#include "../platform/Presentation.h"
 
 namespace Passepartout {
 PreferencesView::PreferencesView(wxWindow *parent, UserPreferencesObservable &preferences) : ThemeDetailView(parent, Presentation::Plain) {

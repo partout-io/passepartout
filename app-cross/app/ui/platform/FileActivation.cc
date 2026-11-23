@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "WindowsFileActivation.h"
+#include "FileActivation.h"
+#ifdef _WIN32
 #include <windows.h>
 #include <appmodel.h>
 #include <future>
@@ -14,7 +15,10 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Storage.Streams.h>
 
+#endif
+
 namespace Passepartout {
+#ifdef _WIN32
 namespace {
 constexpr wchar_t WindowClass[] = L"Passepartout.FileActivation.1";
 constexpr ULONG_PTR MessageType = 0x50504143;
@@ -76,9 +80,9 @@ bool IsSameExecutable(HWND window, DWORD &pid) {
     return CompareStringOrdinal(current.data(), count, target.data(), length, TRUE) == CSTR_EQUAL;
 }
 }
-struct WindowsFileActivation::Impl {
-    FileActivation inbox;
-    FileActivation::Handler handler;
+struct FileActivation::Impl {
+    FileActivationInbox inbox;
+    FileActivationInbox::Handler handler;
     HWND window = nullptr;
     static LRESULT CALLBACK WindowProcedure(HWND window, UINT message, WPARAM parameter, LPARAM data) {
         if (message == WM_NCCREATE) {
@@ -88,7 +92,7 @@ struct WindowsFileActivation::Impl {
         auto *self = reinterpret_cast<Impl *>(GetWindowLongPtrW(window, GWLP_USERDATA));
         if (message == WM_COPYDATA && self) {
             const auto *copy = reinterpret_cast<COPYDATASTRUCT *>(data);
-            if (!copy || copy->dwData != MessageType || !copy->lpData || copy->cbData > FileActivation::MaximumBytes) return FALSE;
+            if (!copy || copy->dwData != MessageType || !copy->lpData || copy->cbData > FileActivationInbox::MaximumBytes) return FALSE;
             try {
                 return self->inbox.Accept(std::string(static_cast<const char *>(copy->lpData), copy->cbData), self->handler);
             } catch (...) {
@@ -97,7 +101,7 @@ struct WindowsFileActivation::Impl {
         }
         return DefWindowProcW(window, message, parameter, data);
     }
-    Impl(const std::wstring &service, FileActivation::Handler onFiles) : handler(std::move(onFiles)) {
+    Impl(const std::wstring &service, FileActivationInbox::Handler onFiles) : handler(std::move(onFiles)) {
         WNDCLASSW type{};
         type.hInstance = GetModuleHandleW(nullptr);
         type.lpszClassName = WindowClass;
@@ -111,21 +115,20 @@ struct WindowsFileActivation::Impl {
         if (window) DestroyWindow(window);
     }
 };
-WindowsFileActivation::WindowsFileActivation(const std::wstring &service, FileActivation::Handler handler)
-    : impl_(std::make_unique<Impl>(service, std::move(handler))) {}
-WindowsFileActivation::~WindowsFileActivation() = default;
-bool WindowsFileActivation::Forward(const std::wstring &service, std::shared_ptr<const ConfigurationFiles> files) {
+FileActivation::FileActivation(const std::string &service, FileActivationInbox::Handler handler)
+    : impl_(std::make_unique<Impl>(std::wstring(winrt::to_hstring(service).c_str()), std::move(handler))) {}
+bool FileActivation::Forward(const std::string &service, std::shared_ptr<const ConfigurationFiles> files) {
     try {
         GUID uuid{};
         winrt::check_hresult(CoCreateGuid(&uuid));
         const auto id = winrt::to_string(winrt::to_hstring(uuid));
         // Read brokered files on an MTA, then transfer a copy before the sender exits.
         const auto message = std::async(std::launch::async, [id, files] {
-            return FileActivation::Encode(id, *files);
+            return FileActivationInbox::Encode(id, *files);
         }).get();
         const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
         do {
-            const auto window = FindWindowExW(HWND_MESSAGE, nullptr, WindowClass, service.c_str());
+            const auto window = FindWindowExW(HWND_MESSAGE, nullptr, WindowClass, winrt::to_hstring(service).c_str());
             DWORD pid = 0;
             if (window && IsSameExecutable(window, pid)) {
                 AllowSetForegroundWindow(pid);
@@ -142,7 +145,7 @@ bool WindowsFileActivation::Forward(const std::wstring &service, std::shared_ptr
     } catch (...) {}
     return false;
 }
-std::shared_ptr<const ConfigurationFiles> ReadWindowsActivationFiles() {
+std::shared_ptr<const ConfigurationFiles> FileActivation::ReadFiles() {
     UINT32 size = 0;
     if (GetCurrentPackageFullName(&size, nullptr) == APPMODEL_ERROR_NO_PACKAGE) return {};
     const Apartment apartment(winrt::apartment_type::single_threaded);
@@ -160,4 +163,15 @@ std::shared_ptr<const ConfigurationFiles> ReadWindowsActivationFiles() {
     }
     return std::make_shared<BrokeredFiles>(std::move(files), failures);
 }
+#else
+struct FileActivation::Impl {};
+FileActivation::FileActivation(const std::string &, FileActivationInbox::Handler) {}
+bool FileActivation::Forward(const std::string &, std::shared_ptr<const ConfigurationFiles>) {
+    return false;
+}
+std::shared_ptr<const ConfigurationFiles> FileActivation::ReadFiles() {
+    return {};
+}
+#endif
+FileActivation::~FileActivation() = default;
 }
