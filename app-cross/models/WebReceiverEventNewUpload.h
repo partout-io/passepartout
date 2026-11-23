@@ -18,9 +18,9 @@
 #ifndef WebReceiverEventNewUpload_H_
 #define WebReceiverEventNewUpload_H_
 
+#include <partout/models/Helpers.h>
 #include "WebFileUpload.h"
 #include <string>
-#include <partout/Json.h>
 
 namespace Passepartout::Models
 {

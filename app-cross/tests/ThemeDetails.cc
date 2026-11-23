@@ -82,18 +82,18 @@ int main(int argc, char **argv) {
                 !wxWindow::FindWindowByLabel(Localized(StringKey::GlobalNounsInterval), view)) return 22;
         }
         Passepartout::IssueReportView *report = nullptr;
-        Passepartout::ThemeModal reportModal(&frame, "Report", [&report](wxWindow *parent) {
+        Passepartout::ThemeModal report_modal(&frame, "Report", [&report](wxWindow *parent) {
             report = new Passepartout::IssueReportView(parent);
             return report;
         }, Passepartout::ThemeModal::Mode::Editable, Passepartout::ThemeModal::Sizing::TextInput,
             [&report] { return report->CanSubmit(); });
-        auto *ok = reportModal.FindWindow(wxID_OK);
+        auto *ok = report_modal.FindWindow(wxID_OK);
         auto *comment = dynamic_cast<wxTextCtrl *>(wxWindow::FindWindowByName(
             Passepartout::Localized(Passepartout::StringKey::GlobalNounsComment), report));
         if (!ok || !comment || ok->IsEnabled() || report->CanSubmit()) return 12;
         if (comment->GetMinSize() != wxSize(report->GetCharWidth() * 40,
             report->GetCharHeight() * 8)) return 15;
-        const auto extra = reportModal.GetSize() - reportModal.GetMinSize();
+        const auto extra = report_modal.GetSize() - report_modal.GetMinSize();
         if (extra != wxSize(report->GetCharWidth() * 20, report->GetCharHeight() * 4)) return 16;
         comment->SetValue("A report comment");
         ok->UpdateWindowUI();
@@ -102,21 +102,21 @@ int main(int argc, char **argv) {
         ok->UpdateWindowUI();
         if (ok->IsEnabled() || report->CanSubmit()) return 14;
         const wxString secret = "secret-key-value";
-        auto *secureRow = new Passepartout::ThemeDetailView(&frame,
+        auto *secure_row = new Passepartout::ThemeDetailView(&frame,
             Passepartout::ThemeDetailView::Presentation::Form);
-        secureRow->Section("Keys");
-        secureRow->LongContent("Private key", secret, [] {}, true);
-        auto *appLog = secureRow->ButtonRow("App", [] {});
-        auto *tunnelLog = secureRow->ButtonRow("A longer localized tunnel label", [] {}, "Unavailable");
-        if (appLog->GetMinSize().x != tunnelLog->GetMinSize().x ||
-            tunnelLog->GetMinSize().x < tunnelLog->GetBestSize().x) return 10;
-        secureRow->EndSection();
-        secureRow->ButtonRow("An unrelated much longer report action", [] {});
-        if (appLog->GetMinSize().x != tunnelLog->GetMinSize().x) return 11;
-        secureRow->Finish();
-        if (wxWindow::FindWindowByLabel(secret, secureRow)) return 7;
+        secure_row->Section("Keys");
+        secure_row->LongContent("Private key", secret, [] {}, true);
+        auto *app_log = secure_row->ButtonRow("App", [] {});
+        auto *tunnel_log = secure_row->ButtonRow("A longer localized tunnel label", [] {}, "Unavailable");
+        if (app_log->GetMinSize().x != tunnel_log->GetMinSize().x ||
+            tunnel_log->GetMinSize().x < tunnel_log->GetBestSize().x) return 10;
+        secure_row->EndSection();
+        secure_row->ButtonRow("An unrelated much longer report action", [] {});
+        if (app_log->GetMinSize().x != tunnel_log->GetMinSize().x) return 11;
+        secure_row->Finish();
+        if (wxWindow::FindWindowByLabel(secret, secure_row)) return 7;
         if (!wxWindow::FindWindowByLabel(Passepartout::Localized(
-            Passepartout::StringKey::GlobalActionsEdit), secureRow)) return 8;
+            Passepartout::StringKey::GlobalActionsEdit), secure_row)) return 8;
         auto *content = new Passepartout::ThemeLongContent(&frame, "Private key", secret);
         wxTextCtrl *editor = nullptr;
         for (auto *child : content->GetChildren()) {

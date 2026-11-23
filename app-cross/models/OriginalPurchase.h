@@ -18,7 +18,7 @@
 #ifndef OriginalPurchase_H_
 #define OriginalPurchase_H_
 
-#include <partout/Json.h>
+#include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {

@@ -11,15 +11,15 @@
 namespace Passepartout {
 ThemeDetailView::ThemeDetailView(wxWindow *parent, Presentation presentation)
     : wxScrolledWindow(parent, wxID_ANY), layout_(new wxBoxSizer(wxVERTICAL)),
-      presentation_(presentation), contentParent_(this), section_(layout_) {
+      presentation_(presentation), content_parent_(this), section_(layout_) {
     Theme::Apply(this);
     SetScrollRate(0, presentation_ == Presentation::Centered ? 0 : Theme::Spacing(this));
     SetSizer(layout_);
     Bind(wxEVT_SIZE, [this](wxSizeEvent &event) {
-        if (!wrapPending_) {
-            wrapPending_ = true;
+        if (!wrap_pending_) {
+            wrap_pending_ = true;
             CallAfter([this] {
-                wrapPending_ = false;
+                wrap_pending_ = false;
                 Rewrap();
             });
         }
@@ -27,14 +27,14 @@ ThemeDetailView::ThemeDetailView(wxWindow *parent, Presentation presentation)
     });
 }
 void ThemeDetailView::Section(const wxString &title) {
-    buttonGroups_.emplace_back();
+    button_groups_.emplace_back();
     if (presentation_ != Presentation::Centered) {
         auto *box = new wxStaticBoxSizer(wxVERTICAL, this, title);
         layout_->Add(box, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, Theme::Spacing(this));
-        contentParent_ = box->GetStaticBox();
+        content_parent_ = box->GetStaticBox();
         section_ = new wxBoxSizer(wxVERTICAL);
         box->Add(section_, 0, wxEXPAND | wxALL, Theme::Spacing(this));
-        formRows_ = nullptr;
+        form_rows_ = nullptr;
         return;
     }
     auto *label = new wxStaticText(this, wxID_ANY, title);
@@ -53,7 +53,7 @@ void ThemeDetailView::Field(const wxString &title, const wxString &value, bool m
     }
     if (value.empty()) return;
     auto *rows = FormRows();
-    rows->Add(new wxStaticText(contentParent_, wxID_ANY, title), 0, wxALIGN_CENTER_VERTICAL);
+    rows->Add(new wxStaticText(content_parent_, wxID_ANY, title), 0, wxALIGN_CENTER_VERTICAL);
     rows->Add(Value(value, monospace), 1, wxEXPAND | wxALIGN_CENTER_VERTICAL);
 }
 void ThemeDetailView::CopiableField(const wxString &title, const wxString &value, bool monospace) {
@@ -64,20 +64,20 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
     const wxString &value, bool enabled) {
     if (IsForm()) {
         auto *rows = FormRows();
-        rows->Add(new wxStaticText(contentParent_, wxID_ANY, title), 0, wxALIGN_CENTER_VERTICAL);
+        rows->Add(new wxStaticText(content_parent_, wxID_ANY, title), 0, wxALIGN_CENTER_VERTICAL);
         const auto label = value.empty() ? Localized(StringKey::GlobalActionsEdit) : value;
-        auto *link = new ThemeContentLink(contentParent_, label, std::move(action));
+        auto *link = new ThemeContentLink(content_parent_, label, std::move(action));
         link->SetName(title);
         link->Enable(enabled);
         rows->Add(link, 0, wxALIGN_RIGHT | wxALIGN_CENTER_VERTICAL);
         return;
     }
     auto *row = new wxBoxSizer(wxHORIZONTAL);
-    auto *link = new ThemeContentLink(contentParent_, title, std::move(action));
+    auto *link = new ThemeContentLink(content_parent_, title, std::move(action));
     link->Enable(enabled);
     row->Add(link, 0, wxALIGN_CENTER_VERTICAL);
     if (!value.empty()) {
-        row->Add(new wxStaticText(contentParent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), 1,
+        row->Add(new wxStaticText(content_parent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT), 1,
             wxALIGN_CENTER_VERTICAL | wxLEFT, Theme::Spacing(this));
     }
     if (presentation_ == Presentation::Plain) {
@@ -87,7 +87,7 @@ void ThemeDetailView::ContentLink(const wxString &title, std::function<void()> a
     }
 }
 void ThemeDetailView::ExternalLink(const wxString &title, std::function<void()> action) {
-    auto *link = new ThemeContentLink(contentParent_, title, std::move(action));
+    auto *link = new ThemeContentLink(content_parent_, title, std::move(action));
     section_->Add(link, SectionRowFlags(false));
 }
 void ThemeDetailView::LongContent(const wxString &title, const wxString &preview,
@@ -102,15 +102,15 @@ wxSizerFlags ThemeDetailView::SectionRowFlags(bool expand) {
     return result;
 }
 wxFlexGridSizer *ThemeDetailView::FormRows() {
-    if (!formRows_) {
-        formRows_ = new wxFlexGridSizer(2, Theme::Spacing(this, Theme::Space::Row), Theme::Spacing(this, Theme::Space::Columns));
-        formRows_->AddGrowableCol(1);
-        section_->Add(formRows_, SectionRowFlags());
+    if (!form_rows_) {
+        form_rows_ = new wxFlexGridSizer(2, Theme::Spacing(this, Theme::Space::Row), Theme::Spacing(this, Theme::Space::Columns));
+        form_rows_->AddGrowableCol(1);
+        section_->Add(form_rows_, SectionRowFlags());
     }
-    return formRows_;
+    return form_rows_;
 }
 wxStaticText *ThemeDetailView::Value(const wxString &value, bool monospace) {
-    auto *text = new wxStaticText(contentParent_, wxID_ANY, value.BeforeFirst('\n'),
+    auto *text = new wxStaticText(content_parent_, wxID_ANY, value.BeforeFirst('\n'),
         wxDefaultPosition, wxDefaultSize, wxST_ELLIPSIZE_END | wxALIGN_RIGHT);
     if (monospace) Theme::Monospace(text);
     text->SetMinSize(wxSize(GetCharWidth() * 12, text->GetBestSize().y));
@@ -122,19 +122,19 @@ void ThemeDetailView::Items(const wxString &title, const std::vector<wxString> &
 }
 
 void ThemeDetailView::EndSection() {
-    buttonGroups_.emplace_back();
-    contentParent_ = this;
+    button_groups_.emplace_back();
+    content_parent_ = this;
     section_ = layout_;
-    formRows_ = nullptr;
+    form_rows_ = nullptr;
 }
 wxButton *ThemeDetailView::ButtonRow(const wxString &title, std::function<void()> action,
     const wxString &explanation) {
-    auto *row = new ThemeButtonRow(contentParent_, title, std::move(action), explanation);
-    buttonGroups_.back().push_back(row->Button());
-    ThemeButtonRow::AlignButtons(buttonGroups_.back());
+    auto *row = new ThemeButtonRow(content_parent_, title, std::move(action), explanation);
+    button_groups_.back().push_back(row->Button());
+    ThemeButtonRow::AlignButtons(button_groups_.back());
     if (row->Explanation()) wrapped_.push_back({row->Explanation(), explanation});
     section_->Add(row, SectionRowFlags());
-    formRows_ = nullptr;
+    form_rows_ = nullptr;
     return row->Button();
 }
 wxTextCtrl *ThemeDetailView::TextField(const wxString &title, const wxString &value, long style) {
@@ -144,38 +144,38 @@ wxTextCtrl *ThemeDetailView::TextField(const wxString &title, const wxString &va
             field->Add(WrappingText(title), 0, wxEXPAND | wxBOTTOM,
                 Theme::Spacing(this, Theme::Space::SectionContent));
         }
-        auto *text = new wxTextCtrl(contentParent_, wxID_ANY, value,
+        auto *text = new wxTextCtrl(content_parent_, wxID_ANY, value,
             wxDefaultPosition, wxDefaultSize, style);
         text->SetName(title);
         text->SetMinSize(wxSize(GetCharWidth() * 40, GetCharHeight() * 8));
         field->Add(text, 1, wxEXPAND);
         section_->Add(field, SectionRowFlags().Proportion(1));
-        formRows_ = nullptr;
+        form_rows_ = nullptr;
         return text;
     }
     if (title.empty()) {
-        auto *text = new wxTextCtrl(contentParent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, style);
+        auto *text = new wxTextCtrl(content_parent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, style);
         text->SetName(value);
         section_->Add(text, SectionRowFlags());
-        formRows_ = nullptr;
+        form_rows_ = nullptr;
         return text;
     }
     auto *rows = FormRows();
-    rows->Add(new wxStaticText(contentParent_, wxID_ANY, title), 0, wxALIGN_CENTER_VERTICAL);
-    auto *text = new wxTextCtrl(contentParent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, style);
+    rows->Add(new wxStaticText(content_parent_, wxID_ANY, title), 0, wxALIGN_CENTER_VERTICAL);
+    auto *text = new wxTextCtrl(content_parent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize, style);
     text->SetName(title);
     rows->Add(text, 1, wxEXPAND | wxALIGN_CENTER_VERTICAL);
     return text;
 }
 wxStaticText *ThemeDetailView::WrappingText(const wxString &text) {
-    auto *label = new wxStaticText(contentParent_, wxID_ANY, text,
+    auto *label = new wxStaticText(content_parent_, wxID_ANY, text,
         wxDefaultPosition, wxDefaultSize, wxST_NO_AUTORESIZE);
     label->SetMinSize(wxSize(1, label->GetBestSize().y));
     wrapped_.push_back({label, text});
     return label;
 }
 void ThemeDetailView::Rewrap() {
-    for (const auto &buttons : buttonGroups_) ThemeButtonRow::AlignButtons(buttons);
+    for (const auto &buttons : button_groups_) ThemeButtonRow::AlignButtons(buttons);
     Layout();
     bool changed = false;
     for (auto &entry : wrapped_) {
@@ -213,17 +213,17 @@ wxCheckBox *ThemeDetailView::Toggle(const wxString &title, const wxString &suppo
             Theme::Spacing(this, Theme::Space::SectionContent));
     }
     row->Add(captions, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, Theme::Spacing(this, Theme::Space::Columns));
-    auto *control = new wxCheckBox(contentParent_, wxID_ANY, {});
+    auto *control = new wxCheckBox(content_parent_, wxID_ANY, {});
     control->SetName(title);
     control->SetValue(checked);
-    if (subtitle) toggleSupport_[control] = subtitle;
+    if (subtitle) toggle_support_[control] = subtitle;
     row->Add(control, 0, wxALIGN_CENTER_VERTICAL);
     section_->Add(row, SectionRowFlags());
     return control;
 }
 void ThemeDetailView::SetToggleSupport(wxCheckBox *toggle, const wxString &support) {
-    const auto found = toggleSupport_.find(toggle);
-    if (found == toggleSupport_.end()) return;
+    const auto found = toggle_support_.find(toggle);
+    if (found == toggle_support_.end()) return;
     for (auto &entry : wrapped_) {
         if (entry.label != found->second || entry.text == support) continue;
         entry.text = support;
@@ -235,11 +235,11 @@ void ThemeDetailView::SetToggleSupport(wxCheckBox *toggle, const wxString &suppo
 }
 wxCheckBox *ThemeDetailView::CopiableToggle(const wxString &value, bool checked) {
     auto *row = new wxBoxSizer(wxHORIZONTAL);
-    auto *text = new wxTextCtrl(contentParent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize,
+    auto *text = new wxTextCtrl(content_parent_, wxID_ANY, value, wxDefaultPosition, wxDefaultSize,
         wxTE_READONLY);
     text->SetName(value);
     row->Add(text, 1, wxALIGN_CENTER_VERTICAL | wxRIGHT, Theme::Spacing(this, Theme::Space::Columns));
-    auto *control = new wxCheckBox(contentParent_, wxID_ANY, {});
+    auto *control = new wxCheckBox(content_parent_, wxID_ANY, {});
     control->SetName(value);
     control->SetValue(checked);
     row->Add(control, 0, wxALIGN_CENTER_VERTICAL);

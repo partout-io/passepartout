@@ -8,7 +8,7 @@
 
 namespace Passepartout {
 bool ProfileObservable::CanSave(const AppSnapshot &state, const std::string &id) {
-    if (!CanRemove(state, {id}) || !state.tunnelAvailable || state.tunnelObservationErrors.count(id)) return false;
+    if (!CanRemove(state, {id}) || !state.tunnel_available || state.tunnel_observation_errors.count(id)) return false;
     return std::none_of(state.tunnels.begin(), state.tunnels.end(), [&](const auto &tunnel) {
         return tunnel.id == id && (tunnel.isEnabled || tunnel.status.value != Status::disconnected);
     });
@@ -20,9 +20,9 @@ void ProfileObservable::SaveEditor(std::shared_ptr<ProfileEditor> editor) {
     if (editor && CanSave(Snapshot(), editor->Original().id)) session_.SaveEditor(std::move(editor));
 }
 bool ProfileObservable::CanRemove(const AppSnapshot &state, const std::vector<std::string> &ids) {
-    if (!state.loaded || state.foregroundBusy || state.pendingProfile || ids.empty()) return false;
+    if (!state.loaded || state.foreground_busy || state.pending_profile || ids.empty()) return false;
     return std::all_of(ids.begin(), ids.end(), [&](const auto &id) {
-        if (std::find(state.recoveringProfiles.begin(), state.recoveringProfiles.end(), id) != state.recoveringProfiles.end())
+        if (std::find(state.recovering_profiles.begin(), state.recovering_profiles.end(), id) != state.recovering_profiles.end())
             return false;
         return std::any_of(state.profiles.begin(), state.profiles.end(), [&](const auto &profile) {
             return profile.id == id;

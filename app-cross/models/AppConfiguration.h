@@ -18,9 +18,9 @@
 #ifndef AppConfiguration_H_
 #define AppConfiguration_H_
 
-#include "AppConstants.h"
+#include <partout/models/Helpers.h>
 #include "AppBundle.h"
-#include <partout/Json.h>
+#include "AppConstants.h"
 
 namespace Passepartout::Models
 {

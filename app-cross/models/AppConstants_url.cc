@@ -11,7 +11,6 @@
 */
 
 #include "AppConstants_url.h"
-#include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {

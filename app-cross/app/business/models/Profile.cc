@@ -16,28 +16,14 @@
 #endif
 
 namespace Passepartout {
-bool IsSafeProfileId(const std::string &id) {
-    auto upper = id;
-    std::transform(upper.begin(), upper.end(), upper.begin(), [](unsigned char c) {
-        return static_cast<char>(std::toupper(c));
-    });
-    if (upper == "CON" || upper == "PRN" || upper == "AUX" || upper == "NUL" ||
-        (upper.size() == 4 && (upper.substr(0, 3) == "COM" || upper.substr(0, 3) == "LPT") &&
-         upper[3] >= '0' && upper[3] <= '9')) return false;
-    return !id.empty() && id.size() <= 128 &&
-        std::all_of(id.begin(), id.end(), [](unsigned char c) {
-            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-                (c >= '0' && c <= '9') || c == '-' || c == '_';
-        });
-}
 namespace {
 std::wstring LowerName(const std::string &name) {
 #ifdef _WIN32
     if (name.empty()) return {};
-    const int wideSize = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name.data(), static_cast<int>(name.size()), nullptr, 0);
-    if (!wideSize) throw std::runtime_error("Invalid UTF-8 profile name.");
-    std::wstring wide(wideSize, L'\0');
-    MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name.data(), static_cast<int>(name.size()), wide.data(), wideSize);
+    const int wide_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name.data(), static_cast<int>(name.size()), nullptr, 0);
+    if (!wide_size) throw std::runtime_error("Invalid UTF-8 profile name.");
+    std::wstring wide(wide_size, L'\0');
+    MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name.data(), static_cast<int>(name.size()), wide.data(), wide_size);
 #else
     std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
     auto wide = converter.from_bytes(name);
@@ -76,14 +62,30 @@ double LastUpdate(const Profile &profile) {
     return -std::numeric_limits<double>::infinity();
 }
 }
+
+bool IsSafeProfileId(const std::string &id) {
+    auto upper = id;
+    std::transform(upper.begin(), upper.end(), upper.begin(), [](unsigned char c) {
+        return static_cast<char>(std::toupper(c));
+    });
+    if (upper == "CON" || upper == "PRN" || upper == "AUX" || upper == "NUL" ||
+        (upper.size() == 4 && (upper.substr(0, 3) == "COM" || upper.substr(0, 3) == "LPT") &&
+         upper[3] >= '0' && upper[3] <= '9')) return false;
+    return !id.empty() && id.size() <= 128 &&
+        std::all_of(id.begin(), id.end(), [](unsigned char c) {
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+                (c >= '0' && c <= '9') || c == '-' || c == '_';
+        });
+}
+
 void SortProfiles(std::vector<Profile> &profiles) {
     std::sort(profiles.begin(), profiles.end(), [](const auto &a, const auto &b) {
         const auto left = LowerName(a.name);
         const auto right = LowerName(b.name);
         if (left != right) return left < right;
-        const auto leftDate = LastUpdate(a);
-        const auto rightDate = LastUpdate(b);
-        if (leftDate != rightDate) return leftDate > rightDate;
+        const auto left_date = LastUpdate(a);
+        const auto right_date = LastUpdate(b);
+        if (left_date != right_date) return left_date > right_date;
         return a.id < b.id;
     });
 }

@@ -18,9 +18,9 @@
 #ifndef ProfileEventDelete_H_
 #define ProfileEventDelete_H_
 
+#include <partout/models/Helpers.h>
 #include <string>
 #include <vector>
-#include <partout/Json.h>
 
 namespace Passepartout::Models
 {

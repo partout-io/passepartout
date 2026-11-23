@@ -8,7 +8,7 @@
 #include <winrt/base.h>
 
 namespace Passepartout {
-bool ReviewWindowsIssue(const IssueReport &report) {
+bool Windows::Issue::Review(const IssueReport &report) {
     const auto module = LoadLibraryExW(L"mapi32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if (!module) return false;
     struct Library {

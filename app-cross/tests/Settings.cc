@@ -20,21 +20,20 @@
 #include <condition_variable>
 #include "Support.h"
 
-using namespace Passepartout;
 namespace {
-class MemoryPreferences final : public PreferencesRepository {
+class MemoryPreferences final : public Passepartout::PreferencesRepository {
 public:
-    Models::AppPreferences value = DefaultPreferences();
+    Passepartout::Models::AppPreferences value = Passepartout::Preferences::Defaults();
     bool fails = false;
-    Models::AppPreferences Fetch() override {
+    Passepartout::Models::AppPreferences Fetch() override {
         return value;
     }
-    void Save(const Models::AppPreferences &next) override {
+    void Save(const Passepartout::Models::AppPreferences &next) override {
         if (fails) throw std::runtime_error("Save failed");
         value = next;
     }
 };
-class FakeHttp final : public HttpClient {
+class FakeHttp final : public Passepartout::HttpClient {
 public:
     std::string response = "{}";
     bool fails = false;
@@ -46,7 +45,7 @@ public:
     }
     void Cancel() noexcept override {}
 };
-class FakeVersion final : public VersionStrategy {
+class FakeVersion final : public Passepartout::VersionStrategy {
 public:
     std::string value = "1.2.3.4";
     bool fails = false;
@@ -64,7 +63,7 @@ struct BlockingState {
     bool entered = false;
     bool canceled = false;
 };
-class BlockingHttp final : public HttpClient {
+class BlockingHttp final : public Passepartout::HttpClient {
 public:
     explicit BlockingHttp(std::shared_ptr<BlockingState> state) : state_(std::move(state)) {}
     std::string Get(const std::string &) override {
@@ -93,6 +92,8 @@ void Fails(Action action) {
     assert(failed);
 }
 }
+
+using namespace Passepartout;
 int main() {
     InitializeTests();
     const auto directory = std::filesystem::temp_directory_path() /
@@ -144,10 +145,10 @@ int main() {
             remote->response = std::string("{\"appNotWorking\":") + value + "}";
             assert(config.Refresh() && config.ActiveFlags().empty());
         }
-        auto throttledHttp = std::make_unique<FakeHttp>();
-        auto *throttledRemote = throttledHttp.get();
-        ConfigManager throttled(std::move(throttledHttp), "https://example.invalid", 7, std::chrono::hours(1));
-        assert(throttled.Refresh() && !throttled.Refresh() && throttledRemote->requests == 1);
+        auto throttled_http = std::make_unique<FakeHttp>();
+        auto *throttled_remote = throttled_http.get();
+        ConfigManager throttled(std::move(throttled_http), "https://example.invalid", 7, std::chrono::hours(1));
+        assert(throttled.Refresh() && !throttled.Refresh() && throttled_remote->requests == 1);
         auto blocked = std::make_shared<BlockingState>();
         {
             ConfigObservable observable(std::make_unique<ConfigManager>(std::make_unique<BlockingHttp>(blocked),
@@ -175,14 +176,31 @@ int main() {
         Fails([&] { version.Check(201000); });
         assert(!stored && !version.Snapshot().latest);
 
-        CreditsObservable credits(creditsResource, std::make_unique<FakeHttp>());
+        CreditsObservable credits(CreditsResource, std::make_unique<FakeHttp>());
         assert(!credits.HasLoadError());
-        assert(credits.Snapshot().licenses.size() == Partout::Json::Parse(creditsResource).At("licenses").Size());
+        assert(!credits.Snapshot().licenses.empty());
+        Models::Credits sample;
+        sample.licenses = {
+            {"Common", std::nullopt, "MIT", "https://example.com/common"},
+            {"Windows", std::vector<Models::Platform>{{Models::Platform::windows}}, "MIT", "https://example.com/windows"},
+            {"Unix", std::vector<Models::Platform>{{Models::Platform::unixLike}}, "MIT", "https://example.com/unix"},
+            {"Hidden", std::vector<Models::Platform>{}, "MIT", "https://example.com/hidden"}
+        };
+        const auto resource = sample.ToJson().Encode();
+        CreditsObservable windows_credits(resource, std::make_unique<FakeHttp>(), Models::Platform::windows);
+        CreditsObservable unix_credits(resource, std::make_unique<FakeHttp>(), Models::Platform::unixLike);
+        assert(!windows_credits.HasLoadError() && !unix_credits.HasLoadError());
+        assert(windows_credits.Snapshot().licenses.size() == 2);
+        assert(windows_credits.Snapshot().licenses[0].name == "Common");
+        assert(windows_credits.Snapshot().licenses[1].name == "Windows");
+        assert(unix_credits.Snapshot().licenses.size() == 2);
+        assert(unix_credits.Snapshot().licenses[0].name == "Common");
+        assert(unix_credits.Snapshot().licenses[1].name == "Unix");
         AppLogger logger;
         AppLogger::SetPrivateData(false);
-        logger.Write(LogLevel::info, "test", "public marker");
+        logger.Write(LogLevel::info, LogCategory::core, "public marker");
         AppLogger::SetPrivateData(true);
-        logger.Write(LogLevel::info, "test", "private marker");
+        logger.Write(LogLevel::info, LogCategory::core, "private marker");
         AppLogger::SetPrivateData(false);
         assert(AppLogger::RuntimeLog().find("private marker") != std::string::npos);
         assert(AppLogger::RuntimeLog(false).find("private marker") == std::string::npos);

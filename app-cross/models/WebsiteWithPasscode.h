@@ -18,8 +18,8 @@
 #ifndef WebsiteWithPasscode_H_
 #define WebsiteWithPasscode_H_
 
+#include <partout/models/Helpers.h>
 #include <string>
-#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models

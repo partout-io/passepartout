@@ -5,6 +5,6 @@
 #pragma once
 #include "../../business/managers/IssueReporter.h"
 
-namespace Passepartout {
-bool ReviewWindowsIssue(const IssueReport &report);
+namespace Passepartout::Windows::Issue {
+bool Review(const IssueReport &report);
 }

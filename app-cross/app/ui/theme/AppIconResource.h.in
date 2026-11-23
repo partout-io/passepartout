@@ -5,5 +5,5 @@
 #pragma once
 
 namespace Passepartout {
-inline constexpr unsigned char appIconData[] = { @APP_ICON_BYTES@ };
+inline constexpr unsigned char AppIconData[] = { @APP_ICON_BYTES@ };
 }

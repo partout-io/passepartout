@@ -12,7 +12,7 @@ namespace Passepartout {
 class DiagnosticsView final : public ThemeDetailView {
 public:
     DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagnostics,
-                    UserPreferencesObservable &preferences, SettingsPresentation present, std::function<void()> reportIssue);
+                    UserPreferencesObservable &preferences, SettingsPresentation present, std::function<void()> report_issue);
 private:
     wxTimer timer_;
 };

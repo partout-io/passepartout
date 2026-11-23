@@ -11,7 +11,7 @@ FilePreferencesRepository::FilePreferencesRepository(std::filesystem::path path)
     std::filesystem::create_directories(path_.parent_path());
 }
 Models::AppPreferences FilePreferencesRepository::Fetch() {
-    auto defaults = DefaultPreferences();
+    auto defaults = Preferences::Defaults();
     if (!std::filesystem::exists(path_)) return defaults;
     const auto data = Partout::Json::Parse(ReadConfiguration(path_));
     if (!data.IsObject()) throw std::runtime_error("Invalid preferences.");
@@ -22,6 +22,6 @@ Models::AppPreferences FilePreferencesRepository::Fetch() {
     return preferences;
 }
 void FilePreferencesRepository::Save(const Models::AppPreferences &preferences) {
-    WriteAtomicFile(path_, preferences.ToJson().Encode());
+    AtomicFile::Write(path_, preferences.ToJson().Encode());
 }
 }

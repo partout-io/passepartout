@@ -4,6 +4,6 @@
 
 #pragma once
 namespace Passepartout {
-inline constexpr const char creditsResource[] = R"Credits(@APP_CREDITS_JSON@)Credits";
-inline constexpr const char changelogResource[] = R"Changelog(@APP_CHANGELOG@)Changelog";
+inline constexpr const char CreditsResource[] = R"Credits(@APP_CREDITS_JSON@)Credits";
+inline constexpr const char ChangelogResource[] = R"Changelog(@APP_CHANGELOG@)Changelog";
 }

@@ -9,12 +9,15 @@
 #include "../business/strategy/FileProfileJournal.h"
 #include "../business/strategy/FakeTunnelStrategy.h"
 #include "../business/strategy/FilePreferencesRepository.h"
-#include "../business/platform/WindowsTunnel.h"
+#include "../business/platform/WindowsTunnelPreferences.h"
 #include "../business/platform/WindowsHttpClient.h"
 #include "../ui/platform/WindowsIssueHandoff.h"
 #include "SettingsResources.h"
 #include "../business/extensions/DecodeImportResult.h"
 #include "partout.h"
+#ifdef _WIN32
+#include "partout_winrt.h"
+#endif
 #include <cstdlib>
 #include <stdexcept>
 
@@ -22,8 +25,8 @@ namespace Passepartout {
 namespace {
 class PartoutWireGuardKeyGenerator final : public WireGuardKeyGenerator {
 public:
-    std::string PublicKey(const std::string &privateKey) const override {
-        std::unique_ptr<char, decltype(&std::free)> key(partout_wireguard_pubkey(privateKey.c_str()), &std::free);
+    std::string PublicKey(const std::string &private_key) const override {
+        std::unique_ptr<char, decltype(&std::free)> key(partout_wireguard_pubkey(private_key.c_str()), &std::free);
         return key ? std::string(key.get()) : std::string();
     }
 };
@@ -44,7 +47,7 @@ int BuildNumber(const std::string &version) {
 }
 std::unique_ptr<HttpClient> MakeHttp(const Models::AppConstants &constants, bool demo) {
 #ifdef _WIN32
-    if (!demo) return MakeWindowsHttpClient(std::chrono::milliseconds(
+    if (!demo) return Windows::MakeHttpClient(std::chrono::milliseconds(
         static_cast<std::int64_t>(constants.url.timeoutInterval * 1000)));
 #endif
     class OfflineHttpClient final : public HttpClient {
@@ -58,7 +61,7 @@ std::unique_ptr<HttpClient> MakeHttp(const Models::AppConstants &constants, bool
 }
 bool ReviewIssue(const IssueReport &report) {
 #ifdef _WIN32
-    return ReviewWindowsIssue(report);
+    return Windows::Issue::Review(report);
 #else
     return false;
 #endif
@@ -66,74 +69,66 @@ bool ReviewIssue(const IssueReport &report) {
 Profile ImportProfile(const std::string &text, const std::string &name) {
     std::unique_ptr<char, decltype(&std::free)> json(
         partout_import_profile(text.c_str(), nullptr, name.c_str()), &std::free);
-    return DecodeImportResult(json.get());
+    return Imports::DecodeResult(json.get());
 }
-class UnavailableTunnelStrategy final : public TunnelStrategy {
-public:
-    std::vector<Models::AppTunnelInfo> Fetch() override {
-        throw std::runtime_error("VPN control is only available in the Windows package. Use --demo for UI development.");
-    }
-    void Save(const Profile &) override {
-        Fail();
-    }
-    void Connect(const std::string &) override {
-        Fail();
-    }
-    void Disconnect(const std::string &) override {
-        Fail();
-    }
-    void Remove(const std::string &) override {
-        Fail();
-    }
-private:
-    void Fail() {
-        throw std::runtime_error("VPN control is unavailable.");
-    }
-};
-std::unique_ptr<TunnelStrategy> MakeTunnel(bool demo, const CrossConstants &constants, const Models::AppConstants &shared) {
-    if (demo) return std::make_unique<FakeTunnelStrategy>();
+
+std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const CrossConstants &constants) {
+    if (demo) return std::make_unique<Partout::Tunnel>(std::make_unique<FakeTunnelStrategy>());
 #ifdef _WIN32
-    return MakeWindowsTunnelStrategy(constants.tunnel.serverUri, shared.tunnel.dnsFallbackServers);
+    return std::make_unique<Partout::Tunnel>(
+        std::make_unique<Partout::WinRTTunnelStrategy>(constants.tunnel.server_uri)
+    );
 #else
-    return std::make_unique<UnavailableTunnelStrategy>();
+    return std::make_unique<Partout::Tunnel>(std::make_unique<FakeTunnelStrategy>());
 #endif
 }
+
+std::function<void(const Models::AppPreferences &)> TunnelPreferences(bool demo, const Models::AppConstants &constants) {
+#ifdef _WIN32
+    if (!demo) return [servers = constants.tunnel.dnsFallbackServers](const auto &preferences) {
+        Windows::Tunnel::ApplyPreferences(preferences, servers);
+    };
+#endif
+    return {};
 }
-AppContext::AppContext(const std::filesystem::path &dataRoot, bool demo,
-                       Models::AppConstants appConstants, CrossConstants frontendConstants)
-    : constants(std::move(appConstants)), crossConstants(std::move(frontendConstants)),
-      applicationVersion(ApplicationVersion()),
-      wireGuardKeys(std::make_unique<PartoutWireGuardKeyGenerator>()),
+}
+
+AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
+                       Models::AppConstants app_constants, CrossConstants frontend_constants)
+    : constants(std::move(app_constants)), cross_constants(std::move(frontend_constants)),
+      application_version(ApplicationVersion()),
+      wire_guard_keys(std::make_unique<PartoutWireGuardKeyGenerator>()),
       logger_(std::make_shared<AppLogger>()),
       session_(std::make_unique<AppSession>(std::make_unique<FileProfileRepository>(
-          ProfileDirectory(dataRoot, constants, crossConstants, demo)),
-          ImportProfile, MakeTunnel(demo, crossConstants, constants), logger_,
-          std::make_unique<FileProfileJournal>(ProfileDirectory(dataRoot, constants, crossConstants, demo) / "transactions"))),
+          Profiles::Directory(data_root, constants, cross_constants, demo)),
+          ImportProfile, MakeTunnel(demo, cross_constants), logger_,
+          std::make_unique<FileProfileJournal>(Profiles::Directory(data_root, constants, cross_constants, demo) / "transactions"),
+          std::chrono::seconds(1), TunnelPreferences(demo, constants))),
       profiles(*session_), tunnel(*session_),
       preferences(std::make_unique<FilePreferencesRepository>(
-          ProfileDirectory(dataRoot, constants, crossConstants, demo) / "preferences.json"), [this] {
+          Profiles::Directory(data_root, constants, cross_constants, demo) / "preferences.json"), [this] {
               const auto state = session_->Snapshot();
-              return state.loaded && !state.busy && !state.pendingProfile && state.tunnelAvailable &&
-                  state.tunnelObservationErrors.empty() && std::all_of(state.tunnels.begin(), state.tunnels.end(), [](const auto &info) {
+              return state.loaded && !state.busy && !state.pending_profile && state.tunnel_available &&
+                  state.tunnel_observation_errors.empty() && std::all_of(state.tunnels.begin(), state.tunnels.end(), [](const auto &info) {
                       return info.status.value == Status::disconnected;
                   });
           }),
       config(std::make_unique<ConfigManager>(MakeHttp(constants, demo),
-          constants.websites.partoutURL + "/passepartout-config/v1/bundle.json", BuildNumber(applicationVersion),
+          constants.websites.partoutURL + "/passepartout-config/v1/bundle.json", BuildNumber(application_version),
           std::chrono::seconds(static_cast<std::int64_t>(constants.websites.configTTL * constants.websites.betaTTLFactor)))),
-      version(std::make_unique<VersionChecker>(applicationVersion, nullptr, std::string(),
+      version(std::make_unique<VersionChecker>(application_version, nullptr, std::string(),
           static_cast<std::int64_t>(constants.url.versionRateLimit), preferences.Snapshot().lastCheckedVersionTimestamp,
           preferences.Snapshot().lastCheckedVersion, [this](auto timestamp, auto latest) {
               preferences.SetLastCheckedVersion(timestamp, std::move(latest));
-          }), applicationVersion, changelogResource),
-      credits(creditsResource, MakeHttp(constants, demo)),
+          }), application_version, ChangelogResource),
+      credits(CreditsResource, MakeHttp(constants, demo)),
       diagnostics(std::make_unique<IssueReporter>(constants.emails.recipients.beta + "@" + constants.emails.domain,
-          applicationVersion, ReviewIssue)) {
+          application_version, ReviewIssue)) {
     preferences.OnChange([this](const auto &value) {
         session_->ApplyPreferences(value);
     });
     config.Refresh();
-    logger_->Write(LogLevel::info, "core", demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
+    logger_->Write(LogLevel::info, LogCategory::core, demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
 }
 AppContext::~AppContext() = default;
 }

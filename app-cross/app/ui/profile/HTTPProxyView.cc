@@ -6,8 +6,8 @@
 #include "../../strings/Unlocalized.h"
 
 namespace Passepartout {
-HTTPProxyView::HTTPProxyView(wxWindow *parent, const Partout::Models::HTTPProxyModule &module, OpenModuleContent openContent)
-    : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
+HTTPProxyView::HTTPProxyView(wxWindow *parent, const Partout::Models::HTTPProxyModule &module, OpenModuleContent open_content)
+    : ModuleDetailView(parent, std::move(open_content), Presentation::Form) {
     using namespace Strings::Unlocalized;
     const auto &c = module;
     auto endpoint = [this](const wxString &title, const std::optional<std::string> &value) {

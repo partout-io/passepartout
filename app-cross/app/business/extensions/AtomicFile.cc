@@ -17,7 +17,7 @@
 #endif
 
 namespace Passepartout {
-void WriteAtomicFile(const std::filesystem::path &path, const std::string &content) {
+void AtomicFile::Write(const std::filesystem::path &path, const std::string &content) {
     std::random_device random;
     std::ostringstream uuid;
     uuid << std::hex << std::setfill('0');

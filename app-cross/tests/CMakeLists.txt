@@ -5,6 +5,7 @@ project(PassepartoutTests LANGUAGES CXX)
 # Dependencies: build models and application state without the VPN core library.
 set(PP_BUILD_LIBRARY OFF)
 set(PP_BUILD_MODELS ON)
+set(PP_TEST_CPP_RUNTIME ON)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
@@ -49,9 +50,10 @@ if(WIN32)
 
     # Compile the adapter independently of the desktop application.
     add_library(passepartout-windows-integration-check OBJECT
-        ../app/business/platform/WindowsTunnel.cc
+        ../../partout/runtimes/windows/winrt/WinRTTunnelStrategy.cc
+        ../app/business/platform/WindowsTunnelPreferences.cc
         ../app/ui/platform/WindowsConfigurationPicker.cc
-        ../app/ui/platform/WindowsFileActivation.cc
+        ../app/ui/platform/FileActivation.cc
         ../app/business/platform/WindowsHttpClient.cc
         ../app/ui/platform/WindowsURLLauncher.cc
         ../app/ui/platform/WindowsIssueHandoff.cc)
@@ -63,12 +65,9 @@ if(WIN32)
 
     # Native settings translation constructs WinRT values without starting a VPN.
     add_executable(passepartout-windows-settings-test ../../partout/tests/c/windows/winrt/TunSettingsTests.cc)
-    target_link_libraries(passepartout-windows-settings-test PRIVATE partout-winrt-backend nlohmann_json::nlohmann_json)
+    target_link_libraries(passepartout-windows-settings-test PRIVATE partout-winrt-backend Partout::Models)
     target_compile_features(passepartout-windows-settings-test PRIVATE cxx_std_20)
     target_compile_options(passepartout-windows-settings-test PRIVATE /UNDEBUG /utf-8 /EHsc /permissive-)
     add_test(NAME passepartout-windows-settings COMMAND passepartout-windows-settings-test)
-
-    # FIXME: ### Restore the Windows interactive-credentials test target when
-    # Partout master includes its source and implementation from 39140181.
 
 endif()

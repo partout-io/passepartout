@@ -8,10 +8,12 @@ set(APP_SOURCES
     app/ui/app/MainView.cc
     app/ui/app/ProfileListView.cc
     app/ui/extensions/AppProfile.cc
-    app/ui/extensions/ConfigurationPicker.cc
+    app/ui/extensions/FilePath.cc
     app/ui/extensions/FormatDataUnit.cc
     app/ui/extensions/Module.cc
-    app/ui/extensions/Presentation.cc
+    app/ui/platform/ConfigurationPicker.cc
+    app/ui/platform/FileActivation.cc
+    app/ui/platform/Presentation.cc
     app/ui/profile/DNSView.cc
     app/ui/profile/HTTPProxyView.cc
     app/ui/profile/IPView.cc
@@ -46,9 +48,8 @@ set(APP_SOURCES
 if(WIN32)
     list(APPEND APP_SOURCES
         app/business/platform/WindowsHttpClient.cc
-        app/business/platform/WindowsTunnel.cc
+        app/business/platform/WindowsTunnelPreferences.cc
         app/ui/platform/WindowsConfigurationPicker.cc
-        app/ui/platform/WindowsFileActivation.cc
         app/ui/platform/WindowsIssueHandoff.cc
         app/ui/platform/WindowsURLLauncher.cc
     )
@@ -57,12 +58,13 @@ set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/AppLogger.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/AtomicFile.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/BackgroundWorker.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/FileActivation.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/Credits.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/FileActivationInbox.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/TunnelInfo.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/AppSession.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ConfigManager.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/IssueReporter.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ProfileManager.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/TunnelManager.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/VersionChecker.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/models/AppSnapshot.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/models/ConfigurationFiles.cc"

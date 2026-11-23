@@ -10,14 +10,14 @@
 #include <wx/artprov.h>
 #include <wx/bmpbndl.h>
 namespace Passepartout {
-wxIcon Theme::AppIcon(wxWindow *window, int sizeDIP) {
-    wxMemoryInputStream stream(appIconData, sizeof(appIconData));
+wxIcon Theme::AppIcon(wxWindow *window, int size_dip) {
+    wxMemoryInputStream stream(AppIconData, sizeof(AppIconData));
     wxPNGHandler decoder;
     wxImage image;
     if (!decoder.LoadFile(&image, stream)) return {};
     const auto fallback = window->FromDIP(16);
-    const auto width = sizeDIP ? window->FromDIP(sizeDIP) : wxSystemSettings::GetMetric(wxSYS_SMALLICON_X, window);
-    const auto height = sizeDIP ? window->FromDIP(sizeDIP) : wxSystemSettings::GetMetric(wxSYS_SMALLICON_Y, window);
+    const auto width = size_dip ? window->FromDIP(size_dip) : wxSystemSettings::GetMetric(wxSYS_SMALLICON_X, window);
+    const auto height = size_dip ? window->FromDIP(size_dip) : wxSystemSettings::GetMetric(wxSYS_SMALLICON_Y, window);
     image.Rescale(width > 0 ? width : fallback, height > 0 ? height : fallback,
                   wxIMAGE_QUALITY_HIGH);
     wxIcon icon;
@@ -25,13 +25,13 @@ wxIcon Theme::AppIcon(wxWindow *window, int sizeDIP) {
     return icon;
 }
 namespace {
-wxIcon WindowIcon(wxWindow *window, const wxArtID &art, const wxString &fallbackSVG) {
+wxIcon WindowIcon(wxWindow *window, const wxArtID &art, const wxString &fallback_svg) {
     const int metric = wxSystemSettings::GetMetric(wxSYS_SMALLICON_X, window);
     const int size = metric > 0 ? metric : window->FromDIP(16);
     auto icon = wxArtProvider::GetIcon(art, wxART_FRAME_ICON, wxSize(size, size));
     if (icon.IsOk()) return icon;
     const auto colour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT).GetAsString(wxC2S_HTML_SYNTAX);
-    const auto svg = wxString::Format(fallbackSVG, colour);
+    const auto svg = wxString::Format(fallback_svg, colour);
     const auto bundle = wxBitmapBundle::FromSVG(svg.utf8_str(), wxSize(size, size));
     if (bundle.IsOk()) icon.CopyFromBitmap(bundle.GetBitmap(wxSize(size, size)));
     return icon;
@@ -86,7 +86,7 @@ void Theme::Monospace(wxWindow *window) {
         .Style(inherited.GetStyle()));
     window->SetFont(font);
 }
-wxActivityIndicator *ThemeProgressView(wxWindow *parent) {
+wxActivityIndicator *Theme::ProgressView(wxWindow *parent) {
     auto *indicator = new wxActivityIndicator(parent, wxID_ANY);
 #ifdef __WXMSW__
     // Buffer background erasure and dot painting together on Windows.
@@ -94,7 +94,7 @@ wxActivityIndicator *ThemeProgressView(wxWindow *parent) {
 #endif
     return indicator;
 }
-wxStaticText *ThemeEmptyMessage(wxWindow *parent, const wxString &message) {
+wxStaticText *Theme::EmptyMessage(wxWindow *parent, const wxString &message) {
     return new wxStaticText(parent, wxID_ANY, message, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
 }
 }

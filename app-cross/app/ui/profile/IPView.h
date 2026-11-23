@@ -9,6 +9,6 @@
 namespace Passepartout {
 class IPView final : public ModuleDetailView {
 public:
-    IPView(wxWindow *parent, const Partout::Models::IPModule &module, OpenModuleContent openContent);
+    IPView(wxWindow *parent, const Partout::Models::IPModule &module, OpenModuleContent open_content);
 };
 }

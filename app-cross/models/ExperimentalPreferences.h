@@ -18,9 +18,9 @@
 #ifndef ExperimentalPreferences_H_
 #define ExperimentalPreferences_H_
 
+#include <partout/models/Helpers.h>
 #include "ConfigFlag.h"
 #include <vector>
-#include <partout/Json.h>
 
 namespace Passepartout::Models
 {

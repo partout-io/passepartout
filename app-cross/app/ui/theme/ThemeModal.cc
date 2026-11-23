@@ -7,12 +7,12 @@
 
 namespace Passepartout {
 ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
-    const std::function<wxWindow *(wxWindow *)> &makeContent, Mode mode, Sizing sizing, std::function<bool()> canAccept)
+    const std::function<wxWindow *(wxWindow *)> &make_content, Mode mode, Sizing sizing, std::function<bool()> can_accept)
     : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
         wxDEFAULT_DIALOG_STYLE | (sizing == Sizing::FixedContent ? 0 : wxRESIZE_BORDER)) {
     Theme::Apply(this);
     auto *layout = new wxBoxSizer(wxVERTICAL);
-    auto *content = makeContent(this);
+    auto *content = make_content(this);
     layout->Add(content, 1, wxEXPAND);
     auto *buttons = new wxStdDialogButtonSizer;
     auto *close = new wxButton(this, wxID_CANCEL, Localized(mode == Mode::Editable ? StringKey::GlobalActionsCancel : StringKey::GlobalActionsClose));
@@ -22,12 +22,12 @@ ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
         buttons->SetAffirmativeButton(ok);
         SetAffirmativeId(wxID_OK);
         ok->SetDefault();
-        ok->Enable(!canAccept || canAccept());
-        ok->Bind(wxEVT_UPDATE_UI, [canAccept](wxUpdateUIEvent &event) {
-            event.Enable(!canAccept || canAccept());
+        ok->Enable(!can_accept || can_accept());
+        ok->Bind(wxEVT_UPDATE_UI, [can_accept](wxUpdateUIEvent &event) {
+            event.Enable(!can_accept || can_accept());
         });
-        ok->Bind(wxEVT_BUTTON, [this, canAccept](wxCommandEvent &) {
-            if (canAccept && !canAccept()) return;
+        ok->Bind(wxEVT_BUTTON, [this, can_accept](wxCommandEvent &) {
+            if (can_accept && !can_accept()) return;
             EndModal(wxID_OK);
         });
     }

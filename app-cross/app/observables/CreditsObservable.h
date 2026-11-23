@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "Credits.h"
+#include "../business/extensions/Credits.h"
 #include "../business/strategy/HttpClient.h"
 #include "../business/extensions/BackgroundWorker.h"
 #include <map>
@@ -16,7 +16,8 @@ public:
         bool loading = false;
         bool failed = false;
     };
-    CreditsObservable(std::string resource, std::unique_ptr<HttpClient> client);
+    CreditsObservable(std::string resource, std::unique_ptr<HttpClient> client,
+                      Models::Platform::ePlatform platform = Credits::CurrentPlatform());
     ~CreditsObservable();
     const Models::Credits &Snapshot() const;
     bool HasLoadError() const;
@@ -24,7 +25,7 @@ public:
     void LoadLicense(const std::string &url);
 private:
     Models::Credits credits_{};
-    bool loadError_ = false;
+    bool load_error_ = false;
     std::unique_ptr<HttpClient> client_;
     mutable std::mutex mutex_;
     std::map<std::string, Content> content_;

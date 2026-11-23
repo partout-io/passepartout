@@ -20,16 +20,16 @@ class AppSession;
 class AppContext {
 public:
     const Models::AppConstants constants;
-    const CrossConstants crossConstants;
-    const std::string applicationVersion;
-    const std::unique_ptr<WireGuardKeyGenerator> wireGuardKeys;
+    const CrossConstants cross_constants;
+    const std::string application_version;
+    const std::unique_ptr<WireGuardKeyGenerator> wire_guard_keys;
 private:
     std::shared_ptr<AppLogger> logger_;
     std::unique_ptr<AppSession> session_;
 public:
-    AppContext(const std::filesystem::path &dataRoot, bool demo,
-               Models::AppConstants constants = LoadAppConstants(),
-               CrossConstants crossConstants = defaultCrossConstants);
+    AppContext(const std::filesystem::path &data_root, bool demo,
+               Models::AppConstants constants = Constants::Load(),
+               CrossConstants cross_constants = DefaultCrossConstants);
     ~AppContext();
     ProfileObservable profiles;
     TunnelObservable tunnel;

@@ -10,7 +10,7 @@
 namespace Passepartout {
 // A bounded, versioned activation message contains copied configuration content,
 // never sender-owned files or handles whose lifetime could end before import.
-class FileActivation {
+class FileActivationInbox {
 public:
     using Handler = std::function<bool(std::shared_ptr<const ConfigurationFiles>)>;
     static constexpr std::size_t MaximumBytes = 64 * 1024 * 1024;

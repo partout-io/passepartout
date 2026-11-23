@@ -50,7 +50,7 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
         }, module);
         wxVector<wxVariant> cells;
         cells.push_back(wxVariant(enabled));
-        cells.push_back(wxVariant(ModuleTitle(module)));
+        cells.push_back(wxVariant(Modules::Title(module)));
         AppendItem(cells, index + 2);
     }
     SelectRow(0);
@@ -58,8 +58,8 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
         if (!item.IsOk()) return;
         const auto target = GetItemData(item);
         const auto row = static_cast<unsigned>(ItemToRow(item));
-        if (row == selectedRow_) return;
-        selectedRow_ = row;
+        if (row == selected_row_) return;
+        selected_row_ = row;
         selected(target - 1);
     };
     Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, [select](wxDataViewEvent &event) {
@@ -91,15 +91,15 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
 }
 void ProfileModuleList::UpdateMetrics() {
     const int padding = 2 * Theme::Spacing(this);
-    const int checkboxWidth = std::max(GetCharHeight(), wxRendererNative::Get().GetCheckBoxSize(this).x) + padding;
-    GetColumn(0)->SetWidth(checkboxWidth);
-    int titleWidth = 0;
+    const int checkbox_width = std::max(GetCharHeight(), wxRendererNative::Get().GetCheckBoxSize(this).x) + padding;
+    GetColumn(0)->SetWidth(checkbox_width);
+    int title_width = 0;
     for (unsigned row = 0; row < GetItemCount(); ++row) {
-        titleWidth = std::max(titleWidth, GetTextExtent(GetTextValue(row, 1)).x);
+        title_width = std::max(title_width, GetTextExtent(GetTextValue(row, 1)).x);
     }
-    titleWidth += padding;
-    GetColumn(1)->SetWidth(titleWidth);
-    int width = checkboxWidth + titleWidth;
+    title_width += padding;
+    GetColumn(1)->SetWidth(title_width);
+    int width = checkbox_width + title_width;
     width += std::max(0, wxSystemSettings::GetMetric(wxSYS_VSCROLL_X, this));
     SetMinSize(ClientToWindowSize(wxSize(width, GetCharHeight() * 6)));
 }

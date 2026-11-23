@@ -19,14 +19,6 @@ CreditsView::CreditsView(wxWindow *parent, CreditsObservable &credits, SettingsP
     const auto &state = credits.Snapshot();
     Section(Localized(StringKey::ViewsSettingsCreditsLicenses));
     for (const auto &license : state.licenses) {
-#ifdef _WIN32
-        const auto platform = Models::Platform::windows;
-#else
-        const auto platform = Models::Platform::unixLike;
-#endif
-        if (license.platforms && std::none_of(license.platforms->begin(), license.platforms->end(), [platform](const auto &value) {
-            return value.value == platform;
-        })) continue;
         const auto title = wxString::FromUTF8(license.name);
         ContentLink(title, [present, title, &credits, url = license.licenseURL] {
             present(title, [&credits, url, title](wxWindow *parent) {

@@ -18,10 +18,10 @@
 #ifndef IAPEventEligibleFeatures_H_
 #define IAPEventEligibleFeatures_H_
 
+#include <partout/models/Helpers.h>
 #include "AppFeature.h"
-#include <string>
 #include <vector>
-#include <partout/Json.h>
+#include <string>
 
 namespace Passepartout::Models
 {

@@ -32,12 +32,12 @@ wxString StatusText(Status status) {
     }
 }
 wxString TransferText(const AppSnapshot &state, const std::string &id) {
-    if (!state.tunnelAvailable) return {};
+    if (!state.tunnel_available) return {};
     for (const auto &tunnel : state.tunnels) {
         if (tunnel.id != id || tunnel.status.value != Status::connected || !tunnel.transfer) continue;
         const auto &transfer = *tunnel.transfer;
         if (transfer.received < 0 || transfer.sent < 0) return {};
-        return Text(Passepartout::TransferText(transfer, [](double value, int precision) {
+        return Text(Passepartout::Profiles::TransferText(transfer, [](double value, int precision) {
             return wxNumberFormatter::ToString(value, precision, wxNumberFormatter::Style_WithThousandsSep).ToStdString(wxConvUTF8);
         }));
     }
@@ -45,10 +45,10 @@ wxString TransferText(const AppSnapshot &state, const std::string &id) {
 }
 }
 ProfileListView::ProfileListView(wxWindow *parent, TunnelObservable &tunnel,
-    std::function<void()> selectionChanged,
+    std::function<void()> selection_changed,
     std::function<void(std::vector<std::string>)> remove,
     std::function<void(std::string)> edit)
-    : wxPanel(parent), tunnel_(tunnel), selectionChanged_(std::move(selectionChanged)),
+    : wxPanel(parent), tunnel_(tunnel), selection_changed_(std::move(selection_changed)),
       remove_(std::move(remove)), edit_(std::move(edit)) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
     search_ = new wxSearchCtrl(this, wxID_ANY);
@@ -75,16 +75,16 @@ ProfileListView::ProfileListView(wxWindow *parent, TunnelObservable &tunnel,
     SetSizer(layout);
     search_->Bind(wxEVT_TEXT, [this](wxCommandEvent &) {
         RenderRows();
-        selectionChanged_();
+        selection_changed_();
     });
     list_->Bind(wxEVT_DATAVIEW_SELECTION_CHANGED, [this](wxDataViewEvent &) {
-        if (!rendering_) selectionChanged_();
+        if (!rendering_) selection_changed_();
     });
     list_->Bind(wxEVT_DATAVIEW_ITEM_VALUE_CHANGED, &ProfileListView::ToggleProfile, this);
     list_->Bind(wxEVT_DATAVIEW_ITEM_ACTIVATED, [this](wxDataViewEvent &event) {
         if (event.GetColumn() == ProfileListView::ToggleColumn || picking_) return;
         const auto row = list_->ItemToRow(event.GetItem());
-        if (row >= 0 && static_cast<std::size_t>(row) < visibleIds_.size()) edit_(visibleIds_[row]);
+        if (row >= 0 && static_cast<std::size_t>(row) < visible_ids_.size()) edit_(visible_ids_[row]);
     });
     list_->Bind(wxEVT_DATAVIEW_ITEM_CONTEXT_MENU, [this](wxDataViewEvent &event) {
         const auto item = event.GetItem();
@@ -108,7 +108,7 @@ std::vector<std::string> ProfileListView::SelectedIds() const {
     list_->GetSelections(selected);
     for (const auto &item : selected) {
         const auto row = list_->ItemToRow(item);
-        if (row >= 0 && static_cast<std::size_t>(row) < visibleIds_.size()) ids.push_back(visibleIds_[row]);
+        if (row >= 0 && static_cast<std::size_t>(row) < visible_ids_.size()) ids.push_back(visible_ids_[row]);
     }
     return ids;
 }
@@ -121,21 +121,21 @@ void ProfileListView::RenderRows() {
     for (const auto &profile : snapshot_.profiles) {
         if (query.empty() || Text(profile.name).Lower().Contains(query)) ids.push_back(profile.id);
     }
-    const bool rebuild = ids != visibleIds_;
+    const bool rebuild = ids != visible_ids_;
     if (rebuild) {
         list_->DeleteAllItems();
     }
-    visibleIds_ = std::move(ids);
+    visible_ids_ = std::move(ids);
     unsigned row = 0;
     for (const auto &profile : snapshot_.profiles) {
         if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
         const auto toggle = TunnelObservable::StateForProfile(snapshot_, profile.id);
-        const auto status = snapshot_.tunnelAvailable &&
-            snapshot_.tunnelObservationErrors.find(profile.id) == snapshot_.tunnelObservationErrors.end()
+        const auto status = snapshot_.tunnel_available &&
+            snapshot_.tunnel_observation_errors.find(profile.id) == snapshot_.tunnel_observation_errors.end()
             ? StatusText(toggle.status) : wxString();
         const auto transfer = TransferText(snapshot_, profile.id);
-        if (rebuild) AppendProfile(Text(profile.name), status, toggle.isOn, toggle.canInteract && !picking_, transfer);
-        else UpdateProfile(row, Text(profile.name), status, toggle.isOn, toggle.canInteract && !picking_, transfer);
+        if (rebuild) AppendProfile(Text(profile.name), status, toggle.is_on, toggle.can_interact && !picking_, transfer);
+        else UpdateProfile(row, Text(profile.name), status, toggle.is_on, toggle.can_interact && !picking_, transfer);
         ++row;
     }
     if (rebuild) RestoreSelection(selected);
@@ -143,20 +143,20 @@ void ProfileListView::RenderRows() {
     rendering_ = false;
 }
 void ProfileListView::RestoreSelection(const std::vector<std::string> &ids) {
-    const bool wasRendering = rendering_;
+    const bool was_rendering = rendering_;
     rendering_ = true;
     list_->UnselectAll();
-    for (std::size_t row = 0; row < visibleIds_.size(); ++row) {
-        if (std::find(ids.begin(), ids.end(), visibleIds_[row]) == ids.end()) continue;
+    for (std::size_t row = 0; row < visible_ids_.size(); ++row) {
+        if (std::find(ids.begin(), ids.end(), visible_ids_[row]) == ids.end()) continue;
         list_->SelectRow(static_cast<unsigned>(row));
     }
-    rendering_ = wasRendering;
+    rendering_ = was_rendering;
 }
 void ProfileListView::ToggleProfile(wxDataViewEvent &event) {
     if (picking_ || rendering_ || event.GetColumn() != ProfileListView::ToggleColumn) return;
     const auto row = list_->ItemToRow(event.GetItem());
-    if (row < 0 || static_cast<std::size_t>(row) >= visibleIds_.size()) return;
-    tunnel_.SetEnabled(visibleIds_[row], list_->GetToggleValue(row, ProfileListView::ToggleColumn));
+    if (row < 0 || static_cast<std::size_t>(row) >= visible_ids_.size()) return;
+    tunnel_.SetEnabled(visible_ids_[row], list_->GetToggleValue(row, ProfileListView::ToggleColumn));
     // Restore observed state immediately; the next snapshot supplies completion
     // or failure instead of displaying an optimistic connection as successful.
     snapshot_ = tunnel_.Snapshot();
@@ -166,17 +166,17 @@ bool ProfileListView::HasCollectionFocus() const {
     auto *focus = wxWindow::FindFocus();
     return focus && (focus == list_ || list_->IsDescendant(focus));
 }
-void ProfileListView::ShowContextMenu(const wxPoint &screenPosition) {
+void ProfileListView::ShowContextMenu(const wxPoint &screen_position) {
     const auto ids = SelectedIds();
     if (ids.empty()) return;
     wxWindow *collection = list_;
     wxPoint position;
-    if (screenPosition != wxDefaultPosition) position = collection->ScreenToClient(screenPosition);
+    if (screen_position != wxDefaultPosition) position = collection->ScreenToClient(screen_position);
     else position = list_->GetItemRect(list_->GetCurrentItem()).GetBottomLeft();
     wxMenu menu;
     if (ids.size() == 1) {
         menu.Append(wxID_EDIT, Localized(StringKey::GlobalActionsEdit));
-        menu.Enable(wxID_EDIT, !picking_ && !snapshot_.foregroundBusy);
+        menu.Enable(wxID_EDIT, !picking_ && !snapshot_.foreground_busy);
     }
     menu.Append(wxID_DELETE, Localized(StringKey::GlobalActionsRemove));
     menu.Enable(wxID_DELETE, !picking_ && ProfileObservable::CanRemove(tunnel_.Snapshot(), ids));
@@ -186,19 +186,19 @@ void ProfileListView::ShowContextMenu(const wxPoint &screenPosition) {
     if (action == wxID_DELETE) remove_(ids);
     else if (action == wxID_EDIT && ids.size() == 1) edit_(ids.front());
 }
-void ProfileListView::AppendProfile(const wxString &name, const wxString &status, bool isOn, bool enabled, const wxString &transfer) {
+void ProfileListView::AppendProfile(const wxString &name, const wxString &status, bool is_on, bool enabled, const wxString &transfer) {
     wxVector<wxVariant> values;
     values.push_back(wxVariant(name));
     values.push_back(wxVariant(status));
     values.push_back(wxVariant(transfer));
-    values.push_back(wxVariant(isOn));
+    values.push_back(wxVariant(is_on));
     list_->AppendItem(values, enabled ? 1 : 0);
 }
-void ProfileListView::UpdateProfile(unsigned row, const wxString &name, const wxString &status, bool isOn, bool enabled, const wxString &transfer) {
+void ProfileListView::UpdateProfile(unsigned row, const wxString &name, const wxString &status, bool is_on, bool enabled, const wxString &transfer) {
     list_->SetItemData(list_->RowToItem(row), enabled ? 1 : 0);
     list_->SetTextValue(name, row, 0);
     list_->SetTextValue(status, row, 1);
-    list_->SetToggleValue(isOn, row, ToggleColumn);
+    list_->SetToggleValue(is_on, row, ToggleColumn);
     list_->SetTextValue(transfer, row, TransferColumn);
 }
 }

@@ -17,13 +17,13 @@ struct ConfigurationSource {
 // queued import, including failures; ordinary command-line files need no cleanup.
 struct ConfigurationFiles {
     explicit ConfigurationFiles(std::vector<std::filesystem::path> values, std::size_t failures = 0)
-        : paths(std::move(values)), selectionFailures(failures) {}
+        : paths(std::move(values)), selection_failures(failures) {}
     virtual ~ConfigurationFiles() = default;
     virtual std::size_t Count() const;
     virtual ConfigurationSource Read(std::size_t index) const;
     virtual void Cancel() const noexcept {}
     const std::vector<std::filesystem::path> paths;
-    const std::size_t selectionFailures;
+    const std::size_t selection_failures;
 };
 struct MemoryConfigurationFiles final : ConfigurationFiles {
     explicit MemoryConfigurationFiles(std::vector<ConfigurationSource> values, std::size_t failures = 0);

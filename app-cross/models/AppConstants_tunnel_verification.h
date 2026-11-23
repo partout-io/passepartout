@@ -18,8 +18,8 @@
 #ifndef AppConstants_tunnel_verification_H_
 #define AppConstants_tunnel_verification_H_
 
+#include <partout/models/Helpers.h>
 #include "AppConstantsTunnelVerificationParameters.h"
-#include <partout/Json.h>
 
 namespace Passepartout::Models
 {

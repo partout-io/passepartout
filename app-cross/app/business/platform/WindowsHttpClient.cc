@@ -63,7 +63,7 @@ private:
     std::atomic_bool canceled_{false};
 };
 }
-std::unique_ptr<HttpClient> MakeWindowsHttpClient(std::chrono::milliseconds timeout) {
+std::unique_ptr<HttpClient> Windows::MakeHttpClient(std::chrono::milliseconds timeout) {
     return std::make_unique<WindowsHttpClient>(timeout);
 }
 }

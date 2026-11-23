@@ -11,7 +11,6 @@
 */
 
 #include "Credits_notices_inner.h"
-#include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {

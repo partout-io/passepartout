@@ -20,12 +20,12 @@ class VersionChecker {
 public:
     struct State {
         std::optional<std::string> latest;
-        std::string downloadURL;
+        std::string download_url;
     };
     using SaveVersion = std::function<void(std::int64_t, std::optional<std::string>)>;
     VersionChecker(std::string current, std::unique_ptr<VersionStrategy> strategy,
-                   std::string destination, std::int64_t rateLimitSeconds,
-                   std::optional<std::int64_t> lastChecked, std::optional<std::string> cached,
+                   std::string destination, std::int64_t rate_limit_seconds,
+                   std::optional<std::int64_t> last_checked, std::optional<std::string> cached,
                    SaveVersion save);
     bool Available() const;
     State Snapshot() const;
@@ -36,8 +36,8 @@ private:
     std::string current_;
     std::unique_ptr<VersionStrategy> strategy_;
     std::string destination_;
-    std::int64_t rateLimitSeconds_;
-    std::optional<std::int64_t> lastChecked_;
+    std::int64_t rate_limit_seconds_;
+    std::optional<std::int64_t> last_checked_;
     std::optional<std::string> cached_;
     SaveVersion save_;
 };

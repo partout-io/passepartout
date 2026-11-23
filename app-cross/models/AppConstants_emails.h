@@ -18,9 +18,9 @@
 #ifndef AppConstants_emails_H_
 #define AppConstants_emails_H_
 
+#include <partout/models/Helpers.h>
 #include <string>
 #include "AppConstants_emails_recipients.h"
-#include <partout/Json.h>
 
 namespace Passepartout::Models
 {

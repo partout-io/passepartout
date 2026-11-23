@@ -8,42 +8,42 @@
 
 namespace Passepartout {
 void TunnelObservable::Connect(std::string id) {
-    if (interactiveLogin_) return;
+    if (interactive_login_) return;
     const auto editor = session_.CreateEditor(id);
     if (!editor) return;
-    interactiveLogin_ = InteractiveLogin::FromProfile(editor->Original());
-    if (!interactiveLogin_) session_.Connect(std::move(id));
+    interactive_login_ = InteractiveLogin::FromProfile(editor->Original());
+    if (!interactive_login_) session_.Connect(std::move(id));
 }
 TunnelObservable::ToggleState TunnelObservable::StateForProfile(const AppSnapshot &state, const std::string &id) {
     ToggleState result;
     for (const auto &tunnel : state.tunnels) {
         if (tunnel.id == id) {
-            result.isOn = tunnel.isEnabled;
+            result.is_on = tunnel.isEnabled;
             result.status = tunnel.status.value;
         }
     }
     const bool exists = std::any_of(state.profiles.begin(), state.profiles.end(), [&](const auto &profile) {
         return profile.id == id;
     });
-    result.canInteract = exists && state.loaded && !state.foregroundBusy && !state.pendingProfile && state.tunnelAvailable &&
-        std::find(state.recoveringProfiles.begin(), state.recoveringProfiles.end(), id) == state.recoveringProfiles.end() &&
-        state.tunnelObservationErrors.find(id) == state.tunnelObservationErrors.end() &&
+    result.can_interact = exists && state.loaded && !state.foreground_busy && !state.pending_profile && state.tunnel_available &&
+        std::find(state.recovering_profiles.begin(), state.recovering_profiles.end(), id) == state.recovering_profiles.end() &&
+        state.tunnel_observation_errors.find(id) == state.tunnel_observation_errors.end() &&
         result.status != Status::disconnecting;
     return result;
 }
 void TunnelObservable::SetEnabled(const std::string &id, bool enabled) {
     const auto state = StateForProfile(Snapshot(), id);
-    if (!state.canInteract || state.isOn == enabled) return;
+    if (!state.can_interact || state.is_on == enabled) return;
     if (enabled) Connect(id);
     else Disconnect(id);
 }
 std::optional<InteractiveLogin> TunnelObservable::TakeInteractiveLogin() {
-    auto login = std::move(interactiveLogin_);
-    interactiveLogin_.reset();
+    auto login = std::move(interactive_login_);
+    interactive_login_.reset();
     return login;
 }
 void TunnelObservable::CompleteInteractiveLogin(InteractiveLogin login) {
-    if (!login.CanSubmit() || !StateForProfile(Snapshot(), login.original.id).canInteract) return;
+    if (!login.CanSubmit() || !StateForProfile(Snapshot(), login.original.id).can_interact) return;
     const auto id = login.original.id;
     session_.Connect(id, std::move(login.credentials), std::move(login.original));
 }

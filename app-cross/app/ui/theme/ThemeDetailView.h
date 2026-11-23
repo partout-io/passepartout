@@ -44,16 +44,16 @@ private:
         int width = -1;
     };
     std::vector<WrappedLabel> wrapped_;
-    std::map<wxCheckBox *, wxStaticText *> toggleSupport_;
-    std::vector<std::vector<wxButton *>> buttonGroups_{1};
-    bool wrapPending_ = false;
+    std::map<wxCheckBox *, wxStaticText *> toggle_support_;
+    std::vector<std::vector<wxButton *>> button_groups_{1};
+    bool wrap_pending_ = false;
     wxSizerFlags SectionRowFlags(bool expand = true);
     wxFlexGridSizer *FormRows();
     wxStaticText *Value(const wxString &value, bool monospace = false);
     wxBoxSizer *layout_;
     Presentation presentation_;
-    wxWindow *contentParent_;
+    wxWindow *content_parent_;
     wxSizer *section_;
-    wxFlexGridSizer *formRows_ = nullptr;
+    wxFlexGridSizer *form_rows_ = nullptr;
 };
 }

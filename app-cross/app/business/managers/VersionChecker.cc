@@ -25,10 +25,10 @@ std::optional<std::array<unsigned, 4>> Parse(const std::string &text) {
 }
 }
 VersionChecker::VersionChecker(std::string current, std::unique_ptr<VersionStrategy> strategy,
-    std::string destination, std::int64_t rateLimitSeconds, std::optional<std::int64_t> lastChecked,
+    std::string destination, std::int64_t rate_limit_seconds, std::optional<std::int64_t> last_checked,
     std::optional<std::string> cached, SaveVersion save)
     : current_(std::move(current)), strategy_(std::move(strategy)), destination_(std::move(destination)),
-      rateLimitSeconds_(rateLimitSeconds), lastChecked_(lastChecked), cached_(std::move(cached)), save_(std::move(save)) {}
+      rate_limit_seconds_(rate_limit_seconds), last_checked_(last_checked), cached_(std::move(cached)), save_(std::move(save)) {}
 bool VersionChecker::Available() const {
     return strategy_ && destination_.compare(0, 8, "https://") == 0;
 }
@@ -39,20 +39,20 @@ VersionChecker::State VersionChecker::Snapshot() const {
     const auto latest = Parse(*cached_);
     if (current && latest && *latest > *current) {
         state.latest = cached_;
-        state.downloadURL = destination_;
+        state.download_url = destination_;
     }
     return state;
 }
 void VersionChecker::Check(std::int64_t now) {
     if (!Available()) return;
-    if (lastChecked_ && now >= *lastChecked_ && (now - *lastChecked_) / 1000 < rateLimitSeconds_) return;
+    if (last_checked_ && now >= *last_checked_ && (now - *last_checked_) / 1000 < rate_limit_seconds_) return;
     // Network failures leave the last successful result intact. Malformed
     // releases clear it, so a stale release is never offered as a fresh result.
     const auto latest = strategy_->LatestVersion();
     const auto parsed = Parse(latest);
     const std::optional<std::string> value = parsed ? std::optional(latest) : std::nullopt;
     save_(now, value);
-    lastChecked_ = now;
+    last_checked_ = now;
     cached_ = value;
     if (!parsed) throw std::runtime_error("Invalid release version.");
 }

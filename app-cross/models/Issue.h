@@ -18,10 +18,10 @@
 #ifndef Issue_H_
 #define Issue_H_
 
+#include <partout/models/Helpers.h>
 #include <string>
 #include <vector>
 #include "IssueAttachment.h"
-#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models

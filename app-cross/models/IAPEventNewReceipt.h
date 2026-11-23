@@ -18,10 +18,10 @@
 #ifndef IAPEventNewReceipt_H_
 #define IAPEventNewReceipt_H_
 
+#include <partout/models/Helpers.h>
+#include "OriginalPurchase.h"
 #include <string>
 #include <vector>
-#include "OriginalPurchase.h"
-#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models

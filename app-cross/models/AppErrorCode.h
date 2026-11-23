@@ -18,8 +18,8 @@
 #ifndef AppErrorCode_H_
 #define AppErrorCode_H_
 
+#include <partout/models/Helpers.h>
 #include <string>
-#include <partout/Json.h>
 
 namespace Passepartout::Models
 {

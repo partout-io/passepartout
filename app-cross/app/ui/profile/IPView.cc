@@ -6,8 +6,8 @@
 #include "../../strings/Unlocalized.h"
 
 namespace Passepartout {
-IPView::IPView(wxWindow *parent, const Partout::Models::IPModule &module, OpenModuleContent openContent)
-    : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
+IPView::IPView(wxWindow *parent, const Partout::Models::IPModule &module, OpenModuleContent open_content)
+    : ModuleDetailView(parent, std::move(open_content), Presentation::Form) {
     using namespace Strings::Unlocalized;
     const auto &c = module;
     IP(IPv4, c.ipv4);

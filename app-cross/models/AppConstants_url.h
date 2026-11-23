@@ -18,7 +18,7 @@
 #ifndef AppConstants_url_H_
 #define AppConstants_url_H_
 
-#include <partout/Json.h>
+#include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {

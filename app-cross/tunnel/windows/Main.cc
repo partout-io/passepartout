@@ -15,17 +15,15 @@
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Foundation.h>
 
-using namespace winrt::Windows::Foundation;
-
 namespace {
 
 #if defined(_DEBUG) && defined(PASSEPARTOUT_WAIT_FOR_DEBUGGER)
 void WaitForDebugger() {
-    constexpr ULONGLONG timeoutMilliseconds = 30000;
+    constexpr ULONGLONG TimeoutMilliseconds = 30000;
     const auto started = GetTickCount64();
     OutputDebugStringW(L"VPN host waiting up to 30 seconds for a debugger.\n");
     while (!IsDebuggerPresent()) {
-        if (GetTickCount64() - started >= timeoutMilliseconds) {
+        if (GetTickCount64() - started >= TimeoutMilliseconds) {
             OutputDebugStringW(L"VPN host debugger wait timed out; continuing startup.\n");
             return;
         }
@@ -36,7 +34,7 @@ void WaitForDebugger() {
 }
 #endif
 
-struct PluginFactories : winrt::implements<PluginFactories, IGetActivationFactory> {
+struct PluginFactories : winrt::implements<PluginFactories, winrt::Windows::Foundation::IGetActivationFactory> {
     PluginFactories() {
         // Keep one loader reference for the process lifetime, even if factory
         // lookup fails. Unloading this dependency chain can leave Go runtime
@@ -52,8 +50,8 @@ struct PluginFactories : winrt::implements<PluginFactories, IGetActivationFactor
         }
     }
 
-    IInspectable GetActivationFactory(winrt::hstring const &class_id) {
-        IActivationFactory factory{nullptr};
+    winrt::Windows::Foundation::IInspectable GetActivationFactory(winrt::hstring const &class_id) {
+        winrt::Windows::Foundation::IActivationFactory factory{nullptr};
         winrt::check_hresult(
             factory_(static_cast<HSTRING>(winrt::get_abi(class_id)), winrt::put_abi(factory)));
         return factory;
@@ -65,6 +63,8 @@ private:
 };
 
 } // namespace
+
+using namespace winrt::Windows::Foundation;
 
 static int RunHost() {
     try {

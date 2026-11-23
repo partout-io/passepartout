@@ -76,6 +76,13 @@ unrelated refactoring; keep changes within the task's scope.
   directly. Do not add protocol vocabulary to the shared localized catalogs or
   invent per-feature string sets.
 
+## Logging
+
+- Use the shared log category enum for each platform instead of hardcoded category
+  strings (for example, `LogCategory::core` in C++). Keep categories typed through
+  logging APIs and sink callbacks; convert them to stable, unlocalized strings
+  only when formatting output. Reuse existing categories before adding new ones.
+
 ## Application architecture
 
 - Use the same domain names and meanings across frontends. The shared application
@@ -116,6 +123,14 @@ unrelated refactoring; keep changes within the task's scope.
   newer actions, and give subscriptions and cross-domain effects clear owners.
 - Keep platform integration behind explicit boundaries. Adapt navigation to the
   form factor while keeping business rules independent of the UI toolkit.
+- Resolve platform differences below the view layer, in business managers,
+  extensions, or platform adapters exposed through shared interfaces. Views must
+  not branch on operating systems or choose platform-specific types, APIs, path
+  constructors, or encodings. Expose ready-to-render state through observables
+  and shared actions through presentation helpers. Keep native UI integration
+  in toolkit-specific adapters rather than introducing UI dependencies into
+  business code. Provide no-op implementations where a platform has no equivalent
+  behavior, so callers can use the same interface without platform checks.
 - Windows and Linux must maximize their shared wxWidgets look and feel. Reuse
   stock wxWidgets controls, Theme components, layouts, and interactions. Minimize
   platform-specific UI elements; introduce an exception only for a concrete

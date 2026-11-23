@@ -18,9 +18,9 @@
 #ifndef ProfileEventSave_H_
 #define ProfileEventSave_H_
 
-#include <partout/models/TaggedProfile.h>
+#include <partout/models/Helpers.h>
 #include <string>
-#include <partout/Json.h>
+#include <partout/models/TaggedProfile.h>
 #include <optional>
 
 namespace Passepartout::Models

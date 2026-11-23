@@ -9,6 +9,6 @@ namespace Passepartout {
 class OpenVPNCredentialsView final : public ThemeDetailView {
 public:
     OpenVPNCredentialsView(wxWindow *parent, const Partout::Models::OpenVpnCredentials &credentials,
-        std::function<void(std::string, std::string)> updateCredentials);
+        std::function<void(std::string, std::string)> update_credentials);
 };
 }

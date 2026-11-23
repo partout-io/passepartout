@@ -9,6 +9,6 @@
 namespace Passepartout {
 class HTTPProxyView final : public ModuleDetailView {
 public:
-    HTTPProxyView(wxWindow *parent, const Partout::Models::HTTPProxyModule &module, OpenModuleContent openContent);
+    HTTPProxyView(wxWindow *parent, const Partout::Models::HTTPProxyModule &module, OpenModuleContent open_content);
 };
 }

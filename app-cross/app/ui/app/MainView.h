@@ -12,13 +12,14 @@
 class MainView : public wxFrame {
 public:
     MainView(Passepartout::AppContext &context, bool demo,
-             Passepartout::ConfigurationPickerFactory pickerFactory);
+             Passepartout::Configuration::PickerFactory picker_factory
+    );
     ~MainView() override;
     void Quit();
     void Activate(std::shared_ptr<const Passepartout::ConfigurationFiles> files);
 private:
 #ifdef __WXMSW__
-    WXLRESULT MSWWindowProc(WXUINT message, WXWPARAM wParam, WXLPARAM lParam) override;
+    WXLRESULT MSWWindowProc(WXUINT message, WXWPARAM w_param, WXLPARAM l_param) override;
 #endif
     void Render();
     void UpdateActions();

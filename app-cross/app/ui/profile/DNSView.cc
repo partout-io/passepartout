@@ -6,8 +6,8 @@
 #include "../../strings/Unlocalized.h"
 
 namespace Passepartout {
-DNSView::DNSView(wxWindow *parent, const Partout::Models::DNSModule &module, OpenModuleContent openContent)
-    : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
+DNSView::DNSView(wxWindow *parent, const Partout::Models::DNSModule &module, OpenModuleContent open_content)
+    : ModuleDetailView(parent, std::move(open_content), Presentation::Form) {
     using namespace Strings::Unlocalized;
     const auto &c = module;
     const bool cleartext = std::holds_alternative<Partout::Models::DNSModuleProtocolTypeCleartext>(c.protocolType);

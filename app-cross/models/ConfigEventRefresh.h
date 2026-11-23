@@ -18,11 +18,10 @@
 #ifndef ConfigEventRefresh_H_
 #define ConfigEventRefresh_H_
 
+#include <partout/models/Helpers.h>
 #include "ConfigFlag.h"
-#include <partout/Json.h>
-#include <string>
 #include <vector>
-#include <partout/Json.h>
+#include <string>
 
 namespace Passepartout::Models
 {

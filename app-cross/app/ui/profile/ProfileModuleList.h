@@ -14,6 +14,6 @@ public:
         std::function<void(std::size_t)> selected);
 private:
     void UpdateMetrics();
-    unsigned selectedRow_ = 0;
+    unsigned selected_row_ = 0;
 };
 }

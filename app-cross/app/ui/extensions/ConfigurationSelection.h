@@ -4,10 +4,10 @@
 #pragma once
 #include "../../business/models/ConfigurationFiles.h"
 
-namespace Passepartout {
+namespace Passepartout::Configuration {
 // Keep failures from individual native file reads separate from batch failures.
 template<typename Stage>
-ConfigurationFiles CollectConfigurationFiles(std::size_t count, Stage stage) {
+ConfigurationFiles CollectFiles(std::size_t count, Stage stage) {
     std::vector<std::filesystem::path> paths;
     std::size_t failures = 0;
     for (std::size_t index = 0; index < count; ++index) {

@@ -6,8 +6,8 @@
 #include "AppConstants.h"
 #include "AppConstantsResource.h"
 
-namespace Passepartout {
-inline Models::AppConstants LoadAppConstants() {
-    return Models::AppConstants::FromJson(Partout::Json::Parse(appConstantsResource));
+namespace Passepartout::Constants {
+inline Models::AppConstants Load() {
+    return Models::AppConstants::FromJson(Partout::Json::Parse(AppConstantsResource));
 }
 }

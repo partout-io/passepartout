@@ -13,14 +13,14 @@ struct CrossConstants {
         std::string app = "Passepartout";
     } tags;
     struct Storage {
-        std::string demoPrefix = "demo-";
+        std::string demo_prefix = "demo-";
     } storage;
     struct Tunnel {
-        std::string serverUri = "https://passepartout.profile";
+        std::string server_uri = "https://passepartout.profile";
     } tunnel;
     struct CommandLine {
-        std::string demoArgument = "--demo";
-    } commandLine;
+        std::string demo_argument = "--demo";
+    } command_line;
 };
-inline const CrossConstants defaultCrossConstants{};
+inline const CrossConstants DefaultCrossConstants{};
 }

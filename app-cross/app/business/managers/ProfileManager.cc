@@ -20,16 +20,16 @@ void ProfileManager::Load() {
     loaded_ = true;
 }
 Profile ProfileManager::Import(const std::filesystem::path &path,
-    std::function<void(const Profile &)> registerProfile,
-    std::function<void(const std::string &)> rollbackRegistration,
-    std::function<void(const Profile &)> validateRegistration) {
-    return ImportText(ReadConfiguration(path), path.stem().u8string(), std::move(registerProfile),
-        std::move(rollbackRegistration), std::move(validateRegistration));
+    std::function<void(const Profile &)> register_profile,
+    std::function<void(const std::string &)> rollback_registration,
+    std::function<void(const Profile &)> validate_registration) {
+    return ImportText(ReadConfiguration(path), path.stem().u8string(), std::move(register_profile),
+        std::move(rollback_registration), std::move(validate_registration));
 }
 Profile ProfileManager::ImportText(const std::string &text, const std::string &name,
-    std::function<void(const Profile &)> registerProfile,
-    std::function<void(const std::string &)> rollbackRegistration,
-    std::function<void(const Profile &)> validateRegistration) {
+    std::function<void(const Profile &)> register_profile,
+    std::function<void(const std::string &)> rollback_registration,
+    std::function<void(const Profile &)> validate_registration) {
     if (!loaded_) throw std::runtime_error("Load the saved profiles before importing.");
     if (text.empty() || text.size() > 1024 * 1024 || text.find('\0') != std::string::npos)
         throw std::runtime_error("Invalid configuration content.");
@@ -46,27 +46,27 @@ Profile ProfileManager::ImportText(const std::string &text, const std::string &n
     auto committed = profiles_;
     committed.push_back(profile);
     SortProfiles(committed);
-    if (validateRegistration) validateRegistration(profile);
+    if (validate_registration) validate_registration(profile);
     journal_->Save({profile.id, std::nullopt, false});
     try {
-        if (registerProfile) registerProfile(profile);
+        if (register_profile) register_profile(profile);
         repository_->Save(profile);
         journal_->Remove(profile.id);
     } catch (...) {
         const auto failure = std::current_exception();
-        std::string cleanupError;
+        std::string cleanup_error;
         try {
             // Save may have written the object before failing on the index.
             repository_->Remove(profile.id);
         } catch (...) {
-            cleanupError = " Local import rollback failed.";
+            cleanup_error = " Local import rollback failed.";
         }
         try {
-            if (rollbackRegistration) rollbackRegistration(profile.id);
+            if (rollback_registration) rollback_registration(profile.id);
         } catch (...) {
-            cleanupError += " VPN registration rollback failed for " + profile.id + ".";
+            cleanup_error += " VPN registration rollback failed for " + profile.id + ".";
         }
-        if (!cleanupError.empty()) throw std::runtime_error("Unable to commit imported profile." + cleanupError);
+        if (!cleanup_error.empty()) throw std::runtime_error("Unable to commit imported profile." + cleanup_error);
         journal_->Remove(profile.id);
         std::rethrow_exception(failure);
     }
@@ -86,21 +86,21 @@ void ProfileManager::RestoreLocal(const ProfileTransaction &transaction) {
     else repository_->Remove(transaction.id);
 }
 void ProfileManager::Recover(const ProfileTransaction &transaction,
-    std::function<void(const ProfileTransaction &)> recoverRegistration) {
+    std::function<void(const ProfileTransaction &)> recover_registration) {
     RestoreLocal(transaction);
-    recoverRegistration(transaction);
+    recover_registration(transaction);
     journal_->Remove(transaction.id);
     profiles_ = repository_->Fetch();
 }
 void ProfileManager::Update(const Profile &original, const Profile &replacement,
-    std::function<void(const Profile &)> saveRegistration,
-    std::function<void(const Profile &)> validateRegistration) {
+    std::function<void(const Profile &)> save_registration,
+    std::function<void(const Profile &)> validate_registration) {
     RequireReady(original.id);
     if (original.id != replacement.id || Find(original.id) != original)
         throw std::runtime_error("The profile changed while it was being edited.");
     ValidateProfileIdentity(replacement);
     if (original == replacement) throw std::runtime_error("The profile has no changes.");
-    validateRegistration(original);
+    validate_registration(original);
     auto committed = profiles_;
     for (auto &profile : committed) {
         if (profile.id == replacement.id) profile = replacement;
@@ -109,7 +109,7 @@ void ProfileManager::Update(const Profile &original, const Profile &replacement,
     const ProfileTransaction transaction{original.id, original, false};
     journal_->Save(transaction);
     try {
-        saveRegistration(replacement);
+        save_registration(replacement);
         repository_->Save(replacement);
         journal_->Remove(original.id);
     } catch (...) {
@@ -121,7 +121,7 @@ void ProfileManager::Update(const Profile &original, const Profile &replacement,
             restored = false;
         }
         try {
-            saveRegistration(original);
+            save_registration(original);
         } catch (...) {
             restored = false;
         }

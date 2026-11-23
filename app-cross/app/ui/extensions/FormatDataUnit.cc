@@ -9,7 +9,7 @@
 #include <sstream>
 
 namespace Passepartout {
-std::string FormatDataUnit(int64_t bytes, NumberFormatter formatter) {
+std::string DataUnits::Format(int64_t bytes, DataUnits::NumberFormatter formatter) {
     // Same units and thresholds as the other frontends; native presentation
     // supplies its locale-aware formatter without coupling this helper to wx.
     if (!formatter) formatter = [](double value, int precision) {

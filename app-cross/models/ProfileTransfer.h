@@ -18,7 +18,7 @@
 #ifndef ProfileTransfer_H_
 #define ProfileTransfer_H_
 
-#include <partout/Json.h>
+#include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {

@@ -7,6 +7,6 @@
 #include "FormatDataUnit.h"
 #include <string>
 
-namespace Passepartout {
-std::string TransferText(const Models::ProfileTransfer &transfer, NumberFormatter formatter = {});
+namespace Passepartout::Profiles {
+std::string TransferText(const Models::ProfileTransfer &transfer, DataUnits::NumberFormatter formatter = {});
 }

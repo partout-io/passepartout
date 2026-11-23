@@ -18,12 +18,12 @@
 #ifndef Credits_H_
 #define Credits_H_
 
+#include <partout/models/Helpers.h>
 #include "Credits_licenses_inner.h"
-#include <string>
-#include <map>
-#include "Credits_notices_inner.h"
 #include <vector>
-#include <partout/Json.h>
+#include "Credits_notices_inner.h"
+#include <map>
+#include <string>
 
 namespace Passepartout::Models
 {

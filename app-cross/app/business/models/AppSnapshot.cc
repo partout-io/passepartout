@@ -7,8 +7,8 @@
 
 namespace Passepartout {
 bool AppSnapshot::HasActivity() const {
-    if (foregroundBusy || pendingProfile) return true;
-    return tunnelAvailable && std::any_of(tunnels.begin(), tunnels.end(), [](const auto &tunnel) {
+    if (foreground_busy || pending_profile) return true;
+    return tunnel_available && std::any_of(tunnels.begin(), tunnels.end(), [](const auto &tunnel) {
         return tunnel.status.value == Status::connecting || tunnel.status.value == Status::disconnecting;
     });
 }

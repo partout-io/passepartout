@@ -42,7 +42,7 @@ configure_file("${CMAKE_CURRENT_LIST_DIR}/app/context/SettingsResources.h.in"
 
 add_library(passepartout-core STATIC ${CORE_SOURCES})
 target_link_libraries(passepartout-core
-    PUBLIC passepartout-models Threads::Threads
+    PUBLIC passepartout-models Partout::CppRuntime Threads::Threads
     PRIVATE Partout::Headers)
 target_include_directories(passepartout-core PUBLIC "${CMAKE_CURRENT_LIST_DIR}/app"
     "${CMAKE_CURRENT_BINARY_DIR}/generated")

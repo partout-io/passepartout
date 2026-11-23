@@ -4,5 +4,5 @@
 
 #pragma once
 namespace Passepartout {
-inline constexpr const wchar_t tunnelPreferencesKey[] = L"tunnel.preferences";
+inline constexpr const wchar_t TunnelPreferencesKey[] = L"tunnel.preferences";
 }

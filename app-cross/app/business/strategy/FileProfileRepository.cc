@@ -65,12 +65,12 @@ void FileProfileRepository::PersistIndex(const std::vector<Profile> &profiles) {
         }
         entries.Append(std::move(entry));
     }
-    WriteAtomicFile(root_ / "index.json", Partout::Json{{"version", 1}, {"profiles", entries}}.Encode());
+    AtomicFile::Write(root_ / "index.json", Partout::Json{{"version", 1}, {"profiles", entries}}.Encode());
 }
 
 std::vector<Profile> FileProfileRepository::Fetch() {
     auto objects = ReadObjects();
-    std::vector<std::string> orderedIds;
+    std::vector<std::string> ordered_ids;
     bool rebuild = false;
     try {
         const auto index = Partout::Json::Parse(ReadConfiguration(root_ / "index.json"));
@@ -80,20 +80,20 @@ std::vector<Profile> FileProfileRepository::Fetch() {
             auto id = entry.At("id").Get<std::string>();
             entry.At("name").Get<std::string>();
             if (!IsSafeProfileId(id) || !seen.insert(id).second) throw std::runtime_error("Invalid index identity");
-            orderedIds.push_back(std::move(id));
+            ordered_ids.push_back(std::move(id));
         }
     } catch (...) {
         rebuild = true;
     }
     for (const auto &profile : objects) {
-        if (std::find(orderedIds.begin(), orderedIds.end(), profile.id) == orderedIds.end()) rebuild = true;
+        if (std::find(ordered_ids.begin(), ordered_ids.end(), profile.id) == ordered_ids.end()) rebuild = true;
     }
     if (rebuild) {
         PersistIndex(objects);
         return objects;
     }
     std::vector<Profile> ordered;
-    for (const auto &id : orderedIds) {
+    for (const auto &id : ordered_ids) {
         const auto found = std::find_if(objects.begin(), objects.end(), [&](const auto &p) { return p.id == id; });
         if (found == objects.end()) throw std::runtime_error("An indexed profile is missing.");
         ordered.push_back(*found);
@@ -116,7 +116,7 @@ void FileProfileRepository::Save(const Profile &profile) {
     const auto content = profile.ToJson().Encode();
     if (content.size() > MaxConfigurationBytes)
         throw std::runtime_error("The saved profile exceeds 1 MiB.");
-    WriteAtomicFile(path, content);
+    AtomicFile::Write(path, content);
     profiles.erase(std::remove_if(profiles.begin(), profiles.end(), [&](const auto &p) { return p.id == profile.id; }), profiles.end());
     profiles.push_back(profile);
     SortProfiles(profiles);

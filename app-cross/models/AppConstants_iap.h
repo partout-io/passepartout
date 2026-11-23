@@ -18,7 +18,7 @@
 #ifndef AppConstants_iap_H_
 #define AppConstants_iap_H_
 
-#include <partout/Json.h>
+#include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {
