@@ -8,7 +8,7 @@
 
 namespace Passepartout {
 DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagnostics,
-    UserPreferencesObservable &preferences, SettingsPresentation present, std::function<void()> reportIssue) : ThemeDetailView(parent, Presentation::Plain), timer_(this) {
+    UserPreferencesObservable &preferences, SettingsPresentation present, std::function<void()> report_issue) : ThemeDetailView(parent, Presentation::Plain), timer_(this) {
     Section(Localized(StringKey::ViewsDiagnosticsSectionsLive));
     for (const bool tunnel : {false, true}) {
         const auto title = Localized(tunnel ? StringKey::ViewsDiagnosticsRowsTunnel : StringKey::ViewsDiagnosticsRowsApp);
@@ -26,17 +26,17 @@ DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagno
     extensive->Enable(false);
     auto *privacy = Toggle(Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateData),
         Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle), preferences.Snapshot().logsPrivateData);
-    const auto refreshLogging = [this, privacy, extensive, &preferences] {
-        const bool canChange = preferences.CanChangePrivateData();
-        privacy->Enable(canChange);
-        SetToggleSupport(privacy, Localized(canChange
+    const auto refresh_logging = [this, privacy, extensive, &preferences] {
+        const bool can_change = preferences.CanChangePrivateData();
+        privacy->Enable(can_change);
+        SetToggleSupport(privacy, Localized(can_change
             ? StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle
             : StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles));
-        SetToggleSupport(extensive, Localized(canChange
+        SetToggleSupport(extensive, Localized(can_change
             ? StringKey::ViewsDiagnosticsRowsExtensiveLoggingSubtitle
             : StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles));
     };
-    refreshLogging();
+    refresh_logging();
     privacy->Bind(wxEVT_CHECKBOX, [this, privacy, &preferences](wxCommandEvent &) {
         try {
             preferences.SetLogsPrivateData(privacy->GetValue());
@@ -45,12 +45,12 @@ DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagno
             PresentError(this);
         }
     });
-    Bind(wxEVT_TIMER, [refreshLogging](wxTimerEvent &) {
-        refreshLogging();
+    Bind(wxEVT_TIMER, [refresh_logging](wxTimerEvent &) {
+        refresh_logging();
     });
     timer_.Start(200);
     EndSection();
-    ButtonRow(Localized(StringKey::ViewsDiagnosticsReportIssueTitle), std::move(reportIssue));
+    ButtonRow(Localized(StringKey::ViewsDiagnosticsReportIssueTitle), std::move(report_issue));
     Finish();
 }
 }

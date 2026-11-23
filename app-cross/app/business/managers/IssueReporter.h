@@ -20,7 +20,7 @@ public:
     using Handoff = std::function<bool(const IssueReport &)>;
     IssueReporter(std::string recipient, std::string version, Handoff handoff);
     // The native handler must present a draft; attachments live through its return.
-    bool Report(const std::string &comment, const std::string &runtimeLog);
+    bool Report(const std::string &comment, const std::string &runtime_log);
 private:
     std::string recipient_;
     std::string version_;

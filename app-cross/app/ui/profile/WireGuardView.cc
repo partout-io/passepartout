@@ -7,9 +7,9 @@
 #include <wx/numformatter.h>
 
 namespace Passepartout {
-WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardModule &module, OpenModuleContent openContent, const WireGuardKeyGenerator &keys,
-    std::function<void(wxString, std::vector<std::string>)> openList)
-    : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
+WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardModule &module, OpenModuleContent open_content, const WireGuardKeyGenerator &keys,
+    std::function<void(wxString, std::vector<std::string>)> open_list)
+    : ModuleDetailView(parent, std::move(open_content), Presentation::Form) {
     using namespace Strings::Unlocalized;
     if (!module.configuration) return;
     const auto &c = *module.configuration;
@@ -20,27 +20,27 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
         text.Replace("%d", wxNumberFormatter::ToString(static_cast<long>(count)));
         return text;
     };
-    const auto listRow = [this, &entries, &openList](StringKey label, const std::vector<std::string> &values) {
+    const auto list_row = [this, &entries, &open_list](StringKey label, const std::vector<std::string> &values) {
         if (!HasContent(values)) return;
         const auto title = Localized(label);
         const auto items = values;
-        ContentLink(title, [openList, title, items] {
-            openList(title, items);
+        ContentLink(title, [open_list, title, items] {
+            open_list(title, items);
         }, entries(values));
     };
     Section(Localized(StringKey::ModulesWireguardInterface));
     Row(StringKey::GlobalNounsPrivateKey, local.privateKey, true, std::nullopt, true);
     Row(StringKey::GlobalNounsPublicKey, keys.PublicKey(local.privateKey));
-    listRow(StringKey::GlobalNounsAddresses, local.addresses);
+    list_row(StringKey::GlobalNounsAddresses, local.addresses);
     Row(MTU, local.mtu);
     if (local.dns.has_value()) {
         const auto &dns = *local.dns;
         Section(DNS);
-        listRow(StringKey::GlobalNounsServers, dns.servers);
+        list_row(StringKey::GlobalNounsServers, dns.servers);
         std::vector<std::string> domains;
         if (dns.domainName) domains.push_back(*dns.domainName);
         if (dns.searchDomains) domains.insert(domains.end(), dns.searchDomains->begin(), dns.searchDomains->end());
-        listRow(StringKey::EntitiesDnsSearchDomains, domains);
+        list_row(StringKey::EntitiesDnsSearchDomains, domains);
     }
     unsigned index = 0;
     for (const auto &peer : c.peers) {
@@ -50,7 +50,7 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
         Row(StringKey::GlobalNounsPublicKey, peer.publicKey, true);
         Row(StringKey::ModulesWireguardPresharedKey, peer.preSharedKey, true, std::nullopt, true);
         Row(StringKey::GlobalNounsEndpoint, peer.endpoint, true);
-        listRow(StringKey::ModulesWireguardAllowedIps, peer.allowedIPs);
+        list_row(StringKey::ModulesWireguardAllowedIps, peer.allowedIPs);
         Row(StringKey::GlobalNounsKeepAlive, peer.keepAlive);
     }
     Finish();

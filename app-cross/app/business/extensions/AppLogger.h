@@ -15,9 +15,9 @@ using LogSink = std::function<void(LogLevel, LogCategory, const std::string &)>;
 class AppLogger {
 public:
     explicit AppLogger(LogSink sink = {});
-    static void PartoutMessage(void *context, const char *profileId, int level, const char *message) noexcept;
+    static void PartoutMessage(void *context, const char *profile_id, int level, const char *message) noexcept;
     void Write(LogLevel level, LogCategory category, const std::string &message) noexcept;
-    static std::string RuntimeLog(bool includePrivateData = true);
+    static std::string RuntimeLog(bool include_private_data = true);
     static void SetPrivateData(bool enabled) noexcept;
 private:
     LogSink sink_;

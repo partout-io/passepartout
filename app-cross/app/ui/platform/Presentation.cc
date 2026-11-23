@@ -54,7 +54,7 @@ void OpenURL(wxWindow *parent, const std::string &url) {
 #ifdef _WIN32
         new URLLaunch(parent, url);
 #else
-        const wxLogNull suppressNativeAlert;
+        const wxLogNull suppress_native_alert;
         if (!wxLaunchDefaultBrowser(wxString::FromUTF8(url))) PresentError(parent);
 #endif
     } catch (...) {

@@ -24,8 +24,8 @@ public:
                std::unique_ptr<Partout::Tunnel> tunnel,
                std::shared_ptr<AppLogger> logger = std::make_shared<AppLogger>(),
                std::unique_ptr<ProfileJournal> journal = std::make_unique<MemoryProfileJournal>(),
-               std::chrono::milliseconds recoveryDelay = std::chrono::seconds(1),
-               std::function<void(const Models::AppPreferences &)> applyPreferences = {}
+               std::chrono::milliseconds recovery_delay = std::chrono::seconds(1),
+               std::function<void(const Models::AppPreferences &)> apply_preferences = {}
     );
     ~AppSession();
     AppSession(const AppSession &) = delete;
@@ -56,16 +56,16 @@ private:
         std::chrono::steady_clock::time_point next;
         std::string error;
     };
-    std::map<std::string, RecoveryRetry> recoveryRetries_;
-    std::chrono::milliseconds recoveryDelay_;
+    std::map<std::string, RecoveryRetry> recovery_retries_;
+    std::chrono::milliseconds recovery_delay_;
     std::shared_ptr<AppLogger> logger_;
-    std::string lastObservationError_;
-    std::string lastReconciliationError_;
-    bool registerMissingProfiles_ = false;
-    std::optional<Models::AppPreferences> pendingPreferences_;
+    std::string last_observation_error_;
+    std::string last_reconciliation_error_;
+    bool register_missing_profiles_ = false;
+    std::optional<Models::AppPreferences> pending_preferences_;
     ProfileManager profiles_;
     std::unique_ptr<Partout::Tunnel> tunnel_;
-    std::function<void(const Models::AppPreferences &)> applyPreferences_;
+    std::function<void(const Models::AppPreferences &)> apply_preferences_;
     mutable std::mutex mutex_;
     std::condition_variable wake_;
     struct Operation {
@@ -75,8 +75,8 @@ private:
     };
     std::deque<Operation> operations_;
     AppSnapshot snapshot_;
-    std::vector<Profile> editableProfiles_;
-    std::shared_ptr<const ConfigurationFiles> importingFiles_;
+    std::vector<Profile> editable_profiles_;
+    std::shared_ptr<const ConfigurationFiles> importing_files_;
     bool stopping_ = false;
     std::thread worker_;
 };

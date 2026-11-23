@@ -17,9 +17,9 @@ int main() {
     static_assert(std::is_same_v<decltype(ProfileEventSave::profile),
         Partout::Models::TaggedProfile>);
 
-    const auto unixLikePlatform = Platform::FromJson("unixLike");
-    assert(unixLikePlatform.value == Platform::unixLike);
-    assert(unixLikePlatform.ToJson() == "unixLike");
+    const auto unix_like_platform = Platform::FromJson("unixLike");
+    assert(unix_like_platform.value == Platform::unixLike);
+    assert(unix_like_platform.ToJson() == "unixLike");
 
     const auto input = Json::Parse(R"({
         "id":"example", "isEnabled":true, "status":"connected", "onDemand":false

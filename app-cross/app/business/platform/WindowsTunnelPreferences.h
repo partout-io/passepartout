@@ -9,6 +9,6 @@
 
 namespace Passepartout::Windows::Tunnel {
 void ApplyPreferences(
-    const Models::AppPreferences &preferences, const std::vector<std::string> &dnsFallbackServers
+    const Models::AppPreferences &preferences, const std::vector<std::string> &dns_fallback_servers
 );
 }

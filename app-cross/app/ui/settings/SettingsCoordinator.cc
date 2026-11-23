@@ -30,26 +30,26 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     });
     auto *layout = new wxBoxSizer(wxVERTICAL);
     auto *splitter = new ThemeSplitView(this);
-    auto *detailPanel = splitter->Detail();
-    pages_ = new wxSimplebook(detailPanel);
+    auto *detail_panel = splitter->Detail();
+    pages_ = new wxSimplebook(detail_panel);
     pages_->SetFitToCurrentPage(true);
     auto *detail = new wxBoxSizer(wxVERTICAL);
     detail->Add(pages_, 1, wxEXPAND);
-    detailPanel->SetSizer(detail);
+    detail_panel->SetSizer(detail);
     const auto version = context.version.Snapshot();
-    wxString updateTitle;
+    wxString update_title;
     if (version.release.latest) {
-        updateTitle = Localized(StringKey::ViewsSettingsLinksUpdate);
-        updateTitle.Replace("%@", wxString::FromUTF8(*version.release.latest));
+        update_title = Localized(StringKey::ViewsSettingsLinksUpdate);
+        update_title.Replace("%@", wxString::FromUTF8(*version.release.latest));
     }
     const auto initial = SettingsSection::Preferences;
     auto *sidebar = new wxBoxSizer(wxVERTICAL);
     sidebar->Add(new SettingsView(splitter->Sidebar(),
-        updateTitle, initial, [this](SettingsSection section) {
+        update_title, initial, [this](SettingsSection section) {
             SelectSection(section);
         }), 1, wxEXPAND | wxALL, Theme::Spacing(this));
     splitter->Sidebar()->SetSizer(sidebar);
-    const int sidebarWidth = splitter->InitializePanes();
+    const int sidebar_width = splitter->InitializePanes();
     layout->Add(splitter, 1, wxEXPAND);
     auto *buttons = new wxStdDialogButtonSizer;
     auto *close = new wxButton(this, wxID_CANCEL, Localized(StringKey::GlobalActionsClose));
@@ -69,27 +69,27 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     const wxSize viewport(GetCharWidth() * 90, GetCharHeight() * 28);
     auto size = GetSize() - pages_->GetClientSize() + viewport;
     size.IncTo(GetBestSize());
-    const auto workArea = wxDisplay(this).GetClientArea();
-    size.DecTo(workArea.GetSize());
+    const auto work_area = wxDisplay(this).GetClientArea();
+    size.DecTo(work_area.GetSize());
     SetSize(size);
-    splitter->SetSashPosition(sidebarWidth);
+    splitter->SetSashPosition(sidebar_width);
     CentreOnParent();
     auto position = GetPosition();
-    position.x = std::max(workArea.x, std::min(position.x, workArea.GetRight() - GetSize().x + 1));
-    position.y = std::max(workArea.y, std::min(position.y, workArea.GetBottom() - GetSize().y + 1));
+    position.x = std::max(work_area.x, std::min(position.x, work_area.GetRight() - GetSize().x + 1));
+    position.y = std::max(work_area.y, std::min(position.y, work_area.GetBottom() - GetSize().y + 1));
     Move(position);
 }
 void SettingsCoordinator::SelectSection(SettingsSection section) {
     if (section == SettingsSection::Update) {
-        OpenURL(this, context_.version.Snapshot().release.downloadURL);
+        OpenURL(this, context_.version.Snapshot().release.download_url);
         return;
     }
     if (section == section_ && pages_->GetPageCount() != 0) return;
     wxWindowUpdateLocker update(this);
     section_ = section;
     pages_->DeleteAllPages();
-    const SettingsPresentation present = [this](auto title, auto makePage) {
-        ThemeModal modal(this, title, makePage);
+    const SettingsPresentation present = [this](auto title, auto make_page) {
+        ThemeModal modal(this, title, make_page);
         modal.ShowModal();
     };
     switch (section) {
@@ -134,9 +134,9 @@ void SettingsCoordinator::ReportIssue() {
         PresentError(this);
     }
 }
-void SettingsCoordinator::ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> makePage) {
+void SettingsCoordinator::ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> make_page) {
     wxWindowUpdateLocker update(this);
-    auto *page = makePage(pages_);
+    auto *page = make_page(pages_);
     pages_->AddPage(page, title, true);
     pages_->InvalidateBestSize();
     pages_->GetParent()->Layout();

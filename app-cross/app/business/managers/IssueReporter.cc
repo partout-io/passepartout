@@ -10,7 +10,7 @@
 namespace Passepartout {
 IssueReporter::IssueReporter(std::string recipient, std::string version, Handoff handoff)
     : recipient_(std::move(recipient)), version_(std::move(version)), handoff_(std::move(handoff)) {}
-bool IssueReporter::Report(const std::string &comment, const std::string &runtimeLog) {
+bool IssueReporter::Report(const std::string &comment, const std::string &runtime_log) {
     if (comment.size() > 64 * 1024) throw std::invalid_argument("The comment is too long.");
     std::random_device random;
     std::filesystem::path directory;
@@ -34,9 +34,9 @@ bool IssueReporter::Report(const std::string &comment, const std::string &runtim
     AtomicFile::Write(metadata, "Passepartout " + version_ + "\nPlatform: Windows\nCrypto: mbedTLS\n"
         "Tunnel runtime log: unavailable in frontend process\n");
     IssueReport report{recipient_, "Passepartout " + version_, comment, {metadata}};
-    if (!runtimeLog.empty()) {
+    if (!runtime_log.empty()) {
         const auto log = directory / "runtime.txt";
-        AtomicFile::Write(log, runtimeLog);
+        AtomicFile::Write(log, runtime_log);
         report.attachments.push_back(log);
     }
     return handoff_(report);

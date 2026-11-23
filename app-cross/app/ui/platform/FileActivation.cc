@@ -100,7 +100,7 @@ struct FileActivation::Impl {
         }
         return DefWindowProcW(window, message, parameter, data);
     }
-    Impl(const std::wstring &service, FileActivationInbox::Handler onFiles) : handler(std::move(onFiles)) {
+    Impl(const std::wstring &service, FileActivationInbox::Handler on_files) : handler(std::move(on_files)) {
         WNDCLASSW type{};
         type.hInstance = GetModuleHandleW(nullptr);
         type.lpszClassName = WindowClass;

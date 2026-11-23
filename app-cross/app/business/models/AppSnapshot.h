@@ -12,18 +12,18 @@ enum class AppErrorContext { general, import, tunnel };
 struct AppSnapshot {
     std::vector<Models::AppProfileHeader> profiles;
     std::vector<Models::AppTunnelInfo> tunnels;
-    std::map<std::string, std::string> tunnelObservationErrors;
+    std::map<std::string, std::string> tunnel_observation_errors;
     bool loaded = false;
     bool busy = true;
-    bool tunnelAvailable = false;
-    bool foregroundBusy = false;
-    std::optional<std::string> pendingProfile;
-    std::vector<std::string> recoveringProfiles;
+    bool tunnel_available = false;
+    bool foreground_busy = false;
+    std::optional<std::string> pending_profile;
+    std::vector<std::string> recovering_profiles;
     bool HasActivity() const;
     std::string error;
-    std::string tunnelError;
-    std::string reconciliationError;
-    AppErrorContext errorContext = AppErrorContext::general;
+    std::string tunnel_error;
+    std::string reconciliation_error;
+    AppErrorContext error_context = AppErrorContext::general;
     std::uint64_t revision = 0;
 };
 }

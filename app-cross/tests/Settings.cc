@@ -145,10 +145,10 @@ int main() {
             remote->response = std::string("{\"appNotWorking\":") + value + "}";
             assert(config.Refresh() && config.ActiveFlags().empty());
         }
-        auto throttledHttp = std::make_unique<FakeHttp>();
-        auto *throttledRemote = throttledHttp.get();
-        ConfigManager throttled(std::move(throttledHttp), "https://example.invalid", 7, std::chrono::hours(1));
-        assert(throttled.Refresh() && !throttled.Refresh() && throttledRemote->requests == 1);
+        auto throttled_http = std::make_unique<FakeHttp>();
+        auto *throttled_remote = throttled_http.get();
+        ConfigManager throttled(std::move(throttled_http), "https://example.invalid", 7, std::chrono::hours(1));
+        assert(throttled.Refresh() && !throttled.Refresh() && throttled_remote->requests == 1);
         auto blocked = std::make_shared<BlockingState>();
         {
             ConfigObservable observable(std::make_unique<ConfigManager>(std::make_unique<BlockingHttp>(blocked),
@@ -176,7 +176,7 @@ int main() {
         Fails([&] { version.Check(201000); });
         assert(!stored && !version.Snapshot().latest);
 
-        CreditsObservable credits(creditsResource, std::make_unique<FakeHttp>());
+        CreditsObservable credits(CreditsResource, std::make_unique<FakeHttp>());
         assert(!credits.HasLoadError());
         assert(!credits.Snapshot().licenses.empty());
         Models::Credits sample;
@@ -187,15 +187,15 @@ int main() {
             {"Hidden", std::vector<Models::Platform>{}, "MIT", "https://example.com/hidden"}
         };
         const auto resource = sample.ToJson().Encode();
-        CreditsObservable windowsCredits(resource, std::make_unique<FakeHttp>(), Models::Platform::windows);
-        CreditsObservable unixCredits(resource, std::make_unique<FakeHttp>(), Models::Platform::unixLike);
-        assert(!windowsCredits.HasLoadError() && !unixCredits.HasLoadError());
-        assert(windowsCredits.Snapshot().licenses.size() == 2);
-        assert(windowsCredits.Snapshot().licenses[0].name == "Common");
-        assert(windowsCredits.Snapshot().licenses[1].name == "Windows");
-        assert(unixCredits.Snapshot().licenses.size() == 2);
-        assert(unixCredits.Snapshot().licenses[0].name == "Common");
-        assert(unixCredits.Snapshot().licenses[1].name == "Unix");
+        CreditsObservable windows_credits(resource, std::make_unique<FakeHttp>(), Models::Platform::windows);
+        CreditsObservable unix_credits(resource, std::make_unique<FakeHttp>(), Models::Platform::unixLike);
+        assert(!windows_credits.HasLoadError() && !unix_credits.HasLoadError());
+        assert(windows_credits.Snapshot().licenses.size() == 2);
+        assert(windows_credits.Snapshot().licenses[0].name == "Common");
+        assert(windows_credits.Snapshot().licenses[1].name == "Windows");
+        assert(unix_credits.Snapshot().licenses.size() == 2);
+        assert(unix_credits.Snapshot().licenses[0].name == "Common");
+        assert(unix_credits.Snapshot().licenses[1].name == "Unix");
         AppLogger logger;
         AppLogger::SetPrivateData(false);
         logger.Write(LogLevel::info, LogCategory::core, "public marker");

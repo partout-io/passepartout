@@ -23,8 +23,8 @@ wxString HexKey(const std::string &value) {
 }
 }
 OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule &module,
-    OpenModuleContent openContent, std::function<void()> openCredentials, std::function<void()> openRemotes)
-    : ModuleDetailView(parent, std::move(openContent), Presentation::Form) {
+    OpenModuleContent open_content, std::function<void()> open_credentials, std::function<void()> open_remotes)
+    : ModuleDetailView(parent, std::move(open_content), Presentation::Form) {
     using namespace Strings::Unlocalized;
     if (!module.configuration) return;
     const auto &c = *module.configuration;
@@ -33,11 +33,11 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
         const auto count = module.configuration->remotes->size();
         auto summary = Localized(count == 1 ? StringKey::GlobalNounsEntriesOne : StringKey::GlobalNounsEntriesN);
         summary.Replace("%d", wxNumberFormatter::ToString(static_cast<long>(count)));
-        ContentLink(Localized(StringKey::ModulesOpenvpnRemotes), std::move(openRemotes), summary);
+        ContentLink(Localized(StringKey::ModulesOpenvpnRemotes), std::move(open_remotes), summary);
     }
     if (module.configuration->authUserPass.value_or(false)) {
         Section(Localized(StringKey::GlobalNounsAccount));
-        ContentLink(Localized(StringKey::ModulesOpenvpnCredentials), std::move(openCredentials));
+        ContentLink(Localized(StringKey::ModulesOpenvpnCredentials), std::move(open_credentials));
     }
     using PullMask = Partout::Models::OpenVpnPullMask;
     std::vector<wxString> pulled;
@@ -53,15 +53,15 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
         for (const auto &title : pulled) Field(title, Localized(StringKey::GlobalNounsEnabled));
     }
     using RoutingPolicy = Partout::Models::OpenVpnRoutingPolicy;
-    const auto hasPolicy = [&](RoutingPolicy::eOpenVpnRoutingPolicy policy) {
+    const auto has_policy = [&](RoutingPolicy::eOpenVpnRoutingPolicy policy) {
         return c.routingPolicies && std::any_of(c.routingPolicies->begin(), c.routingPolicies->end(), [&](const auto &item) {
             return item.value == policy;
         });
     };
-    if (hasPolicy(RoutingPolicy::IPv4) || hasPolicy(RoutingPolicy::IPv6)) {
+    if (has_policy(RoutingPolicy::IPv4) || has_policy(RoutingPolicy::IPv6)) {
         Section(Localized(StringKey::ModulesOpenvpnRedirectGateway));
-        if (hasPolicy(RoutingPolicy::IPv4)) Field(IPv4, Localized(StringKey::GlobalNounsEnabled));
-        if (hasPolicy(RoutingPolicy::IPv6)) Field(IPv6, Localized(StringKey::GlobalNounsEnabled));
+        if (has_policy(RoutingPolicy::IPv4)) Field(IPv4, Localized(StringKey::GlobalNounsEnabled));
+        if (has_policy(RoutingPolicy::IPv6)) Field(IPv6, Localized(StringKey::GlobalNounsEnabled));
     }
     IP(IPv4, c.ipv4, c.routes4, true);
     IP(IPv6, c.ipv6, c.routes6, true);
@@ -132,7 +132,7 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
             if (!key.empty()) {
                 const auto title = Localized(StringKey::ModulesOpenvpnTlsWrap);
                 LongContent(title, key, [this, title, key] {
-                    openContent_(title, key);
+                    open_content_(title, key);
                 }, true);
             }
         }

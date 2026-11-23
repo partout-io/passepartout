@@ -11,11 +11,11 @@
 namespace Passepartout {
 AppSession::AppSession(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
                        std::unique_ptr<Partout::Tunnel> tunnel, std::shared_ptr<AppLogger> logger,
-                       std::unique_ptr<ProfileJournal> journal, std::chrono::milliseconds recoveryDelay,
-                       std::function<void(const Models::AppPreferences &)> applyPreferences
+                       std::unique_ptr<ProfileJournal> journal, std::chrono::milliseconds recovery_delay,
+                       std::function<void(const Models::AppPreferences &)> apply_preferences
 )
-    : recoveryDelay_(recoveryDelay), logger_(std::move(logger)), profiles_(std::move(repository), std::move(importer), std::move(journal)),
-      tunnel_(std::move(tunnel)), applyPreferences_(std::move(applyPreferences)) {
+    : recovery_delay_(recovery_delay), logger_(std::move(logger)), profiles_(std::move(repository), std::move(importer), std::move(journal)),
+      tunnel_(std::move(tunnel)), apply_preferences_(std::move(apply_preferences)) {
     logger_->Write(LogLevel::info, LogCategory::core, "Start application session");
     snapshot_.busy = false;
     worker_ = std::thread([this] {
@@ -29,7 +29,7 @@ AppSession::~AppSession() {
         std::lock_guard lock(mutex_);
         stopping_ = true;
         operations_.clear();
-        importing = importingFiles_;
+        importing = importing_files_;
     }
     if (importing) importing->Cancel();
     wake_.notify_all();
@@ -43,9 +43,9 @@ AppSnapshot AppSession::Snapshot() const {
 }
 void AppSession::ApplyPreferences(Models::AppPreferences preferences) {
     Post([this, preferences = std::move(preferences)] {
-        pendingPreferences_ = preferences;
-        if (applyPreferences_) applyPreferences_(*pendingPreferences_);
-        pendingPreferences_.reset();
+        pending_preferences_ = preferences;
+        if (apply_preferences_) apply_preferences_(*pending_preferences_);
+        pending_preferences_.reset();
     }, AppErrorContext::tunnel);
 }
 bool AppSession::Post(std::function<void()> operation, AppErrorContext context, bool foreground) {
@@ -53,7 +53,7 @@ bool AppSession::Post(std::function<void()> operation, AppErrorContext context, 
         std::lock_guard lock(mutex_);
         if (stopping_) return false;
         snapshot_.busy = true;
-        snapshot_.foregroundBusy = snapshot_.foregroundBusy || foreground;
+        snapshot_.foreground_busy = snapshot_.foreground_busy || foreground;
         snapshot_.error.clear();
         ++snapshot_.revision;
         operations_.push_back({std::move(operation), context, foreground});
@@ -88,28 +88,28 @@ void AppSession::Run() {
         if (!error.empty()) logger_->Write(LogLevel::error, LogCategory::core, "Unable to execute operation");
         // A failed state refresh must not turn a committed import into a
         // failed import. Keep operation and observation failures separate.
-        std::string tunnelError;
+        std::string tunnel_error;
         try {
             Publish();
         } catch (const std::exception &e) {
-            tunnelError = e.what();
+            tunnel_error = e.what();
         } catch (...) {
-            tunnelError = "Unable to read VPN state.";
+            tunnel_error = "Unable to read VPN state.";
         }
-        if (tunnelError != lastObservationError_) {
-            logger_->Write(tunnelError.empty() ? LogLevel::info : LogLevel::error, LogCategory::tunnel,
-                tunnelError.empty() ? "Tunnel observation recovered" : "Unable to fetch tunnel state");
-            lastObservationError_ = tunnelError;
+        if (tunnel_error != last_observation_error_) {
+            logger_->Write(tunnel_error.empty() ? LogLevel::info : LogLevel::error, LogCategory::tunnel,
+                tunnel_error.empty() ? "Tunnel observation recovered" : "Unable to fetch tunnel state");
+            last_observation_error_ = tunnel_error;
         }
         {
             std::lock_guard lock(mutex_);
-            if (!tunnelError.empty()) snapshot_.tunnelAvailable = false;
-            snapshot_.pendingProfile = tunnel_->PendingProfile();
+            if (!tunnel_error.empty()) snapshot_.tunnel_available = false;
+            snapshot_.pending_profile = tunnel_->PendingProfile();
             snapshot_.error = std::move(error);
-            snapshot_.tunnelError = std::move(tunnelError);
-            snapshot_.errorContext = operation.context;
+            snapshot_.tunnel_error = std::move(tunnel_error);
+            snapshot_.error_context = operation.context;
             snapshot_.busy = !operations_.empty();
-            snapshot_.foregroundBusy = std::any_of(operations_.begin(), operations_.end(), [](const auto &queued) {
+            snapshot_.foreground_busy = std::any_of(operations_.begin(), operations_.end(), [](const auto &queued) {
                 return queued.foreground;
             });
             ++snapshot_.revision;
@@ -120,7 +120,7 @@ void AppSession::Run() {
 std::string AppSession::RecoverProfiles() {
     std::string error;
     for (const auto &transaction : profiles_.PendingTransactions()) {
-        auto &retry = recoveryRetries_[transaction.id];
+        auto &retry = recovery_retries_[transaction.id];
         if (std::chrono::steady_clock::now() < retry.next) {
             error = retry.error;
             continue;
@@ -133,23 +133,23 @@ std::string AppSession::RecoverProfiles() {
                     tunnel_->Save(*pending.previous);
                 } else tunnel_->RollbackRegistration(pending.id);
             });
-            recoveryRetries_.erase(transaction.id);
+            recovery_retries_.erase(transaction.id);
         } catch (...) {
             retry.attempts = std::min(retry.attempts + 1, 5u);
-            retry.next = std::chrono::steady_clock::now() + recoveryDelay_ * (1u << retry.attempts);
+            retry.next = std::chrono::steady_clock::now() + recovery_delay_ * (1u << retry.attempts);
             retry.error = "Unable to recover profile " + transaction.id + ". Recovery will be retried.";
             error = retry.error;
         }
     }
-    std::vector<std::string> pendingIds;
-    for (const auto &transaction : profiles_.PendingTransactions()) pendingIds.push_back(transaction.id);
+    std::vector<std::string> pending_ids;
+    for (const auto &transaction : profiles_.PendingTransactions()) pending_ids.push_back(transaction.id);
     std::lock_guard lock(mutex_);
-    snapshot_.recoveringProfiles = std::move(pendingIds);
+    snapshot_.recovering_profiles = std::move(pending_ids);
     return error;
 }
 void AppSession::Publish() {
-    std::string reconciliationError;
-    if (Snapshot().loaded) reconciliationError = RecoverProfiles();
+    std::string reconciliation_error;
+    if (Snapshot().loaded) reconciliation_error = RecoverProfiles();
     std::vector<Models::AppProfileHeader> headers;
     for (const auto &profile : profiles_.Profiles()) {
         Models::AppProfileHeader header{};
@@ -192,44 +192,44 @@ void AppSession::Publish() {
     {
         std::lock_guard lock(mutex_);
         snapshot_.profiles = std::move(headers);
-        editableProfiles_ = profiles_.Profiles();
+        editable_profiles_ = profiles_.Profiles();
     }
     auto tunnels = Tunnels::Info(tunnel_->Fetch());
-    if (registerMissingProfiles_) {
+    if (register_missing_profiles_) {
         const auto unavailable = tunnel_->ObservationErrors();
         try {
             for (const auto &profile : profiles_.Profiles()) {
                 if (unavailable.find(profile.id) != unavailable.end()) continue;
                 const auto state = Snapshot();
-                if (std::find(state.recoveringProfiles.begin(), state.recoveringProfiles.end(), profile.id)
-                    != state.recoveringProfiles.end()) continue;
+                if (std::find(state.recovering_profiles.begin(), state.recovering_profiles.end(), profile.id)
+                    != state.recovering_profiles.end()) continue;
                 const bool exists = std::any_of(tunnels.begin(), tunnels.end(), [&](const auto &tunnel) {
                     return tunnel.id == profile.id;
                 });
                 if (!exists) tunnel_->Save(profile);
             }
             tunnels = Tunnels::Info(tunnel_->Fetch());
-            registerMissingProfiles_ = false;
+            register_missing_profiles_ = false;
         } catch (const std::exception &error) {
-            reconciliationError = "Unable to register saved profiles: " + std::string(error.what());
+            reconciliation_error = "Unable to register saved profiles: " + std::string(error.what());
         }
     }
     // Only durable intents authorize cleanup. Untracked native profiles are
     // preserved, including registrations which predate a rejected import.
-    if (reconciliationError != lastReconciliationError_) {
-        logger_->Write(reconciliationError.empty() ? LogLevel::info : LogLevel::error, LogCategory::profiles,
-            reconciliationError.empty() ? "Profile reconciliation recovered" : reconciliationError);
-        lastReconciliationError_ = reconciliationError;
+    if (reconciliation_error != last_reconciliation_error_) {
+        logger_->Write(reconciliation_error.empty() ? LogLevel::info : LogLevel::error, LogCategory::profiles,
+            reconciliation_error.empty() ? "Profile reconciliation recovered" : reconciliation_error);
+        last_reconciliation_error_ = reconciliation_error;
     }
     const auto previous = Snapshot();
-    const auto observationErrors = tunnel_->ObservationErrors();
-    for (const auto &[id, error] : observationErrors) {
-        const auto old = previous.tunnelObservationErrors.find(id);
-        if (old == previous.tunnelObservationErrors.end() || old->second != error)
+    const auto observation_errors = tunnel_->ObservationErrors();
+    for (const auto &[id, error] : observation_errors) {
+        const auto old = previous.tunnel_observation_errors.find(id);
+        if (old == previous.tunnel_observation_errors.end() || old->second != error)
             logger_->Write(LogLevel::error, LogCategory::tunnel, "Unable to observe profile " + id + ": " + error);
     }
-    for (const auto &[id, error] : previous.tunnelObservationErrors) {
-        if (observationErrors.find(id) == observationErrors.end())
+    for (const auto &[id, error] : previous.tunnel_observation_errors) {
+        if (observation_errors.find(id) == observation_errors.end())
             logger_->Write(LogLevel::info, LogCategory::tunnel, "Profile observation error cleared: " + id);
     }
     for (const auto &tunnel : tunnels) {
@@ -241,9 +241,9 @@ void AppSession::Publish() {
     }
     std::lock_guard lock(mutex_);
     snapshot_.tunnels = std::move(tunnels);
-    snapshot_.tunnelAvailable = true;
-    snapshot_.tunnelObservationErrors = observationErrors;
-    snapshot_.reconciliationError = std::move(reconciliationError);
+    snapshot_.tunnel_available = true;
+    snapshot_.tunnel_observation_errors = observation_errors;
+    snapshot_.reconciliation_error = std::move(reconciliation_error);
 }
 
 void AppSession::Load() {
@@ -259,13 +259,13 @@ void AppSession::Load() {
             std::lock_guard lock(mutex_);
             snapshot_.loaded = true;
         }
-        registerMissingProfiles_ = true;
+        register_missing_profiles_ = true;
     });
 }
 std::shared_ptr<ProfileEditor> AppSession::CreateEditor(const std::string &id) const {
     std::lock_guard lock(mutex_);
-    if (!snapshot_.loaded || snapshot_.foregroundBusy) return {};
-    for (const auto &profile : editableProfiles_) {
+    if (!snapshot_.loaded || snapshot_.foreground_busy) return {};
+    for (const auto &profile : editable_profiles_) {
         if (profile.id == id) return std::make_shared<ProfileEditor>(profile);
     }
     return {};
@@ -291,22 +291,22 @@ void AppSession::Import(std::vector<std::filesystem::path> paths) {
     ImportFiles(std::make_shared<ConfigurationFiles>(std::move(paths)));
 }
 void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
-    if (!files || (!files->Count() && !files->selectionFailures)) return;
+    if (!files || (!files->Count() && !files->selection_failures)) return;
     Post([this, files = std::move(files)] {
         {
             std::lock_guard lock(mutex_);
             if (stopping_) return;
-            importingFiles_ = files;
+            importing_files_ = files;
         }
         struct ReleaseFiles {
             AppSession &session;
             ~ReleaseFiles() {
                 std::lock_guard lock(session.mutex_);
-                session.importingFiles_.reset();
+                session.importing_files_.reset();
             }
         } release{*this};
         // Process every supplied activation, even if one configuration fails.
-        std::size_t failures = files->selectionFailures;
+        std::size_t failures = files->selection_failures;
         for (std::size_t index = 0; index < files->Count(); ++index) {
             {
                 std::lock_guard lock(mutex_);
@@ -343,11 +343,11 @@ void AppSession::ImportFailed() {
 }
 void AppSession::Remove(std::vector<std::string> ids) {
     Post([this, ids = std::move(ids)] {
-        const std::set<std::string> uniqueIds(ids.begin(), ids.end());
+        const std::set<std::string> unique_ids(ids.begin(), ids.end());
         // A menu or confirmation can outlive its targets. Validate the entire
         // request before deleting anything, on the same worker as mutations.
-        for (const auto &id : uniqueIds) profiles_.Find(id);
-        for (const auto &id : uniqueIds) {
+        for (const auto &id : unique_ids) profiles_.Find(id);
+        for (const auto &id : unique_ids) {
             logger_->Write(LogLevel::info, LogCategory::profiles, "Remove profile");
             profiles_.Remove(id);
             tunnel_->CancelPending(id);
@@ -357,9 +357,9 @@ void AppSession::Remove(std::vector<std::string> ids) {
 void AppSession::Connect(std::string id, std::optional<Partout::Models::OpenVpnCredentials> credentials,
     std::optional<Profile> original) {
     Post([this, id = std::move(id), credentials = std::move(credentials), original = std::move(original)] {
-        if (pendingPreferences_) {
-            if (applyPreferences_) applyPreferences_(*pendingPreferences_);
-            pendingPreferences_.reset();
+        if (pending_preferences_) {
+            if (apply_preferences_) apply_preferences_(*pending_preferences_);
+            pending_preferences_.reset();
         }
         for (const auto &transaction : profiles_.PendingTransactions()) {
             if (transaction.id == id) throw std::runtime_error("Profile recovery is still pending.");

@@ -11,16 +11,16 @@
 namespace Passepartout {
 class ThemeSwitchRenderer final : public wxDataViewCustomRenderer {
 public:
-    ThemeSwitchRenderer(const wxString &onLabel, const wxString &offLabel)
+    ThemeSwitchRenderer(const wxString &on_label, const wxString &off_label)
         : wxDataViewCustomRenderer("bool", wxDATAVIEW_CELL_ACTIVATABLE, wxALIGN_CENTER),
-          onLabel_(onLabel), offLabel_(offLabel) {}
+          on_label_(on_label), off_label_(off_label) {}
 
     bool SetValue(const wxVariant &value) override {
-        isOn_ = value.GetBool();
+        is_on_ = value.GetBool();
         return true;
     }
     bool GetValue(wxVariant &value) const override {
-        value = isOn_;
+        value = is_on_;
         return true;
     }
     wxSize GetSize() const override {
@@ -31,11 +31,11 @@ public:
         const auto track = wxRect(size).CentreIn(cell);
         const auto inset = GetView()->FromDIP(3);
         const auto diameter = track.height - 2 * inset;
-        const auto knobX = isOn_ ? track.GetRight() - inset - diameter + 1 : track.x + inset;
-        const wxRect knob(knobX, track.y + inset, diameter, diameter);
+        const auto knob_x = is_on_ ? track.GetRight() - inset - diameter + 1 : track.x + inset;
+        const wxRect knob(knob_x, track.y + inset, diameter, diameter);
         const auto outline = wxSystemSettings::GetColour(GetEnabled() ? wxSYS_COLOUR_WINDOWTEXT : wxSYS_COLOUR_GRAYTEXT);
-        const auto fill = wxSystemSettings::GetColour(isOn_ && GetEnabled() ? wxSYS_COLOUR_HIGHLIGHT : wxSYS_COLOUR_WINDOW);
-        const auto thumb = isOn_ && GetEnabled() ? wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHTTEXT) : outline;
+        const auto fill = wxSystemSettings::GetColour(is_on_ && GetEnabled() ? wxSYS_COLOUR_HIGHLIGHT : wxSYS_COLOUR_WINDOW);
+        const auto thumb = is_on_ && GetEnabled() ? wxSystemSettings::GetColour(wxSYS_COLOUR_HIGHLIGHTTEXT) : outline;
         const wxPen border(outline, GetView()->FromDIP(1));
         std::unique_ptr<wxGraphicsContext> graphics(wxGraphicsContext::CreateFromUnknownDC(*dc));
         if (graphics) {
@@ -64,12 +64,12 @@ public:
     }
 #if wxUSE_ACCESSIBILITY
     wxString GetAccessibleDescription() const override {
-        return isOn_ ? onLabel_ : offLabel_;
+        return is_on_ ? on_label_ : off_label_;
     }
 #endif
 private:
-    wxString onLabel_;
-    wxString offLabel_;
-    bool isOn_ = false;
+    wxString on_label_;
+    wxString off_label_;
+    bool is_on_ = false;
 };
 }

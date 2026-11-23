@@ -8,7 +8,7 @@
 
 namespace Passepartout {
 struct Theme {
-    static wxIcon AppIcon(wxWindow *window, int sizeDIP = 0);
+    static wxIcon AppIcon(wxWindow *window, int size_dip = 0);
     static wxIcon SettingsIcon(wxWindow *window);
     static wxIcon ProfileIcon(wxWindow *window);
     enum class Space { Row, SectionContent, Section, Columns };

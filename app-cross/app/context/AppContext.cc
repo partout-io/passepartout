@@ -25,8 +25,8 @@ namespace Passepartout {
 namespace {
 class PartoutWireGuardKeyGenerator final : public WireGuardKeyGenerator {
 public:
-    std::string PublicKey(const std::string &privateKey) const override {
-        std::unique_ptr<char, decltype(&std::free)> key(partout_wireguard_pubkey(privateKey.c_str()), &std::free);
+    std::string PublicKey(const std::string &private_key) const override {
+        std::unique_ptr<char, decltype(&std::free)> key(partout_wireguard_pubkey(private_key.c_str()), &std::free);
         return key ? std::string(key.get()) : std::string();
     }
 };
@@ -76,7 +76,7 @@ std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const CrossConstants &con
     if (demo) return std::make_unique<Partout::Tunnel>(std::make_unique<FakeTunnelStrategy>());
 #ifdef _WIN32
     return std::make_unique<Partout::Tunnel>(
-        std::make_unique<Partout::WinRTTunnelStrategy>(constants.tunnel.serverUri)
+        std::make_unique<Partout::WinRTTunnelStrategy>(constants.tunnel.server_uri)
     );
 #else
     throw std::runtime_error("VPN control is unavailable on this platform.");
@@ -93,37 +93,37 @@ std::function<void(const Models::AppPreferences &)> TunnelPreferences(bool demo,
 }
 }
 
-AppContext::AppContext(const std::filesystem::path &dataRoot, bool demo,
-                       Models::AppConstants appConstants, CrossConstants frontendConstants)
-    : constants(std::move(appConstants)), crossConstants(std::move(frontendConstants)),
-      applicationVersion(ApplicationVersion()),
-      wireGuardKeys(std::make_unique<PartoutWireGuardKeyGenerator>()),
+AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
+                       Models::AppConstants app_constants, CrossConstants frontend_constants)
+    : constants(std::move(app_constants)), cross_constants(std::move(frontend_constants)),
+      application_version(ApplicationVersion()),
+      wire_guard_keys(std::make_unique<PartoutWireGuardKeyGenerator>()),
       logger_(std::make_shared<AppLogger>()),
       session_(std::make_unique<AppSession>(std::make_unique<FileProfileRepository>(
-          Profiles::Directory(dataRoot, constants, crossConstants, demo)),
-          ImportProfile, MakeTunnel(demo, crossConstants), logger_,
-          std::make_unique<FileProfileJournal>(Profiles::Directory(dataRoot, constants, crossConstants, demo) / "transactions"),
+          Profiles::Directory(data_root, constants, cross_constants, demo)),
+          ImportProfile, MakeTunnel(demo, cross_constants), logger_,
+          std::make_unique<FileProfileJournal>(Profiles::Directory(data_root, constants, cross_constants, demo) / "transactions"),
           std::chrono::seconds(1), TunnelPreferences(demo, constants))),
       profiles(*session_), tunnel(*session_),
       preferences(std::make_unique<FilePreferencesRepository>(
-          Profiles::Directory(dataRoot, constants, crossConstants, demo) / "preferences.json"), [this] {
+          Profiles::Directory(data_root, constants, cross_constants, demo) / "preferences.json"), [this] {
               const auto state = session_->Snapshot();
-              return state.loaded && !state.busy && !state.pendingProfile && state.tunnelAvailable &&
-                  state.tunnelObservationErrors.empty() && std::all_of(state.tunnels.begin(), state.tunnels.end(), [](const auto &info) {
+              return state.loaded && !state.busy && !state.pending_profile && state.tunnel_available &&
+                  state.tunnel_observation_errors.empty() && std::all_of(state.tunnels.begin(), state.tunnels.end(), [](const auto &info) {
                       return info.status.value == Status::disconnected;
                   });
           }),
       config(std::make_unique<ConfigManager>(MakeHttp(constants, demo),
-          constants.websites.partoutURL + "/passepartout-config/v1/bundle.json", BuildNumber(applicationVersion),
+          constants.websites.partoutURL + "/passepartout-config/v1/bundle.json", BuildNumber(application_version),
           std::chrono::seconds(static_cast<std::int64_t>(constants.websites.configTTL * constants.websites.betaTTLFactor)))),
-      version(std::make_unique<VersionChecker>(applicationVersion, nullptr, std::string(),
+      version(std::make_unique<VersionChecker>(application_version, nullptr, std::string(),
           static_cast<std::int64_t>(constants.url.versionRateLimit), preferences.Snapshot().lastCheckedVersionTimestamp,
           preferences.Snapshot().lastCheckedVersion, [this](auto timestamp, auto latest) {
               preferences.SetLastCheckedVersion(timestamp, std::move(latest));
-          }), applicationVersion, changelogResource),
-      credits(creditsResource, MakeHttp(constants, demo)),
+          }), application_version, ChangelogResource),
+      credits(CreditsResource, MakeHttp(constants, demo)),
       diagnostics(std::make_unique<IssueReporter>(constants.emails.recipients.beta + "@" + constants.emails.domain,
-          applicationVersion, ReviewIssue)) {
+          application_version, ReviewIssue)) {
     preferences.OnChange([this](const auto &value) {
         session_->ApplyPreferences(value);
     });

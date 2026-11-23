@@ -8,6 +8,6 @@
 
 namespace Passepartout::Constants {
 inline Models::AppConstants Load() {
-    return Models::AppConstants::FromJson(Partout::Json::Parse(appConstantsResource));
+    return Models::AppConstants::FromJson(Partout::Json::Parse(AppConstantsResource));
 }
 }

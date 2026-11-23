@@ -41,9 +41,9 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     });
     auto *layout = new wxBoxSizer(wxVERTICAL);
     auto *splitter = new ThemeSplitView(this);
-    auto *sidebarPanel = splitter->Sidebar();
-    auto *detailPanel = splitter->Detail();
-    pages_ = new wxSimplebook(detailPanel);
+    auto *sidebar_panel = splitter->Sidebar();
+    auto *detail_panel = splitter->Detail();
+    pages_ = new wxSimplebook(detail_panel);
     pages_->SetFitToCurrentPage(true);
     auto *buttons = new wxBoxSizer(wxHORIZONTAL);
     progress_ = Theme::ProgressView(this);
@@ -51,15 +51,15 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     save_ = new wxButton(this, wxID_SAVE, Localized(StringKey::GlobalActionsSave));
     cancel_ = new wxButton(this, wxID_CANCEL, Localized(StringKey::GlobalActionsCancel));
     auto *sidebar = new wxBoxSizer(wxVERTICAL);
-    modules_ = new ProfileModuleList(sidebarPanel, *editor_, [this](std::size_t selection) {
+    modules_ = new ProfileModuleList(sidebar_panel, *editor_, [this](std::size_t selection) {
         SelectSection(selection);
     });
     sidebar->Add(modules_, 1, wxEXPAND | wxALL, Theme::Spacing(this));
-    sidebarPanel->SetSizer(sidebar);
+    sidebar_panel->SetSizer(sidebar);
     auto *detail = new wxBoxSizer(wxVERTICAL);
     detail->Add(pages_, 1, wxEXPAND);
-    detailPanel->SetSizer(detail);
-    const int sidebarWidth = splitter->InitializePanes();
+    detail_panel->SetSizer(detail);
+    const int sidebar_width = splitter->InitializePanes();
     layout->Add(splitter, 1, wxEXPAND);
     buttons->Add(progress_, 0, wxLEFT | wxALIGN_CENTER_VERTICAL, Theme::Spacing(this));
     buttons->AddStretchSpacer();
@@ -101,15 +101,15 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     const wxSize viewport(GetCharWidth() * 70, GetCharHeight() * 24);
     auto size = GetSize() - pages_->GetClientSize() + viewport;
     size.IncTo(GetBestSize());
-    const auto workArea = wxDisplay(this).GetClientArea();
-    size.DecTo(workArea.GetSize());
+    const auto work_area = wxDisplay(this).GetClientArea();
+    size.DecTo(work_area.GetSize());
     SetSize(size);
-    splitter->SetSashPosition(sidebarWidth);
+    splitter->SetSashPosition(sidebar_width);
     timer_.Start(100);
     CentreOnParent();
     auto position = GetPosition();
-    position.x = std::max(workArea.x, std::min(position.x, workArea.GetRight() - GetSize().x + 1));
-    position.y = std::max(workArea.y, std::min(position.y, workArea.GetBottom() - GetSize().y + 1));
+    position.x = std::max(work_area.x, std::min(position.x, work_area.GetRight() - GetSize().x + 1));
+    position.y = std::max(work_area.y, std::min(position.y, work_area.GetBottom() - GetSize().y + 1));
     Move(position);
 }
 void ProfileCoordinator::ShowSection(wxWindow *page, const wxString &title) {
@@ -137,13 +137,13 @@ void ProfileCoordinator::SelectSection(std::size_t selection) {
 }
 void ProfileCoordinator::OpenModule(std::size_t index) {
     const auto module = editor_->Snapshot().draft.modules.at(index);
-    const auto openContent = [this](wxString title, wxString content) {
+    const auto open_content = [this](wxString title, wxString content) {
         ThemeModal modal(this, title, [title, content](wxWindow *parent) {
             return new ThemeLongContent(parent, title, content);
         });
         modal.ShowModal();
     };
-    const auto openList = [this](wxString title, std::vector<std::string> values) {
+    const auto open_list = [this](wxString title, std::vector<std::string> values) {
         ThemeModal modal(this, title, [title, values](wxWindow *parent) {
             return new ThemeTextList(parent, title, values);
         });
@@ -152,13 +152,13 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
     wxWindow *page = std::visit([&](const auto &tagged) -> wxWindow * {
         using namespace Partout::Models;
         using Tag = std::decay_t<decltype(tagged)>;
-        if constexpr (std::is_same_v<Tag, TaggedModuleDns>) return new DNSView(pages_, tagged.value, openContent);
+        if constexpr (std::is_same_v<Tag, TaggedModuleDns>) return new DNSView(pages_, tagged.value, open_content);
         else if constexpr (std::is_same_v<Tag, TaggedModuleOnDemand>) return new OnDemandView(pages_, tagged.value);
-        else if constexpr (std::is_same_v<Tag, TaggedModuleHTTPProxy>) return new HTTPProxyView(pages_, tagged.value, openContent);
-        else if constexpr (std::is_same_v<Tag, TaggedModuleIp>) return new IPView(pages_, tagged.value, openContent);
-        else if constexpr (std::is_same_v<Tag, TaggedModuleWireGuard>) return new WireGuardView(pages_, tagged.value, openContent, keys_, openList);
+        else if constexpr (std::is_same_v<Tag, TaggedModuleHTTPProxy>) return new HTTPProxyView(pages_, tagged.value, open_content);
+        else if constexpr (std::is_same_v<Tag, TaggedModuleIp>) return new IPView(pages_, tagged.value, open_content);
+        else if constexpr (std::is_same_v<Tag, TaggedModuleWireGuard>) return new WireGuardView(pages_, tagged.value, open_content, keys_, open_list);
         else if constexpr (std::is_same_v<Tag, TaggedModuleOpenVpn>) {
-            return new OpenVPNView(pages_, tagged.value, openContent, [this, index] {
+            return new OpenVPNView(pages_, tagged.value, open_content, [this, index] {
                 const auto module = std::get<TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
                 OpenVpnCredentials credentials{};
                 credentials.otpMethod.value = OpenVpnCredentialsOTPMethod::none;
@@ -180,11 +180,11 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
                 updated.value.credentials = std::move(accepted);
                 editor_->UpdateModule(updated);
                 RefreshState();
-            }, [this, index, openList] {
+            }, [this, index, open_list] {
                 const auto draft = editor_->Snapshot().draft;
                 const auto &module = std::get<TaggedModuleOpenVpn>(draft.modules.at(index)).value;
                 if (!module.configuration || !module.configuration->remotes) return;
-                openList(Localized(StringKey::ModulesOpenvpnRemotes), *module.configuration->remotes);
+                open_list(Localized(StringKey::ModulesOpenvpnRemotes), *module.configuration->remotes);
             });
         } else {
             return new ThemeDetailView(pages_);

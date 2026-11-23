@@ -14,7 +14,7 @@ public:
 private:
     void ReportIssue();
     void SelectSection(SettingsSection section);
-    void ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> makePage);
+    void ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> make_page);
     AppContext &context_;
     SettingsSection section_ = SettingsSection::Preferences;
     wxSimplebook *pages_;

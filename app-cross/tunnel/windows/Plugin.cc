@@ -29,9 +29,9 @@
 
 namespace {
 
-constexpr std::wstring_view kBackgroundTaskClass = Passepartout::PackageConstants::BackgroundTask;
+constexpr std::wstring_view BackgroundTaskClass = Passepartout::PackageConstants::BackgroundTask;
 std::atomic_uint64_t g_log_sequence = 0;
-std::atomic_bool logsPrivateData{false};
+std::atomic_bool logs_private_data{false};
 
 void Log(std::wstring_view message, winrt::Windows::Networking::Vpn::VpnChannel const &channel = nullptr) noexcept {
     std::wstring line;
@@ -141,11 +141,11 @@ std::string ReadProfile(winrt::Windows::Networking::Vpn::VpnChannel const &chann
     }
 }
 
-void LogNative(void *, const char *profileId, int, const char *message) noexcept {
+void LogNative(void *, const char *profile_id, int, const char *message) noexcept {
     try {
         if (!message) return;
-        const auto text = profileId && logsPrivateData.load() ?
-            "[" + std::string(profileId) + "] " + message : std::string(message);
+        const auto text = profile_id && logs_private_data.load() ?
+            "[" + std::string(profile_id) + "] " + message : std::string(message);
         Log(winrt::to_hstring(text));
     } catch (...) {
         // Never throw through the native logging callback.
@@ -154,13 +154,13 @@ void LogNative(void *, const char *profileId, int, const char *message) noexcept
 
 // The native daemon is process-wide. The lease survives every borrowed callback
 // and is released only after runtime teardown, including failed/canceled startup.
-std::atomic_bool channelOwned{false};
+std::atomic_bool channel_owned{false};
 struct ChannelLease {
     ChannelLease() {
-        if (channelOwned.exchange(true)) throw winrt::hresult_illegal_method_call(L"A VPN channel is already active.");
+        if (channel_owned.exchange(true)) throw winrt::hresult_illegal_method_call(L"A VPN channel is already active.");
     }
     ~ChannelLease() {
-        channelOwned.store(false);
+        channel_owned.store(false);
     }
 };
 struct ChannelSession {
@@ -175,27 +175,27 @@ struct ChannelSession {
     explicit ChannelSession(winrt::Windows::Networking::Vpn::VpnChannel const &value) : channel(value) {
         const auto profile = ReadProfile(channel);
         using namespace winrt::Windows::Data::Json;
-        auto preferences = JsonObject::Parse(Passepartout::defaultTunnelPreferences);
+        auto preferences = JsonObject::Parse(Passepartout::DefaultTunnelPreferences);
         const auto values = winrt::Windows::Storage::ApplicationData::Current().LocalSettings().Values();
-        if (values.HasKey(Passepartout::tunnelPreferencesKey)) {
-            preferences = JsonObject::Parse(winrt::unbox_value<winrt::hstring>(values.Lookup(Passepartout::tunnelPreferencesKey)));
+        if (values.HasKey(Passepartout::TunnelPreferencesKey)) {
+            preferences = JsonObject::Parse(winrt::unbox_value<winrt::hstring>(values.Lookup(Passepartout::TunnelPreferencesKey)));
         }
         partout_init_args init{};
         init.logger_fn = LogNative;
         init.log_level = PartoutLogLevelDebug;
         init.logs_private_data = preferences.GetNamedBoolean(L"logsPrivateData", false);
-        logsPrivateData.store(init.logs_private_data);
+        logs_private_data.store(init.logs_private_data);
         const auto temporary = winrt::to_string(winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().Path());
         partout_daemon_options options{};
         options.cache_dir = temporary.c_str();
         options.starts_immediately = true;
         options.crypto = PartoutCryptoMbedTLS;
-        Partout::Models::TunnelControllerOptions controllerOptions{};
+        Partout::Models::TunnelControllerOptions controller_options{};
         const auto fallback = preferences.GetNamedArray(L"dnsFallbackServers", JsonArray{});
         for (const auto &server : fallback)
-            controllerOptions.dnsFallbackServers.push_back(winrt::to_string(server.GetString()));
+            controller_options.dnsFallbackServers.push_back(winrt::to_string(server.GetString()));
         runtime = std::make_unique<Partout::VpnChannelRuntime>(
-            channel, profile.c_str(), init, options, std::move(controllerOptions));
+            channel, profile.c_str(), init, options, std::move(controller_options));
     }
     void Cancel() noexcept {
         canceled.store(true);
@@ -339,7 +339,7 @@ extern "C" HRESULT __stdcall DllGetActivationFactory(HSTRING class_id, void **fa
 
     uint32_t length = 0;
     const wchar_t *raw = WindowsGetStringRawBuffer(class_id, &length);
-    if (std::wstring_view{raw, length} != kBackgroundTaskClass) {
+    if (std::wstring_view{raw, length} != BackgroundTaskClass) {
         return CLASS_E_CLASSNOTAVAILABLE;
     }
 

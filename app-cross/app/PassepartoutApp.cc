@@ -15,8 +15,8 @@
 namespace {
 std::string SingleInstanceKey(bool demo) {
     // Scope both the instance lock and activation channel to the user and mode.
-    auto key = Passepartout::defaultCrossConstants.tags.app + "-" + wxGetUserId().ToStdString(wxConvUTF8);
-    if (demo) key += Passepartout::defaultCrossConstants.commandLine.demoArgument;
+    auto key = Passepartout::DefaultCrossConstants.tags.app + "-" + wxGetUserId().ToStdString(wxConvUTF8);
+    if (demo) key += Passepartout::DefaultCrossConstants.command_line.demo_argument;
     return key;
 }
 }
@@ -30,36 +30,36 @@ bool PassepartoutApp::OnInit() {
     SetAppearance(Appearance::System);
 #endif
     wxUILocale::UseDefault();
-    AppLogger startupLogger;
-    startupLogger.Write(LogLevel::info, LogCategory::core, "Start application");
-    SetAppName(wxString::FromUTF8(defaultCrossConstants.tags.app));
+    AppLogger startup_logger;
+    startup_logger.Write(LogLevel::info, LogCategory::core, "Start application");
+    SetAppName(wxString::FromUTF8(DefaultCrossConstants.tags.app));
 
     // Parse the launch mode and configuration paths.
     bool demo = false;
     std::vector<std::filesystem::path> files;
     for (int i = 1; i < argc; ++i) {
         const wxString arg(argv[i]);
-        if (arg == wxString::FromUTF8(defaultCrossConstants.commandLine.demoArgument)) demo = true;
+        if (arg == wxString::FromUTF8(DefaultCrossConstants.command_line.demo_argument)) demo = true;
         else files.push_back(Paths::FromString(arg));
     }
 
     // Prefer brokered activation files; preserve read failures for import reporting.
-    std::shared_ptr<const ConfigurationFiles> activationFiles;
+    std::shared_ptr<const ConfigurationFiles> activation_files;
     try {
-        activationFiles = FileActivation::ReadFiles();
+        activation_files = FileActivation::ReadFiles();
     } catch (...) {
-        startupLogger.Write(LogLevel::error, LogCategory::core, "Unable to read activation files");
-        activationFiles = std::make_shared<ConfigurationFiles>(std::vector<std::filesystem::path>{}, 1);
+        startup_logger.Write(LogLevel::error, LogCategory::core, "Unable to read activation files");
+        activation_files = std::make_shared<ConfigurationFiles>(std::vector<std::filesystem::path>{}, 1);
     }
-    if (!activationFiles) activationFiles = std::make_shared<ConfigurationFiles>(files);
+    if (!activation_files) activation_files = std::make_shared<ConfigurationFiles>(files);
 
     // Forward to the existing instance, or claim this launch as the primary instance.
-    const auto dataRoot = Paths::FromString(wxStandardPaths::Get().GetUserLocalDataDir());
-    const auto instanceKey = SingleInstanceKey(demo);
-    instance_ = std::make_unique<wxSingleInstanceChecker>(wxString::FromUTF8(instanceKey));
+    const auto data_root = Paths::FromString(wxStandardPaths::Get().GetUserLocalDataDir());
+    const auto instance_key = SingleInstanceKey(demo);
+    instance_ = std::make_unique<wxSingleInstanceChecker>(wxString::FromUTF8(instance_key));
     if (instance_->IsAnotherRunning()) {
-        if (FileActivation::Forward(instanceKey, activationFiles)) return false;
-        startupLogger.Write(LogLevel::error, LogCategory::core, "Application startup rejected: another instance is running");
+        if (FileActivation::Forward(instance_key, activation_files)) return false;
+        startup_logger.Write(LogLevel::error, LogCategory::core, "Application startup rejected: another instance is running");
         wxMessageBox(Localized(StringKey::ErrorsAppOther),
                      wxTheApp->GetAppName(), wxOK | wxICON_INFORMATION);
         return false;
@@ -74,22 +74,22 @@ bool PassepartoutApp::OnInit() {
     const char *stage = "creating application context";
     try {
         // Assemble shared state and create the main presentation surface.
-        context_ = std::make_unique<AppContext>(dataRoot, demo);
+        context_ = std::make_unique<AppContext>(data_root, demo);
         stage = "creating main window";
-        startupLogger.Write(LogLevel::debug, LogCategory::core, "Create main window");
+        startup_logger.Write(LogLevel::debug, LogCategory::core, "Create main window");
         auto *view = new MainView(*context_, demo, Configuration::MakePicker);
         SetTopWindow(view);
 
         // Receive subsequent activations before processing the initial import.
         stage = "registering file activation";
         const wxWeakRef<MainView> target(view);
-        activation_ = std::make_unique<FileActivation>(instanceKey, [target](auto files) {
+        activation_ = std::make_unique<FileActivation>(instance_key, [target](auto files) {
             if (!target || target->IsBeingDeleted()) return false;
             target->Activate(std::move(files));
             return true;
         });
         stage = "processing initial file activation";
-        view->Activate(std::move(activationFiles));
+        view->Activate(std::move(activation_files));
 
         // Refresh shared state whenever the application returns to the foreground.
         stage = "binding application events";
@@ -105,10 +105,10 @@ bool PassepartoutApp::OnInit() {
         // Show the fully connected main window.
         stage = "showing main window";
         view->Show();
-        startupLogger.Write(LogLevel::info, LogCategory::core, "Main window shown");
+        startup_logger.Write(LogLevel::info, LogCategory::core, "Main window shown");
         return true;
     } catch (...) {
-        startupLogger.Write(LogLevel::error, LogCategory::core,
+        startup_logger.Write(LogLevel::error, LogCategory::core,
             std::string("Application startup failed while ") + stage);
     }
 

@@ -21,16 +21,16 @@ std::optional<InteractiveLogin> InteractiveLogin::FromProfile(const Profile &pro
         login.original = profile;
         login.credentials.otpMethod.value = Partout::Models::OpenVpnCredentialsOTPMethod::none;
         if (saved) login.credentials = *saved;
-        login.needsOTP = login.credentials.otpMethod.value != Partout::Models::OpenVpnCredentialsOTPMethod::none;
+        login.needs_otp = login.credentials.otpMethod.value != Partout::Models::OpenVpnCredentialsOTPMethod::none;
         // The native adapter receives the raw OTP; Partout applies its encoding.
-        if (login.needsOTP) login.credentials.password.clear();
+        if (login.needs_otp) login.credentials.password.clear();
         login.credentials.otp.reset();
         return login;
     }
     return std::nullopt;
 }
 bool InteractiveLogin::CanSubmit() const {
-    const auto &value = needsOTP ? credentials.password : credentials.username;
+    const auto &value = needs_otp ? credentials.password : credentials.username;
     return value.find_first_not_of(" \t\r\n") != std::string::npos;
 }
 }

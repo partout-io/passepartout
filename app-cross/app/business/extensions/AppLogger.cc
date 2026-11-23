@@ -15,15 +15,15 @@
 
 namespace Passepartout {
 namespace {
-std::mutex runtimeMutex;
+std::mutex runtime_mutex;
 struct RuntimeLine {
     std::string text;
-    bool isPrivate;
+    bool is_private;
 };
-std::deque<RuntimeLine> runtimeLines;
-std::atomic_bool logsPrivateData{false};
-std::size_t runtimeBytes = 0;
-constexpr std::size_t maximumLogBytes = 256 * 1024;
+std::deque<RuntimeLine> runtime_lines;
+std::atomic_bool logs_private_data{false};
+std::size_t runtime_bytes = 0;
+constexpr std::size_t MaximumLogBytes = 256 * 1024;
 const char *CategoryName(LogCategory category) {
     switch (category) {
     case LogCategory::core: return "core";
@@ -35,29 +35,29 @@ const char *CategoryName(LogCategory category) {
 }
 }
 void AppLogger::SetPrivateData(bool enabled) noexcept {
-    logsPrivateData.store(enabled);
+    logs_private_data.store(enabled);
 }
-std::string AppLogger::RuntimeLog(bool includePrivateData) {
-    std::lock_guard lock(runtimeMutex);
+std::string AppLogger::RuntimeLog(bool include_private_data) {
+    std::lock_guard lock(runtime_mutex);
     std::string result;
-    result.reserve(runtimeBytes);
-    for (const auto &line : runtimeLines) {
-        if (includePrivateData || !line.isPrivate) result += line.text;
+    result.reserve(runtime_bytes);
+    for (const auto &line : runtime_lines) {
+        if (include_private_data || !line.is_private) result += line.text;
     }
     return result;
 }
 AppLogger::AppLogger(LogSink sink) : sink_(std::move(sink)) {}
-void AppLogger::PartoutMessage(void *, const char *profileId, int level, const char *message) noexcept {
+void AppLogger::PartoutMessage(void *, const char *profile_id, int level, const char *message) noexcept {
     // Partout holds this process-wide callback; no application-owned context may dangle.
     static AppLogger logger;
     if (!message) return;
     try {
-        const auto text = profileId && logsPrivateData.load()
-            ? "[" + std::string(profileId) + "] " + message : std::string(message);
-        const auto logLevel = level <= PartoutLogLevelError ? LogLevel::error
+        const auto text = profile_id && logs_private_data.load()
+            ? "[" + std::string(profile_id) + "] " + message : std::string(message);
+        const auto log_level = level <= PartoutLogLevelError ? LogLevel::error
             : level <= PartoutLogLevelInfo ? LogLevel::info
             : LogLevel::debug;
-        logger.Write(logLevel, LogCategory::partout, text);
+        logger.Write(log_level, LogCategory::partout, text);
     } catch (...) {
         // Never throw through the native logging callback.
     }
@@ -75,15 +75,15 @@ void AppLogger::Write(LogLevel level, LogCategory category, const std::string &m
         std::ostringstream line;
         line << timestamp << " [" << CategoryName(category) << "] [" << name << "] " << message << '\n';
         auto text = line.str();
-        if (text.size() > maximumLogBytes) text.resize(maximumLogBytes);
+        if (text.size() > MaximumLogBytes) text.resize(MaximumLogBytes);
         {
-            std::lock_guard bufferLock(runtimeMutex);
-            while (!runtimeLines.empty() && (runtimeBytes + text.size() > maximumLogBytes || runtimeLines.size() >= 2000)) {
-                runtimeBytes -= runtimeLines.front().text.size();
-                runtimeLines.pop_front();
+            std::lock_guard buffer_lock(runtime_mutex);
+            while (!runtime_lines.empty() && (runtime_bytes + text.size() > MaximumLogBytes || runtime_lines.size() >= 2000)) {
+                runtime_bytes -= runtime_lines.front().text.size();
+                runtime_lines.pop_front();
             }
-            runtimeBytes += text.size();
-            runtimeLines.push_back({text, logsPrivateData.load()});
+            runtime_bytes += text.size();
+            runtime_lines.push_back({text, logs_private_data.load()});
         }
 #ifdef _WIN32
         OutputDebugStringA(text.c_str());

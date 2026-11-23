@@ -6,9 +6,9 @@
 #include <wx/numformatter.h>
 
 namespace Passepartout {
-ModuleDetailView::ModuleDetailView(wxWindow *parent, OpenModuleContent openContent, Presentation presentation)
-    : ThemeDetailView(parent, presentation), openContent_(std::move(openContent)) {}
-void ModuleDetailView::Row(const wxString &title, const std::vector<std::string> &values, bool longContent,
+ModuleDetailView::ModuleDetailView(wxWindow *parent, OpenModuleContent open_content, Presentation presentation)
+    : ThemeDetailView(parent, presentation), open_content_(std::move(open_content)) {}
+void ModuleDetailView::Row(const wxString &title, const std::vector<std::string> &values, bool long_content,
     const std::optional<wxString> &preview, bool secure) {
     std::vector<wxString> items;
     wxString text;
@@ -20,8 +20,8 @@ void ModuleDetailView::Row(const wxString &title, const std::vector<std::string>
         text += item;
     }
     if (items.empty()) return;
-    if (IsForm() && !longContent) Items(title, items);
-    else Row(title, text.ToStdString(wxConvUTF8), longContent, preview, secure);
+    if (IsForm() && !long_content) Items(title, items);
+    else Row(title, text.ToStdString(wxConvUTF8), long_content, preview, secure);
 }
 void ModuleDetailView::Duration(StringKey title, const std::optional<double> &value) {
     if (!value) return;
@@ -34,17 +34,17 @@ void ModuleDetailView::Duration(StringKey title, const std::optional<double> &va
     Field(Localized(title), text);
 }
 void ModuleDetailView::IP(const wxString &title, const std::optional<Partout::Models::IPSettings> &settings,
-    const std::optional<std::vector<Partout::Models::Route>> &additionalRoutes, bool openVPN) {
+    const std::optional<std::vector<Partout::Models::Route>> &additional_routes, bool open_vpn) {
     const auto &ip = settings.value_or(Partout::Models::IPSettings{});
     auto included = ip.includedRoutes;
-    if (additionalRoutes) included.insert(included.end(), additionalRoutes->begin(), additionalRoutes->end());
+    if (additional_routes) included.insert(included.end(), additional_routes->begin(), additional_routes->end());
     if (ip.subnets.empty() && included.empty() && ip.excludedRoutes.empty()) return;
     Section(title);
-    if (openVPN && !ip.subnets.empty()) {
+    if (open_vpn && !ip.subnets.empty()) {
         const auto &host = ip.subnets.front();
         Row(StringKey::GlobalNounsAddress, host.substr(0, host.find('/')));
     } else Row(StringKey::GlobalNounsAddress, ip.subnets);
-    if (openVPN) {
+    if (open_vpn) {
         for (const auto &route : ip.includedRoutes) {
             if (!route.destination) {
                 Row(StringKey::GlobalNounsGateway, route.gateway);

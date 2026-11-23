@@ -5,5 +5,5 @@
 #pragma once
 // Embedded from the same constants.json resource used by Apple and Android.
 namespace Passepartout {
-inline constexpr const char appConstantsResource[] = R"AppConstants(@APP_CONSTANTS_JSON@)AppConstants";
+inline constexpr const char AppConstantsResource[] = R"AppConstants(@APP_CONSTANTS_JSON@)AppConstants";
 }

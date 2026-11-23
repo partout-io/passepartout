@@ -19,7 +19,7 @@ CreditsObservable::CreditsObservable(std::string resource, std::unique_ptr<HttpC
             return a.name < b.name;
         });
     } catch (...) {
-        loadError_ = true;
+        load_error_ = true;
     }
 }
 CreditsObservable::~CreditsObservable() {
@@ -29,7 +29,7 @@ const Models::Credits &CreditsObservable::Snapshot() const {
     return credits_;
 }
 bool CreditsObservable::HasLoadError() const {
-    return loadError_;
+    return load_error_;
 }
 CreditsObservable::Content CreditsObservable::License(const std::string &url) const {
     std::lock_guard lock(mutex_);

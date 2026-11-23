@@ -19,11 +19,11 @@ namespace {
 
 #if defined(_DEBUG) && defined(PASSEPARTOUT_WAIT_FOR_DEBUGGER)
 void WaitForDebugger() {
-    constexpr ULONGLONG timeoutMilliseconds = 30000;
+    constexpr ULONGLONG TimeoutMilliseconds = 30000;
     const auto started = GetTickCount64();
     OutputDebugStringW(L"VPN host waiting up to 30 seconds for a debugger.\n");
     while (!IsDebuggerPresent()) {
-        if (GetTickCount64() - started >= timeoutMilliseconds) {
+        if (GetTickCount64() - started >= TimeoutMilliseconds) {
             OutputDebugStringW(L"VPN host debugger wait timed out; continuing startup.\n");
             return;
         }

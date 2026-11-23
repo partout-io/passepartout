@@ -10,8 +10,8 @@ namespace Passepartout {
 std::string FileActivationInbox::Encode(const std::string &id, const ConfigurationFiles &files) {
     if (files.Count() > 64) throw std::runtime_error("Too many activation files.");
     auto sources = Partout::Json::Array();
-    std::size_t failures = files.selectionFailures;
-    std::size_t encodedBytes = 1024;
+    std::size_t failures = files.selection_failures;
+    std::size_t encoded_bytes = 1024;
     for (std::size_t index = 0; index < files.Count(); ++index) {
         try {
             const auto source = files.Read(index);
@@ -19,8 +19,8 @@ std::string FileActivationInbox::Encode(const std::string &id, const Configurati
                 throw std::runtime_error("Invalid activation file.");
             const Partout::Json entry = {{"name", source.name}, {"text", source.text}};
             const auto size = entry.Encode().size(); // Validate UTF-8 independently for mixed batches.
-            if (encodedBytes + size + 1 > MaximumBytes) throw std::runtime_error("Activation is too large.");
-            encodedBytes += size + 1;
+            if (encoded_bytes + size + 1 > MaximumBytes) throw std::runtime_error("Activation is too large.");
+            encoded_bytes += size + 1;
             sources.Append(entry);
         } catch (...) {
             ++failures;

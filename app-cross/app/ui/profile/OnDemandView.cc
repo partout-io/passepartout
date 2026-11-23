@@ -30,16 +30,16 @@ OnDemandView::OnDemandView(wxWindow *parent, const Partout::Models::OnDemandModu
         return;
     }
     Section(Localized(StringKey::GlobalNounsNetworks));
-    const auto hasNetwork = [&module](OnDemandModuleOtherNetwork::eOnDemandModuleOtherNetwork type) {
+    const auto has_network = [&module](OnDemandModuleOtherNetwork::eOnDemandModuleOtherNetwork type) {
         return std::any_of(module.withOtherNetworks.begin(), module.withOtherNetworks.end(),
             [type](const auto &network) {
                 return network.value == type;
             });
     };
     Toggle(Localized(StringKey::ModulesOnDemandMobile), {},
-        hasNetwork(OnDemandModuleOtherNetwork::mobile))->Disable();
+        has_network(OnDemandModuleOtherNetwork::mobile))->Disable();
     Toggle(Localized(StringKey::ModulesOnDemandEthernet), {},
-        hasNetwork(OnDemandModuleOtherNetwork::ethernet))->Disable();
+        has_network(OnDemandModuleOtherNetwork::ethernet))->Disable();
     Message(Localized(StringKey::ModulesOnDemandNetworksFooter), TextStyle::Secondary);
     Section(Strings::Unlocalized::WiFi);
     for (const auto &[ssid, enabled] : module.withSSIDs) {

@@ -9,6 +9,6 @@ namespace Passepartout {
 class WireGuardKeyGenerator {
 public:
     virtual ~WireGuardKeyGenerator() = default;
-    virtual std::string PublicKey(const std::string &privateKey) const = 0;
+    virtual std::string PublicKey(const std::string &private_key) const = 0;
 };
 }

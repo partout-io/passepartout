@@ -25,7 +25,7 @@ public:
     void LoadLicense(const std::string &url);
 private:
     Models::Credits credits_{};
-    bool loadError_ = false;
+    bool load_error_ = false;
     std::unique_ptr<HttpClient> client_;
     mutable std::mutex mutex_;
     std::map<std::string, Content> content_;

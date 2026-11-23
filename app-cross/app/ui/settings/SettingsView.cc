@@ -25,7 +25,7 @@ public:
 
 };
 }
-SettingsView::SettingsView(wxWindow *parent, const wxString &updateTitle,
+SettingsView::SettingsView(wxWindow *parent, const wxString &update_title,
     SettingsSection initial, std::function<void(SettingsSection)> selected)
     : wxPanel(parent) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
@@ -55,22 +55,22 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &updateTitle,
     page(StringKey::ViewsSettingsCreditsTitle, SettingsSection::Credits);
     append(Localized(StringKey::GlobalNounsTroubleshooting), 0);
     page(StringKey::ViewsDiagnosticsTitle, SettingsSection::Diagnostics);
-    unsigned initialRow = 0;
+    unsigned initial_row = 0;
     for (unsigned row = 0; row < list->GetItemCount(); ++row) {
-        if (list->GetItemData(list->RowToItem(row)) == static_cast<wxUIntPtr>(initial)) initialRow = row;
+        if (list->GetItemData(list->RowToItem(row)) == static_cast<wxUIntPtr>(initial)) initial_row = row;
     }
-    list->SelectRow(initialRow);
-    selectedRow_ = initialRow;
+    list->SelectRow(initial_row);
+    selected_row_ = initial_row;
     const auto select = [this, list, selected](const wxDataViewItem &item) {
         if (!item.IsOk()) return;
         const auto target = list->GetItemData(item);
         if (!target) {
-            list->SelectRow(selectedRow_);
+            list->SelectRow(selected_row_);
             return;
         }
         const auto row = static_cast<unsigned>(list->ItemToRow(item));
-        if (row == selectedRow_) return;
-        selectedRow_ = row;
+        if (row == selected_row_) return;
+        selected_row_ = row;
         const auto section = static_cast<SettingsSection>(target);
         selected(section);
     };
@@ -115,8 +115,8 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &updateTitle,
         });
         event.Skip();
     });
-    if (!updateTitle.empty()) {
-        layout->Add(new ThemeContentLink(this, updateTitle, [selected] {
+    if (!update_title.empty()) {
+        layout->Add(new ThemeContentLink(this, update_title, [selected] {
             selected(SettingsSection::Update);
         }), 0, wxBOTTOM, Theme::Spacing(this));
     }

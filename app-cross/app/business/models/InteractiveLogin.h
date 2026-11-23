@@ -9,7 +9,7 @@ namespace Passepartout {
 struct InteractiveLogin {
     Profile original;
     Partout::Models::OpenVpnCredentials credentials;
-    bool needsOTP = false;
+    bool needs_otp = false;
     static std::optional<InteractiveLogin> FromProfile(const Profile &profile);
     bool CanSubmit() const;
 };

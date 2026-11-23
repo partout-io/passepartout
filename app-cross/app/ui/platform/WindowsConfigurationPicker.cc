@@ -28,7 +28,7 @@ struct RequestDirectory {
 };
 struct StagedFiles final : ConfigurationFiles {
     StagedFiles(ConfigurationFiles files, std::shared_ptr<RequestDirectory> owner)
-        : ConfigurationFiles(std::move(files.paths), files.selectionFailures), directory(std::move(owner)) {}
+        : ConfigurationFiles(std::move(files.paths), files.selection_failures), directory(std::move(owner)) {}
     const std::shared_ptr<RequestDirectory> directory;
 };
 struct SelectionState {

@@ -31,11 +31,11 @@ wxString QuitTitle() {
 using namespace Passepartout;
 
 MainView::MainView(AppContext &context, bool demo,
-                   Configuration::PickerFactory pickerFactory
+                   Configuration::PickerFactory picker_factory
 )
-    : wxFrame(nullptr, wxID_ANY, Text(context.crossConstants.tags.app) +
-          (demo ? " (" + Text(context.crossConstants.commandLine.demoArgument) + ")" : wxString())),
-      context_(context), timer_(this), picker_(pickerFactory(*this)) {
+    : wxFrame(nullptr, wxID_ANY, Text(context.cross_constants.tags.app) +
+          (demo ? " (" + Text(context.cross_constants.command_line.demo_argument) + ")" : wxString())),
+      context_(context), timer_(this), picker_(picker_factory(*this)) {
     Theme::Apply(this);
     auto *panel = new wxPanel(this);
     Theme::Apply(panel);
@@ -75,20 +75,20 @@ MainView::MainView(AppContext &context, bool demo,
     auto *help = new wxMenu;
     help->Append(wxID_ABOUT, Localized(StringKey::GlobalNounsAbout));
     menus->Append(help, wxGetStockLabel(wxID_HELP));
-    const auto changelogId = wxWindow::NewControlId();
-    help->Append(changelogId, Strings::Unlocalized::Changelog);
+    const auto changelog_id = wxWindow::NewControlId();
+    help->Append(changelog_id, Strings::Unlocalized::Changelog);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
         const auto content = Text(context_.version.Snapshot().changelog);
         ThemeModal modal(this, Strings::Unlocalized::Changelog, [content](wxWindow *parent) {
             return new ThemeLongContent(parent, Strings::Unlocalized::Changelog, content);
         });
         modal.ShowModal();
-    }, changelogId);
+    }, changelog_id);
     SetMenuBar(menus);
 #ifdef __WXMSW__
     if (auto menu = GetSystemMenu(static_cast<HWND>(GetHandle()), FALSE)) {
         const auto title = Localized(StringKey::GlobalNounsAbout) + " " +
-            Text(context.crossConstants.tags.app) + "...";
+            Text(context.cross_constants.tags.app) + "...";
         InsertMenuW(menu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, nullptr);
         InsertMenuW(menu, 0, MF_BYPOSITION | MF_STRING, SystemAbout, title.wc_str());
     }
@@ -100,13 +100,13 @@ MainView::MainView(AppContext &context, bool demo,
         Quit();
     }, wxID_EXIT);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
-        ThemeModal dialog(this, Localized(StringKey::GlobalNounsAbout) + " " + Text(context_.crossConstants.tags.app),
+        ThemeModal dialog(this, Localized(StringKey::GlobalNounsAbout) + " " + Text(context_.cross_constants.tags.app),
             [this](wxWindow *parent) {
-                const SettingsPresentation present = [parent](auto title, auto makeContent) {
-                    ThemeModal modal(parent, title, makeContent);
+                const SettingsPresentation present = [parent](auto title, auto make_content) {
+                    ThemeModal modal(parent, title, make_content);
                     modal.ShowModal();
                 };
-                return new VersionView(parent, context_.version, Text(context_.crossConstants.tags.app), present);
+                return new VersionView(parent, context_.version, Text(context_.cross_constants.tags.app), present);
             }, ThemeModal::Mode::ReadOnly, ThemeModal::Sizing::FixedContent);
         dialog.ShowModal();
     }, wxID_ABOUT);
@@ -149,9 +149,9 @@ MainView::~MainView() {
     timer_.Stop();
 }
 void MainView::Render() {
-    const bool tunnelUnavailable = !snapshot_.tunnelError.empty() || !snapshot_.reconciliationError.empty();
-    message_->SetLabel(Localized(tunnelUnavailable ? StringKey::ErrorsAppTunnel : StringKey::ViewsAppFoldersNoProfiles));
-    message_->Show(tunnelUnavailable || (snapshot_.loaded && snapshot_.profiles.empty()));
+    const bool tunnel_unavailable = !snapshot_.tunnel_error.empty() || !snapshot_.reconciliation_error.empty();
+    message_->SetLabel(Localized(tunnel_unavailable ? StringKey::ErrorsAppTunnel : StringKey::ViewsAppFoldersNoProfiles));
+    message_->Show(tunnel_unavailable || (snapshot_.loaded && snapshot_.profiles.empty()));
     const bool activity = snapshot_.HasActivity();
     if (activity) progress_->Start();
     else progress_->Stop();
@@ -161,7 +161,7 @@ void MainView::Render() {
 }
 void MainView::UpdateActions() {
     collection_->Render(snapshot_, picking_);
-    const bool idle = !picking_ && !snapshot_.foregroundBusy && !snapshot_.pendingProfile && snapshot_.loaded;
+    const bool idle = !picking_ && !snapshot_.foreground_busy && !snapshot_.pending_profile && snapshot_.loaded;
     const auto selected = collection_->SelectedIds();
     import_->Enable(idle);
     GetMenuBar()->Enable(wxID_ADD, idle);
@@ -186,10 +186,10 @@ void MainView::Tick(wxTimerEvent &) {
         if (!snapshot_.error.empty() && !snapshot_.busy) {
             // Pause polling while the alert runs its nested event loop.
             timer_.Stop();
-            const bool importing = !snapshot_.error.empty() && snapshot_.errorContext == AppErrorContext::import;
+            const bool importing = !snapshot_.error.empty() && snapshot_.error_context == AppErrorContext::import;
             // FIXME: ### Map typed failure reasons to localized recovery guidance without exposing raw native errors or secrets.
             const auto message = Localized(importing ? StringKey::ErrorsAppImportGeneric :
-                snapshot_.errorContext == AppErrorContext::tunnel ? StringKey::ErrorsAppTunnel : StringKey::ErrorsAppOther);
+                snapshot_.error_context == AppErrorContext::tunnel ? StringKey::ErrorsAppTunnel : StringKey::ErrorsAppOther);
             wxMessageDialog dialog(this, message,
                 importing ? Localized(StringKey::ViewsAppToolbarImportFile) : wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
             dialog.SetOKLabel(Localized(StringKey::GlobalNounsOk));
@@ -245,26 +245,26 @@ void MainView::Quit() {
     Close();
 }
 void MainView::Activate(std::shared_ptr<const ConfigurationFiles> files) {
-    if (files && (files->Count() || files->selectionFailures)) activations_.push_back(std::move(files));
+    if (files && (files->Count() || files->selection_failures)) activations_.push_back(std::move(files));
     if (IsIconized()) Iconize(false);
     Raise();
 }
 void MainView::Edit(const std::string &id) {
-    if (picking_ || context_.profiles.Snapshot().foregroundBusy) return;
+    if (picking_ || context_.profiles.Snapshot().foreground_busy) return;
     const auto editor = context_.profiles.CreateEditor(id);
     if (!editor) return;
-    ProfileCoordinator dialog(this, context_.profiles, editor, *context_.wireGuardKeys);
+    ProfileCoordinator dialog(this, context_.profiles, editor, *context_.wire_guard_keys);
     dialog.ShowModal();
 }
 
 #ifdef __WXMSW__
-WXLRESULT MainView::MSWWindowProc(WXUINT message, WXWPARAM wParam, WXLPARAM lParam) {
-    if (message == WM_SYSCOMMAND && (wParam & 0xfff0) == SystemAbout) {
+WXLRESULT MainView::MSWWindowProc(WXUINT message, WXWPARAM w_param, WXLPARAM l_param) {
+    if (message == WM_SYSCOMMAND && (w_param & 0xfff0) == SystemAbout) {
         // Dispatch through the existing About action after native menu handling.
         auto *event = new wxCommandEvent(wxEVT_MENU, wxID_ABOUT);
         wxQueueEvent(this, event);
         return 0;
     }
-    return wxFrame::MSWWindowProc(message, wParam, lParam);
+    return wxFrame::MSWWindowProc(message, w_param, l_param);
 }
 #endif

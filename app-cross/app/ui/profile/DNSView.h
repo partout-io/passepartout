@@ -9,6 +9,6 @@
 namespace Passepartout {
 class DNSView final : public ModuleDetailView {
 public:
-    DNSView(wxWindow *parent, const Partout::Models::DNSModule &module, OpenModuleContent openContent);
+    DNSView(wxWindow *parent, const Partout::Models::DNSModule &module, OpenModuleContent open_content);
 };
 }

@@ -21,7 +21,7 @@ int main() {
         return true;
     };
     assert(inbox.Accept(message, handler));
-    assert(owned->Count() == 1 && owned->selectionFailures == 1);
+    assert(owned->Count() == 1 && owned->selection_failures == 1);
     assert(owned->Read(0).name == "Café 日本語" && owned->Read(0).text == "line 1\nline 2");
     assert(inbox.Accept(message, handler) && activations == 1);
     assert(!inbox.Accept("invalid", handler));
@@ -32,6 +32,6 @@ int main() {
     assert(inbox.Accept(focus, handler) && activations == 2 && owned->Count() == 0);
     const MemoryConfigurationFiles invalid({{"Too large", std::string(1024 * 1024 + 1, 'x')}});
     assert(inbox.Accept(FileActivationInbox::Encode("request-3", invalid), handler));
-    assert(!owned->Count() && owned->selectionFailures == 1);
+    assert(!owned->Count() && owned->selection_failures == 1);
     std::cout << "Activation copying, Unicode, mixed failures, duplicates and retry passed.\n";
 }

@@ -10,7 +10,7 @@ namespace Passepartout {
 class OpenVPNView final : public ModuleDetailView {
 public:
     OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule &module,
-        OpenModuleContent openContent, std::function<void()> openCredentials,
-        std::function<void()> openRemotes);
+        OpenModuleContent open_content, std::function<void()> open_credentials,
+        std::function<void()> open_remotes);
 };
 }

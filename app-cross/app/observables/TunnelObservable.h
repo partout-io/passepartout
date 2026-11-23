@@ -12,8 +12,8 @@ class AppSession;
 class TunnelObservable {
 public:
     struct ToggleState {
-        bool isOn = false;
-        bool canInteract = false;
+        bool is_on = false;
+        bool can_interact = false;
         Status status = Status::disconnected;
     };
     explicit TunnelObservable(AppSession &session) : session_(session) {}
@@ -27,6 +27,6 @@ public:
     AppSnapshot Snapshot() const;
 private:
     AppSession &session_;
-    std::optional<InteractiveLogin> interactiveLogin_;
+    std::optional<InteractiveLogin> interactive_login_;
 };
 }
