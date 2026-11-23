@@ -22,7 +22,7 @@
 #include <string>
 #include "AppUserLevel.h"
 #include <map>
-#include <partout/json.h>
+#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models
@@ -58,8 +58,8 @@ struct  AppBundle
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static AppBundle FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static AppBundle FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppBundle& o);

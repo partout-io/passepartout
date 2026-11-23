@@ -12,7 +12,7 @@
 namespace Passepartout {
 class ConfigManager {
 public:
-    using Flags = std::map<Models::ConfigFlag::eConfigFlag, Partout::Models::Json>;
+    using Flags = std::map<Models::ConfigFlag::eConfigFlag, Partout::Json>;
     ConfigManager(std::unique_ptr<HttpClient> client, std::string url, int build,
                   std::chrono::seconds ttl);
     bool Refresh();

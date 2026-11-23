@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppTunnelInfo::ToJson() const
+::Partout::Json AppTunnelInfo::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppTunnelInfo AppTunnelInfo::FromJson(const ::Partout::Models::Json& j)
+AppTunnelInfo AppTunnelInfo::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppTunnelInfo>();
 }

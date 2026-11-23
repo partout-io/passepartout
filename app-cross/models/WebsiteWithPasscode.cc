@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json WebsiteWithPasscode::ToJson() const
+::Partout::Json WebsiteWithPasscode::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-WebsiteWithPasscode WebsiteWithPasscode::FromJson(const ::Partout::Models::Json& j)
+WebsiteWithPasscode WebsiteWithPasscode::FromJson(const ::Partout::Json& j)
 {
     return j.Get<WebsiteWithPasscode>();
 }

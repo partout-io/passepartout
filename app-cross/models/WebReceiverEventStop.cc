@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json WebReceiverEventStop::ToJson() const
+::Partout::Json WebReceiverEventStop::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-WebReceiverEventStop WebReceiverEventStop::FromJson(const ::Partout::Models::Json& j)
+WebReceiverEventStop WebReceiverEventStop::FromJson(const ::Partout::Json& j)
 {
     return j.Get<WebReceiverEventStop>();
 }

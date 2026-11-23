@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppPreferenceKey::ToJson() const
+::Partout::Json AppPreferenceKey::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppPreferenceKey AppPreferenceKey::FromJson(const ::Partout::Models::Json& j)
+AppPreferenceKey AppPreferenceKey::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppPreferenceKey>();
 }

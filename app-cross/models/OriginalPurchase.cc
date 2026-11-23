@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json OriginalPurchase::ToJson() const
+::Partout::Json OriginalPurchase::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-OriginalPurchase OriginalPurchase::FromJson(const ::Partout::Models::Json& j)
+OriginalPurchase OriginalPurchase::FromJson(const ::Partout::Json& j)
 {
     return j.Get<OriginalPurchase>();
 }

@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json Credits_licenses_inner::ToJson() const
+::Partout::Json Credits_licenses_inner::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-Credits_licenses_inner Credits_licenses_inner::FromJson(const ::Partout::Models::Json& j)
+Credits_licenses_inner Credits_licenses_inner::FromJson(const ::Partout::Json& j)
 {
     return j.Get<Credits_licenses_inner>();
 }

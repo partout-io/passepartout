@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppFeature::ToJson() const
+::Partout::Json AppFeature::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppFeature AppFeature::FromJson(const ::Partout::Models::Json& j)
+AppFeature AppFeature::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppFeature>();
 }

@@ -23,7 +23,7 @@
 #include <partout/models/ModuleType.h>
 #include <vector>
 #include "ProfileSharingFlag.h"
-#include <partout/json.h>
+#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models
@@ -61,8 +61,8 @@ struct  AppProfileHeader
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static AppProfileHeader FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static AppProfileHeader FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppProfileHeader& o);

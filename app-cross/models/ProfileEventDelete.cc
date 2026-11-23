@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json ProfileEventDelete::ToJson() const
+::Partout::Json ProfileEventDelete::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-ProfileEventDelete ProfileEventDelete::FromJson(const ::Partout::Models::Json& j)
+ProfileEventDelete ProfileEventDelete::FromJson(const ::Partout::Json& j)
 {
     return j.Get<ProfileEventDelete>();
 }

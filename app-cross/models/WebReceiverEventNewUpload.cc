@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json WebReceiverEventNewUpload::ToJson() const
+::Partout::Json WebReceiverEventNewUpload::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-WebReceiverEventNewUpload WebReceiverEventNewUpload::FromJson(const ::Partout::Models::Json& j)
+WebReceiverEventNewUpload WebReceiverEventNewUpload::FromJson(const ::Partout::Json& j)
 {
     return j.Get<WebReceiverEventNewUpload>();
 }

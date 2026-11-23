@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json ConfigFlag::ToJson() const
+::Partout::Json ConfigFlag::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-ConfigFlag ConfigFlag::FromJson(const ::Partout::Models::Json& j)
+ConfigFlag ConfigFlag::FromJson(const ::Partout::Json& j)
 {
     return j.Get<ConfigFlag>();
 }

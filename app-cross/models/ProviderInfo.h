@@ -19,7 +19,7 @@
 #define ProviderInfo_H_
 
 #include <string>
-#include <partout/json.h>
+#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models
@@ -51,8 +51,8 @@ struct  ProviderInfo
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static ProviderInfo FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static ProviderInfo FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const ProviderInfo& o);

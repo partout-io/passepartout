@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json DistributionTarget::ToJson() const
+::Partout::Json DistributionTarget::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-DistributionTarget DistributionTarget::FromJson(const ::Partout::Models::Json& j)
+DistributionTarget DistributionTarget::FromJson(const ::Partout::Json& j)
 {
     return j.Get<DistributionTarget>();
 }

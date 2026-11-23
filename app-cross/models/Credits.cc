@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json Credits::ToJson() const
+::Partout::Json Credits::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-Credits Credits::FromJson(const ::Partout::Models::Json& j)
+Credits Credits::FromJson(const ::Partout::Json& j)
 {
     return j.Get<Credits>();
 }

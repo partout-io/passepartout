@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppProfileHeader::ToJson() const
+::Partout::Json AppProfileHeader::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppProfileHeader AppProfileHeader::FromJson(const ::Partout::Models::Json& j)
+AppProfileHeader AppProfileHeader::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppProfileHeader>();
 }

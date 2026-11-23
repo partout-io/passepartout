@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json ExperimentalPreferences::ToJson() const
+::Partout::Json ExperimentalPreferences::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-ExperimentalPreferences ExperimentalPreferences::FromJson(const ::Partout::Models::Json& j)
+ExperimentalPreferences ExperimentalPreferences::FromJson(const ::Partout::Json& j)
 {
     return j.Get<ExperimentalPreferences>();
 }

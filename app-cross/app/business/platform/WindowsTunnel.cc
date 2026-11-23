@@ -69,7 +69,7 @@ public:
                 winrt::uninit_apartment();
             }
         } apartment;
-        const Partout::Models::Json value = {
+        const Partout::Json value = {
             {"dnsFallbackServers", preferences.dnsFallsBack ? dnsFallbackServers_ : std::vector<std::string>{}},
             {"logsPrivateData", preferences.logsPrivateData}
         };

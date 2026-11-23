@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppConstants_emails_recipients::ToJson() const
+::Partout::Json AppConstants_emails_recipients::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppConstants_emails_recipients AppConstants_emails_recipients::FromJson(const ::Partout::Models::Json& j)
+AppConstants_emails_recipients AppConstants_emails_recipients::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppConstants_emails_recipients>();
 }

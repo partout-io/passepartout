@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json ProfileEventChangeRemoteImporting::ToJson() const
+::Partout::Json ProfileEventChangeRemoteImporting::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-ProfileEventChangeRemoteImporting ProfileEventChangeRemoteImporting::FromJson(const ::Partout::Models::Json& j)
+ProfileEventChangeRemoteImporting ProfileEventChangeRemoteImporting::FromJson(const ::Partout::Json& j)
 {
     return j.Get<ProfileEventChangeRemoteImporting>();
 }

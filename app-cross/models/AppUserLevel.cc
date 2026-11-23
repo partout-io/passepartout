@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppUserLevel::ToJson() const
+::Partout::Json AppUserLevel::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppUserLevel AppUserLevel::FromJson(const ::Partout::Models::Json& j)
+AppUserLevel AppUserLevel::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppUserLevel>();
 }

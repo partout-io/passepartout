@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppConstants_log_formatter::ToJson() const
+::Partout::Json AppConstants_log_formatter::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppConstants_log_formatter AppConstants_log_formatter::FromJson(const ::Partout::Models::Json& j)
+AppConstants_log_formatter AppConstants_log_formatter::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppConstants_log_formatter>();
 }

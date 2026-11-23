@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json LocalLoggerOptions::ToJson() const
+::Partout::Json LocalLoggerOptions::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-LocalLoggerOptions LocalLoggerOptions::FromJson(const ::Partout::Models::Json& j)
+LocalLoggerOptions LocalLoggerOptions::FromJson(const ::Partout::Json& j)
 {
     return j.Get<LocalLoggerOptions>();
 }

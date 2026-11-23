@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json VersionEventNew::ToJson() const
+::Partout::Json VersionEventNew::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-VersionEventNew VersionEventNew::FromJson(const ::Partout::Models::Json& j)
+VersionEventNew VersionEventNew::FromJson(const ::Partout::Json& j)
 {
     return j.Get<VersionEventNew>();
 }

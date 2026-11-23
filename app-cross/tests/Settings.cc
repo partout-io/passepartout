@@ -177,7 +177,7 @@ int main() {
 
         CreditsObservable credits(creditsResource, std::make_unique<FakeHttp>());
         assert(!credits.HasLoadError());
-        assert(credits.Snapshot().licenses.size() == Partout::Models::Json::Parse(creditsResource).At("licenses").Size());
+        assert(credits.Snapshot().licenses.size() == Partout::Json::Parse(creditsResource).At("licenses").Size());
         AppLogger logger;
         AppLogger::SetPrivateData(false);
         logger.Write(LogLevel::info, "test", "public marker");

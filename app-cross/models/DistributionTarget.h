@@ -19,7 +19,7 @@
 #define DistributionTarget_H_
 
 #include <string>
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -62,8 +62,8 @@ struct  DistributionTarget
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static DistributionTarget FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static DistributionTarget FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const DistributionTarget& o);

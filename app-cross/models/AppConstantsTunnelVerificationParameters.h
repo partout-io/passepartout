@@ -18,7 +18,7 @@
 #ifndef AppConstantsTunnelVerificationParameters_H_
 #define AppConstantsTunnelVerificationParameters_H_
 
-#include <partout/json.h>
+#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models
@@ -53,8 +53,8 @@ struct  AppConstantsTunnelVerificationParameters
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static AppConstantsTunnelVerificationParameters FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static AppConstantsTunnelVerificationParameters FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppConstantsTunnelVerificationParameters& o);

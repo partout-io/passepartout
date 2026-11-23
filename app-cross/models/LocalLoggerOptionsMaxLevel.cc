@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json LocalLoggerOptionsMaxLevel::ToJson() const
+::Partout::Json LocalLoggerOptionsMaxLevel::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-LocalLoggerOptionsMaxLevel LocalLoggerOptionsMaxLevel::FromJson(const ::Partout::Models::Json& j)
+LocalLoggerOptionsMaxLevel LocalLoggerOptionsMaxLevel::FromJson(const ::Partout::Json& j)
 {
     return j.Get<LocalLoggerOptionsMaxLevel>();
 }

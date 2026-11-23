@@ -92,7 +92,7 @@ unrelated refactoring; keep changes within the task's scope.
   JSON codecs, including for scalar display formatting. Expose canonical protocol
   spellings through the models API (such as enum `ToString()`); keep the underlying
   serialization dependency inside the model implementation. Application boundaries
-  must use `Partout::Models::Json` for parsing, encoding, and opaque JSON payloads;
+  must use `Partout::Json` for parsing, encoding, and opaque JSON payloads;
   never reference `nlohmann` types, operations, or exceptions from application code.
   Extend the shared wrapper or generated model API when an operation is missing,
   rather than exposing the serialization backend or adding application aliases.

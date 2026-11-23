@@ -21,7 +21,7 @@
 #include "AppFeature.h"
 #include <string>
 #include <vector>
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -54,8 +54,8 @@ struct  IAPEventEligibleFeatures
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static IAPEventEligibleFeatures FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static IAPEventEligibleFeatures FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const IAPEventEligibleFeatures& o);

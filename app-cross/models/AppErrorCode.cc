@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppErrorCode::ToJson() const
+::Partout::Json AppErrorCode::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppErrorCode AppErrorCode::FromJson(const ::Partout::Models::Json& j)
+AppErrorCode AppErrorCode::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppErrorCode>();
 }

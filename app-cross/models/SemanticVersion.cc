@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json SemanticVersion::ToJson() const
+::Partout::Json SemanticVersion::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-SemanticVersion SemanticVersion::FromJson(const ::Partout::Models::Json& j)
+SemanticVersion SemanticVersion::FromJson(const ::Partout::Json& j)
 {
     return j.Get<SemanticVersion>();
 }

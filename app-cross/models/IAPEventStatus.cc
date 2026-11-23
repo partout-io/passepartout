@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json IAPEventStatus::ToJson() const
+::Partout::Json IAPEventStatus::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-IAPEventStatus IAPEventStatus::FromJson(const ::Partout::Models::Json& j)
+IAPEventStatus IAPEventStatus::FromJson(const ::Partout::Json& j)
 {
     return j.Get<IAPEventStatus>();
 }

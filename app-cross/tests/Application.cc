@@ -497,7 +497,7 @@ int main() {
     constants.containers.local = "../outside";
     Rejects([&] { ProfileDirectory("root", constants, frontendConstants, false); });
     const auto imported = Example();
-    const auto success = Partout::Models::Json{{"payload", imported.ToJson()}};
+    const auto success = Partout::Json{{"payload", imported.ToJson()}};
     assert(DecodeImportResult(success.Encode().c_str()) == imported);
     auto explicitSuccess = success;
     explicitSuccess.Set("code", nullptr);
@@ -528,7 +528,7 @@ int main() {
         const auto storageRoot = root / "layout";
         FileProfileRepository storage(storageRoot);
         assert(storage.Fetch().empty());
-        assert(Partout::Models::Json::Parse(ReadConfiguration(storageRoot / "index.json")).At("version") == 1);
+        assert(Partout::Json::Parse(ReadConfiguration(storageRoot / "index.json")).At("version") == 1);
         auto earlier = Example("earlier", "ALPHA");
         earlier.userInfo = {{"lastUpdate", 1}, {"fingerprint", "first"}};
         auto later = Example("later", "alpha");
@@ -538,7 +538,7 @@ int main() {
         storage.Save(later);
         assert(std::filesystem::exists(storageRoot / "objects" / "later.json"));
         assert(storage.Fetch().at(0).id == "later");
-        auto index = Partout::Models::Json::Parse(ReadConfiguration(storageRoot / "index.json"));
+        auto index = Partout::Json::Parse(ReadConfiguration(storageRoot / "index.json"));
         assert(index.At("profiles").Elements().at(0).At("fingerprint") == "second");
         assert(index.At("profiles").Elements().at(0).At("lastUpdate") == "2");
         // A valid index defines fetch order, as on Android.

@@ -19,7 +19,7 @@
 #define IAPEventStatus_H_
 
 #include <string>
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -50,8 +50,8 @@ struct  IAPEventStatus
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static IAPEventStatus FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static IAPEventStatus FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const IAPEventStatus& o);

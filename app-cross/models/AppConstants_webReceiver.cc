@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppConstants_webReceiver::ToJson() const
+::Partout::Json AppConstants_webReceiver::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppConstants_webReceiver AppConstants_webReceiver::FromJson(const ::Partout::Models::Json& j)
+AppConstants_webReceiver AppConstants_webReceiver::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppConstants_webReceiver>();
 }

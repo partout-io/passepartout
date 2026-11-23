@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json ProviderInfo::ToJson() const
+::Partout::Json ProviderInfo::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-ProviderInfo ProviderInfo::FromJson(const ::Partout::Models::Json& j)
+ProviderInfo ProviderInfo::FromJson(const ::Partout::Json& j)
 {
     return j.Get<ProviderInfo>();
 }

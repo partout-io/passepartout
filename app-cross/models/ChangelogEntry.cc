@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json ChangelogEntry::ToJson() const
+::Partout::Json ChangelogEntry::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-ChangelogEntry ChangelogEntry::FromJson(const ::Partout::Models::Json& j)
+ChangelogEntry ChangelogEntry::FromJson(const ::Partout::Json& j)
 {
     return j.Get<ChangelogEntry>();
 }

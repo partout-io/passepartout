@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json IssueAttachment::ToJson() const
+::Partout::Json IssueAttachment::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-IssueAttachment IssueAttachment::FromJson(const ::Partout::Models::Json& j)
+IssueAttachment IssueAttachment::FromJson(const ::Partout::Json& j)
 {
     return j.Get<IssueAttachment>();
 }

@@ -21,7 +21,7 @@
 #include <string>
 #include "AppProfileStatus.h"
 #include "ProfileTransfer.h"
-#include <partout/json.h>
+#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models
@@ -57,8 +57,8 @@ struct  AppTunnelInfo
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static AppTunnelInfo FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static AppTunnelInfo FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const AppTunnelInfo& o);

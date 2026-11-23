@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json ProfileTransfer::ToJson() const
+::Partout::Json ProfileTransfer::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-ProfileTransfer ProfileTransfer::FromJson(const ::Partout::Models::Json& j)
+ProfileTransfer ProfileTransfer::FromJson(const ::Partout::Json& j)
 {
     return j.Get<ProfileTransfer>();
 }

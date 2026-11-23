@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json ConfigBundleConfig::ToJson() const
+::Partout::Json ConfigBundleConfig::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-ConfigBundleConfig ConfigBundleConfig::FromJson(const ::Partout::Models::Json& j)
+ConfigBundleConfig ConfigBundleConfig::FromJson(const ::Partout::Json& j)
 {
     return j.Get<ConfigBundleConfig>();
 }
@@ -113,7 +113,7 @@ void from_json(const nlohmann::json& j, ConfigBundleConfig& o)
     }
 
     if (j.find("data") != j.end()) {
-        ::Partout::Models::Json temporary_data;
+        ::Partout::Json temporary_data;
         Partout::Models::ReadJsonValue(j.at("data"), temporary_data);
         parsed.data = std::move(temporary_data);
     }

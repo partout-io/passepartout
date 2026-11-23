@@ -11,7 +11,7 @@
 
 int main() {
     using namespace Passepartout::Models;
-    using Partout::Models::Json;
+    using Partout::Json;
     static_assert(std::is_same_v<decltype(AppProfileHeader::moduleTypes),
         std::vector<Partout::Models::ModuleType>>);
     static_assert(std::is_same_v<decltype(ProfileEventSave::profile),

@@ -13,7 +13,7 @@ ConfigManager::ConfigManager(std::unique_ptr<HttpClient> client, std::string url
 bool ConfigManager::Refresh() {
     const auto now = std::chrono::steady_clock::now();
     if (refreshed_ && now - *refreshed_ < ttl_) return false;
-    const auto bundle = Partout::Models::Json::Parse(client_->Get(url_));
+    const auto bundle = Partout::Json::Parse(client_->Get(url_));
     if (!bundle.IsObject()) throw std::runtime_error("Invalid configuration bundle.");
     Flags flags;
     for (const auto &entry : bundle.Members()) {
@@ -30,7 +30,7 @@ bool ConfigManager::Refresh() {
         if (config.platforms && std::none_of(config.platforms->begin(), config.platforms->end(), [](const auto &platform) {
             return platform.value == Models::Platform::windows;
         })) continue;
-        flags.emplace(flag, config.data.value_or(Partout::Models::Json()));
+        flags.emplace(flag, config.data.value_or(Partout::Json()));
     }
     flags_ = std::move(flags);
     refreshed_ = now;

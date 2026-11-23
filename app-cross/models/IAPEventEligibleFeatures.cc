@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json IAPEventEligibleFeatures::ToJson() const
+::Partout::Json IAPEventEligibleFeatures::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-IAPEventEligibleFeatures IAPEventEligibleFeatures::FromJson(const ::Partout::Models::Json& j)
+IAPEventEligibleFeatures IAPEventEligibleFeatures::FromJson(const ::Partout::Json& j)
 {
     return j.Get<IAPEventEligibleFeatures>();
 }

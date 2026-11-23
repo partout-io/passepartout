@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppProfileStatus::ToJson() const
+::Partout::Json AppProfileStatus::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppProfileStatus AppProfileStatus::FromJson(const ::Partout::Models::Json& j)
+AppProfileStatus AppProfileStatus::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppProfileStatus>();
 }

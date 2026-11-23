@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json MixedEventShouldReconnect::ToJson() const
+::Partout::Json MixedEventShouldReconnect::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-MixedEventShouldReconnect MixedEventShouldReconnect::FromJson(const ::Partout::Models::Json& j)
+MixedEventShouldReconnect MixedEventShouldReconnect::FromJson(const ::Partout::Json& j)
 {
     return j.Get<MixedEventShouldReconnect>();
 }

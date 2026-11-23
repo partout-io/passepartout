@@ -18,10 +18,10 @@
 #ifndef ConfigBundleConfig_H_
 #define ConfigBundleConfig_H_
 
-#include <partout/json.h>
+#include <partout/Json.h>
 #include "Platform.h"
 #include <vector>
-#include <partout/json.h>
+#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models
@@ -33,7 +33,7 @@ struct  ConfigBundleConfig
     int32_t rate;
     std::optional<std::vector<Passepartout::Models::Platform>> platforms;
     std::optional<int32_t> minBuild;
-    std::optional<::Partout::Models::Json> data;
+    std::optional<::Partout::Json> data;
 
     bool operator==(const ConfigBundleConfig& other) const;
     bool operator!=(const ConfigBundleConfig& other) const;
@@ -55,8 +55,8 @@ struct  ConfigBundleConfig
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static ConfigBundleConfig FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static ConfigBundleConfig FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const ConfigBundleConfig& o);

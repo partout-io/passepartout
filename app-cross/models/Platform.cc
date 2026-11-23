@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json Platform::ToJson() const
+::Partout::Json Platform::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-Platform Platform::FromJson(const ::Partout::Models::Json& j)
+Platform Platform::FromJson(const ::Partout::Json& j)
 {
     return j.Get<Platform>();
 }

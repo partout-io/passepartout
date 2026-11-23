@@ -19,7 +19,7 @@
 #define LocalLoggerOptions_H_
 
 #include "LocalLoggerOptionsMaxLevel.h"
-#include <partout/json.h>
+#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models
@@ -53,8 +53,8 @@ struct  LocalLoggerOptions
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static LocalLoggerOptions FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static LocalLoggerOptions FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const LocalLoggerOptions& o);

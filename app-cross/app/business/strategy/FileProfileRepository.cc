@@ -31,7 +31,7 @@ std::vector<Profile> FileProfileRepository::ReadObjects() {
         if (!entry.is_regular_file() || entry.is_symlink())
             throw std::runtime_error("Invalid entry in the profile store.");
         try {
-            auto profile = Profile::FromJson(Partout::Models::Json::Parse(ReadConfiguration(entry.path())));
+            auto profile = Profile::FromJson(Partout::Json::Parse(ReadConfiguration(entry.path())));
             ValidateProfileIdentity(profile);
             const auto destination = ObjectPath(profile.id);
             if (destination.filename() != entry.path().filename())
@@ -49,9 +49,9 @@ std::vector<Profile> FileProfileRepository::ReadObjects() {
 }
 
 void FileProfileRepository::PersistIndex(const std::vector<Profile> &profiles) {
-    auto entries = Partout::Models::Json::Array();
+    auto entries = Partout::Json::Array();
     for (const auto &profile : profiles) {
-        Partout::Models::Json entry = {{"id", profile.id}, {"name", profile.name}};
+        Partout::Json entry = {{"id", profile.id}, {"name", profile.name}};
         if (profile.userInfo && profile.userInfo->IsObject()) {
             for (const auto *key : {"lastUpdate", "fingerprint"}) {
                 const auto value = profile.userInfo->Find(key);
@@ -65,7 +65,7 @@ void FileProfileRepository::PersistIndex(const std::vector<Profile> &profiles) {
         }
         entries.Append(std::move(entry));
     }
-    WriteAtomicFile(root_ / "index.json", Partout::Models::Json{{"version", 1}, {"profiles", entries}}.Encode());
+    WriteAtomicFile(root_ / "index.json", Partout::Json{{"version", 1}, {"profiles", entries}}.Encode());
 }
 
 std::vector<Profile> FileProfileRepository::Fetch() {
@@ -73,7 +73,7 @@ std::vector<Profile> FileProfileRepository::Fetch() {
     std::vector<std::string> orderedIds;
     bool rebuild = false;
     try {
-        const auto index = Partout::Models::Json::Parse(ReadConfiguration(root_ / "index.json"));
+        const auto index = Partout::Json::Parse(ReadConfiguration(root_ / "index.json"));
         if (index.At("version") != 1 || !index.At("profiles").IsArray()) throw std::runtime_error("Invalid index");
         std::set<std::string> seen;
         for (const auto &entry : index.At("profiles").Elements()) {
@@ -107,7 +107,7 @@ void FileProfileRepository::Save(const Profile &profile) {
     const auto path = ObjectPath(profile.id);
     if (std::filesystem::exists(path)) {
         try {
-            const auto previous = Profile::FromJson(Partout::Models::Json::Parse(ReadConfiguration(path)));
+            const auto previous = Profile::FromJson(Partout::Json::Parse(ReadConfiguration(path)));
             if (previous.id != profile.id) throw std::runtime_error("Conflicting profile identity");
         } catch (...) {
             throw std::runtime_error("The existing profile cannot be safely replaced.");

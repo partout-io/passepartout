@@ -20,7 +20,7 @@
 
 #include "ConfigFlag.h"
 #include <vector>
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -51,8 +51,8 @@ struct  ExperimentalPreferences
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static ExperimentalPreferences FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static ExperimentalPreferences FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const ExperimentalPreferences& o);

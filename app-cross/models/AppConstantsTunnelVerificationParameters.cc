@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppConstantsTunnelVerificationParameters::ToJson() const
+::Partout::Json AppConstantsTunnelVerificationParameters::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppConstantsTunnelVerificationParameters AppConstantsTunnelVerificationParameters::FromJson(const ::Partout::Models::Json& j)
+AppConstantsTunnelVerificationParameters AppConstantsTunnelVerificationParameters::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppConstantsTunnelVerificationParameters>();
 }

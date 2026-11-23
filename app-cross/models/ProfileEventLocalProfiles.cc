@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json ProfileEventLocalProfiles::ToJson() const
+::Partout::Json ProfileEventLocalProfiles::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-ProfileEventLocalProfiles ProfileEventLocalProfiles::FromJson(const ::Partout::Models::Json& j)
+ProfileEventLocalProfiles ProfileEventLocalProfiles::FromJson(const ::Partout::Json& j)
 {
     return j.Get<ProfileEventLocalProfiles>();
 }

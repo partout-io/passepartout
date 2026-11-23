@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json ProfileSharingFlag::ToJson() const
+::Partout::Json ProfileSharingFlag::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-ProfileSharingFlag ProfileSharingFlag::FromJson(const ::Partout::Models::Json& j)
+ProfileSharingFlag ProfileSharingFlag::FromJson(const ::Partout::Json& j)
 {
     return j.Get<ProfileSharingFlag>();
 }

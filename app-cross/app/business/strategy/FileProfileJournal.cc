@@ -25,7 +25,7 @@ std::vector<ProfileTransaction> FileProfileJournal::Fetch() {
         if (!entry.is_regular_file() || entry.is_symlink())
             throw std::runtime_error("Invalid transaction file.");
         try {
-            const auto json = Partout::Models::Json::Parse(ReadConfiguration(entry.path()));
+            const auto json = Partout::Json::Parse(ReadConfiguration(entry.path()));
             if (json.At("version") != 1) throw std::runtime_error("Invalid transaction version.");
             if (json.Value("committed", false)) continue;
             ProfileTransaction transaction;
@@ -47,7 +47,7 @@ std::vector<ProfileTransaction> FileProfileJournal::Fetch() {
     return result;
 }
 void FileProfileJournal::Save(const ProfileTransaction &transaction) {
-    Partout::Models::Json json = {{"version", 1}, {"id", transaction.id},
+    Partout::Json json = {{"version", 1}, {"id", transaction.id},
         {"removal", transaction.removal}, {"previous", nullptr}};
     if (transaction.previous) json.Set("previous", transaction.previous->ToJson());
     const auto text = json.Encode();
@@ -57,7 +57,7 @@ void FileProfileJournal::Save(const ProfileTransaction &transaction) {
 void FileProfileJournal::Remove(const std::string &id) {
     // Persist completion before deleting the record. If deletion is interrupted,
     // a completed update must never be mistaken for work requiring rollback.
-    WriteAtomicFile(Path(id), Partout::Models::Json{{"version", 1}, {"committed", true}}.Encode());
+    WriteAtomicFile(Path(id), Partout::Json{{"version", 1}, {"committed", true}}.Encode());
     std::error_code ignored;
     std::filesystem::remove(Path(id), ignored);
 }

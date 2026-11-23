@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json ProfileEventRefresh::ToJson() const
+::Partout::Json ProfileEventRefresh::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-ProfileEventRefresh ProfileEventRefresh::FromJson(const ::Partout::Models::Json& j)
+ProfileEventRefresh ProfileEventRefresh::FromJson(const ::Partout::Json& j)
 {
     return j.Get<ProfileEventRefresh>();
 }

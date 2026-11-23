@@ -19,10 +19,10 @@
 #define ConfigEventRefresh_H_
 
 #include "ConfigFlag.h"
-#include <partout/json.h>
+#include <partout/Json.h>
 #include <string>
 #include <vector>
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -31,7 +31,7 @@ struct  ConfigEventRefresh
 {
 
     std::vector<Passepartout::Models::ConfigFlag> flags;
-    ::Partout::Models::Json data;
+    ::Partout::Json data;
     std::string type = "ConfigEventRefresh";
 
     bool operator==(const ConfigEventRefresh& other) const;
@@ -54,8 +54,8 @@ struct  ConfigEventRefresh
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static ConfigEventRefresh FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static ConfigEventRefresh FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const ConfigEventRefresh& o);

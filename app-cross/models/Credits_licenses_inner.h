@@ -21,7 +21,7 @@
 #include <string>
 #include "Platform.h"
 #include <vector>
-#include <partout/json.h>
+#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models
@@ -55,8 +55,8 @@ struct  Credits_licenses_inner
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static Credits_licenses_inner FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static Credits_licenses_inner FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const Credits_licenses_inner& o);

@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppBundle::ToJson() const
+::Partout::Json AppBundle::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppBundle AppBundle::FromJson(const ::Partout::Models::Json& j)
+AppBundle AppBundle::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppBundle>();
 }

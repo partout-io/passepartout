@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json WebFileUpload::ToJson() const
+::Partout::Json WebFileUpload::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-WebFileUpload WebFileUpload::FromJson(const ::Partout::Models::Json& j)
+WebFileUpload WebFileUpload::FromJson(const ::Partout::Json& j)
 {
     return j.Get<WebFileUpload>();
 }

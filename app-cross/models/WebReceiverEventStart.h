@@ -20,7 +20,7 @@
 
 #include <string>
 #include "WebsiteWithPasscode.h"
-#include <partout/json.h>
+#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
@@ -51,8 +51,8 @@ struct  WebReceiverEventStart
     /// </summary>
     bool Validate(std::stringstream& msg, const std::string& pathPrefix) const;
 
-    ::Partout::Models::Json ToJson() const;
-    static WebReceiverEventStart FromJson(const ::Partout::Models::Json& j);
+    ::Partout::Json ToJson() const;
+    static WebReceiverEventStart FromJson(const ::Partout::Json& j);
 };
 
  void to_json(nlohmann::json& j, const WebReceiverEventStart& o);

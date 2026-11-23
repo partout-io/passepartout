@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppConfiguration::ToJson() const
+::Partout::Json AppConfiguration::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppConfiguration AppConfiguration::FromJson(const ::Partout::Models::Json& j)
+AppConfiguration AppConfiguration::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppConfiguration>();
 }

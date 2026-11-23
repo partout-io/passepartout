@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppConstants_tunnel::ToJson() const
+::Partout::Json AppConstants_tunnel::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppConstants_tunnel AppConstants_tunnel::FromJson(const ::Partout::Models::Json& j)
+AppConstants_tunnel AppConstants_tunnel::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppConstants_tunnel>();
 }

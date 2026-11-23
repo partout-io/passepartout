@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json AppConstants_containers::ToJson() const
+::Partout::Json AppConstants_containers::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-AppConstants_containers AppConstants_containers::FromJson(const ::Partout::Models::Json& j)
+AppConstants_containers AppConstants_containers::FromJson(const ::Partout::Json& j)
 {
     return j.Get<AppConstants_containers>();
 }

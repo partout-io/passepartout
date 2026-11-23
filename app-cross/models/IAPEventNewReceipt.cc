@@ -16,12 +16,12 @@
 namespace Passepartout::Models
 {
 
-::Partout::Models::Json IAPEventNewReceipt::ToJson() const
+::Partout::Json IAPEventNewReceipt::ToJson() const
 {
-    return ::Partout::Models::Json(*this);
+    return ::Partout::Json(*this);
 }
 
-IAPEventNewReceipt IAPEventNewReceipt::FromJson(const ::Partout::Models::Json& j)
+IAPEventNewReceipt IAPEventNewReceipt::FromJson(const ::Partout::Json& j)
 {
     return j.Get<IAPEventNewReceipt>();
 }
