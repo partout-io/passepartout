@@ -46,7 +46,7 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     pages_ = new wxSimplebook(detailPanel);
     pages_->SetFitToCurrentPage(true);
     auto *buttons = new wxBoxSizer(wxHORIZONTAL);
-    progress_ = ThemeProgressView(this);
+    progress_ = Theme::ProgressView(this);
     progress_->Hide();
     save_ = new wxButton(this, wxID_SAVE, Localized(StringKey::GlobalActionsSave));
     cancel_ = new wxButton(this, wxID_CANCEL, Localized(StringKey::GlobalActionsCancel));
@@ -190,7 +190,7 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
             return new ThemeDetailView(pages_);
         }
     }, module);
-    ShowSection(page, ModuleTitle(module));
+    ShowSection(page, Modules::Title(module));
 }
 void ProfileCoordinator::RefreshState() {
     const auto state = editor_->Snapshot();

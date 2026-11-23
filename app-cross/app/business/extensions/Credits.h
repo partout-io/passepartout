@@ -5,7 +5,7 @@
 #pragma once
 #include "../../../models/Credits.h"
 
-namespace Passepartout {
+namespace Passepartout::Credits {
 Models::Platform::ePlatform CurrentPlatform();
-void FilterCredits(Models::Credits &credits, Models::Platform::ePlatform platform);
+void Filter(Models::Credits &credits, Models::Platform::ePlatform platform);
 }

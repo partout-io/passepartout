@@ -86,7 +86,7 @@ void Theme::Monospace(wxWindow *window) {
         .Style(inherited.GetStyle()));
     window->SetFont(font);
 }
-wxActivityIndicator *ThemeProgressView(wxWindow *parent) {
+wxActivityIndicator *Theme::ProgressView(wxWindow *parent) {
     auto *indicator = new wxActivityIndicator(parent, wxID_ANY);
 #ifdef __WXMSW__
     // Buffer background erasure and dot painting together on Windows.
@@ -94,7 +94,7 @@ wxActivityIndicator *ThemeProgressView(wxWindow *parent) {
 #endif
     return indicator;
 }
-wxStaticText *ThemeEmptyMessage(wxWindow *parent, const wxString &message) {
+wxStaticText *Theme::EmptyMessage(wxWindow *parent, const wxString &message) {
     return new wxStaticText(parent, wxID_ANY, message, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
 }
 }

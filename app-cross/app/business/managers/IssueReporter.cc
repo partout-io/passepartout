@@ -31,12 +31,12 @@ bool IssueReporter::Report(const std::string &comment, const std::string &runtim
         }
     } cleanup{directory};
     const auto metadata = directory / "application.txt";
-    WriteAtomicFile(metadata, "Passepartout " + version_ + "\nPlatform: Windows\nCrypto: mbedTLS\n"
+    AtomicFile::Write(metadata, "Passepartout " + version_ + "\nPlatform: Windows\nCrypto: mbedTLS\n"
         "Tunnel runtime log: unavailable in frontend process\n");
     IssueReport report{recipient_, "Passepartout " + version_, comment, {metadata}};
     if (!runtimeLog.empty()) {
         const auto log = directory / "runtime.txt";
-        WriteAtomicFile(log, runtimeLog);
+        AtomicFile::Write(log, runtimeLog);
         report.attachments.push_back(log);
     }
     return handoff_(report);

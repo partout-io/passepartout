@@ -7,7 +7,7 @@
 #include "../../strings/Unlocalized.h"
 
 namespace Passepartout {
-wxString ModuleTitle(const Partout::Models::TaggedModule &module) {
+wxString Modules::Title(const Partout::Models::TaggedModule &module) {
     using namespace Partout::Models;
     using namespace Strings::Unlocalized;
     if (std::holds_alternative<TaggedModuleDns>(module)) return DNS;

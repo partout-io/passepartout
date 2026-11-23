@@ -7,7 +7,7 @@
 #include <string>
 #include <functional>
 
-namespace Passepartout {
+namespace Passepartout::DataUnits {
 using NumberFormatter = std::function<std::string(double, int)>;
-std::string FormatDataUnit(int64_t bytes, NumberFormatter formatter = {});
+std::string Format(int64_t bytes, NumberFormatter formatter = {});
 }

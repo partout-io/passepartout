@@ -31,7 +31,8 @@ wxString QuitTitle() {
 using namespace Passepartout;
 
 MainView::MainView(AppContext &context, bool demo,
-                   ConfigurationPickerFactory pickerFactory)
+                   Configuration::PickerFactory pickerFactory
+)
     : wxFrame(nullptr, wxID_ANY, Text(context.crossConstants.tags.app) +
           (demo ? " (" + Text(context.crossConstants.commandLine.demoArgument) + ")" : wxString())),
       context_(context), timer_(this), picker_(pickerFactory(*this)) {
@@ -51,12 +52,12 @@ MainView::MainView(AppContext &context, bool demo,
             Edit(id);
         });
     layout->Add(collection_, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, gap);
-    message_ = ThemeEmptyMessage(panel, Localized(StringKey::GlobalNounsLoading));
+    message_ = Theme::EmptyMessage(panel, Localized(StringKey::GlobalNounsLoading));
     layout->Add(message_, 0, wxEXPAND | wxALL, gap);
     auto *actions = new wxBoxSizer(wxHORIZONTAL);
     import_ = new wxButton(panel, wxID_ADD, Localized(StringKey::ViewsAppToolbarImportFile));
     remove_ = new wxButton(panel, wxID_DELETE, Localized(StringKey::GlobalActionsRemove));
-    progress_ = ThemeProgressView(panel);
+    progress_ = Theme::ProgressView(panel);
     for (auto *button : {import_, remove_}) {
         actions->Add(button, 0, wxRIGHT, gap);
     }

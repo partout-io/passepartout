@@ -6,6 +6,6 @@
 #include <filesystem>
 #include <wx/string.h>
 
-namespace Passepartout {
-std::filesystem::path FilePath(const wxString &value);
+namespace Passepartout::Paths {
+std::filesystem::path FromString(const wxString &value);
 }

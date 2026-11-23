@@ -190,11 +190,12 @@ struct ChannelSession {
         options.cache_dir = temporary.c_str();
         options.starts_immediately = true;
         options.crypto = PartoutCryptoMbedTLS;
-        // FIXME: ### Restore DNS fallback preference forwarding when Partout master
-        // gains the VpnChannelRuntime fallback-server argument (39140181).
-        // FIXME: ### Restore native interactive/OTP preparation through the Partout
-        // runtime after 39140181 is merged; master uses saved profile credentials.
-        runtime = std::make_unique<Partout::VpnChannelRuntime>(channel, profile.c_str(), init, options);
+        Partout::Models::TunnelControllerOptions controllerOptions{};
+        const auto fallback = preferences.GetNamedArray(L"dnsFallbackServers", JsonArray{});
+        for (const auto &server : fallback)
+            controllerOptions.dnsFallbackServers.push_back(winrt::to_string(server.GetString()));
+        runtime = std::make_unique<Partout::VpnChannelRuntime>(
+            channel, profile.c_str(), init, options, std::move(controllerOptions));
     }
     void Cancel() noexcept {
         canceled.store(true);

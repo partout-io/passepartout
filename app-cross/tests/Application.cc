@@ -7,7 +7,7 @@
 #include "business/extensions/DecodeImportResult.h"
 #include "context/LoadAppConstants.h"
 #include "context/ProfileDirectory.h"
-#include "business/managers/TunnelManager.h"
+#include <partout/tunnel/Tunnel.h>
 #include "business/strategy/FakeTunnelStrategy.h"
 #include "business/managers/AppSession.h"
 #include "observables/ProfileObservable.h"
@@ -46,7 +46,7 @@ void Rejects(Action action) {
     }
     assert(rejected);
 }
-class ControlledTunnel final : public Passepartout::TunnelStrategy {
+class ControlledTunnel final : public Partout::TunnelStrategy {
 public:
     Passepartout::FakeTunnelStrategy fake;
     bool failConnect = false;
@@ -61,11 +61,11 @@ public:
     unsigned removalAttempts = 0;
     std::map<std::string, std::string> observationErrors;
     std::vector<std::string> events;
-    void ApplyPreferences(const Passepartout::Models::AppPreferences &) override {
+    void ApplyPreferences(const Passepartout::Models::AppPreferences &) {
         events.push_back("preferences");
         if (failPreferences) throw std::runtime_error("Preferences rejected");
     }
-    std::vector<Passepartout::Models::AppTunnelInfo> Fetch() override {
+    std::vector<Partout::Models::TunnelSnapshot> Fetch() override {
         if (failFetch) throw std::runtime_error("VPN state unavailable");
         auto result = fake.Fetch();
         result.erase(std::remove_if(result.begin(), result.end(), [&](const auto &info) {
@@ -84,7 +84,7 @@ public:
     void Connect(const std::string &id) override {
         events.push_back("connect:" + id);
         if (failConnect) throw std::runtime_error("Connection rejected");
-        if (delayedConnect) fake.SetStatus(id, Passepartout::Status::connecting);
+        if (delayedConnect) fake.SetStatus(id, Partout::Models::TunnelStatus::activating);
         else fake.Connect(id);
     }
     void Disconnect(const std::string &id) override {
@@ -92,7 +92,7 @@ public:
         if (failDisconnect) throw std::runtime_error("Disconnect rejected");
         const auto states = fake.Fetch();
         const bool exists = std::any_of(states.begin(), states.end(), [&](const auto &state) { return state.id == id; });
-        if (delayedDisconnect && exists) fake.SetStatus(id, Passepartout::Status::disconnecting);
+        if (delayedDisconnect && exists) fake.SetStatus(id, Partout::Models::TunnelStatus::deactivating);
         else fake.Disconnect(id);
         if (loseObservationOnDisconnect) observationErrors[id] = "Invalid handle after disconnect";
     }
@@ -122,10 +122,10 @@ public:
         stored.clear();
     }
 };
-class BlockingTunnel final : public Passepartout::TunnelStrategy {
+class BlockingTunnel final : public Partout::TunnelStrategy {
 public:
     explicit BlockingTunnel(std::shared_ptr<Gate> gate) : gate_(std::move(gate)) {}
-    std::vector<Passepartout::Models::AppTunnelInfo> Fetch() override {
+    std::vector<Partout::Models::TunnelSnapshot> Fetch() override {
         return fake_.Fetch();
     }
     void Save(const Passepartout::Profile &p) override {
@@ -171,10 +171,10 @@ struct Cancellation {
         changed.notify_all();
     }
 };
-class CancelableTunnel final : public Passepartout::TunnelStrategy {
+class CancelableTunnel final : public Partout::TunnelStrategy {
 public:
     explicit CancelableTunnel(std::shared_ptr<Cancellation> cancellation) : cancellation_(std::move(cancellation)) {}
-    std::vector<Passepartout::Models::AppTunnelInfo> Fetch() override {
+    std::vector<Partout::Models::TunnelSnapshot> Fetch() override {
         cancellation_->Block();
         return {};
     }
@@ -206,14 +206,14 @@ void TestShutdown(const std::filesystem::path &root) {
     const auto tunnel = std::make_shared<Cancellation>();
     {
         Passepartout::AppSession session(std::make_unique<Passepartout::FileProfileRepository>(root / "cancel-tunnel"), {},
-            std::make_unique<CancelableTunnel>(tunnel));
+            std::make_unique<Partout::Tunnel>(std::make_unique<CancelableTunnel>(tunnel)));
         tunnel->WaitForEntry();
     }
     assert(tunnel->canceled);
     const auto files = std::make_shared<Cancellation>();
     {
         Passepartout::AppSession session(std::make_unique<Passepartout::FileProfileRepository>(root / "cancel-files"), {},
-            std::make_unique<Passepartout::FakeTunnelStrategy>());
+            std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
         Wait(session);
         session.ImportFiles(std::make_shared<CancelableFiles>(files));
         files->WaitForEntry();
@@ -225,7 +225,9 @@ void TestPreferencesRetry(const std::filesystem::path &root) {
     repository->Save(Example());
     auto strategy = std::make_unique<ControlledTunnel>();
     auto *backend = strategy.get();
-    Passepartout::AppSession session(std::move(repository), {}, std::move(strategy));
+    Passepartout::AppSession session(std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)),
+        std::make_shared<Passepartout::AppLogger>(), std::make_unique<Passepartout::MemoryProfileJournal>(),
+        std::chrono::seconds(1), [backend](const auto &preferences) { backend->ApplyPreferences(preferences); });
     Wait(session);
     backend->events.clear();
     backend->failPreferences = true;
@@ -248,7 +250,7 @@ void TestRemovalObservation() {
     backend->fake.Save(Example());
     backend->fake.Connect("test-id");
     backend->observationErrors["test-id"] = "Unavailable";
-    Passepartout::TunnelManager tunnel(std::move(strategy));
+    Partout::Tunnel tunnel(std::move(strategy));
     Rejects([&] {
         tunnel.Remove("test-id");
     });
@@ -269,7 +271,7 @@ void TestRemovalTargets(const std::filesystem::path &root) {
     auto repository = std::make_unique<Passepartout::FileProfileRepository>(directory);
     repository->Save(Example("first"));
     repository->Save(Example("second"));
-    Passepartout::AppSession session(std::move(repository), {}, std::make_unique<Passepartout::FakeTunnelStrategy>());
+    Passepartout::AppSession session(std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
     Passepartout::ProfileObservable profiles(session);
     Wait(session);
     const std::vector<std::string> targets{"first", "second"};
@@ -342,7 +344,7 @@ void TestSelectionFailures(const std::filesystem::path &root) {
     std::ofstream(valid) << "valid";
     std::ofstream(invalid) << "invalid syntax";
     std::vector<std::size_t> visited;
-    auto selected = Passepartout::CollectConfigurationFiles(5, [&](std::size_t index) {
+    auto selected = Passepartout::Configuration::CollectFiles(5, [&](std::size_t index) {
         visited.push_back(index);
         if (index == 1) return valid;
         if (index == 3) return invalid;
@@ -354,7 +356,7 @@ void TestSelectionFailures(const std::filesystem::path &root) {
         [](const std::string &text, const std::string &) {
             if (text != "valid") throw std::runtime_error("Invalid configuration");
             return Example("selected-valid");
-        }, std::make_unique<Passepartout::FakeTunnelStrategy>());
+        }, std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
     Wait(session);
     session.ImportFiles(std::make_shared<Passepartout::ConfigurationFiles>(std::move(selected)));
     Wait(session);
@@ -364,14 +366,14 @@ void TestSelectionFailures(const std::filesystem::path &root) {
     assert(snapshot.error.find("4 configuration(s)") != std::string::npos);
     assert(Passepartout::FileProfileRepository(root / "selection-store").Fetch().size() == 1);
 
-    auto failed = Passepartout::CollectConfigurationFiles(2, [](std::size_t) -> std::filesystem::path {
+    auto failed = Passepartout::Configuration::CollectFiles(2, [](std::size_t) -> std::filesystem::path {
         throw std::runtime_error("Unreadable file");
     });
     session.ImportFiles(std::make_shared<Passepartout::ConfigurationFiles>(std::move(failed)));
     Wait(session);
     assert(session.Snapshot().error.find("2 configuration(s)") != std::string::npos);
     assert(session.Snapshot().profiles.size() == 1);
-    auto empty = Passepartout::CollectConfigurationFiles(0, [](std::size_t) -> std::filesystem::path {
+    auto empty = Passepartout::Configuration::CollectFiles(0, [](std::size_t) -> std::filesystem::path {
         assert(false);
         return {};
     });
@@ -381,7 +383,7 @@ void TestSelectionFailures(const std::filesystem::path &root) {
 }
 void TestLargeSelection(const std::filesystem::path &root) {
     constexpr std::size_t count = 40;
-    auto selected = Passepartout::CollectConfigurationFiles(count, [&](std::size_t index) {
+    auto selected = Passepartout::Configuration::CollectFiles(count, [&](std::size_t index) {
         const auto path = root / ("batch-" + std::to_string(index) + ".conf");
         std::ofstream(path) << "batch-" << index;
         return path;
@@ -390,7 +392,7 @@ void TestLargeSelection(const std::filesystem::path &root) {
     Passepartout::AppSession session(std::make_unique<Passepartout::FileProfileRepository>(root / "large-selection-store"),
         [](const std::string &text, const std::string &) {
             return Example(text);
-        }, std::make_unique<Passepartout::FakeTunnelStrategy>());
+        }, std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
     Wait(session);
     session.ImportFiles(std::make_shared<Passepartout::ConfigurationFiles>(std::move(selected)));
     Wait(session);
@@ -433,7 +435,7 @@ void TestSelectedFiles(const std::filesystem::path &root, bool fail) {
             gate->release.get_future().wait();
             if (fail) throw std::runtime_error("Invalid configuration");
             return Example();
-        }, std::make_unique<Passepartout::FakeTunnelStrategy>());
+        }, std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
     Wait(session);
     Passepartout::ProfileObservable observable(session);
     auto files = std::make_shared<TemporaryConfigurationFiles>(input, destroyed);
@@ -477,39 +479,39 @@ int main() {
         auto *control = strategy.get();
         control->fake.Save(Example("broken"));
         control->observationErrors.emplace("broken", "Invalid handle");
-        TunnelManager manager(std::move(strategy));
+        Partout::Tunnel manager(std::move(strategy));
         manager.Save(Example("healthy"));
         manager.Connect(Example("healthy"));
         assert(!manager.PendingProfile());
         assert((control->events == std::vector<std::string>{"save:healthy", "connect:healthy"}));
-        assert(manager.Fetch().at(0).status.value == Status::connected);
+        assert(manager.Fetch().at(0).status.value == Partout::Models::TunnelStatus::active);
         assert(manager.ObservationErrors().count("broken") == 1);
         Rejects([&] { manager.Connect(Example("broken")); });
         assert(control->events.size() == 2);
     }
-    auto constants = LoadAppConstants();
+    auto constants = Constants::Load();
     assert(constants.containers.local == "Local");
-    assert(ProfileDirectory("root", constants, defaultCrossConstants, false) == std::filesystem::path("root/local"));
-    assert(ProfileDirectory("root", constants, defaultCrossConstants, true) == std::filesystem::path("root/demo-local"));
+    assert(Profiles::Directory("root", constants, defaultCrossConstants, false) == std::filesystem::path("root/local"));
+    assert(Profiles::Directory("root", constants, defaultCrossConstants, true) == std::filesystem::path("root/demo-local"));
     constants.containers.local = "Testing";
     auto frontendConstants = defaultCrossConstants;
     frontendConstants.storage.demoPrefix = "preview-";
-    assert(ProfileDirectory("root", constants, frontendConstants, true) == std::filesystem::path("root/preview-testing"));
+    assert(Profiles::Directory("root", constants, frontendConstants, true) == std::filesystem::path("root/preview-testing"));
     constants.containers.local = "../outside";
-    Rejects([&] { ProfileDirectory("root", constants, frontendConstants, false); });
+    Rejects([&] { Profiles::Directory("root", constants, frontendConstants, false); });
     const auto imported = Example();
     const auto success = Partout::Json{{"payload", imported.ToJson()}};
-    assert(DecodeImportResult(success.Encode().c_str()) == imported);
+    assert(Imports::DecodeResult(success.Encode().c_str()) == imported);
     auto explicitSuccess = success;
     explicitSuccess.Set("code", nullptr);
-    assert(DecodeImportResult(explicitSuccess.Encode().c_str()) == imported);
+    assert(Imports::DecodeResult(explicitSuccess.Encode().c_str()) == imported);
     auto failure = success;
     failure.Set("code", "parsing");
-    Rejects([&] { DecodeImportResult(failure.Encode().c_str()); });
-    Rejects([] { DecodeImportResult(nullptr); });
-    Rejects([] { DecodeImportResult("not JSON"); });
-    Rejects([] { DecodeImportResult("{}"); });
-    Rejects([&] { DecodeImportResult(imported.ToJson().Encode().c_str()); });
+    Rejects([&] { Imports::DecodeResult(failure.Encode().c_str()); });
+    Rejects([] { Imports::DecodeResult(nullptr); });
+    Rejects([] { Imports::DecodeResult("not JSON"); });
+    Rejects([] { Imports::DecodeResult("{}"); });
+    Rejects([&] { Imports::DecodeResult(imported.ToJson().Encode().c_str()); });
     const auto root = std::filesystem::temp_directory_path() /
         ("passepartout-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     std::filesystem::create_directories(root);
@@ -642,14 +644,14 @@ int main() {
 
         auto controlled = std::make_unique<ControlledTunnel>();
         auto *strategy = controlled.get();
-        TunnelManager tunnel(std::move(controlled));
+        Partout::Tunnel tunnel(std::move(controlled));
         tunnel.Save(p);
         tunnel.Connect(p);
-        assert(tunnel.Fetch().at(0).status.value == Status::connected);
+        assert(tunnel.Fetch().at(0).status.value == Partout::Models::TunnelStatus::active);
         tunnel.Save(Example("second"));
         tunnel.Connect(Example("second"));
-        assert(strategy->fake.Fetch().at(0).status.value == Status::disconnected);
-        assert(strategy->fake.Fetch().at(1).status.value == Status::connected);
+        assert(strategy->fake.Fetch().at(0).status.value == Partout::Models::TunnelStatus::inactive);
+        assert(strategy->fake.Fetch().at(1).status.value == Partout::Models::TunnelStatus::active);
         assert((strategy->events == std::vector<std::string>{"save:" + p.id, "connect:" + p.id,
             "save:second", "disconnect:" + p.id, "connect:second"}));
         tunnel.Connect(p);
@@ -659,7 +661,7 @@ int main() {
             tunnel.Remove(p.id);
         });
         assert(tunnel.Fetch().size() == 1);
-        strategy->fake.SetStatus(p.id, Status::disconnected);
+        strategy->fake.SetStatus(p.id, Partout::Models::TunnelStatus::inactive);
         tunnel.Remove(p.id);
         assert(tunnel.Fetch().empty());
 
@@ -671,43 +673,43 @@ int main() {
             handoverStrategy->fake.Save(Example(id));
         handoverStrategy->fake.Connect(p.id);
         handoverStrategy->delayedDisconnect = true;
-        TunnelManager handover(std::move(handoverBackend));
+        Partout::Tunnel handover(std::move(handoverBackend));
         handover.Connect(Example("next"));
         assert(handover.PendingProfile() == "next");
         handover.Advance();
         assert(handoverStrategy->events == std::vector<std::string>{"disconnect:" + p.id});
         handover.Connect(Example("latest"));
-        handoverStrategy->fake.SetStatus(p.id, Status::disconnected);
+        handoverStrategy->fake.SetStatus(p.id, Partout::Models::TunnelStatus::inactive);
         handover.Advance();
         assert(!handover.PendingProfile());
         assert((handoverStrategy->events == std::vector<std::string>{"disconnect:" + p.id, "connect:latest"}));
         handoverStrategy->failDisconnect = true;
         Rejects([&] { handover.Connect(Example("failed")); });
         assert(!handover.PendingProfile());
-        assert(handoverStrategy->fake.Fetch().at(1).status.value == Status::connected);
+        assert(handoverStrategy->fake.Fetch().at(1).status.value == Partout::Models::TunnelStatus::active);
         handoverStrategy->failDisconnect = false;
         handover.Connect(Example("cancelled"));
         handover.Disconnect("cancelled");
         assert(!handover.PendingProfile());
-        handoverStrategy->fake.SetStatus("latest", Status::disconnected);
-        handoverStrategy->fake.SetStatus("cancelled", Status::disconnected);
+        handoverStrategy->fake.SetStatus("latest", Partout::Models::TunnelStatus::inactive);
+        handoverStrategy->fake.SetStatus("cancelled", Partout::Models::TunnelStatus::inactive);
         handover.Advance();
         assert(handoverStrategy->fake.Fetch().size() == 6);
         handoverStrategy->failConnect = true;
         Rejects([&] { handover.Connect(Example("connection-failure")); });
         assert(!handover.PendingProfile());
-        for (const auto &state : handover.Fetch()) assert(state.status.value == Status::disconnected);
+        for (const auto &state : handover.Fetch()) assert(state.status.value == Partout::Models::TunnelStatus::inactive);
 
         auto activationBackend = std::make_unique<ControlledTunnel>();
         auto *activationStrategy = activationBackend.get();
         activationStrategy->delayedConnect = true;
-        TunnelManager activation(std::move(activationBackend));
+        Partout::Tunnel activation(std::move(activationBackend));
         activation.Save(Example("activation"));
         activation.Connect(Example("activation"));
         assert(activation.PendingProfile() == "activation");
         activation.Advance();
         assert(activation.PendingProfile() == "activation");
-        activationStrategy->fake.SetStatus("activation", Status::connected);
+        activationStrategy->fake.SetStatus("activation", Partout::Models::TunnelStatus::active);
         activation.Advance();
         assert(!activation.PendingProfile());
         activationStrategy->fake.Disconnect("activation");
@@ -721,7 +723,7 @@ int main() {
         timeoutBackend->fake.Save(Example("timeout"));
         timeoutBackend->fake.Connect(p.id);
         timeoutBackend->delayedDisconnect = true;
-        TunnelManager timeout(std::move(timeoutBackend), std::make_shared<AppLogger>(), std::chrono::milliseconds(0));
+        Partout::Tunnel timeout(std::move(timeoutBackend), std::chrono::milliseconds(0));
         Rejects([&] { timeout.Connect(Example("timeout")); });
         assert(!timeout.PendingProfile());
 
@@ -757,7 +759,7 @@ int main() {
             auto journal = std::make_unique<MemoryProfileJournal>();
             auto *pending = journal.get();
             AppSession logged(std::make_unique<FileProfileRepository>(root / "logging"), importer,
-                std::move(loggingBackend), logger, std::move(journal), std::chrono::milliseconds(0));
+                std::make_unique<Partout::Tunnel>(std::move(loggingBackend)), logger, std::move(journal), std::chrono::milliseconds(0));
             Wait(logged);
             const auto count = messages.size();
             logged.Refresh();
@@ -790,7 +792,7 @@ int main() {
         auto failed = std::make_unique<ControlledTunnel>();
         auto *sessionStrategy = failed.get();
         failed->failConnect = true;
-        AppSession session(std::make_unique<FileProfileRepository>(root / "profiles"), importer, std::move(failed));
+        AppSession session(std::make_unique<FileProfileRepository>(root / "profiles"), importer, std::make_unique<Partout::Tunnel>(std::move(failed)));
         Wait(session);
         assert(session.Snapshot().loaded);
         assert(session.Snapshot().profiles.size() == 2);
@@ -807,7 +809,7 @@ int main() {
         {
             auto backend = std::make_unique<ControlledTunnel>();
             auto *registration = backend.get();
-            AppSession imported(std::make_unique<FileProfileRepository>(root / "registration"), importer, std::move(backend));
+            AppSession imported(std::make_unique<FileProfileRepository>(root / "registration"), importer, std::make_unique<Partout::Tunnel>(std::move(backend)));
             Wait(imported);
             imported.Import({config});
             Wait(imported);
@@ -836,7 +838,7 @@ int main() {
         auto unavailable = std::make_unique<ControlledTunnel>();
         auto *unavailableStrategy = unavailable.get();
         unavailable->failFetch = true;
-        AppSession offline(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::move(unavailable),
+        AppSession offline(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::make_unique<Partout::Tunnel>(std::move(unavailable)),
             std::make_shared<AppLogger>(), std::make_unique<MemoryProfileJournal>(), std::chrono::milliseconds(0));
         Wait(offline);
         // A transient startup observation failure is not a failed user action.
@@ -885,7 +887,7 @@ int main() {
         // Startup also reconciles registrations left by a previous process.
         auto orphaned = std::make_unique<ControlledTunnel>();
         orphaned->fake.Save(Example("orphaned"));
-        AppSession restarted(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::move(orphaned));
+        AppSession restarted(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::make_unique<Partout::Tunnel>(std::move(orphaned)));
         Wait(restarted);
         // An untracked registration is not proof of an interrupted deletion.
         assert(restarted.Snapshot().tunnels.size() == 1);
@@ -894,7 +896,7 @@ int main() {
         std::ofstream(root / "corrupt" / "objects" / "broken.json") << "invalid";
         auto retained = std::make_unique<ControlledTunnel>();
         retained->fake.Save(Example("retained"));
-        AppSession corrupt(std::move(corruptRepository), importer, std::move(retained));
+        AppSession corrupt(std::move(corruptRepository), importer, std::make_unique<Partout::Tunnel>(std::move(retained)));
         Wait(corrupt);
         assert(!corrupt.Snapshot().loaded);
         assert(!corrupt.Snapshot().error.empty());
@@ -973,7 +975,7 @@ int main() {
         auto gate = std::make_shared<Gate>();
         auto entered = gate->entered.get_future();
         AppSession queued(std::make_unique<FileProfileRepository>(root / "profiles"),
-                          importer, std::make_unique<BlockingTunnel>(gate));
+                          importer, std::make_unique<Partout::Tunnel>(std::make_unique<BlockingTunnel>(gate)));
         Wait(queued);
         queued.Connect(p.id);
         assert(entered.wait_for(std::chrono::seconds(5)) == std::future_status::ready);
@@ -991,7 +993,7 @@ int main() {
         delayed->delayedDisconnect = true;
         auto *delayedStrategy = delayed.get();
         AppSession removal(std::make_unique<FileProfileRepository>(root / "profiles"),
-            importer, std::move(delayed), std::make_shared<AppLogger>(),
+            importer, std::make_unique<Partout::Tunnel>(std::move(delayed)), std::make_shared<AppLogger>(),
             std::make_unique<MemoryProfileJournal>(), std::chrono::milliseconds(0));
         Wait(removal);
         removal.Remove({p.id});
@@ -1004,7 +1006,7 @@ int main() {
         assert(reopened.Fetch().empty());
         // Keep the Windows registration until disconnect actually finishes.
         assert(delayedStrategy->fake.Fetch().size() == 1);
-        delayedStrategy->fake.SetStatus(p.id, Status::disconnected);
+        delayedStrategy->fake.SetStatus(p.id, Partout::Models::TunnelStatus::inactive);
         removal.Refresh();
         Wait(removal);
         assert(removal.Snapshot().tunnelError.empty());

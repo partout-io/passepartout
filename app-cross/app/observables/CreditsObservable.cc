@@ -14,7 +14,7 @@ CreditsObservable::CreditsObservable(std::string resource, std::unique_ptr<HttpC
     try {
         auto json = Partout::Json::Parse(resource);
         credits_ = Models::Credits::FromJson(json);
-        FilterCredits(credits_, platform);
+        Credits::Filter(credits_, platform);
         std::sort(credits_.licenses.begin(), credits_.licenses.end(), [](const auto &a, const auto &b) {
             return a.name < b.name;
         });

@@ -6,6 +6,6 @@
 #include <filesystem>
 #include <string>
 
-namespace Passepartout {
-void WriteAtomicFile(const std::filesystem::path &path, const std::string &content);
+namespace Passepartout::AtomicFile {
+void Write(const std::filesystem::path &path, const std::string &content);
 }

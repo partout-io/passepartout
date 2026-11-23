@@ -8,7 +8,7 @@
 namespace Passepartout {
 UserPreferencesObservable::UserPreferencesObservable(std::unique_ptr<PreferencesRepository> repository,
     std::function<bool()> canChangePrivateData)
-    : repository_(std::move(repository)), preferences_(DefaultPreferences()), canChangePrivateData_(std::move(canChangePrivateData)) {
+    : repository_(std::move(repository)), preferences_(Preferences::Defaults()), canChangePrivateData_(std::move(canChangePrivateData)) {
     try {
         preferences_ = repository_->Fetch();
     } catch (...) {

@@ -9,12 +9,15 @@
 #include "../business/strategy/FileProfileJournal.h"
 #include "../business/strategy/FakeTunnelStrategy.h"
 #include "../business/strategy/FilePreferencesRepository.h"
-#include "../business/platform/WindowsTunnel.h"
+#include "../business/platform/WindowsTunnelPreferences.h"
 #include "../business/platform/WindowsHttpClient.h"
 #include "../ui/platform/WindowsIssueHandoff.h"
 #include "SettingsResources.h"
 #include "../business/extensions/DecodeImportResult.h"
 #include "partout.h"
+#ifdef _WIN32
+#include "partout_winrt.h"
+#endif
 #include <cstdlib>
 #include <stdexcept>
 
@@ -44,7 +47,7 @@ int BuildNumber(const std::string &version) {
 }
 std::unique_ptr<HttpClient> MakeHttp(const Models::AppConstants &constants, bool demo) {
 #ifdef _WIN32
-    if (!demo) return MakeWindowsHttpClient(std::chrono::milliseconds(
+    if (!demo) return Windows::MakeHttpClient(std::chrono::milliseconds(
         static_cast<std::int64_t>(constants.url.timeoutInterval * 1000)));
 #endif
     class OfflineHttpClient final : public HttpClient {
@@ -58,7 +61,7 @@ std::unique_ptr<HttpClient> MakeHttp(const Models::AppConstants &constants, bool
 }
 bool ReviewIssue(const IssueReport &report) {
 #ifdef _WIN32
-    return ReviewWindowsIssue(report);
+    return Windows::Issue::Review(report);
 #else
     return false;
 #endif
@@ -66,39 +69,30 @@ bool ReviewIssue(const IssueReport &report) {
 Profile ImportProfile(const std::string &text, const std::string &name) {
     std::unique_ptr<char, decltype(&std::free)> json(
         partout_import_profile(text.c_str(), nullptr, name.c_str()), &std::free);
-    return DecodeImportResult(json.get());
+    return Imports::DecodeResult(json.get());
 }
-class UnavailableTunnelStrategy final : public TunnelStrategy {
-public:
-    std::vector<Models::AppTunnelInfo> Fetch() override {
-        throw std::runtime_error("VPN control is only available in the Windows package. Use --demo for UI development.");
-    }
-    void Save(const Profile &) override {
-        Fail();
-    }
-    void Connect(const std::string &) override {
-        Fail();
-    }
-    void Disconnect(const std::string &) override {
-        Fail();
-    }
-    void Remove(const std::string &) override {
-        Fail();
-    }
-private:
-    void Fail() {
-        throw std::runtime_error("VPN control is unavailable.");
-    }
-};
-std::unique_ptr<TunnelStrategy> MakeTunnel(bool demo, const CrossConstants &constants, const Models::AppConstants &shared) {
-    if (demo) return std::make_unique<FakeTunnelStrategy>();
+
+std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const CrossConstants &constants) {
+    if (demo) return std::make_unique<Partout::Tunnel>(std::make_unique<FakeTunnelStrategy>());
 #ifdef _WIN32
-    return MakeWindowsTunnelStrategy(constants.tunnel.serverUri, shared.tunnel.dnsFallbackServers);
+    return std::make_unique<Partout::Tunnel>(
+        std::make_unique<Partout::WinRTTunnelStrategy>(constants.tunnel.serverUri)
+    );
 #else
-    return std::make_unique<UnavailableTunnelStrategy>();
+    throw std::runtime_error("VPN control is unavailable on this platform.");
 #endif
 }
+
+std::function<void(const Models::AppPreferences &)> TunnelPreferences(bool demo, const Models::AppConstants &constants) {
+#ifdef _WIN32
+    if (!demo) return [servers = constants.tunnel.dnsFallbackServers](const auto &preferences) {
+        Windows::Tunnel::ApplyPreferences(preferences, servers);
+    };
+#endif
+    return {};
 }
+}
+
 AppContext::AppContext(const std::filesystem::path &dataRoot, bool demo,
                        Models::AppConstants appConstants, CrossConstants frontendConstants)
     : constants(std::move(appConstants)), crossConstants(std::move(frontendConstants)),
@@ -106,12 +100,13 @@ AppContext::AppContext(const std::filesystem::path &dataRoot, bool demo,
       wireGuardKeys(std::make_unique<PartoutWireGuardKeyGenerator>()),
       logger_(std::make_shared<AppLogger>()),
       session_(std::make_unique<AppSession>(std::make_unique<FileProfileRepository>(
-          ProfileDirectory(dataRoot, constants, crossConstants, demo)),
-          ImportProfile, MakeTunnel(demo, crossConstants, constants), logger_,
-          std::make_unique<FileProfileJournal>(ProfileDirectory(dataRoot, constants, crossConstants, demo) / "transactions"))),
+          Profiles::Directory(dataRoot, constants, crossConstants, demo)),
+          ImportProfile, MakeTunnel(demo, crossConstants), logger_,
+          std::make_unique<FileProfileJournal>(Profiles::Directory(dataRoot, constants, crossConstants, demo) / "transactions"),
+          std::chrono::seconds(1), TunnelPreferences(demo, constants))),
       profiles(*session_), tunnel(*session_),
       preferences(std::make_unique<FilePreferencesRepository>(
-          ProfileDirectory(dataRoot, constants, crossConstants, demo) / "preferences.json"), [this] {
+          Profiles::Directory(dataRoot, constants, crossConstants, demo) / "preferences.json"), [this] {
               const auto state = session_->Snapshot();
               return state.loaded && !state.busy && !state.pendingProfile && state.tunnelAvailable &&
                   state.tunnelObservationErrors.empty() && std::all_of(state.tunnels.begin(), state.tunnels.end(), [](const auto &info) {

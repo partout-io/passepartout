@@ -37,7 +37,7 @@ wxString TransferText(const AppSnapshot &state, const std::string &id) {
         if (tunnel.id != id || tunnel.status.value != Status::connected || !tunnel.transfer) continue;
         const auto &transfer = *tunnel.transfer;
         if (transfer.received < 0 || transfer.sent < 0) return {};
-        return Text(Passepartout::TransferText(transfer, [](double value, int precision) {
+        return Text(Passepartout::Profiles::TransferText(transfer, [](double value, int precision) {
             return wxNumberFormatter::ToString(value, precision, wxNumberFormatter::Style_WithThousandsSep).ToStdString(wxConvUTF8);
         }));
     }

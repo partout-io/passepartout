@@ -10,10 +10,12 @@
 
 namespace Passepartout {
 AppSession::AppSession(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
-                       std::unique_ptr<TunnelStrategy> tunnel, std::shared_ptr<AppLogger> logger,
-                       std::unique_ptr<ProfileJournal> journal, std::chrono::milliseconds recoveryDelay)
+                       std::unique_ptr<Partout::Tunnel> tunnel, std::shared_ptr<AppLogger> logger,
+                       std::unique_ptr<ProfileJournal> journal, std::chrono::milliseconds recoveryDelay,
+                       std::function<void(const Models::AppPreferences &)> applyPreferences
+)
     : recoveryDelay_(recoveryDelay), logger_(std::move(logger)), profiles_(std::move(repository), std::move(importer), std::move(journal)),
-      tunnel_(std::move(tunnel), logger_) {
+      tunnel_(std::move(tunnel)), applyPreferences_(std::move(applyPreferences)) {
     logger_->Write(LogLevel::info, LogCategory::core, "Start application session");
     snapshot_.busy = false;
     worker_ = std::thread([this] {
@@ -31,7 +33,7 @@ AppSession::~AppSession() {
     }
     if (importing) importing->Cancel();
     wake_.notify_all();
-    tunnel_.Cancel();
+    tunnel_->Cancel();
     worker_.join();
     logger_->Write(LogLevel::info, LogCategory::core, "Finished application session");
 }
@@ -42,7 +44,7 @@ AppSnapshot AppSession::Snapshot() const {
 void AppSession::ApplyPreferences(Models::AppPreferences preferences) {
     Post([this, preferences = std::move(preferences)] {
         pendingPreferences_ = preferences;
-        tunnel_.ApplyPreferences(*pendingPreferences_);
+        if (applyPreferences_) applyPreferences_(*pendingPreferences_);
         pendingPreferences_.reset();
     }, AppErrorContext::tunnel);
 }
@@ -74,9 +76,9 @@ void AppSession::Run() {
         std::string error;
         try {
             operation.run();
-            if (tunnel_.PendingProfile()) {
+            if (tunnel_->PendingProfile()) {
                 operation.context = AppErrorContext::tunnel;
-                tunnel_.Advance();
+                tunnel_->Advance();
             }
         } catch (const std::exception &e) {
             error = e.what();
@@ -102,7 +104,7 @@ void AppSession::Run() {
         {
             std::lock_guard lock(mutex_);
             if (!tunnelError.empty()) snapshot_.tunnelAvailable = false;
-            snapshot_.pendingProfile = tunnel_.PendingProfile();
+            snapshot_.pendingProfile = tunnel_->PendingProfile();
             snapshot_.error = std::move(error);
             snapshot_.tunnelError = std::move(tunnelError);
             snapshot_.errorContext = operation.context;
@@ -125,11 +127,11 @@ std::string AppSession::RecoverProfiles() {
         }
         try {
             profiles_.Recover(transaction, [this](const ProfileTransaction &pending) {
-                if (pending.removal) tunnel_.Remove(pending.id);
+                if (pending.removal) tunnel_->Remove(pending.id);
                 else if (pending.previous) {
-                    tunnel_.ValidateUpdate(*pending.previous);
-                    tunnel_.Save(*pending.previous);
-                } else tunnel_.RollbackRegistration(pending.id);
+                    tunnel_->ValidateUpdate(*pending.previous);
+                    tunnel_->Save(*pending.previous);
+                } else tunnel_->RollbackRegistration(pending.id);
             });
             recoveryRetries_.erase(transaction.id);
         } catch (...) {
@@ -192,9 +194,9 @@ void AppSession::Publish() {
         snapshot_.profiles = std::move(headers);
         editableProfiles_ = profiles_.Profiles();
     }
-    auto tunnels = tunnel_.Fetch();
+    auto tunnels = Tunnels::Info(tunnel_->Fetch());
     if (registerMissingProfiles_) {
-        const auto unavailable = tunnel_.ObservationErrors();
+        const auto unavailable = tunnel_->ObservationErrors();
         try {
             for (const auto &profile : profiles_.Profiles()) {
                 if (unavailable.find(profile.id) != unavailable.end()) continue;
@@ -204,9 +206,9 @@ void AppSession::Publish() {
                 const bool exists = std::any_of(tunnels.begin(), tunnels.end(), [&](const auto &tunnel) {
                     return tunnel.id == profile.id;
                 });
-                if (!exists) tunnel_.Save(profile);
+                if (!exists) tunnel_->Save(profile);
             }
-            tunnels = tunnel_.Fetch();
+            tunnels = Tunnels::Info(tunnel_->Fetch());
             registerMissingProfiles_ = false;
         } catch (const std::exception &error) {
             reconciliationError = "Unable to register saved profiles: " + std::string(error.what());
@@ -220,7 +222,7 @@ void AppSession::Publish() {
         lastReconciliationError_ = reconciliationError;
     }
     const auto previous = Snapshot();
-    const auto observationErrors = tunnel_.ObservationErrors();
+    const auto observationErrors = tunnel_->ObservationErrors();
     for (const auto &[id, error] : observationErrors) {
         const auto old = previous.tunnelObservationErrors.find(id);
         if (old == previous.tunnelObservationErrors.end() || old->second != error)
@@ -274,10 +276,10 @@ void AppSession::SaveEditor(std::shared_ptr<ProfileEditor> editor) {
         try {
             profiles_.Update(editor->Original(), editor->Snapshot().draft,
                 [this](const Profile &profile) {
-                    tunnel_.ValidateUpdate(profile);
-                    tunnel_.Save(profile);
+                    tunnel_->ValidateUpdate(profile);
+                    tunnel_->Save(profile);
                 }, [this](const Profile &profile) {
-                    tunnel_.ValidateUpdate(profile);
+                    tunnel_->ValidateUpdate(profile);
                 });
             editor->FinishSave(true);
         } catch (...) {
@@ -316,11 +318,11 @@ void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
                 // Registration follows the injected strategy on every platform,
                 // including fake tunnels used by portable tests and demo mode.
                 profiles_.ImportText(source.text, source.name, [this](const Profile &value) {
-                    tunnel_.Register(value);
+                    tunnel_->Register(value);
                 }, [this](const std::string &id) {
-                    tunnel_.RollbackRegistration(id);
+                    tunnel_->RollbackRegistration(id);
                 }, [this](const Profile &value) {
-                    tunnel_.ValidateNew(value);
+                    tunnel_->ValidateNew(value);
                 });
                 logger_->Write(LogLevel::info, LogCategory::profiles, "Finished saving profile");
             } catch (const std::exception &) {
@@ -348,7 +350,7 @@ void AppSession::Remove(std::vector<std::string> ids) {
         for (const auto &id : uniqueIds) {
             logger_->Write(LogLevel::info, LogCategory::profiles, "Remove profile");
             profiles_.Remove(id);
-            tunnel_.CancelPending(id);
+            tunnel_->CancelPending(id);
         }
     });
 }
@@ -356,7 +358,7 @@ void AppSession::Connect(std::string id, std::optional<Partout::Models::OpenVpnC
     std::optional<Profile> original) {
     Post([this, id = std::move(id), credentials = std::move(credentials), original = std::move(original)] {
         if (pendingPreferences_) {
-            tunnel_.ApplyPreferences(*pendingPreferences_);
+            if (applyPreferences_) applyPreferences_(*pendingPreferences_);
             pendingPreferences_.reset();
         }
         for (const auto &transaction : profiles_.PendingTransactions()) {
@@ -364,12 +366,14 @@ void AppSession::Connect(std::string id, std::optional<Partout::Models::OpenVpnC
         }
         const auto profile = profiles_.Find(id);
         if (original && profile != *original) throw std::runtime_error("Profile changed during interactive login.");
-        tunnel_.Connect(profile, credentials);
+        std::optional<Partout::TunnelCredentials> authentication;
+        if (credentials) authentication = Partout::TunnelCredentials{credentials->username, credentials->password};
+        tunnel_->Connect(profile, std::move(authentication));
     }, AppErrorContext::tunnel);
 }
 void AppSession::Disconnect(std::string id) {
     Post([this, id = std::move(id)] {
-        tunnel_.Disconnect(id);
+        tunnel_->Disconnect(id);
     }, AppErrorContext::tunnel);
 }
 void AppSession::Refresh() {

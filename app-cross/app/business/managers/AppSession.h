@@ -6,7 +6,9 @@
 #include "../models/AppSnapshot.h"
 #include "../models/ProfileEditor.h"
 #include "ProfileManager.h"
-#include "TunnelManager.h"
+#include <partout/tunnel/Tunnel.h>
+#include "../extensions/AppLogger.h"
+#include "AppPreferences.h"
 #include "../models/ConfigurationFiles.h"
 #include <condition_variable>
 #include <deque>
@@ -19,10 +21,12 @@ namespace Passepartout {
 class AppSession {
 public:
     AppSession(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
-               std::unique_ptr<TunnelStrategy> tunnel,
+               std::unique_ptr<Partout::Tunnel> tunnel,
                std::shared_ptr<AppLogger> logger = std::make_shared<AppLogger>(),
                std::unique_ptr<ProfileJournal> journal = std::make_unique<MemoryProfileJournal>(),
-               std::chrono::milliseconds recoveryDelay = std::chrono::seconds(1));
+               std::chrono::milliseconds recoveryDelay = std::chrono::seconds(1),
+               std::function<void(const Models::AppPreferences &)> applyPreferences = {}
+    );
     ~AppSession();
     AppSession(const AppSession &) = delete;
     AppSession &operator=(const AppSession &) = delete;
@@ -60,7 +64,8 @@ private:
     bool registerMissingProfiles_ = false;
     std::optional<Models::AppPreferences> pendingPreferences_;
     ProfileManager profiles_;
-    TunnelManager tunnel_;
+    std::unique_ptr<Partout::Tunnel> tunnel_;
+    std::function<void(const Models::AppPreferences &)> applyPreferences_;
     mutable std::mutex mutex_;
     std::condition_variable wake_;
     struct Operation {

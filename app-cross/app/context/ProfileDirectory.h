@@ -10,9 +10,10 @@
 #include <filesystem>
 #include <stdexcept>
 
-namespace Passepartout {
-inline std::filesystem::path ProfileDirectory(const std::filesystem::path &root,
-    const Models::AppConstants &constants, const CrossConstants &crossConstants, bool demo) {
+namespace Passepartout::Profiles {
+inline std::filesystem::path Directory(const std::filesystem::path &root,
+    const Models::AppConstants &constants, const CrossConstants &crossConstants, bool demo
+) {
     auto name = constants.containers.local;
     std::transform(name.begin(), name.end(), name.begin(), [](unsigned char c) {
         return static_cast<char>(std::tolower(c));

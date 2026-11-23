@@ -5,7 +5,6 @@
 #pragma once
 #include "../business/models/AppSnapshot.h"
 #include "../business/models/InteractiveLogin.h"
-#include "../business/models/ConfigurationFiles.h"
 
 namespace Passepartout {
 class AppSession;

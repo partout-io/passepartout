@@ -52,12 +52,12 @@ void FileProfileJournal::Save(const ProfileTransaction &transaction) {
     if (transaction.previous) json.Set("previous", transaction.previous->ToJson());
     const auto text = json.Encode();
     if (text.size() > MaxConfigurationBytes) throw std::runtime_error("Profile recovery data exceeds 1 MiB.");
-    WriteAtomicFile(Path(transaction.id), text);
+    AtomicFile::Write(Path(transaction.id), text);
 }
 void FileProfileJournal::Remove(const std::string &id) {
     // Persist completion before deleting the record. If deletion is interrupted,
     // a completed update must never be mistaken for work requiring rollback.
-    WriteAtomicFile(Path(id), Partout::Json{{"version", 1}, {"committed", true}}.Encode());
+    AtomicFile::Write(Path(id), Partout::Json{{"version", 1}, {"committed", true}}.Encode());
     std::error_code ignored;
     std::filesystem::remove(Path(id), ignored);
 }

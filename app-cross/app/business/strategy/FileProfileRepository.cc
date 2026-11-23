@@ -65,7 +65,7 @@ void FileProfileRepository::PersistIndex(const std::vector<Profile> &profiles) {
         }
         entries.Append(std::move(entry));
     }
-    WriteAtomicFile(root_ / "index.json", Partout::Json{{"version", 1}, {"profiles", entries}}.Encode());
+    AtomicFile::Write(root_ / "index.json", Partout::Json{{"version", 1}, {"profiles", entries}}.Encode());
 }
 
 std::vector<Profile> FileProfileRepository::Fetch() {
@@ -116,7 +116,7 @@ void FileProfileRepository::Save(const Profile &profile) {
     const auto content = profile.ToJson().Encode();
     if (content.size() > MaxConfigurationBytes)
         throw std::runtime_error("The saved profile exceeds 1 MiB.");
-    WriteAtomicFile(path, content);
+    AtomicFile::Write(path, content);
     profiles.erase(std::remove_if(profiles.begin(), profiles.end(), [&](const auto &p) { return p.id == profile.id; }), profiles.end());
     profiles.push_back(profile);
     SortProfiles(profiles);

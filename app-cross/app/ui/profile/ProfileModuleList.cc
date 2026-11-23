@@ -50,7 +50,7 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
         }, module);
         wxVector<wxVariant> cells;
         cells.push_back(wxVariant(enabled));
-        cells.push_back(wxVariant(ModuleTitle(module)));
+        cells.push_back(wxVariant(Modules::Title(module)));
         AppendItem(cells, index + 2);
     }
     SelectRow(0);

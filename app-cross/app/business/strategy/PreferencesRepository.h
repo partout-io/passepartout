@@ -6,7 +6,10 @@
 #include "AppPreferences.h"
 
 namespace Passepartout {
-Models::AppPreferences DefaultPreferences();
+namespace Preferences {
+Models::AppPreferences Defaults();
+}
+
 class PreferencesRepository {
 public:
     virtual ~PreferencesRepository() = default;

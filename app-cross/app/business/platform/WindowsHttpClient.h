@@ -6,6 +6,6 @@
 #include "../strategy/HttpClient.h"
 #include <chrono>
 
-namespace Passepartout {
-std::unique_ptr<HttpClient> MakeWindowsHttpClient(std::chrono::milliseconds timeout);
+namespace Passepartout::Windows {
+std::unique_ptr<HttpClient> MakeHttpClient(std::chrono::milliseconds timeout);
 }

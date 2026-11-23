@@ -57,7 +57,7 @@ ConfigurationPickerResult Collect(const winrt::Windows::Foundation::Collections:
     const auto root = winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().CreateFolderAsync(
         ImportFolder, winrt::Windows::Storage::CreationCollisionOption::OpenIfExists).get();
     const auto destination = root.CreateFolderAsync(request, winrt::Windows::Storage::CreationCollisionOption::FailIfExists).get();
-    auto selected = CollectConfigurationFiles(count, [&](std::size_t index) {
+    auto selected = Configuration::CollectFiles(count, [&](std::size_t index) {
         const auto file = files.GetAt(static_cast<std::uint32_t>(index));
         const auto stream = file.OpenReadAsync().get();
         if (!stream.Size() || stream.Size() > MaxBytes) throw std::runtime_error("Invalid import file size.");
@@ -150,7 +150,7 @@ private:
 };
 }
 
-std::unique_ptr<ConfigurationPicker> MakeWindowsConfigurationPicker(HWND owner) {
+std::unique_ptr<ConfigurationPicker> Windows::Configuration::MakePicker(HWND owner) {
     return std::make_unique<WindowsConfigurationPicker>(owner);
 }
 }

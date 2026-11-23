@@ -17,7 +17,7 @@ struct Theme {
     static void Apply(wxWindow *window, Background background = Background::Surface);
     static void SecondaryText(wxWindow *window);
     static void Monospace(wxWindow *window);
+    static wxActivityIndicator *ProgressView(wxWindow *parent);
+    static wxStaticText *EmptyMessage(wxWindow *parent, const wxString &message);
 };
-wxActivityIndicator *ThemeProgressView(wxWindow *parent);
-wxStaticText *ThemeEmptyMessage(wxWindow *parent, const wxString &message);
 }

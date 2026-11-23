@@ -42,14 +42,14 @@ Passepartout::Profile Example() {
 void Wait(Passepartout::AppSession &session) {
     assert(session.WaitIdle(std::chrono::seconds(5)));
 }
-class RejectingTunnel final : public Passepartout::TunnelStrategy {
+class RejectingTunnel final : public Partout::TunnelStrategy {
 public:
     Passepartout::FakeTunnelStrategy fake;
     bool rejects = false;
     Passepartout::Profile saved;
     unsigned saves = 0;
-    std::optional<Partout::Models::OpenVpnCredentials> connectionCredentials;
-    std::vector<Passepartout::Models::AppTunnelInfo> Fetch() override {
+    std::optional<Partout::TunnelCredentials> connectionCredentials;
+    std::vector<Partout::Models::TunnelSnapshot> Fetch() override {
         return fake.Fetch();
     }
     void Save(const Passepartout::Profile &profile) override {
@@ -61,7 +61,7 @@ public:
     void Connect(const std::string &id) override {
         fake.Connect(id);
     }
-    void ConnectWithCredentials(const std::string &id, const Partout::Models::OpenVpnCredentials &credentials) override {
+    void ConnectWithCredentials(const std::string &id, const Partout::TunnelCredentials &credentials) override {
         connectionCredentials = credentials;
         fake.Connect(id);
     }
@@ -136,7 +136,7 @@ int main() {
         auto strategy = std::make_unique<RejectingTunnel>();
         auto *backend = strategy.get();
         backend->fake.Save(draft);
-        AppSession session(std::make_unique<FileProfileRepository>(store), {}, std::move(strategy),
+        AppSession session(std::make_unique<FileProfileRepository>(store), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)),
             std::make_shared<AppLogger>(), std::make_unique<FileProfileJournal>(journalPath),
             std::chrono::milliseconds(0));
         Wait(session);
@@ -148,7 +148,7 @@ int main() {
         auto canceledLogin = tunnel.TakeInteractiveLogin();
         assert(canceledLogin && !tunnel.TakeInteractiveLogin());
         assert(!backend->connectionCredentials);
-        assert(backend->fake.Fetch().front().status.value == Status::disconnected);
+        assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
         canceledLogin.reset();
         tunnel.Connect(original.id);
         auto submittedLogin = tunnel.TakeInteractiveLogin();
@@ -179,7 +179,7 @@ int main() {
         assert(pending->Snapshot().saved);
         assert(repository.Fetch().front().name == "Retry name");
         assert(backend->saved.name == "Retry name");
-        assert(backend->fake.Fetch().front().status.value == Status::disconnected);
+        assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
         // An old editor cannot silently overwrite a more recent save.
         auto stale = std::make_shared<ProfileEditor>(original);
         stale->Rename("Stale");

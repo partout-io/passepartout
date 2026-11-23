@@ -40,7 +40,7 @@ bool PassepartoutApp::OnInit() {
     for (int i = 1; i < argc; ++i) {
         const wxString arg(argv[i]);
         if (arg == wxString::FromUTF8(defaultCrossConstants.commandLine.demoArgument)) demo = true;
-        else files.push_back(FilePath(arg));
+        else files.push_back(Paths::FromString(arg));
     }
 
     // Prefer brokered activation files; preserve read failures for import reporting.
@@ -54,7 +54,7 @@ bool PassepartoutApp::OnInit() {
     if (!activationFiles) activationFiles = std::make_shared<ConfigurationFiles>(files);
 
     // Forward to the existing instance, or claim this launch as the primary instance.
-    const auto dataRoot = FilePath(wxStandardPaths::Get().GetUserLocalDataDir());
+    const auto dataRoot = Paths::FromString(wxStandardPaths::Get().GetUserLocalDataDir());
     const auto instanceKey = SingleInstanceKey(demo);
     instance_ = std::make_unique<wxSingleInstanceChecker>(wxString::FromUTF8(instanceKey));
     if (instance_->IsAnotherRunning()) {
@@ -77,7 +77,7 @@ bool PassepartoutApp::OnInit() {
         context_ = std::make_unique<AppContext>(dataRoot, demo);
         stage = "creating main window";
         startupLogger.Write(LogLevel::debug, LogCategory::core, "Create main window");
-        auto *view = new MainView(*context_, demo, MakeConfigurationPicker);
+        auto *view = new MainView(*context_, demo, Configuration::MakePicker);
         SetTopWindow(view);
 
         // Receive subsequent activations before processing the initial import.

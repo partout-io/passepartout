@@ -28,7 +28,7 @@ private:
     std::unique_ptr<AppSession> session_;
 public:
     AppContext(const std::filesystem::path &dataRoot, bool demo,
-               Models::AppConstants constants = LoadAppConstants(),
+               Models::AppConstants constants = Constants::Load(),
                CrossConstants crossConstants = defaultCrossConstants);
     ~AppContext();
     ProfileObservable profiles;

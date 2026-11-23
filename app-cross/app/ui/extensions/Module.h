@@ -6,6 +6,6 @@
 #include <partout/models/TaggedModule.h>
 #include <wx/string.h>
 
-namespace Passepartout {
-wxString ModuleTitle(const Partout::Models::TaggedModule &module);
+namespace Passepartout::Modules {
+wxString Title(const Partout::Models::TaggedModule &module);
 }

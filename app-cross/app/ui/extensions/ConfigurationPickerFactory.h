@@ -7,7 +7,7 @@
 
 class wxWindow;
 
-namespace Passepartout {
-using ConfigurationPickerFactory = std::function<std::unique_ptr<ConfigurationPicker>(wxWindow &)>;
-std::unique_ptr<ConfigurationPicker> MakeConfigurationPicker(wxWindow &owner);
+namespace Passepartout::Configuration {
+using PickerFactory = std::function<std::unique_ptr<ConfigurationPicker>(wxWindow &)>;
+std::unique_ptr<ConfigurationPicker> MakePicker(wxWindow &owner);
 }

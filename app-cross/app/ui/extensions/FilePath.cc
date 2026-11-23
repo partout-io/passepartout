@@ -5,7 +5,7 @@
 #include "FilePath.h"
 
 namespace Passepartout {
-std::filesystem::path FilePath(const wxString &value) {
+std::filesystem::path Paths::FromString(const wxString &value) {
     return std::filesystem::u8path(value.ToStdString(wxConvUTF8));
 }
 }

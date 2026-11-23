@@ -7,8 +7,8 @@
 #include <partout/models/ABIEnvelope.h>
 #include <stdexcept>
 
-namespace Passepartout {
-inline Profile DecodeImportResult(const char *json) {
+namespace Passepartout::Imports {
+inline Profile DecodeResult(const char *json) {
     if (!json) throw std::runtime_error("Partout could not import this configuration.");
     try {
         const auto envelope = Partout::Models::ABIEnvelope::FromJson(Partout::Json::Parse(json));

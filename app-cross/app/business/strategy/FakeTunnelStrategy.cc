@@ -7,34 +7,34 @@
 #include <stdexcept>
 
 namespace Passepartout {
-std::vector<Models::AppTunnelInfo> FakeTunnelStrategy::Fetch() {
+std::vector<Partout::Models::TunnelSnapshot> FakeTunnelStrategy::Fetch() {
     return tunnels_;
 }
 void FakeTunnelStrategy::Save(const Profile &profile) {
     for (const auto &tunnel : tunnels_) {
         if (tunnel.id == profile.id) return;
     }
-    Models::AppTunnelInfo info{};
+    Partout::Models::TunnelSnapshot info{};
     info.id = profile.id;
-    info.status.value = Status::disconnected;
+    info.status.value = Partout::Models::TunnelStatus::inactive;
     tunnels_.push_back(info);
 }
-void FakeTunnelStrategy::SetStatus(const std::string &id, Status status) {
+void FakeTunnelStrategy::SetStatus(const std::string &id, Partout::Models::TunnelStatus::eTunnelStatus status) {
     for (auto &tunnel : tunnels_) {
         if (tunnel.id != id) continue;
         tunnel.status.value = status;
-        tunnel.isEnabled = status != Status::disconnected;
+        tunnel.isEnabled = status != Partout::Models::TunnelStatus::inactive;
         return;
     }
     throw std::runtime_error("The VPN profile no longer exists.");
 }
 void FakeTunnelStrategy::Connect(const std::string &id) {
-    SetStatus(id, Status::connected);
+    SetStatus(id, Partout::Models::TunnelStatus::active);
 }
 void FakeTunnelStrategy::Disconnect(const std::string &id) {
     for (const auto &tunnel : tunnels_) {
         if (tunnel.id == id) {
-            SetStatus(id, Status::disconnected);
+            SetStatus(id, Partout::Models::TunnelStatus::inactive);
             return;
         }
     }

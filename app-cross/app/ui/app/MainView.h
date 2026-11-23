@@ -12,7 +12,8 @@
 class MainView : public wxFrame {
 public:
     MainView(Passepartout::AppContext &context, bool demo,
-             Passepartout::ConfigurationPickerFactory pickerFactory);
+             Passepartout::Configuration::PickerFactory pickerFactory
+    );
     ~MainView() override;
     void Quit();
     void Activate(std::shared_ptr<const Passepartout::ConfigurationFiles> files);

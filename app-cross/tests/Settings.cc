@@ -23,7 +23,7 @@
 namespace {
 class MemoryPreferences final : public Passepartout::PreferencesRepository {
 public:
-    Passepartout::Models::AppPreferences value = Passepartout::DefaultPreferences();
+    Passepartout::Models::AppPreferences value = Passepartout::Preferences::Defaults();
     bool fails = false;
     Passepartout::Models::AppPreferences Fetch() override {
         return value;

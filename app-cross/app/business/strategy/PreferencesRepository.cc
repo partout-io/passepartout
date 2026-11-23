@@ -6,7 +6,7 @@
 #include "partout.h"
 
 namespace Passepartout {
-Models::AppPreferences DefaultPreferences() {
+Models::AppPreferences Preferences::Defaults() {
     Models::AppPreferences preferences{};
     preferences.dnsFallsBack = true;
     preferences.cryptoBackend = PartoutCryptoMbedTLS;
