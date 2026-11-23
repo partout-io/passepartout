@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "partout.h"
-#include "partout_posix.h"
+#include "partout_platform.h"
 
 static void stdio_logger(void *ctx, const char *profile_id, int level, const char *message) {
     (void)ctx;
@@ -62,9 +62,8 @@ int main(int argc, char *argv[]) {
     // FIXME: #209/notes, Cross UI, hardcoded values
     const char *preferences = "{\"deviceId\":\"abcdef\"}";
 
-    const partout_daemon_bindings bindings = {
-        .controller_functions = partout_posix_controller_functions()
-    };
+    partout_daemon_bindings bindings = {0};
+    if (!partout_platform_bindings_init(&bindings)) goto failure;
     const partout_daemon_start_args start_args = {
         .profile = profile,
         .options = {
