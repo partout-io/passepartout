@@ -1,4 +1,4 @@
-name: Android tests
+name: Tests
 
 on:
   pull_request:
@@ -6,12 +6,6 @@ on:
     branches:
       - "master"
       - "hotfix/*"
-    paths-ignore:
-      - "README.md"
-      - ".env.*"
-      - "**/*.md"
-      - "app-apple/**"
-      - "app-cross/**"
   workflow_dispatch:
 
 permissions:
@@ -23,7 +17,7 @@ concurrency:
 
 jobs:
   checks:
-    name: Run checks
+    name: Run light checks
     uses: ./.github/workflows/checks.yml
     with:
-      suite: android
+      light: true

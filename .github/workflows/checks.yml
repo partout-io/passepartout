@@ -9,14 +9,13 @@ on:
         default: true
         type: boolean
 
-      suite:
-        description: Test suite (empty runs all suites)
+      light:
+        description: Skip Partout tests and run only affected app tests on PRs
         required: false
-        default: ""
-        type: string
+        default: false
+        type: boolean
 
 env:
-  NODE_VERSION: "20"
   JAVA_VERSION: "17"
   ANDROID_API_LEVEL: "36"
   ANDROID_BUILD_TOOLS_VERSION: "36.0.0"
@@ -28,60 +27,58 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  run_tests:
-    name: ${{ matrix.suite }} tests
+  select_checks:
+    name: Select affected apps
     if: inputs.run_checks
-    runs-on: ${{ (matrix.suite == 'cross' || matrix.suite == 'android' || (matrix.suite == 'partout' && github.event_name == 'pull_request')) && 'ubuntu-latest' || 'xcode-27' }}
-    timeout-minutes: 15
-    strategy:
-      fail-fast: true
-      matrix:
-        suite: ${{ fromJSON(inputs.suite == '' && '["apple", "android", "partout", "cross"]' || format('["{0}"]', inputs.suite)) }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      apple: ${{ steps.select.outputs.apple }}
+      android: ${{ steps.select.outputs.android }}
+      cross: ${{ steps.select.outputs.cross }}
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: ${{ matrix.suite == 'android' || (matrix.suite == 'partout' && github.event_name == 'pull_request') }}
+          fetch-depth: 0
+      - name: Select affected apps
+        id: select
+        run: |
+          python3 - <<'PYTHON'
+          import json
+          import os
+          import subprocess
 
-      - uses: partout-io/action-prepare-xcode-build@master
-        if: matrix.suite == 'apple' || (matrix.suite == 'partout' && github.event_name != 'pull_request')
+          with open(os.environ['GITHUB_EVENT_PATH']) as source:
+              event = json.load(source)
+          apps = ['apple', 'android', 'cross']
+          if 'pull_request' in event:
+              pr = event['pull_request']
+              changed = subprocess.check_output([
+                  'git', 'diff', '--name-only', '-z', '--no-renames',
+                  pr['base']['sha'] + '...' + pr['head']['sha'],
+              ]).decode().split('\0')
+              apps = [app for app in apps
+                      if any(path.startswith('app-' + app + '/') for path in changed)]
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              for app in ['apple', 'android', 'cross']:
+                  print(app + '=' + str(app in apps).lower(), file=output)
+          PYTHON
+
+  validation:
+    name: Codegen and translations
+    if: inputs.run_checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
         with:
-          access-token: ${{ github.token }}
           submodules: true
 
       - uses: partout-io/setup-zig@main
-        if: matrix.suite == 'partout'
-
-      - uses: actions/setup-node@v6
-        if: matrix.suite == 'api'
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: npm
-          cache-dependency-path: api/package-lock.json
-
-      - uses: actions/setup-java@v6
-        if: matrix.suite == 'android'
-        with:
-          distribution: temurin
-          java-version: ${{ env.JAVA_VERSION }}
-          cache: gradle
-
-      - uses: android-actions/setup-android@v4
-        if: matrix.suite == 'android'
-        with:
-          packages: platform-tools
-
-      - name: Install Android SDK components
-        if: matrix.suite == 'android'
-        run: |
-          sdkmanager \
-            "platforms;android-${ANDROID_API_LEVEL}" \
-            "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
-            "cmake;${CMAKE_VERSION}" \
-            "ndk;${ANDROID_NDK_VERSION}"
 
       - name: Verify cross-platform generators
-        if: matrix.suite == 'cross'
         run: |
+          app-android/scripts/import-apple-strings.sh
           python3 app-cross/scripts/gen-cmake-files.py
           python3 -B app-cross/tests/string_generation.py
           python3 app-cross/scripts/import-apple-strings.py
@@ -91,36 +88,104 @@ jobs:
           fi
 
       - name: Validate translations
-        if: matrix.suite == 'apple'
         run: app-apple/scripts/clean-translations.sh
 
       - name: Verify Passepartout model generation
-        if: matrix.suite == 'partout'
         run: python3 ci/test_codegen.py
 
-      - name: Verify Partout model generation
-        if: matrix.suite == 'partout' && github.event_name != 'pull_request'
-        run: python3 partout/tests/codegen/test_codegen.py
+  apple:
+    name: Apple tests
+    needs: select_checks
+    if: needs.select_checks.outputs.apple == 'true'
+    runs-on: xcode-27
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: partout-io/action-prepare-xcode-build@master
+        with:
+          access-token: ${{ github.token }}
+          submodules: true
 
       - name: Run Apple tests
-        if: matrix.suite == 'apple'
         run: ci/run-apple-tests.sh
 
+  android:
+    name: Android tests
+    needs: select_checks
+    if: needs.select_checks.outputs.android == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: gradle
+
+      - uses: android-actions/setup-android@v4
+        with:
+          packages: platform-tools
+
+      - name: Install Android SDK components
+        run: |
+          sdkmanager \
+            "platforms;android-${ANDROID_API_LEVEL}" \
+            "build-tools;${ANDROID_BUILD_TOOLS_VERSION}" \
+            "cmake;${CMAKE_VERSION}" \
+            "ndk;${ANDROID_NDK_VERSION}"
+
       - name: Run Android tests
-        if: matrix.suite == 'android'
         run: ci/run-android-tests.sh
 
+  partout:
+    name: Partout tests
+    if: inputs.run_checks && !inputs.light
+    runs-on: xcode-27
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: partout-io/action-prepare-xcode-build@master
+        with:
+          access-token: ${{ github.token }}
+          submodules: true
+
+      - uses: partout-io/setup-zig@main
+
+      - name: Verify Partout model generation
+        run: python3 partout/tests/codegen/test_codegen.py
+
       - name: Run Partout tests
-        if: matrix.suite == 'partout' && github.event_name != 'pull_request'
         run: ci/run-partout-tests.sh
 
       - name: Run Partout tests (Swift)
-        if: matrix.suite == 'partout' && github.event_name != 'pull_request'
         run: ci/run-partout-swift-tests.sh
 
-      - name: Run API tests
-        if: matrix.suite == 'api'
-        run: ci/run-api-tests.sh
+  cross_application:
+    name: Cross tests (${{ matrix.os }})
+    needs: select_checks
+    if: needs.select_checks.outputs.cross == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - name: Configure portable tests and Windows adapter compile check
+        run: cmake -S app-cross/tests -B build/cross -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build build/cross --config Debug --parallel 2
+      - name: Test
+        run: ctest --test-dir build/cross -C Debug --output-on-failure
 
   skip_checks:
     name: Checks skipped
