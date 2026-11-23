@@ -28,4 +28,4 @@ rootProject.name = "Passepartout"
 include(":app")
 
 include(":partout")
-project(":partout").projectDir = file("../partout/cross/android")
+project(":partout").projectDir = file("../partout/runtimes/android")
