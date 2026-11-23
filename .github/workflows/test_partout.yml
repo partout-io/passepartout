@@ -2,17 +2,21 @@ name: Partout tests
 
 on:
   pull_request:
-    types: [ opened, synchronize ]
+    types: [opened, synchronize, reopened]
     branches:
       - "master"
       - "hotfix/*"
-    paths-ignore:
-      - "README.md"
-      - ".env.*"
-      - "**/*.md"
-      - "app-apple/**"
-      - "app-android/**"
-      - "app-cross/**"
+    paths:
+      - ".github/workflows/checks.yml"
+      - ".github/workflows/test_partout.yml"
+      - "ci/**"
+      - "scripts/**"
+      - "partout"
+      - "partout/**"
+      - "app-apple/Sources/CommonLibraryCore/Domain/Codegen/**"
+      - "app-android/app/src/main/kotlin/com/algoritmico/passepartout/models/**"
+      - "app-cross/models/**"
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

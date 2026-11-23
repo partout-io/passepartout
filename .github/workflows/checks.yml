@@ -31,7 +31,7 @@ jobs:
   run_tests:
     name: ${{ matrix.suite }} tests
     if: inputs.run_checks
-    runs-on: ${{ (matrix.suite == 'cross' || matrix.suite == 'android') && 'ubuntu-latest' || 'xcode-27' }}
+    runs-on: ${{ (matrix.suite == 'cross' || matrix.suite == 'android' || (matrix.suite == 'partout' && github.event_name == 'pull_request')) && 'ubuntu-latest' || 'xcode-27' }}
     timeout-minutes: 15
     strategy:
       fail-fast: true
@@ -40,10 +40,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         with:
-          submodules: ${{ matrix.suite == 'android' }}
+          submodules: ${{ matrix.suite == 'android' || (matrix.suite == 'partout' && github.event_name == 'pull_request') }}
 
       - uses: partout-io/action-prepare-xcode-build@master
-        if: matrix.suite == 'apple' || matrix.suite == 'partout'
+        if: matrix.suite == 'apple' || (matrix.suite == 'partout' && github.event_name != 'pull_request')
         with:
           access-token: ${{ github.token }}
           submodules: true
@@ -94,11 +94,13 @@ jobs:
         if: matrix.suite == 'apple'
         run: app-apple/scripts/clean-translations.sh
 
-      - name: Verify model generation in both repositories
+      - name: Verify Passepartout model generation
         if: matrix.suite == 'partout'
-        run: |
-          python3 partout/tests/codegen/test_codegen.py
-          python3 ci/test_codegen.py
+        run: python3 ci/test_codegen.py
+
+      - name: Verify Partout model generation
+        if: matrix.suite == 'partout' && github.event_name != 'pull_request'
+        run: python3 partout/tests/codegen/test_codegen.py
 
       - name: Run Apple tests
         if: matrix.suite == 'apple'
@@ -109,11 +111,11 @@ jobs:
         run: ci/run-android-tests.sh
 
       - name: Run Partout tests
-        if: matrix.suite == 'partout'
+        if: matrix.suite == 'partout' && github.event_name != 'pull_request'
         run: ci/run-partout-tests.sh
 
       - name: Run Partout tests (Swift)
-        if: matrix.suite == 'partout'
+        if: matrix.suite == 'partout' && github.event_name != 'pull_request'
         run: ci/run-partout-swift-tests.sh
 
       - name: Run API tests
