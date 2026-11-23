@@ -1,0 +1,29 @@
+name: Android tests
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - "master"
+      - "hotfix/*"
+    paths-ignore:
+      - "README.md"
+      - ".env.*"
+      - "**/*.md"
+      - "app-apple/**"
+      - "app-cross/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    name: Run checks
+    uses: ./.github/workflows/checks.yml
+    with:
+      suite: android
