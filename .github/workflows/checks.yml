@@ -24,7 +24,7 @@ jobs:
     name: ${{ matrix.suite }} tests
     if: inputs.run_checks
     runs-on: ${{ (matrix.suite == 'cross' || matrix.suite == 'android') && 'ubuntu-latest' || 'xcode-27' }}
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       fail-fast: true
       matrix:
@@ -50,25 +50,6 @@ jobs:
           cache: npm
           cache-dependency-path: api/package-lock.json
 
-      - name: Verify cross-platform generators
-        if: matrix.suite == 'cross'
-        run: |
-          python3 app-cross/scripts/gen-cmake-files.py
-          python3 -B app-cross/tests/string_generation.py
-          python3 app-cross/scripts/import-apple-strings.py
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git status --short
-            exit 1
-          fi
-
-      - name: Validate translations
-        if: matrix.suite == 'apple'
-        run: app-apple/scripts/clean-translations.sh
-
-      - name: Run Apple tests
-        if: matrix.suite == 'apple'
-        run: ci/run-apple-tests.sh
-
       - uses: actions/setup-java@v6
         if: matrix.suite == 'android'
         with:
@@ -90,19 +71,38 @@ jobs:
             "cmake;4.1.2" \
             "ndk;30.0.16138531"
 
-      - name: Run Android app unit tests
-        if: matrix.suite == 'android'
-        run: ci/run-android-tests.sh
+      - name: Verify cross-platform generators
+        if: matrix.suite == 'cross'
+        run: |
+          python3 app-cross/scripts/gen-cmake-files.py
+          python3 -B app-cross/tests/string_generation.py
+          python3 app-cross/scripts/import-apple-strings.py
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git status --short
+            exit 1
+          fi
 
-      - name: Run Partout tests (Swift)
-        if: matrix.suite == 'partout'
-        run: ci/run-partout-swift-tests.sh
+      - name: Validate translations
+        if: matrix.suite == 'apple'
+        run: app-apple/scripts/clean-translations.sh
 
       - name: Verify model generation in both repositories
         if: matrix.suite == 'partout'
         run: |
           python3 partout/tests/codegen/test_codegen.py
           python3 partout/tests/codegen/test_parent_codegen.py .
+
+      - name: Run Apple tests
+        if: matrix.suite == 'apple'
+        run: ci/run-apple-tests.sh
+
+      - name: Run Android tests
+        if: matrix.suite == 'android'
+        run: ci/run-android-tests.sh
+
+      - name: Run Partout tests (Swift)
+        if: matrix.suite == 'partout'
+        run: ci/run-partout-swift-tests.sh
 
       - name: Run Partout tests
         if: matrix.suite == 'partout'
