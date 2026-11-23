@@ -108,13 +108,13 @@ jobs:
         if: matrix.suite == 'android'
         run: ci/run-android-tests.sh
 
-      - name: Run Partout tests (Swift)
-        if: matrix.suite == 'partout'
-        run: ci/run-partout-swift-tests.sh
-
       - name: Run Partout tests
         if: matrix.suite == 'partout'
         run: ci/run-partout-tests.sh
+
+      - name: Run Partout tests (Swift)
+        if: matrix.suite == 'partout'
+        run: ci/run-partout-swift-tests.sh
 
       - name: Run API tests
         if: matrix.suite == 'api'
