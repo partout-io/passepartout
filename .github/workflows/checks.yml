@@ -21,6 +21,7 @@ env:
   ANDROID_BUILD_TOOLS_VERSION: "36.0.0"
   CMAKE_VERSION: "4.1.2"
   ANDROID_NDK_VERSION: "30.0.16138531"
+  TIMEOUT_MINUTES: &timeout_minutes 10
 
 concurrency:
   group: checks-${{ github.workflow }}-${{ github.ref }}
@@ -48,7 +49,7 @@ jobs:
     name: Codegen and translations
     if: inputs.run_checks
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: *timeout_minutes
     steps:
       - uses: actions/checkout@v6
         with:
@@ -70,15 +71,15 @@ jobs:
       - name: Validate translations
         run: app-apple/scripts/clean-translations.sh
 
-      - name: Verify Passepartout model generation
+      - name: Verify model generation
         run: python3 ci/test_codegen.py
 
-  apple:
+  app_apple:
     name: Apple tests
     needs: select_checks
     if: needs.select_checks.outputs.apple == 'true'
     runs-on: xcode-27
-    timeout-minutes: 15
+    timeout-minutes: *timeout_minutes
     steps:
       - uses: actions/checkout@v6
 
@@ -90,12 +91,12 @@ jobs:
       - name: Run Apple tests
         run: ci/run-apple-tests.sh
 
-  android:
+  app_android:
     name: Android tests
     needs: select_checks
     if: needs.select_checks.outputs.android == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: *timeout_minutes
     steps:
       - uses: actions/checkout@v6
         with:
@@ -122,11 +123,32 @@ jobs:
       - name: Run Android tests
         run: ci/run-android-tests.sh
 
+  app_cross:
+    name: Cross tests (${{ matrix.os }})
+    needs: select_checks
+    if: needs.select_checks.outputs.cross == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: *timeout_minutes
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: true
+      - name: Configure portable tests and Windows adapter compile check
+        run: cmake -S app-cross/tests -B build/cross -DCMAKE_BUILD_TYPE=Debug
+      - name: Build
+        run: cmake --build build/cross --config Debug --parallel 2
+      - name: Test
+        run: ctest --test-dir build/cross -C Debug --output-on-failure
+
   partout:
     name: Partout tests
     if: inputs.run_checks && !inputs.light
     runs-on: xcode-27
-    timeout-minutes: 15
+    timeout-minutes: *timeout_minutes
     steps:
       - uses: actions/checkout@v6
 
@@ -145,27 +167,6 @@ jobs:
 
       - name: Run Partout tests (Swift)
         run: ci/run-partout-swift-tests.sh
-
-  cross_application:
-    name: Cross tests (${{ matrix.os }})
-    needs: select_checks
-    if: needs.select_checks.outputs.cross == 'true'
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          submodules: true
-      - name: Configure portable tests and Windows adapter compile check
-        run: cmake -S app-cross/tests -B build/cross -DCMAKE_BUILD_TYPE=Debug
-      - name: Build
-        run: cmake --build build/cross --config Debug --parallel 2
-      - name: Test
-        run: ctest --test-dir build/cross -C Debug --output-on-failure
 
   skip_checks:
     name: Checks skipped
