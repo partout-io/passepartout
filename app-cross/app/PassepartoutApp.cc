@@ -13,9 +13,6 @@
 #include <wx/uilocale.h>
 
 namespace {
-    wxString Text(const std::string &value) {
-        return wxString::FromUTF8(value);
-    }
     std::string SingleInstanceKey(bool demo) {
         // Scope both the instance lock and activation channel to the user and mode.
         auto key = Passepartout::defaultCrossConstants.tags.app + "-" + wxGetUserId().ToStdString(wxConvUTF8);
@@ -35,14 +32,14 @@ bool PassepartoutApp::OnInit() {
     wxUILocale::UseDefault();
     AppLogger startupLogger;
     startupLogger.Write(LogLevel::info, LogCategory::core, "Start application");
-    SetAppName(Text(defaultCrossConstants.tags.app));
+    SetAppName(wxString::FromUTF8(defaultCrossConstants.tags.app));
 
     // Parse the launch mode and configuration paths.
     bool demo = false;
     std::vector<std::filesystem::path> files;
     for (int i = 1; i < argc; ++i) {
         const wxString arg(argv[i]);
-        if (arg == Text(defaultCrossConstants.commandLine.demoArgument)) demo = true;
+        if (arg == wxString::FromUTF8(defaultCrossConstants.commandLine.demoArgument)) demo = true;
         else files.push_back(FilePath(arg));
     }
 
@@ -59,7 +56,7 @@ bool PassepartoutApp::OnInit() {
     // Forward to the existing instance, or claim this launch as the primary instance.
     const auto dataRoot = FilePath(wxStandardPaths::Get().GetUserLocalDataDir());
     const auto instanceKey = SingleInstanceKey(demo);
-    instance_ = std::make_unique<wxSingleInstanceChecker>(Text(instanceKey));
+    instance_ = std::make_unique<wxSingleInstanceChecker>(wxString::FromUTF8(instanceKey));
     if (instance_->IsAnotherRunning()) {
         if (FileActivation::Forward(instanceKey, activationFiles)) return false;
         startupLogger.Write(LogLevel::error, LogCategory::core, "Application startup rejected: another instance is running");
@@ -114,9 +111,11 @@ bool PassepartoutApp::OnInit() {
         startupLogger.Write(LogLevel::error, LogCategory::core,
             std::string("Application startup failed while ") + stage);
     }
+
     wxMessageBox(Localized(StringKey::ErrorsAppOther), wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
     return false;
 }
+
 int PassepartoutApp::OnExit() {
     // Stop accepting activations before releasing application state and the instance lock.
     activation_.reset();
