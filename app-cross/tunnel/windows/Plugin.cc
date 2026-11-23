@@ -27,19 +27,13 @@
 #include "partout.h"
 #include "partout_winrt.h"
 
-using namespace winrt;
-using namespace winrt::Windows::ApplicationModel::Background;
-using namespace winrt::Windows::Foundation;
-using namespace winrt::Windows::Networking::Vpn;
-using namespace winrt::Windows::Storage;
-
 namespace {
 
 constexpr std::wstring_view kBackgroundTaskClass = Passepartout::PackageConstants::BackgroundTask;
 std::atomic_uint64_t g_log_sequence = 0;
 std::atomic_bool logsPrivateData{false};
 
-void Log(std::wstring_view message, VpnChannel const &channel = nullptr) noexcept {
+void Log(std::wstring_view message, winrt::Windows::Networking::Vpn::VpnChannel const &channel = nullptr) noexcept {
     std::wstring line;
     try {
         const auto sequence = ++g_log_sequence;
@@ -96,12 +90,12 @@ void LogPartoutModulePath() noexcept {
 
 // CustomField is the per-connection CustomConfiguration XML supplied by Windows.
 // Never fall back to a bundled profile or a process-wide test configuration.
-std::string ReadProfile(VpnChannel const &channel) {
+std::string ReadProfile(winrt::Windows::Networking::Vpn::VpnChannel const &channel) {
     std::wstring_view stage = L"reading Windows custom configuration";
     try {
         const auto configuration = channel.Configuration().CustomField();
         if (configuration.empty() || configuration.size() > 1024 * 1024) {
-            throw hresult_invalid_argument();
+            throw winrt::hresult_invalid_argument();
         }
         using namespace winrt::Windows::Data::Xml::Dom;
         const XmlLoadSettings settings;
@@ -115,7 +109,7 @@ std::string ReadProfile(VpnChannel const &channel) {
         const auto root = document.DocumentElement();
         if (!root || root.TagName() != L"PartoutProfile" ||
             root.GetAttribute(L"version") != L"1") {
-            throw hresult_invalid_argument();
+            throw winrt::hresult_invalid_argument();
         }
         std::wstring json;
         bool has_connection_details = false;
@@ -129,11 +123,11 @@ std::string ReadProfile(VpnChannel const &channel) {
                 // Its inner text must never become part of the JSON payload.
                 has_connection_details = true;
             } else {
-                throw hresult_invalid_argument();
+                throw winrt::hresult_invalid_argument();
             }
         }
         if (json.empty() || std::wstring_view{json}.find(L'\0') != std::wstring_view::npos) {
-            throw hresult_invalid_argument();
+            throw winrt::hresult_invalid_argument();
         }
         // Check syntax here; Partout validates the profile schema when connecting.
         stage = L"parsing profile JSON";
@@ -143,7 +137,7 @@ std::string ReadProfile(VpnChannel const &channel) {
         Log(L"Profile rejected while " + std::wstring{stage} + L"; HRESULT=" +
             std::to_wstring(winrt::to_hresult().value), channel);
         // Parser exceptions can include profile contents. Expose only a fixed message.
-        throw hresult_invalid_argument(L"Missing or invalid PartoutProfile configuration.");
+        throw winrt::hresult_invalid_argument(L"Missing or invalid PartoutProfile configuration.");
     }
 }
 
@@ -163,7 +157,7 @@ void LogNative(void *, const char *profileId, int, const char *message) noexcept
 std::atomic_bool channelOwned{false};
 struct ChannelLease {
     ChannelLease() {
-        if (channelOwned.exchange(true)) throw hresult_illegal_method_call(L"A VPN channel is already active.");
+        if (channelOwned.exchange(true)) throw winrt::hresult_illegal_method_call(L"A VPN channel is already active.");
     }
     ~ChannelLease() {
         channelOwned.store(false);
@@ -171,27 +165,27 @@ struct ChannelLease {
 };
 struct ChannelSession {
     ChannelLease lease;
-    VpnChannel channel;
+    winrt::Windows::Networking::Vpn::VpnChannel channel;
     // Guarded by VpnPlugin's ownership mutex. Startup owns teardown until it
     // explicitly hands the session over to Disconnect.
     bool starting = true;
     std::atomic_bool canceled{false};
     std::unique_ptr<Partout::VpnChannelRuntime> runtime;
 
-    explicit ChannelSession(VpnChannel const &value) : channel(value) {
+    explicit ChannelSession(winrt::Windows::Networking::Vpn::VpnChannel const &value) : channel(value) {
         const auto profile = ReadProfile(channel);
         using namespace winrt::Windows::Data::Json;
         auto preferences = JsonObject::Parse(Passepartout::defaultTunnelPreferences);
-        const auto values = ApplicationData::Current().LocalSettings().Values();
+        const auto values = winrt::Windows::Storage::ApplicationData::Current().LocalSettings().Values();
         if (values.HasKey(Passepartout::tunnelPreferencesKey)) {
-            preferences = JsonObject::Parse(unbox_value<hstring>(values.Lookup(Passepartout::tunnelPreferencesKey)));
+            preferences = JsonObject::Parse(winrt::unbox_value<winrt::hstring>(values.Lookup(Passepartout::tunnelPreferencesKey)));
         }
         partout_init_args init{};
         init.logger_fn = LogNative;
         init.log_level = PartoutLogLevelDebug;
         init.logs_private_data = preferences.GetNamedBoolean(L"logsPrivateData", false);
         logsPrivateData.store(init.logs_private_data);
-        const auto temporary = to_string(ApplicationData::Current().TemporaryFolder().Path());
+        const auto temporary = winrt::to_string(winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().Path());
         partout_daemon_options options{};
         options.cache_dir = temporary.c_str();
         options.starts_immediately = true;
@@ -215,15 +209,15 @@ struct PluginState {
     std::shared_ptr<ChannelSession> session;
 };
 
-struct VpnPlugin : winrt::implements<VpnPlugin, IVpnPlugIn> {
+struct VpnPlugin : winrt::implements<VpnPlugin, winrt::Windows::Networking::Vpn::IVpnPlugIn> {
     explicit VpnPlugin(std::shared_ptr<PluginState> state) : state_(std::move(state)) {}
-    void Connect(VpnChannel const &channel) {
+    void Connect(winrt::Windows::Networking::Vpn::VpnChannel const &channel) {
         Log(L"VPN connect requested", channel);
         std::shared_ptr<ChannelSession> session;
         {
             std::scoped_lock lock(state_->mutex);
-            if (canceled_) throw hresult_canceled();
-            if (state_->session) throw hresult_illegal_method_call(L"A VPN channel is already active.");
+            if (canceled_) throw winrt::hresult_canceled();
+            if (state_->session) throw winrt::hresult_illegal_method_call(L"A VPN channel is already active.");
             session = std::make_shared<ChannelSession>(channel);
             state_->session = session;
             startup_ = session;
@@ -245,7 +239,7 @@ struct VpnPlugin : winrt::implements<VpnPlugin, IVpnPlugIn> {
             throw;
         }
     }
-    void Disconnect(VpnChannel const &channel) {
+    void Disconnect(winrt::Windows::Networking::Vpn::VpnChannel const &channel) {
         std::shared_ptr<ChannelSession> session;
         bool stop = false;
         {
@@ -267,7 +261,7 @@ struct VpnPlugin : winrt::implements<VpnPlugin, IVpnPlugIn> {
             if (session && session->starting) session->Cancel();
         } catch (...) {}
     }
-    void GetKeepAlivePayload(VpnChannel const &channel, VpnPacketBuffer &packet) {
+    void GetKeepAlivePayload(winrt::Windows::Networking::Vpn::VpnChannel const &channel, winrt::Windows::Networking::Vpn::VpnPacketBuffer &packet) {
         const auto session = Borrow(channel);
         if (!session) {
             packet = nullptr;
@@ -275,18 +269,18 @@ struct VpnPlugin : winrt::implements<VpnPlugin, IVpnPlugIn> {
         }
         session->runtime->GetKeepAlivePayload(channel, packet);
     }
-    void Encapsulate(VpnChannel const &channel, VpnPacketBufferList const &packets,
-                     VpnPacketBufferList const &encapsulated) {
+    void Encapsulate(winrt::Windows::Networking::Vpn::VpnChannel const &channel, winrt::Windows::Networking::Vpn::VpnPacketBufferList const &packets,
+                     winrt::Windows::Networking::Vpn::VpnPacketBufferList const &encapsulated) {
         const auto session = Borrow(channel);
         if (session) session->runtime->Encapsulate(channel, packets, encapsulated);
     }
-    void Decapsulate(VpnChannel const &channel, VpnPacketBuffer const &packet,
-                     VpnPacketBufferList const &decapsulated, VpnPacketBufferList const &control) {
+    void Decapsulate(winrt::Windows::Networking::Vpn::VpnChannel const &channel, winrt::Windows::Networking::Vpn::VpnPacketBuffer const &packet,
+                     winrt::Windows::Networking::Vpn::VpnPacketBufferList const &decapsulated, winrt::Windows::Networking::Vpn::VpnPacketBufferList const &control) {
         const auto session = Borrow(channel);
         if (session) session->runtime->Decapsulate(channel, packet, decapsulated, control);
     }
 private:
-    std::shared_ptr<ChannelSession> Borrow(VpnChannel const &channel) {
+    std::shared_ptr<ChannelSession> Borrow(winrt::Windows::Networking::Vpn::VpnChannel const &channel) {
         std::scoped_lock lock(state_->mutex);
         const auto &session = state_->session;
         return session && session->channel == channel && !session->canceled.load() ? session : nullptr;
@@ -298,8 +292,8 @@ private:
     bool canceled_ = false;
 };
 
-struct VpnBackgroundTask : winrt::implements<VpnBackgroundTask, IBackgroundTask> {
-    void Run(IBackgroundTaskInstance const &task) {
+struct VpnBackgroundTask : winrt::implements<VpnBackgroundTask, winrt::Windows::ApplicationModel::Background::IBackgroundTask> {
+    void Run(winrt::Windows::ApplicationModel::Background::IBackgroundTaskInstance const &task) {
         const auto deferral = task.GetDeferral();
         try {
             static std::once_flag module_path_logged;
@@ -309,7 +303,7 @@ struct VpnBackgroundTask : winrt::implements<VpnBackgroundTask, IBackgroundTask>
             const auto cancellation = task.Canceled(winrt::auto_revoke, [plugin](auto const &, auto) {
                 plugin->CancelStartup();
             });
-            VpnChannel::ProcessEventAsync(plugin.as<IVpnPlugIn>(), task.TriggerDetails());
+            winrt::Windows::Networking::Vpn::VpnChannel::ProcessEventAsync(plugin.as<winrt::Windows::Networking::Vpn::IVpnPlugIn>(), task.TriggerDetails());
         } catch (winrt::hresult_error const &error) {
             Log(L"Background task failed: HRESULT=" + std::to_wstring(error.code().value));
             deferral.Complete();
@@ -323,13 +317,19 @@ struct VpnBackgroundTask : winrt::implements<VpnBackgroundTask, IBackgroundTask>
     }
 };
 
-struct VpnBackgroundTaskFactory : winrt::implements<VpnBackgroundTaskFactory, IActivationFactory> {
-    IInspectable ActivateInstance() {
+struct VpnBackgroundTaskFactory : winrt::implements<VpnBackgroundTaskFactory, winrt::Windows::Foundation::IActivationFactory> {
+    winrt::Windows::Foundation::IInspectable ActivateInstance() {
         return winrt::make<VpnBackgroundTask>();
     }
 };
 
 } // namespace
+
+using namespace winrt;
+using namespace winrt::Windows::ApplicationModel::Background;
+using namespace winrt::Windows::Foundation;
+using namespace winrt::Windows::Networking::Vpn;
+using namespace winrt::Windows::Storage;
 
 extern "C" HRESULT __stdcall DllGetActivationFactory(HSTRING class_id, void **factory) noexcept {
     if (!factory) return E_POINTER;

@@ -16,7 +16,6 @@
 #include <windows.h>
 #endif
 
-using namespace Passepartout;
 namespace {
 #ifdef __WXMSW__
 constexpr unsigned SystemAbout = 0x100;
@@ -28,6 +27,8 @@ wxString QuitTitle() {
     return wxGetStockLabel(wxID_EXIT) + "\tCtrl+Q";
 }
 }
+
+using namespace Passepartout;
 
 MainView::MainView(AppContext &context, bool demo,
                    ConfigurationPickerFactory pickerFactory)

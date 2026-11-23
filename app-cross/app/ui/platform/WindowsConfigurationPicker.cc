@@ -14,8 +14,6 @@
 
 namespace Passepartout {
 namespace {
-using namespace winrt::Windows::Foundation;
-using namespace winrt::Windows::Storage;
 constexpr wchar_t ImportFolder[] = L"configuration-imports";
 constexpr std::uint32_t MaxBytes = 1024 * 1024;
 
@@ -52,23 +50,23 @@ std::wstring NewRequestId() {
     return text;
 }
 
-ConfigurationPickerResult Collect(const Collections::IVectorView<StorageFile> &files, const std::wstring &request,
+ConfigurationPickerResult Collect(const winrt::Windows::Foundation::Collections::IVectorView<winrt::Windows::Storage::StorageFile> &files, const std::wstring &request,
                                   const std::shared_ptr<RequestDirectory> &directory) {
     if (!files || !files.Size()) return {};
     const auto count = files.Size();
-    const auto root = ApplicationData::Current().TemporaryFolder().CreateFolderAsync(
-        ImportFolder, CreationCollisionOption::OpenIfExists).get();
-    const auto destination = root.CreateFolderAsync(request, CreationCollisionOption::FailIfExists).get();
+    const auto root = winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().CreateFolderAsync(
+        ImportFolder, winrt::Windows::Storage::CreationCollisionOption::OpenIfExists).get();
+    const auto destination = root.CreateFolderAsync(request, winrt::Windows::Storage::CreationCollisionOption::FailIfExists).get();
     auto selected = CollectConfigurationFiles(count, [&](std::size_t index) {
         const auto file = files.GetAt(static_cast<std::uint32_t>(index));
         const auto stream = file.OpenReadAsync().get();
         if (!stream.Size() || stream.Size() > MaxBytes) throw std::runtime_error("Invalid import file size.");
-        const auto buffer = stream.ReadAsync(Streams::Buffer(MaxBytes + 1),
-            MaxBytes + 1, Streams::InputStreamOptions::None).get();
+        const auto buffer = stream.ReadAsync(winrt::Windows::Storage::Streams::Buffer(MaxBytes + 1),
+            MaxBytes + 1, winrt::Windows::Storage::Streams::InputStreamOptions::None).get();
         if (!buffer.Length() || buffer.Length() > MaxBytes) throw std::runtime_error("Invalid import file size.");
         const auto folder = destination.CreateFolderAsync(std::to_wstring(index)).get();
         const auto copy = folder.CreateFileAsync(file.Name()).get();
-        FileIO::WriteBufferAsync(copy, buffer).get();
+        winrt::Windows::Storage::FileIO::WriteBufferAsync(copy, buffer).get();
         return std::filesystem::path(copy.Path().c_str());
     });
     return {std::make_shared<StagedFiles>(std::move(selected), directory), false};
@@ -93,11 +91,11 @@ public:
                 }
             } apartment;
             const auto request = NewRequestId();
-            const auto temporary = ApplicationData::Current().TemporaryFolder().Path();
+            const auto temporary = winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().Path();
             auto directory = std::make_shared<RequestDirectory>(
                 std::filesystem::path(temporary.c_str()) / ImportFolder / request);
             // Use the owner's native window without depending on its UI toolkit.
-            Pickers::FileOpenPicker picker;
+            winrt::Windows::Storage::Pickers::FileOpenPicker picker;
             winrt::check_hresult(picker.as<IInitializeWithWindow>()->Initialize(owner_));
             picker.FileTypeFilter().Append(L"*");
             operation_ = picker.PickMultipleFilesAsync();
@@ -148,7 +146,7 @@ public:
 private:
     const HWND owner_;
     std::shared_ptr<SelectionState> state_;
-    IAsyncOperation<Collections::IVectorView<StorageFile>> operation_{nullptr};
+    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Windows::Storage::StorageFile>> operation_{nullptr};
 };
 }
 

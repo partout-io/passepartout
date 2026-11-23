@@ -13,12 +13,12 @@
 #include <wx/uilocale.h>
 
 namespace {
-    std::string SingleInstanceKey(bool demo) {
-        // Scope both the instance lock and activation channel to the user and mode.
-        auto key = Passepartout::defaultCrossConstants.tags.app + "-" + wxGetUserId().ToStdString(wxConvUTF8);
-        if (demo) key += Passepartout::defaultCrossConstants.commandLine.demoArgument;
-        return key;
-    }
+std::string SingleInstanceKey(bool demo) {
+    // Scope both the instance lock and activation channel to the user and mode.
+    auto key = Passepartout::defaultCrossConstants.tags.app + "-" + wxGetUserId().ToStdString(wxConvUTF8);
+    if (demo) key += Passepartout::defaultCrossConstants.commandLine.demoArgument;
+    return key;
+}
 }
 
 using namespace Passepartout;

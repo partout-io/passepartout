@@ -6,6 +6,6 @@
 #include "../strategy/TunnelStrategy.h"
 
 namespace Passepartout {
-std::unique_ptr<TunnelStrategy> MakeWindowsTunnelStrategy(const std::string &serverUri,
-                                                        std::vector<std::string> dnsFallbackServers);
+std::unique_ptr<TunnelStrategy> MakeWindowsTunnelStrategy(
+    const std::string &serverUri, std::vector<std::string> dnsFallbackServers);
 }

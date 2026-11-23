@@ -16,20 +16,6 @@
 #endif
 
 namespace Passepartout {
-bool IsSafeProfileId(const std::string &id) {
-    auto upper = id;
-    std::transform(upper.begin(), upper.end(), upper.begin(), [](unsigned char c) {
-        return static_cast<char>(std::toupper(c));
-    });
-    if (upper == "CON" || upper == "PRN" || upper == "AUX" || upper == "NUL" ||
-        (upper.size() == 4 && (upper.substr(0, 3) == "COM" || upper.substr(0, 3) == "LPT") &&
-         upper[3] >= '0' && upper[3] <= '9')) return false;
-    return !id.empty() && id.size() <= 128 &&
-        std::all_of(id.begin(), id.end(), [](unsigned char c) {
-            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
-                (c >= '0' && c <= '9') || c == '-' || c == '_';
-        });
-}
 namespace {
 std::wstring LowerName(const std::string &name) {
 #ifdef _WIN32
@@ -76,6 +62,22 @@ double LastUpdate(const Profile &profile) {
     return -std::numeric_limits<double>::infinity();
 }
 }
+
+bool IsSafeProfileId(const std::string &id) {
+    auto upper = id;
+    std::transform(upper.begin(), upper.end(), upper.begin(), [](unsigned char c) {
+        return static_cast<char>(std::toupper(c));
+    });
+    if (upper == "CON" || upper == "PRN" || upper == "AUX" || upper == "NUL" ||
+        (upper.size() == 4 && (upper.substr(0, 3) == "COM" || upper.substr(0, 3) == "LPT") &&
+         upper[3] >= '0' && upper[3] <= '9')) return false;
+    return !id.empty() && id.size() <= 128 &&
+        std::all_of(id.begin(), id.end(), [](unsigned char c) {
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+                (c >= '0' && c <= '9') || c == '-' || c == '_';
+        });
+}
+
 void SortProfiles(std::vector<Profile> &profiles) {
     std::sort(profiles.begin(), profiles.end(), [](const auto &a, const auto &b) {
         const auto left = LowerName(a.name);

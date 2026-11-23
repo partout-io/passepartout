@@ -7,7 +7,6 @@
 #include <cassert>
 #include <locale>
 
-using namespace Passepartout;
 namespace {
 class CommaDecimal final : public std::numpunct<char> {
 protected:
@@ -16,6 +15,8 @@ protected:
     }
 };
 }
+
+using namespace Passepartout;
 int main() {
     assert(FormatDataUnit(-1) == "0B");
     assert(FormatDataUnit(0) == "0B");

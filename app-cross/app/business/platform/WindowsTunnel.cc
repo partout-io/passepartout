@@ -90,8 +90,8 @@ private:
     std::map<std::string, std::string> observationErrors_;
 };
 }
-std::unique_ptr<TunnelStrategy> MakeWindowsTunnelStrategy(const std::string &serverUri,
-                                                        std::vector<std::string> dnsFallbackServers) {
+std::unique_ptr<TunnelStrategy> MakeWindowsTunnelStrategy(
+    const std::string &serverUri, std::vector<std::string> dnsFallbackServers) {
     return std::make_unique<WindowsTunnelStrategy>(serverUri, std::move(dnsFallbackServers));
 }
 }

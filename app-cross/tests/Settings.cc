@@ -20,21 +20,20 @@
 #include <condition_variable>
 #include "Support.h"
 
-using namespace Passepartout;
 namespace {
-class MemoryPreferences final : public PreferencesRepository {
+class MemoryPreferences final : public Passepartout::PreferencesRepository {
 public:
-    Models::AppPreferences value = DefaultPreferences();
+    Passepartout::Models::AppPreferences value = Passepartout::DefaultPreferences();
     bool fails = false;
-    Models::AppPreferences Fetch() override {
+    Passepartout::Models::AppPreferences Fetch() override {
         return value;
     }
-    void Save(const Models::AppPreferences &next) override {
+    void Save(const Passepartout::Models::AppPreferences &next) override {
         if (fails) throw std::runtime_error("Save failed");
         value = next;
     }
 };
-class FakeHttp final : public HttpClient {
+class FakeHttp final : public Passepartout::HttpClient {
 public:
     std::string response = "{}";
     bool fails = false;
@@ -46,7 +45,7 @@ public:
     }
     void Cancel() noexcept override {}
 };
-class FakeVersion final : public VersionStrategy {
+class FakeVersion final : public Passepartout::VersionStrategy {
 public:
     std::string value = "1.2.3.4";
     bool fails = false;
@@ -64,7 +63,7 @@ struct BlockingState {
     bool entered = false;
     bool canceled = false;
 };
-class BlockingHttp final : public HttpClient {
+class BlockingHttp final : public Passepartout::HttpClient {
 public:
     explicit BlockingHttp(std::shared_ptr<BlockingState> state) : state_(std::move(state)) {}
     std::string Get(const std::string &) override {
@@ -93,6 +92,8 @@ void Fails(Action action) {
     assert(failed);
 }
 }
+
+using namespace Passepartout;
 int main() {
     InitializeTests();
     const auto directory = std::filesystem::temp_directory_path() /

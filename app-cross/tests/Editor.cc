@@ -16,10 +16,9 @@
 #include <iostream>
 #include "Support.h"
 
-using namespace Passepartout;
 namespace {
-Profile Example() {
-    Profile profile{};
+Passepartout::Profile Example() {
+    Passepartout::Profile profile{};
     profile.id = "editor-id";
     profile.name = "Original";
     Partout::Models::TaggedModuleOpenVpn openvpn{};
@@ -40,20 +39,20 @@ Profile Example() {
     profile.userInfo = {{"unknown-metadata", "keep"}};
     return profile;
 }
-void Wait(AppSession &session) {
+void Wait(Passepartout::AppSession &session) {
     assert(session.WaitIdle(std::chrono::seconds(5)));
 }
-class RejectingTunnel final : public TunnelStrategy {
+class RejectingTunnel final : public Passepartout::TunnelStrategy {
 public:
-    FakeTunnelStrategy fake;
+    Passepartout::FakeTunnelStrategy fake;
     bool rejects = false;
-    Profile saved;
+    Passepartout::Profile saved;
     unsigned saves = 0;
     std::optional<Partout::Models::OpenVpnCredentials> connectionCredentials;
-    std::vector<Models::AppTunnelInfo> Fetch() override {
+    std::vector<Passepartout::Models::AppTunnelInfo> Fetch() override {
         return fake.Fetch();
     }
-    void Save(const Profile &profile) override {
+    void Save(const Passepartout::Profile &profile) override {
         ++saves;
         if (rejects) throw std::runtime_error("Save rejected");
         saved = profile;
@@ -74,6 +73,8 @@ public:
     }
 };
 }
+
+using namespace Passepartout;
 int main() {
     InitializeTests();
     const auto original = Example();
