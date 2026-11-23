@@ -42,27 +42,7 @@ jobs:
           fetch-depth: 0
       - name: Select affected apps
         id: select
-        run: |
-          python3 - <<'PYTHON'
-          import json
-          import os
-          import subprocess
-
-          with open(os.environ['GITHUB_EVENT_PATH']) as source:
-              event = json.load(source)
-          apps = ['apple', 'android', 'cross']
-          if 'pull_request' in event:
-              pr = event['pull_request']
-              changed = subprocess.check_output([
-                  'git', 'diff', '--name-only', '-z', '--no-renames',
-                  pr['base']['sha'] + '...' + pr['head']['sha'],
-              ]).decode().split('\0')
-              apps = [app for app in apps
-                      if any(path.startswith('app-' + app + '/') for path in changed)]
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
-              for app in ['apple', 'android', 'cross']:
-                  print(app + '=' + str(app in apps).lower(), file=output)
-          PYTHON
+        run: python3 ci/select_apps.py
 
   validation:
     name: Codegen and translations
