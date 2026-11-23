@@ -133,7 +133,7 @@ AppContext::AppContext(const std::filesystem::path &dataRoot, bool demo,
         session_->ApplyPreferences(value);
     });
     config.Refresh();
-    logger_->Write(LogLevel::info, "core", demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
+    logger_->Write(LogLevel::info, LogCategory::core, demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
 }
 AppContext::~AppContext() = default;
 }

@@ -14,7 +14,7 @@ AppSession::AppSession(std::unique_ptr<ProfileRepository> repository, ProfileImp
                        std::unique_ptr<ProfileJournal> journal, std::chrono::milliseconds recoveryDelay)
     : recoveryDelay_(recoveryDelay), logger_(std::move(logger)), profiles_(std::move(repository), std::move(importer), std::move(journal)),
       tunnel_(std::move(tunnel), logger_) {
-    logger_->Write(LogLevel::info, "core", "Start application session");
+    logger_->Write(LogLevel::info, LogCategory::core, "Start application session");
     snapshot_.busy = false;
     worker_ = std::thread([this] {
         Run();
@@ -33,7 +33,7 @@ AppSession::~AppSession() {
     wake_.notify_all();
     tunnel_.Cancel();
     worker_.join();
-    logger_->Write(LogLevel::info, "core", "Finished application session");
+    logger_->Write(LogLevel::info, LogCategory::core, "Finished application session");
 }
 AppSnapshot AppSession::Snapshot() const {
     std::lock_guard lock(mutex_);
@@ -83,7 +83,7 @@ void AppSession::Run() {
         } catch (...) {
             error = "The operation failed.";
         }
-        if (!error.empty()) logger_->Write(LogLevel::error, "core", "Unable to execute operation");
+        if (!error.empty()) logger_->Write(LogLevel::error, LogCategory::core, "Unable to execute operation");
         // A failed state refresh must not turn a committed import into a
         // failed import. Keep operation and observation failures separate.
         std::string tunnelError;
@@ -95,7 +95,7 @@ void AppSession::Run() {
             tunnelError = "Unable to read VPN state.";
         }
         if (tunnelError != lastObservationError_) {
-            logger_->Write(tunnelError.empty() ? LogLevel::info : LogLevel::error, "tunnel",
+            logger_->Write(tunnelError.empty() ? LogLevel::info : LogLevel::error, LogCategory::tunnel,
                 tunnelError.empty() ? "Tunnel observation recovered" : "Unable to fetch tunnel state");
             lastObservationError_ = tunnelError;
         }
@@ -215,7 +215,7 @@ void AppSession::Publish() {
     // Only durable intents authorize cleanup. Untracked native profiles are
     // preserved, including registrations which predate a rejected import.
     if (reconciliationError != lastReconciliationError_) {
-        logger_->Write(reconciliationError.empty() ? LogLevel::info : LogLevel::error, "profiles",
+        logger_->Write(reconciliationError.empty() ? LogLevel::info : LogLevel::error, LogCategory::profiles,
             reconciliationError.empty() ? "Profile reconciliation recovered" : reconciliationError);
         lastReconciliationError_ = reconciliationError;
     }
@@ -224,18 +224,18 @@ void AppSession::Publish() {
     for (const auto &[id, error] : observationErrors) {
         const auto old = previous.tunnelObservationErrors.find(id);
         if (old == previous.tunnelObservationErrors.end() || old->second != error)
-            logger_->Write(LogLevel::error, "tunnel", "Unable to observe profile " + id + ": " + error);
+            logger_->Write(LogLevel::error, LogCategory::tunnel, "Unable to observe profile " + id + ": " + error);
     }
     for (const auto &[id, error] : previous.tunnelObservationErrors) {
         if (observationErrors.find(id) == observationErrors.end())
-            logger_->Write(LogLevel::info, "tunnel", "Profile observation error cleared: " + id);
+            logger_->Write(LogLevel::info, LogCategory::tunnel, "Profile observation error cleared: " + id);
     }
     for (const auto &tunnel : tunnels) {
         const auto old = std::find_if(previous.tunnels.begin(), previous.tunnels.end(), [&](const auto &value) {
             return value.id == tunnel.id;
         });
         if (old == previous.tunnels.end() || old->status != tunnel.status)
-            logger_->Write(LogLevel::info, "tunnel", "Profile " + tunnel.id + " status: " + tunnel.status.ToJson().Encode());
+            logger_->Write(LogLevel::info, LogCategory::tunnel, "Profile " + tunnel.id + " status: " + tunnel.status.ToJson().Encode());
     }
     std::lock_guard lock(mutex_);
     snapshot_.tunnels = std::move(tunnels);
@@ -250,9 +250,9 @@ void AppSession::Load() {
             std::lock_guard lock(mutex_);
             snapshot_.loaded = false;
         }
-        logger_->Write(LogLevel::info, "profiles", "Reload local profiles...");
+        logger_->Write(LogLevel::info, LogCategory::profiles, "Reload local profiles...");
         profiles_.Load();
-        logger_->Write(LogLevel::info, "profiles", "Reloaded local profiles: " + std::to_string(profiles_.Profiles().size()));
+        logger_->Write(LogLevel::info, LogCategory::profiles, "Reloaded local profiles: " + std::to_string(profiles_.Profiles().size()));
         {
             std::lock_guard lock(mutex_);
             snapshot_.loaded = true;
@@ -311,7 +311,7 @@ void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
                 if (stopping_) return;
             }
             try {
-                logger_->Write(LogLevel::info, "profiles", "Import profile...");
+                logger_->Write(LogLevel::info, LogCategory::profiles, "Import profile...");
                 const auto source = files->Read(index);
                 // Registration follows the injected strategy on every platform,
                 // including fake tunnels used by portable tests and demo mode.
@@ -322,9 +322,9 @@ void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
                 }, [this](const Profile &value) {
                     tunnel_.ValidateNew(value);
                 });
-                logger_->Write(LogLevel::info, "profiles", "Finished saving profile");
+                logger_->Write(LogLevel::info, LogCategory::profiles, "Finished saving profile");
             } catch (const std::exception &) {
-                logger_->Write(LogLevel::error, "profiles", "Unable to import profile");
+                logger_->Write(LogLevel::error, LogCategory::profiles, "Unable to import profile");
                 ++failures;
             } catch (...) {
                 ++failures;
@@ -346,7 +346,7 @@ void AppSession::Remove(std::vector<std::string> ids) {
         // request before deleting anything, on the same worker as mutations.
         for (const auto &id : uniqueIds) profiles_.Find(id);
         for (const auto &id : uniqueIds) {
-            logger_->Write(LogLevel::info, "profiles", "Remove profile");
+            logger_->Write(LogLevel::info, LogCategory::profiles, "Remove profile");
             profiles_.Remove(id);
             tunnel_.CancelPending(id);
         }

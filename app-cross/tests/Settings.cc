@@ -180,9 +180,9 @@ int main() {
         assert(credits.Snapshot().licenses.size() == Partout::Json::Parse(creditsResource).At("licenses").Size());
         AppLogger logger;
         AppLogger::SetPrivateData(false);
-        logger.Write(LogLevel::info, "test", "public marker");
+        logger.Write(LogLevel::info, LogCategory::core, "public marker");
         AppLogger::SetPrivateData(true);
-        logger.Write(LogLevel::info, "test", "private marker");
+        logger.Write(LogLevel::info, LogCategory::core, "private marker");
         AppLogger::SetPrivateData(false);
         assert(AppLogger::RuntimeLog().find("private marker") != std::string::npos);
         assert(AppLogger::RuntimeLog(false).find("private marker") == std::string::npos);

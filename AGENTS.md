@@ -76,6 +76,13 @@ unrelated refactoring; keep changes within the task's scope.
   directly. Do not add protocol vocabulary to the shared localized catalogs or
   invent per-feature string sets.
 
+## Logging
+
+- Use the shared log category enum for each platform instead of hardcoded category
+  strings (for example, `LogCategory::core` in C++). Keep categories typed through
+  logging APIs and sink callbacks; convert them to stable, unlocalized strings
+  only when formatting output. Reuse existing categories before adding new ones.
+
 ## Application architecture
 
 - Use the same domain names and meanings across frontends. The shared application

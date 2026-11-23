@@ -746,7 +746,7 @@ int main() {
 
         // Record background errors once, preserve actual availability on cleanup failure, and log recovery/shutdown.
         std::vector<std::string> messages;
-        auto logger = std::make_shared<AppLogger>([&](LogLevel, const std::string &, const std::string &message) {
+        auto logger = std::make_shared<AppLogger>([&](LogLevel, LogCategory, const std::string &message) {
             messages.push_back(message);
         });
         {

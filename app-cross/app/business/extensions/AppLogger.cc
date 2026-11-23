@@ -24,6 +24,15 @@ std::deque<RuntimeLine> runtimeLines;
 std::atomic_bool logsPrivateData{false};
 std::size_t runtimeBytes = 0;
 constexpr std::size_t maximumLogBytes = 256 * 1024;
+const char *CategoryName(LogCategory category) {
+    switch (category) {
+    case LogCategory::core: return "core";
+    case LogCategory::tunnel: return "tunnel";
+    case LogCategory::profiles: return "profiles";
+    case LogCategory::partout: return "partout";
+    }
+    return "unknown";
+}
 }
 void AppLogger::SetPrivateData(bool enabled) noexcept {
     logsPrivateData.store(enabled);
@@ -48,12 +57,12 @@ void AppLogger::PartoutMessage(void *, const char *profileId, int level, const c
         const auto logLevel = level <= PartoutLogLevelError ? LogLevel::error
             : level <= PartoutLogLevelInfo ? LogLevel::info
             : LogLevel::debug;
-        logger.Write(logLevel, "partout", text);
+        logger.Write(logLevel, LogCategory::partout, text);
     } catch (...) {
         // Never throw through the native logging callback.
     }
 }
-void AppLogger::Write(LogLevel level, const std::string &category, const std::string &message) noexcept {
+void AppLogger::Write(LogLevel level, LogCategory category, const std::string &message) noexcept {
     try {
         std::lock_guard lock(mutex_);
         if (sink_) {
@@ -64,7 +73,7 @@ void AppLogger::Write(LogLevel level, const std::string &category, const std::st
             std::chrono::system_clock::now().time_since_epoch()).count();
         const char *name = level == LogLevel::error ? "error" : level == LogLevel::info ? "info" : "debug";
         std::ostringstream line;
-        line << timestamp << " [" << category << "] [" << name << "] " << message << '\n';
+        line << timestamp << " [" << CategoryName(category) << "] [" << name << "] " << message << '\n';
         auto text = line.str();
         if (text.size() > maximumLogBytes) text.resize(maximumLogBytes);
         {

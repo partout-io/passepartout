@@ -23,7 +23,7 @@ std::map<std::string, std::string> TunnelManager::ObservationErrors() const {
     return strategy_->ObservationErrors();
 }
 void TunnelManager::Save(const Profile &profile) {
-    logger_->Write(LogLevel::info, "tunnel", "Install profile");
+    logger_->Write(LogLevel::info, LogCategory::tunnel, "Install profile");
     strategy_->Save(profile);
 }
 void TunnelManager::Register(const Profile &profile) {
@@ -47,12 +47,12 @@ void TunnelManager::ValidateUpdate(const Profile &profile) {
     }
 }
 void TunnelManager::RollbackRegistration(const std::string &id) {
-    logger_->Write(LogLevel::info, "tunnel", "Roll back imported VPN registration");
+    logger_->Write(LogLevel::info, LogCategory::tunnel, "Roll back imported VPN registration");
     // Never disconnect a connection as a side effect of import rollback.
     strategy_->Remove(id);
 }
 void TunnelManager::Connect(const Profile &profile, std::optional<Partout::Models::OpenVpnCredentials> credentials) {
-    logger_->Write(LogLevel::info, "tunnel", "Connect to profile");
+    logger_->Write(LogLevel::info, LogCategory::tunnel, "Connect to profile");
     pending_.reset();
     pendingCredentials_.reset();
     connectionRequested_ = false;
@@ -68,7 +68,7 @@ void TunnelManager::Connect(const Profile &profile, std::optional<Partout::Model
     }
     for (const auto &tunnel : tunnels) {
         if (tunnel.status.value == Status::disconnected || tunnel.status.value == Status::disconnecting) continue;
-        logger_->Write(LogLevel::info, "tunnel", "Disconnect profile before handover");
+        logger_->Write(LogLevel::info, LogCategory::tunnel, "Disconnect profile before handover");
         strategy_->Disconnect(tunnel.id);
     }
     pending_ = profile;
@@ -88,7 +88,7 @@ void TunnelManager::Advance() {
                 return tunnel.id == pending_->id;
             });
             if (target != tunnels.end() && target->status.value == Status::connected) {
-                logger_->Write(LogLevel::info, "tunnel", "Connected to profile");
+                logger_->Write(LogLevel::info, LogCategory::tunnel, "Connected to profile");
                 pending_.reset();
                 pendingCredentials_.reset();
                 return;
@@ -113,7 +113,7 @@ void TunnelManager::Advance() {
         if (pendingCredentials_) strategy_->ConnectWithCredentials(pending_->id, *pendingCredentials_);
         else strategy_->Connect(pending_->id);
         pendingCredentials_.reset();
-        logger_->Write(LogLevel::info, "tunnel", "Connect request accepted for profile");
+        logger_->Write(LogLevel::info, LogCategory::tunnel, "Connect request accepted for profile");
         connectionRequested_ = true;
         handoverStarted_ = std::chrono::steady_clock::now();
         Advance();
@@ -136,7 +136,7 @@ void TunnelManager::CancelPending(const std::string &id) {
 void TunnelManager::Disconnect(const std::string &id) {
     pending_.reset();
     pendingCredentials_.reset();
-    logger_->Write(LogLevel::info, "tunnel", "Disconnect profile");
+    logger_->Write(LogLevel::info, LogCategory::tunnel, "Disconnect profile");
     strategy_->Disconnect(id);
 }
 void TunnelManager::Remove(const std::string &id) {

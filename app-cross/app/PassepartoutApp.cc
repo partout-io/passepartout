@@ -32,7 +32,7 @@ bool PassepartoutApp::OnInit() {
 #endif
     wxUILocale::UseDefault();
     AppLogger startupLogger;
-    startupLogger.Write(LogLevel::info, "core", "Start application");
+    startupLogger.Write(LogLevel::info, LogCategory::core, "Start application");
     SetAppName(Text(defaultCrossConstants.tags.app));
     bool demo = false;
     std::vector<std::filesystem::path> files;
@@ -59,7 +59,7 @@ bool PassepartoutApp::OnInit() {
 #ifdef _WIN32
         if (WindowsFileActivation::Forward(instanceName.ToStdWstring(), activationFiles)) return false;
 #endif
-        startupLogger.Write(LogLevel::error, "core", "Application startup rejected: another instance is running");
+        startupLogger.Write(LogLevel::error, LogCategory::core, "Application startup rejected: another instance is running");
         wxMessageBox(Localized(StringKey::ErrorsAppOther),
                      wxTheApp->GetAppName(), wxOK | wxICON_INFORMATION);
         return false;
@@ -73,7 +73,7 @@ bool PassepartoutApp::OnInit() {
     try {
         context_ = std::make_unique<AppContext>(dataRoot, demo);
         stage = "creating main window";
-        startupLogger.Write(LogLevel::debug, "core", "Create main window");
+        startupLogger.Write(LogLevel::debug, LogCategory::core, "Create main window");
         auto *view = new MainView(*context_, demo, MakeConfigurationPicker);
         SetTopWindow(view);
 #ifdef _WIN32
@@ -95,10 +95,10 @@ bool PassepartoutApp::OnInit() {
         });
         stage = "showing main window";
         view->Show();
-        startupLogger.Write(LogLevel::info, "core", "Main window shown");
+        startupLogger.Write(LogLevel::info, LogCategory::core, "Main window shown");
         return true;
     } catch (...) {
-        startupLogger.Write(LogLevel::error, "core", std::string("Application startup failed while ") + stage);
+        startupLogger.Write(LogLevel::error, LogCategory::core, std::string("Application startup failed while ") + stage);
     }
     wxMessageBox(Localized(StringKey::ErrorsAppOther), wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
     return false;

@@ -10,12 +10,13 @@
 
 namespace Passepartout {
 enum class LogLevel { debug, info, error };
-using LogSink = std::function<void(LogLevel, const std::string &, const std::string &)>;
+enum class LogCategory { core, tunnel, profiles, partout };
+using LogSink = std::function<void(LogLevel, LogCategory, const std::string &)>;
 class AppLogger {
 public:
     explicit AppLogger(LogSink sink = {});
     static void PartoutMessage(void *context, const char *profileId, int level, const char *message) noexcept;
-    void Write(LogLevel level, const std::string &category, const std::string &message) noexcept;
+    void Write(LogLevel level, LogCategory category, const std::string &message) noexcept;
     static std::string RuntimeLog(bool includePrivateData = true);
     static void SetPrivateData(bool enabled) noexcept;
 private:
