@@ -79,7 +79,7 @@ std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const CrossConstants &con
         std::make_unique<Partout::WinRTTunnelStrategy>(constants.tunnel.server_uri)
     );
 #else
-    throw std::runtime_error("VPN control is unavailable on this platform.");
+    return std::make_unique<Partout::Tunnel>(std::make_unique<FakeTunnelStrategy>());
 #endif
 }
 
