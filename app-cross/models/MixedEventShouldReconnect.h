@@ -18,9 +18,9 @@
 #ifndef MixedEventShouldReconnect_H_
 #define MixedEventShouldReconnect_H_
 
-#include <partout/models/TaggedProfile.h>
+#include <partout/models/Helpers.h>
 #include <string>
-#include <partout/Json.h>
+#include <partout/models/TaggedProfile.h>
 
 namespace Passepartout::Models
 {

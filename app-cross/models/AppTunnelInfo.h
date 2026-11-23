@@ -18,10 +18,10 @@
 #ifndef AppTunnelInfo_H_
 #define AppTunnelInfo_H_
 
+#include <partout/models/Helpers.h>
 #include <string>
 #include "AppProfileStatus.h"
 #include "ProfileTransfer.h"
-#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models

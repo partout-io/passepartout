@@ -18,9 +18,9 @@
 #ifndef VersionRelease_H_
 #define VersionRelease_H_
 
+#include <partout/models/Helpers.h>
 #include "SemanticVersion.h"
 #include <string>
-#include <partout/Json.h>
 
 namespace Passepartout::Models
 {

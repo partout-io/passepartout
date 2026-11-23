@@ -18,9 +18,9 @@
 #ifndef VersionEventNew_H_
 #define VersionEventNew_H_
 
+#include <partout/models/Helpers.h>
 #include "VersionRelease.h"
 #include <string>
-#include <partout/Json.h>
 
 namespace Passepartout::Models
 {

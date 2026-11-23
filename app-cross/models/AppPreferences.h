@@ -18,11 +18,11 @@
 #ifndef AppPreferences_H_
 #define AppPreferences_H_
 
+#include <partout/models/Helpers.h>
 #include "ConfigFlag.h"
+#include <vector>
 #include <string>
 #include "ExperimentalPreferences.h"
-#include <vector>
-#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models

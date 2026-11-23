@@ -11,7 +11,6 @@
 */
 
 #include "AppConstants_emails_recipients.h"
-#include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {

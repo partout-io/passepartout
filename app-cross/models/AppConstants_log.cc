@@ -11,7 +11,6 @@
 */
 
 #include "AppConstants_log.h"
-#include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {

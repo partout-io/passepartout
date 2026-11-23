@@ -11,7 +11,6 @@
 */
 
 #include "IAPEventNewReceipt.h"
-#include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {

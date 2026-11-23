@@ -18,11 +18,11 @@
 #ifndef AppBundle_H_
 #define AppBundle_H_
 
+#include <partout/models/Helpers.h>
 #include "DistributionTarget.h"
 #include <string>
 #include "AppUserLevel.h"
 #include <map>
-#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models

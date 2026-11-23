@@ -18,8 +18,8 @@
 #ifndef ChangelogEntry_H_
 #define ChangelogEntry_H_
 
+#include <partout/models/Helpers.h>
 #include <string>
-#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models

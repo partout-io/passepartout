@@ -18,10 +18,9 @@
 #ifndef ConfigBundleConfig_H_
 #define ConfigBundleConfig_H_
 
-#include <partout/Json.h>
+#include <partout/models/Helpers.h>
 #include "Platform.h"
 #include <vector>
-#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models

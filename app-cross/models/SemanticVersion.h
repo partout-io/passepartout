@@ -18,7 +18,7 @@
 #ifndef SemanticVersion_H_
 #define SemanticVersion_H_
 
-#include <partout/Json.h>
+#include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {

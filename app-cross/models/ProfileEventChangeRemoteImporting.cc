@@ -11,7 +11,6 @@
 */
 
 #include "ProfileEventChangeRemoteImporting.h"
-#include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {

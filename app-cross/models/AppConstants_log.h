@@ -18,11 +18,11 @@
 #ifndef AppConstants_log_H_
 #define AppConstants_log_H_
 
-#include "AppConstants_log_filenames.h"
-#include "AppConstants_log_formatter.h"
+#include <partout/models/Helpers.h>
 #include <string>
+#include "AppConstants_log_formatter.h"
 #include "LocalLoggerOptions.h"
-#include <partout/Json.h>
+#include "AppConstants_log_filenames.h"
 
 namespace Passepartout::Models
 {

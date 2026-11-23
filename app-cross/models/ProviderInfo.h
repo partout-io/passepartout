@@ -18,8 +18,8 @@
 #ifndef ProviderInfo_H_
 #define ProviderInfo_H_
 
+#include <partout/models/Helpers.h>
 #include <string>
-#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models

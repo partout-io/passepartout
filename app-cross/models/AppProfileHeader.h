@@ -18,12 +18,12 @@
 #ifndef AppProfileHeader_H_
 #define AppProfileHeader_H_
 
-#include "AppFeature.h"
+#include <partout/models/Helpers.h>
 #include <string>
 #include <partout/models/ModuleType.h>
 #include <vector>
 #include "ProfileSharingFlag.h"
-#include <partout/Json.h>
+#include "AppFeature.h"
 #include <optional>
 
 namespace Passepartout::Models

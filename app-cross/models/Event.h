@@ -5,37 +5,37 @@
 */
 
 #pragma once
+#include <partout/models/Helpers.h>
 // System headers
-#include <partout/Json.h>
 #include <variant>
 #include <string>
 #include <vector>
-#include "AppFeature.h"
-#include "AppProfileHeader.h"
 #include "ConfigEventRefresh.h"
 #include "ConfigFlag.h"
 #include "IAPEventEligibleFeatures.h"
+#include "AppFeature.h"
 #include "IAPEventLoadReceipt.h"
 #include "IAPEventNewReceipt.h"
+#include "OriginalPurchase.h"
 #include "IAPEventStatus.h"
 #include "MixedEventShouldReconnect.h"
-#include "OriginalPurchase.h"
 #include "ProfileEventChangeRemoteImporting.h"
 #include "ProfileEventDelete.h"
 #include "ProfileEventLocalProfiles.h"
 #include "ProfileEventReady.h"
 #include "ProfileEventRefresh.h"
+#include "AppProfileHeader.h"
 #include "ProfileEventSave.h"
 #include "ProfileEventStartRemoteImport.h"
 #include "ProfileEventStopRemoteImport.h"
 #include "VersionEventNew.h"
 #include "VersionRelease.h"
-#include "WebFileUpload.h"
 #include "WebReceiverEventNewUpload.h"
+#include "WebFileUpload.h"
 #include "WebReceiverEventStart.h"
+#include "WebsiteWithPasscode.h"
 #include "WebReceiverEventStop.h"
 #include "WebReceiverEventUploadFailure.h"
-#include "WebsiteWithPasscode.h"
 
 namespace Passepartout::Models {
 

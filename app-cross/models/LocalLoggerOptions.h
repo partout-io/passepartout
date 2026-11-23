@@ -18,8 +18,8 @@
 #ifndef LocalLoggerOptions_H_
 #define LocalLoggerOptions_H_
 
+#include <partout/models/Helpers.h>
 #include "LocalLoggerOptionsMaxLevel.h"
-#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models

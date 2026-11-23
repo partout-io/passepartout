@@ -11,7 +11,6 @@
 */
 
 #include "AppConstants_log_filenames.h"
-#include <partout/models/Helpers.h>
 
 namespace Passepartout::Models
 {

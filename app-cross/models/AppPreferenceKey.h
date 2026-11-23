@@ -18,8 +18,8 @@
 #ifndef AppPreferenceKey_H_
 #define AppPreferenceKey_H_
 
+#include <partout/models/Helpers.h>
 #include <string>
-#include <partout/Json.h>
 
 namespace Passepartout::Models
 {

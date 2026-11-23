@@ -18,8 +18,8 @@
 #ifndef AppConstants_log_formatter_H_
 #define AppConstants_log_formatter_H_
 
+#include <partout/models/Helpers.h>
 #include <string>
-#include <partout/Json.h>
 
 namespace Passepartout::Models
 {

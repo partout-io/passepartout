@@ -18,10 +18,10 @@
 #ifndef Credits_licenses_inner_H_
 #define Credits_licenses_inner_H_
 
+#include <partout/models/Helpers.h>
 #include <string>
 #include "Platform.h"
 #include <vector>
-#include <partout/Json.h>
 #include <optional>
 
 namespace Passepartout::Models

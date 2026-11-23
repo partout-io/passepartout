@@ -18,10 +18,10 @@
 #ifndef ProfileEventRefresh_H_
 #define ProfileEventRefresh_H_
 
-#include "AppProfileHeader.h"
-#include <string>
+#include <partout/models/Helpers.h>
 #include <map>
-#include <partout/Json.h>
+#include <string>
+#include "AppProfileHeader.h"
 
 namespace Passepartout::Models
 {

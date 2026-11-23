@@ -18,8 +18,8 @@
 #ifndef AppConstants_github_H_
 #define AppConstants_github_H_
 
+#include <partout/models/Helpers.h>
 #include <string>
-#include <partout/Json.h>
 
 namespace Passepartout::Models
 {
