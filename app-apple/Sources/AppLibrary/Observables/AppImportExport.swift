@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import CommonLibrary
+import ZIPFoundation
 
 public struct AppImportExport: Sendable {
     public typealias ConfigBlock = @Sendable () -> Set<ABI.ConfigFlag>
@@ -81,6 +82,67 @@ extension AppImportExport {
 
     public func exportedModule(from module: Module) throws -> String {
         try exportModule(module)
+    }
+}
+
+extension AppImportExport {
+    /// Non-archive URLs pass through as-is; a .zip expands to one input per importable entry.
+    public func importedInputs(from url: URL) throws -> [ABI.ProfileImporterInput] {
+        guard url.pathExtension.lowercased() == "zip" else {
+            return [.file(url)]
+        }
+        let didStartAccess = url.startAccessingSecurityScopedResource()
+        defer {
+            if didStartAccess {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
+        let data = try Data(contentsOf: url)
+        return try Self.inputs(fromZipData: data)
+    }
+}
+
+private extension AppImportExport {
+    static let zipEntryExtensions: Set<String> = ["ovpn", "conf", "json"]
+
+    // Matches app-cross ReadConfiguration's per-file cap.
+    static let maxZipEntrySize = 1_000_000
+
+    static func inputs(fromZipData data: Data) throws -> [ABI.ProfileImporterInput] {
+        let archive: Archive
+        do {
+            archive = try Archive(data: data, accessMode: .read)
+        } catch {
+            pspLog(.profiles, .error, "Unable to open archive: \(error)")
+            throw ABI.AppError.importError()
+        }
+        var inputs: [ABI.ProfileImporterInput] = []
+        for entry in archive where entry.type == .file {
+            guard entry.uncompressedSize <= maxZipEntrySize else {
+                pspLog(.profiles, .error, "Skipping oversized archive entry: \(entry.path)")
+                continue
+            }
+            let filename = (entry.path as NSString).lastPathComponent
+            let ext = (filename as NSString).pathExtension.lowercased()
+            guard zipEntryExtensions.contains(ext) else {
+                continue
+            }
+            var contents = Data()
+            do {
+                _ = try archive.extract(entry) { contents.append($0) }
+            } catch {
+                pspLog(.profiles, .error, "Skipping unreadable archive entry: \(entry.path)")
+                continue
+            }
+            guard let text = String(data: contents, encoding: .utf8) else {
+                continue
+            }
+            inputs.append(.contents(filename: filename, data: text))
+        }
+        guard !inputs.isEmpty else {
+            throw ABI.AppError.importError()
+        }
+        return inputs
     }
 }
 

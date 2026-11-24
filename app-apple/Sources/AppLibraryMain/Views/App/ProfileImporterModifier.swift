@@ -33,7 +33,7 @@ struct ProfileImporterModifier: ViewModifier {
             .alert(
                 Strings.Views.App.Toolbar.importFile,
                 isPresented: $importer.isPresentingPassphrase,
-                presenting: importer.nextURL,
+                presenting: importer.nextInput,
                 actions: actions,
                 message: message
             )
@@ -42,7 +42,7 @@ struct ProfileImporterModifier: ViewModifier {
 
 private extension ProfileImporterModifier {
     @ViewBuilder
-    func actions(for url: URL) -> some View {
+    func actions(for input: ABI.ProfileImporterInput) -> some View {
         SecureField(
             Strings.Placeholders.secret,
             text: $importer.currentPassphrase
@@ -50,7 +50,7 @@ private extension ProfileImporterModifier {
         Button(Strings.Alerts.Import.Passphrase.ok) {
             Task {
                 do {
-                    try await importer.reImport(url: url, block: doImport)
+                    try await importer.reImport(input: input, block: doImport)
                 } catch {
                     errorHandler.handle(
                         error,
@@ -65,23 +65,33 @@ private extension ProfileImporterModifier {
         }
     }
 
-    func message(for url: URL) -> some View {
-        Text(Strings.Alerts.Import.Passphrase.message(url.lastPathComponent))
+    func message(for input: ABI.ProfileImporterInput) -> some View {
+        Text(Strings.Alerts.Import.Passphrase.message(input.displayName))
     }
 
-    func doImport(url: URL, passphrase: String?) async throws {
+    func doImport(input: ABI.ProfileImporterInput, passphrase: String?) async throws {
         let profile = try appImportExport.importedProfile(
-            from: .file(url),
+            from: input,
             passphrase: passphrase
         )
         try await profileObservable.saveImported(profile)
     }
 
     func handleResult(_ result: Result<[URL], Error>) {
+        let export = appImportExport
         Task.detached {
             do {
                 let urls = try result.get()
-                try await importer.tryImport(urls: urls, block: doImport)
+                let inputs = try urls.flatMap {
+                    try export.importedInputs(from: $0)
+                }
+                let summary = try await importer.tryImport(inputs: inputs, block: doImport)
+                if summary.failed > 0 {
+                    await errorHandler.handle(
+                        Strings.Errors.App.Import.partial(summary.imported, summary.imported + summary.failed),
+                        title: Strings.Views.App.Toolbar.importFile
+                    )
+                }
             } catch {
                 await errorHandler.handle(
                     error,

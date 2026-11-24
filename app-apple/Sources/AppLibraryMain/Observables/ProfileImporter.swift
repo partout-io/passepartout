@@ -7,61 +7,72 @@ import Foundation
 
 @MainActor @Observable
 final class ProfileImporter {
-    typealias ImportBlock = @Sendable (URL, String?) async throws -> Void
+    typealias ImportBlock = @Sendable (ABI.ProfileImporterInput, String?) async throws -> Void
 
     var isPresentingPassphrase = false
 
     var currentPassphrase = ""
 
-    private(set) var urlsRequiringPassphrase: [URL] = []
+    private(set) var inputsRequiringPassphrase: [ABI.ProfileImporterInput] = []
 
-    var nextURL: URL? {
-        urlsRequiringPassphrase.first
+    var nextInput: ABI.ProfileImporterInput? {
+        inputsRequiringPassphrase.first
     }
 
+    @discardableResult
     func tryImport(
-        urls: [URL],
+        inputs: [ABI.ProfileImporterInput],
         block: @escaping ImportBlock
-    ) async throws {
-        var withPassphrase: [URL] = []
+    ) async throws -> (imported: Int, failed: Int) {
+        var withPassphrase: [ABI.ProfileImporterInput] = []
+        var imported = 0
+        var failed = 0
 
-        for url in urls {
+        for input in inputs {
             do {
-                try await importURL(
-                    url,
+                try await importInput(
+                    input,
                     withPassphrase: nil,
                     block: block
                 )
+                imported += 1
             } catch {
                 let appError = ABI.AppError(error)
                 switch appError {
                 case .partout(let error) where error.isOpenVPNPassphraseRequired:
-                    withPassphrase.append(url)
+                    withPassphrase.append(input)
                     continue
                 default:
+                    // One bad archive entry must not abort a bulk import.
+                    if case .contents = input {
+                        pspLog(.profiles, .error, "Unable to import archive entry: \(error)")
+                        failed += 1
+                        continue
+                    }
                     pspLog(.profiles, .fault, "Unable to import URL: \(error)")
                     throw appError
                 }
             }
         }
 
-        urlsRequiringPassphrase = withPassphrase
-        if !urlsRequiringPassphrase.isEmpty {
+        inputsRequiringPassphrase = withPassphrase
+        if !inputsRequiringPassphrase.isEmpty {
             scheduleNextImport()
         }
+        return (imported, failed)
     }
 
     func reImport(
-        url: URL,
+        input: ABI.ProfileImporterInput,
         block: @escaping ImportBlock
     ) async throws {
         do {
-            try await importURL(
-                url,
+            try await importInput(
+                input,
                 withPassphrase: currentPassphrase,
                 block: block
             )
-            urlsRequiringPassphrase.removeFirst()
+            inputsRequiringPassphrase.removeFirst()
             scheduleNextImport()
         } catch {
             scheduleNextImport()
@@ -70,14 +81,23 @@ final class ProfileImporter {
     }
 
     func cancelImport() {
-        urlsRequiringPassphrase.removeFirst()
+        inputsRequiringPassphrase.removeFirst()
         scheduleNextImport()
+    }
+}
+
+extension ABI.ProfileImporterInput {
+    var displayName: String {
+        switch self {
+        case .file(let url): return url.lastPathComponent
+        case .contents(let filename, _): return filename
+        }
     }
 }
 
 private extension ProfileImporter {
     func scheduleNextImport() {
-        guard !urlsRequiringPassphrase.isEmpty else {
+        guard !inputsRequiringPassphrase.isEmpty else {
             return
         }
         Task {
@@ -88,17 +108,21 @@ private extension ProfileImporter {
         }
     }
 
-    func importURL(
-        _ url: URL,
+    func importInput(
+        _ input: ABI.ProfileImporterInput,
         withPassphrase passphrase: String?,
         block: @escaping ImportBlock
     ) async throws {
+        guard case .file(let url) = input else {
+            try await block(input, passphrase)
+            return
+        }
         let didStartAccess = url.startAccessingSecurityScopedResource()
         defer {
             if didStartAccess {
                 url.stopAccessingSecurityScopedResource()
             }
         }
-        try await block(url, passphrase)
+        try await block(input, passphrase)
     }
 }

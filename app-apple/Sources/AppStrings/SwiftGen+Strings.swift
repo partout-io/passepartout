@@ -219,6 +219,10 @@ public enum Strings {
         public static let binary = Strings.tr("Localizable", "errors.app.import.binary", fallback: "Importing a binary file.")
         /// Unable to import profiles.
         public static let generic = Strings.tr("Localizable", "errors.app.import.generic", fallback: "Unable to import profiles.")
+        /// Imported %ld of %ld profiles.
+        public static func partial(_ p1: Int, _ p2: Int) -> String {
+          return Strings.tr("Localizable", "errors.app.import.partial", p1, p2, fallback: "Imported %ld of %ld profiles.")
+        }
       }
     }
     public enum Modules {

@@ -5,6 +5,7 @@
 @testable import AppLibrary
 import CommonLibrary
 import Foundation
+import ZIPFoundation
 import Testing
 
 struct AppImportExportTests {
@@ -198,9 +199,91 @@ struct AppImportExportTests {
         }
         #expect(didThrowBinaryFile)
     }
+
+    @Test
+    func givenZip_whenImportInputs_thenExpandsImportableEntries() throws {
+        let url = try makeZipURL([
+            ("a.ovpn", Data("client\ndev tun".utf8), .file),
+            ("sub/b.conf", Data("[Interface]".utf8), .file),
+            ("readme.txt", Data("hello".utf8), .file),
+            (".DS_Store", Data(), .file),
+            ("__MACOSX", Data(), .directory)
+        ])
+
+        let inputs = try AppImportExport.dummy.importedInputs(from: url)
+
+        #expect(inputs.count == 2)
+        #expect(inputs.compactMap(\.zipFilename) == ["a.ovpn", "b.conf"])
+        #expect(inputs.compactMap(\.zipContents) == ["client\ndev tun", "[Interface]"])
+    }
+
+    @Test
+    func givenZipWithJunkOnly_whenImportInputs_thenThrowsImportError() throws {
+        let url = try makeZipURL([
+            ("readme.txt", Data("hello".utf8), .file),
+            (".DS_Store", Data(), .file)
+        ])
+
+        #expect(throws: ABI.AppError.self) {
+            try AppImportExport.dummy.importedInputs(from: url)
+        }
+    }
+
+    @Test
+    func givenNonZip_whenImportInputs_thenReturnsFileInput() throws {
+        let url = URL.temporaryDirectory
+            .appending(component: UUID().uuidString)
+            .appendingPathExtension("ovpn")
+
+        let inputs = try AppImportExport.dummy.importedInputs(from: url)
+
+        #expect(inputs.count == 1)
+        #expect(inputs.first?.zipFilename == url.lastPathComponent)
+    }
+
+    @Test
+    func givenZipWithInvalidUTF8Entry_whenImportInputs_thenThrowsImportError() throws {
+        let url = try makeZipURL([
+            ("broken.ovpn", Data([0xFF, 0xFE, 0x00]), .file)
+        ])
+
+        #expect(throws: ABI.AppError.self) {
+            try AppImportExport.dummy.importedInputs(from: url)
+        }
+    }
+
+    @Test
+    func givenZipWithOversizedEntry_whenImportInputs_thenThrowsImportError() throws {
+        let url = try makeZipURL([
+            ("huge.ovpn", Data(repeating: 0x41, count: 1_000_001), .file)
+        ])
+
+        #expect(throws: ABI.AppError.self) {
+            try AppImportExport.dummy.importedInputs(from: url)
+        }
+    }
 }
 
 private extension AppImportExportTests {
+    func makeZipURL(_ entries: [(path: String, contents: Data, type: Entry.EntryType)]) throws -> URL {
+        let archive = try Archive(data: Data(), accessMode: .create)
+        for entry in entries {
+            let contents = entry.contents
+            try archive.addEntry(
+                with: entry.path,
+                type: entry.type,
+                uncompressedSize: Int64(contents.count),
+                provider: { _, _ in contents }
+            )
+        }
+        let data = try #require(archive.data)
+        let url = URL.temporaryDirectory
+            .appending(component: UUID().uuidString)
+            .appendingPathExtension("zip")
+        try data.write(to: url)
+        return url
+    }
+
     func legacyString(_ profile: Profile, version: Int) throws -> String {
         if version == 3 {
             return try JSONEncoder.shared().encodeJSON(profile.asTaggedProfile)
@@ -257,5 +340,18 @@ private extension AppImportExportTests {
             openVPNModule,
             wireGuardModule
         ]
+    }
+}
+
+private extension ABI.ProfileImporterInput {
+    var zipFilename: String? {
+        if case .contents(let filename, _) = self { return filename }
+        if case .file(let url) = self { return url.lastPathComponent }
+        return nil
+    }
+
+    var zipContents: String? {
+        if case .contents(_, let data) = self { return data }
+        return nil
     }
 }
