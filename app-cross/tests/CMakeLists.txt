@@ -4,11 +4,9 @@ project(PassepartoutTests LANGUAGES CXX)
 
 # Dependencies: build models and application state without the VPN core library.
 set(PP_BUILD_LIBRARY OFF)
-set(PP_BUILD_MODELS ON)
+set(PP_BUILD_CPP_RUNTIME ON)
 set(PP_TEST_CPP_RUNTIME ON)
-if(WIN32)
-    set(PP_TEST_WINRT_RUNTIME ON)
-endif()
+set(PP_TEST_WINRT_RUNTIME OFF)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
@@ -60,6 +58,7 @@ if(WIN32)
         ../app/ui/platform/WindowsURLLauncher.cc
         ../app/ui/platform/WindowsIssueHandoff.cc)
     target_link_libraries(passepartout-windows-integration-check PRIVATE
-        passepartout-core Partout::Headers Partout::WinRTRuntime)
+        passepartout-core Partout::Headers)
+    target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)
     target_compile_options(passepartout-windows-integration-check PRIVATE /EHsc /permissive- /utf-8 /W4)
 endif()

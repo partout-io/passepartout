@@ -40,6 +40,7 @@ endif()
 
 # Partout configuration
 set(PP_BUILD_OUTPUT "${OUTPUT_DIR}")
+set(PP_BUILD_CPP_RUNTIME ${BUILD_APP})
 set(PP_BUILD_USE_OPENSSL ON)
 set(PP_BUILD_USE_MBEDTLS ON)
 if(UNIX AND NOT APPLE AND NOT ANDROID)
@@ -99,7 +100,7 @@ if(BUILD_APP)
             app/ui/theme/ThemeButtonRow.cc app/ui/theme/ThemeModal.cc
             app/ui/theme/ThemeContentLink.cc app/strings/Strings.cc)
         target_compile_features(passepartout-ui-test PRIVATE cxx_std_17)
-        target_link_libraries(passepartout-ui-test PRIVATE Partout::Models)
+        target_link_libraries(passepartout-ui-test PRIVATE Partout::CppRuntime)
         if(MSVC)
             target_compile_options(passepartout-ui-test PRIVATE /utf-8)
         endif()
