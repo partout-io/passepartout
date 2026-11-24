@@ -15,9 +15,9 @@ on:
           - android
           - windows
       run_checks:
-        description: Run the initial checks
+        description: Run full checks
         required: true
-        default: false
+        default: true
         type: boolean
 
 concurrency:

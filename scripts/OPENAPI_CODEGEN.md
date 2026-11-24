@@ -22,7 +22,7 @@ Run the regression checks from the repository root:
 
 ```sh
 python3 partout/tests/codegen/test_codegen.py
-python3 partout/tests/codegen/test_parent_codegen.py .
+python3 ci/test_codegen.py
 ```
 
 Python is needed only for these checks. CI runs both. The application baseline is
