@@ -4,13 +4,13 @@ on:
   workflow_call:
     inputs:
       run_checks:
-        description: Run the test suites
+        description: Run the full app and Partout test suites
         required: false
         default: true
         type: boolean
 
       light:
-        description: Skip Partout tests and run only affected app tests on PRs
+        description: Run only affected app tests
         required: false
         default: false
         type: boolean
