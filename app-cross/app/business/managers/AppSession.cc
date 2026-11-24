@@ -76,9 +76,12 @@ void AppSession::Run() {
         std::string error;
         try {
             operation.run();
-            if (tunnel_->PendingProfile()) {
-                operation.context = AppErrorContext::tunnel;
+            try {
                 tunnel_->Advance();
+            } catch (...) {
+                pending_profile_.reset();
+                operation.context = AppErrorContext::tunnel;
+                throw;
             }
         } catch (const std::exception &e) {
             error = e.what();
@@ -104,7 +107,7 @@ void AppSession::Run() {
         {
             std::lock_guard lock(mutex_);
             if (!tunnel_error.empty()) snapshot_.tunnel_available = false;
-            snapshot_.pending_profile = tunnel_->PendingProfile();
+            snapshot_.pending_profile = pending_profile_;
             snapshot_.error = std::move(error);
             snapshot_.tunnel_error = std::move(tunnel_error);
             snapshot_.error_context = operation.context;
@@ -117,6 +120,32 @@ void AppSession::Run() {
         wake_.notify_all();
     }
 }
+
+void AppSession::ValidateNewRegistration(const std::string &id) {
+    if (pending_profile_) throw std::runtime_error("Wait for the pending VPN action before importing.");
+    const auto tunnels = tunnel_->Fetch();
+    if (tunnel_->ObservationErrors().count(id) || std::any_of(tunnels.begin(), tunnels.end(), [&](const auto &tunnel) {
+        return tunnel.id == id;
+    })) throw std::runtime_error("The VPN profile is already registered.");
+}
+
+void AppSession::ValidateProfileUpdate(const std::string &id) {
+    if (pending_profile_) throw std::runtime_error("Wait for the pending VPN action before saving.");
+    const auto tunnels = tunnel_->Fetch();
+    if (tunnel_->ObservationErrors().count(id))
+        throw std::runtime_error("Unable to observe the VPN profile before updating.");
+    for (const auto &tunnel : tunnels) {
+        if (tunnel.id == id && (tunnel.isEnabled || tunnel.status.value != Partout::Models::TunnelStatus::inactive))
+            throw std::runtime_error("Disconnect the VPN before saving this profile.");
+    }
+}
+
+void AppSession::RollbackRegistration(const std::string &id) {
+    // Rollback must never disconnect a profile that became active externally.
+    ValidateProfileUpdate(id);
+    tunnel_->Remove(id);
+}
+
 std::string AppSession::RecoverProfiles() {
     std::string error;
     for (const auto &transaction : profiles_.PendingTransactions()) {
@@ -129,9 +158,8 @@ std::string AppSession::RecoverProfiles() {
             profiles_.Recover(transaction, [this](const ProfileTransaction &pending) {
                 if (pending.removal) tunnel_->Remove(pending.id);
                 else if (pending.previous) {
-                    tunnel_->ValidateUpdate(*pending.previous);
                     tunnel_->Save(*pending.previous);
-                } else tunnel_->RollbackRegistration(pending.id);
+                } else RollbackRegistration(pending.id);
             });
             recovery_retries_.erase(transaction.id);
         } catch (...) {
@@ -239,6 +267,10 @@ void AppSession::Publish() {
         if (old == previous.tunnels.end() || old->status != tunnel.status)
             logger_->Write(LogLevel::info, LogCategory::tunnel, "Profile " + tunnel.id + " status: " + tunnel.status.ToJson().Encode());
     }
+    // The requested target is presentation state; Partout owns the handover.
+    if (pending_profile_ && std::any_of(tunnels.begin(), tunnels.end(), [&](const auto &tunnel) {
+        return tunnel.id == *pending_profile_ && tunnel.status.value == Status::connected;
+    })) pending_profile_.reset();
     std::lock_guard lock(mutex_);
     snapshot_.tunnels = std::move(tunnels);
     snapshot_.tunnel_available = true;
@@ -276,10 +308,9 @@ void AppSession::SaveEditor(std::shared_ptr<ProfileEditor> editor) {
         try {
             profiles_.Update(editor->Original(), editor->Snapshot().draft,
                 [this](const Profile &profile) {
-                    tunnel_->ValidateUpdate(profile);
                     tunnel_->Save(profile);
                 }, [this](const Profile &profile) {
-                    tunnel_->ValidateUpdate(profile);
+                    ValidateProfileUpdate(profile.id);
                 });
             editor->FinishSave(true);
         } catch (...) {
@@ -318,11 +349,11 @@ void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
                 // Registration follows the injected strategy on every platform,
                 // including fake tunnels used by portable tests and demo mode.
                 profiles_.ImportText(source.text, source.name, [this](const Profile &value) {
-                    tunnel_->Register(value);
+                    tunnel_->Save(value);
                 }, [this](const std::string &id) {
-                    tunnel_->RollbackRegistration(id);
+                    RollbackRegistration(id);
                 }, [this](const Profile &value) {
-                    tunnel_->ValidateNew(value);
+                    ValidateNewRegistration(value.id);
                 });
                 logger_->Write(LogLevel::info, LogCategory::profiles, "Finished saving profile");
             } catch (const std::exception &) {
@@ -350,7 +381,10 @@ void AppSession::Remove(std::vector<std::string> ids) {
         for (const auto &id : unique_ids) {
             logger_->Write(LogLevel::info, LogCategory::profiles, "Remove profile");
             profiles_.Remove(id);
-            tunnel_->CancelPending(id);
+            if (pending_profile_ == id) {
+                pending_profile_.reset();
+                tunnel_->Disconnect(id);
+            }
         }
     });
 }
@@ -368,11 +402,14 @@ void AppSession::Connect(std::string id, std::optional<Partout::Models::OpenVpnC
         if (original && profile != *original) throw std::runtime_error("Profile changed during interactive login.");
         std::optional<Partout::TunnelCredentials> authentication;
         if (credentials) authentication = Partout::TunnelCredentials{credentials->username, credentials->password};
+        pending_profile_.reset();
         tunnel_->Connect(profile, std::move(authentication));
+        pending_profile_ = id;
     }, AppErrorContext::tunnel);
 }
 void AppSession::Disconnect(std::string id) {
     Post([this, id = std::move(id)] {
+        pending_profile_.reset();
         tunnel_->Disconnect(id);
     }, AppErrorContext::tunnel);
 }

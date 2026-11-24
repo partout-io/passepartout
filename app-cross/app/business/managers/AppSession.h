@@ -50,6 +50,9 @@ private:
               bool foreground = true);
     void Run();
     void Publish();
+    void ValidateNewRegistration(const std::string &id);
+    void ValidateProfileUpdate(const std::string &id);
+    void RollbackRegistration(const std::string &id);
     std::string RecoverProfiles();
     struct RecoveryRetry {
         unsigned attempts = 0;
@@ -65,6 +68,7 @@ private:
     std::optional<Models::AppPreferences> pending_preferences_;
     ProfileManager profiles_;
     std::unique_ptr<Partout::Tunnel> tunnel_;
+    std::optional<std::string> pending_profile_;
     std::function<void(const Models::AppPreferences &)> apply_preferences_;
     mutable std::mutex mutex_;
     std::condition_variable wake_;

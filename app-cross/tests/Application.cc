@@ -266,6 +266,65 @@ void TestRemovalObservation() {
     tunnel.Remove("test-id");
     assert(backend->removal_attempts == 1 && backend->fake.Fetch().empty());
 }
+void TestPendingActivation(const std::filesystem::path &root) {
+    auto repository = std::make_unique<Passepartout::FileProfileRepository>(root / "pending");
+    repository->Save(Example("first"));
+    repository->Save(Example("second"));
+    auto strategy = std::make_unique<ControlledTunnel>();
+    auto *backend = strategy.get();
+    backend->delayed_disconnect = true;
+    backend->delayed_connect = true;
+    Passepartout::AppSession session(
+        std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::move(strategy))
+    );
+    Wait(session);
+    backend->fake.Connect("first");
+    session.Connect("second");
+    Wait(session);
+    assert(session.Snapshot().pending_profile == "second");
+    assert(!Passepartout::TunnelObservable::StateForProfile(session.Snapshot(), "second").can_interact);
+    session.Refresh();
+    Wait(session);
+    assert(session.Snapshot().pending_profile == "second");
+    backend->fake.Disconnect("first");
+    session.Refresh();
+    Wait(session);
+    assert(session.Snapshot().pending_profile == "second");
+    backend->fake.Connect("second");
+    session.Refresh();
+    Wait(session);
+    assert(!session.Snapshot().pending_profile);
+    assert(Passepartout::TunnelObservable::StateForProfile(session.Snapshot(), "second").can_interact);
+
+    // Failed activation clears the UI request and retains the tunnel error context.
+    backend->delayed_disconnect = false;
+    session.Connect("first");
+    Wait(session);
+    assert(session.Snapshot().pending_profile == "first");
+    backend->fake.Disconnect("first");
+    session.Refresh();
+    Wait(session);
+    assert(!session.Snapshot().pending_profile);
+    assert(!session.Snapshot().error.empty());
+    assert(session.Snapshot().error_context == Passepartout::AppErrorContext::tunnel);
+
+    session.Connect("second");
+    Wait(session);
+    assert(session.Snapshot().pending_profile == "second");
+    session.Disconnect("second");
+    Wait(session);
+    assert(!session.Snapshot().pending_profile && session.Snapshot().error.empty());
+    session.Connect("second");
+    Wait(session);
+    session.Remove({"second"});
+    Wait(session);
+    assert(!session.Snapshot().pending_profile && session.Snapshot().error.empty());
+    session.Refresh();
+    Wait(session);
+    assert(session.Snapshot().tunnels.size() == 1);
+    assert(session.Snapshot().tunnels.front().id == "first");
+}
+
 void TestRemovalTargets(const std::filesystem::path &root) {
     const auto directory = root / "removal-targets";
     auto repository = std::make_unique<Passepartout::FileProfileRepository>(directory);
@@ -482,7 +541,6 @@ int main() {
         Partout::Tunnel manager(std::move(strategy));
         manager.Save(Example("healthy"));
         manager.Connect(Example("healthy"));
-        assert(!manager.PendingProfile());
         assert((control->events == std::vector<std::string>{"save:healthy", "connect:healthy"}));
         assert(manager.Fetch().at(0).status.value == Partout::Models::TunnelStatus::active);
         assert(manager.ObservationErrors().count("broken") == 1);
@@ -517,6 +575,7 @@ int main() {
     std::filesystem::create_directories(root);
     try {
         TestRemovalTargets(root);
+        TestPendingActivation(root);
         TestShutdown(root);
         TestPreferencesRetry(root);
         const auto selection_root = root / "selection";
@@ -675,29 +734,24 @@ int main() {
         handover_strategy->delayed_disconnect = true;
         Partout::Tunnel handover(std::move(handover_backend));
         handover.Connect(Example("next"));
-        assert(handover.PendingProfile() == "next");
         handover.Advance();
         assert(handover_strategy->events == std::vector<std::string>{"disconnect:" + p.id});
         handover.Connect(Example("latest"));
         handover_strategy->fake.SetStatus(p.id, Partout::Models::TunnelStatus::inactive);
         handover.Advance();
-        assert(!handover.PendingProfile());
         assert((handover_strategy->events == std::vector<std::string>{"disconnect:" + p.id, "connect:latest"}));
         handover_strategy->fail_disconnect = true;
         Rejects([&] { handover.Connect(Example("failed")); });
-        assert(!handover.PendingProfile());
         assert(handover_strategy->fake.Fetch().at(1).status.value == Partout::Models::TunnelStatus::active);
         handover_strategy->fail_disconnect = false;
         handover.Connect(Example("cancelled"));
         handover.Disconnect("cancelled");
-        assert(!handover.PendingProfile());
         handover_strategy->fake.SetStatus("latest", Partout::Models::TunnelStatus::inactive);
         handover_strategy->fake.SetStatus("cancelled", Partout::Models::TunnelStatus::inactive);
         handover.Advance();
         assert(handover_strategy->fake.Fetch().size() == 6);
         handover_strategy->fail_connect = true;
         Rejects([&] { handover.Connect(Example("connection-failure")); });
-        assert(!handover.PendingProfile());
         for (const auto &state : handover.Fetch()) assert(state.status.value == Partout::Models::TunnelStatus::inactive);
 
         auto activation_backend = std::make_unique<ControlledTunnel>();
@@ -706,17 +760,13 @@ int main() {
         Partout::Tunnel activation(std::move(activation_backend));
         activation.Save(Example("activation"));
         activation.Connect(Example("activation"));
-        assert(activation.PendingProfile() == "activation");
         activation.Advance();
-        assert(activation.PendingProfile() == "activation");
         activation_strategy->fake.SetStatus("activation", Partout::Models::TunnelStatus::active);
         activation.Advance();
-        assert(!activation.PendingProfile());
         activation_strategy->fake.Disconnect("activation");
         activation.Connect(Example("activation"));
         activation_strategy->fake.Disconnect("activation");
         Rejects([&] { activation.Advance(); });
-        assert(!activation.PendingProfile());
 
         auto timeout_backend = std::make_unique<ControlledTunnel>();
         timeout_backend->fake.Save(p);
@@ -725,7 +775,6 @@ int main() {
         timeout_backend->delayed_disconnect = true;
         Partout::Tunnel timeout(std::move(timeout_backend), std::chrono::milliseconds(0));
         Rejects([&] { timeout.Connect(Example("timeout")); });
-        assert(!timeout.PendingProfile());
 
         // Polling does not show activity; foreground work and observed transitions do.
         AppSnapshot activity;
@@ -811,6 +860,16 @@ int main() {
             auto *registration = backend.get();
             AppSession imported(std::make_unique<FileProfileRepository>(root / "registration"), importer, std::make_unique<Partout::Tunnel>(std::move(backend)));
             Wait(imported);
+            // An import cannot overwrite or roll back an existing native registration.
+            registration->fake.Save(Example("imported"));
+            registration->fake.Connect("imported");
+            imported.Import({config});
+            Wait(imported);
+            assert(!imported.Snapshot().error.empty());
+            assert(imported.Snapshot().profiles.empty());
+            assert(registration->events.empty() && registration->removal_attempts == 0);
+            assert(registration->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::active);
+            registration->fake.Remove("imported");
             imported.Import({config});
             Wait(imported);
             assert(imported.Snapshot().error.empty());
