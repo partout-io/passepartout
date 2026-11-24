@@ -15,9 +15,6 @@
 #include "SettingsResources.h"
 #include "../business/extensions/DecodeImportResult.h"
 #include "partout.h"
-#ifdef _WIN32
-#include "partout_winrt.h"
-#endif
 #include <cstdlib>
 #include <stdexcept>
 
