@@ -207,7 +207,9 @@ struct AppImportExportTests {
             ("sub/b.conf", Data("[Interface]".utf8), .file),
             ("readme.txt", Data("hello".utf8), .file),
             (".DS_Store", Data(), .file),
-            ("__MACOSX", Data(), .directory)
+            ("__MACOSX", Data(), .directory),
+            ("__MACOSX/._a.ovpn", Data("\0\u{05}\u{16}\u{07}Mac OS X".utf8), .file),
+            ("._b.conf", Data("\0\u{05}\u{16}\u{07}Mac OS X".utf8), .file)
         ])
 
         let inputs = try AppImportExport.dummy.importedInputs(from: url)

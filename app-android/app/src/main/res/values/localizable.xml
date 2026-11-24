@@ -377,6 +377,7 @@
     <string name="errors_app_empty_profile_name">Profile name is empty.</string>
     <string name="errors_app_import_binary">Importing a binary file.</string>
     <string name="errors_app_import_generic">Unable to import profiles.</string>
+    <string name="errors_app_import_partial">Imported %1$d of %2$d profiles.</string>
     <string name="errors_app_incompatible_modules">Some active modules are incompatible, try to only activate one of them.</string>
     <string name="errors_app_incomplete_module">Please finish the configuration of the %1$s module.</string>
     <string name="errors_app_ineligible">Purchase required</string>

@@ -377,6 +377,7 @@
     <string name="errors_app_empty_profile_name">O nome do perfil está vazio.</string>
     <string name="errors_app_import_binary">A importar um ficheiro binário.</string>
     <string name="errors_app_import_generic">Não foi possível importar os perfis.</string>
+    <string name="errors_app_import_partial">Importados %1$d de %2$d perfis.</string>
     <string name="errors_app_incompatible_modules">Alguns módulos ativos são incompatíveis, tente ativar apenas um.</string>
     <string name="errors_app_incomplete_module">Conclua a configuração do módulo %1$s.</string>
     <string name="errors_app_ineligible">Compra necessária</string>

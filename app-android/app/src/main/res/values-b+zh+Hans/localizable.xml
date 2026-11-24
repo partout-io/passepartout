@@ -377,6 +377,7 @@
     <string name="errors_app_empty_profile_name">配置文件名称为空。</string>
     <string name="errors_app_import_binary">正在导入二进制文件。</string>
     <string name="errors_app_import_generic">无法导入配置文件。</string>
+    <string name="errors_app_import_partial">已导入 %1$d/%2$d 个配置文件。</string>
     <string name="errors_app_incompatible_modules">某些激活的模块不兼容，请尝试仅激活一个模块。</string>
     <string name="errors_app_incomplete_module">请完成 %1$s 模块的配置。</string>
     <string name="errors_app_ineligible">需要购买</string>

@@ -41,6 +41,7 @@
 "errors.app.empty_profile_name" = "配置文件名称为空。";
 "errors.app.import.binary" = "正在导入二进制文件。";
 "errors.app.import.generic" = "无法导入配置文件。";
+"errors.app.import.partial" = "已导入 %ld/%ld 个配置文件。";
 "errors.app.incompatible_modules" = "某些激活的模块不兼容，请尝试仅激活一个模块。";
 "errors.app.incomplete_module" = "请完成 %@ 模块的配置。";
 "errors.app.ineligible" = "需要购买";
@@ -454,12 +455,9 @@
 "web_uploader.title" = "上传到 Apple TV";
 "views.tv.profiles.import_local" = "导入配置";
 "views.tv.connection_profiles.web_import_description" = "通过 iCloud 共享配置，或选择“导入配置”以显示二维码。使用 iPhone、iPad 或 Mac 上的 Passepartout 扫描该二维码，将配置发送到此电视，也可以使用网页浏览器上传配置文件。";
-
 "android.search.title" = "搜索";
 "android.search.clear" = "清除搜索";
 "android.vpn.settings" = "VPN 设置";
 "android.vpn.restore_failed" = "无法恢复 VPN";
 "android.vpn.restore_help" = "打开 Passepartout 以配置有效的配置文件。如果不使用 VPN 的连接被阻止，请使用 Android 的 VPN 设置管理始终开启的 VPN。";
-
 "android.vpn.delete_blocked" = "删除配置文件前，请先在 Android 的 VPN 设置中管理始终开启的 VPN。";
-

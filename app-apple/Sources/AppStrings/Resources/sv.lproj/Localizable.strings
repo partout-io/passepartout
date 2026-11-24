@@ -41,6 +41,7 @@
 "errors.app.empty_profile_name" = "Profilnamnet är tomt.";
 "errors.app.import.binary" = "Importerar en binär fil.";
 "errors.app.import.generic" = "Kan inte importera profiler.";
+"errors.app.import.partial" = "Importerade %ld av %ld profiler.";
 "errors.app.incompatible_modules" = "Vissa aktiva moduler är inkompatibla, försök att endast aktivera en.";
 "errors.app.incomplete_module" = "Vänligen slutför konfigurationen av %@-modulen.";
 "errors.app.ineligible" = "Köp krävs";
@@ -454,12 +455,9 @@
 "web_uploader.title" = "Ladda upp till Apple TV";
 "views.tv.profiles.import_local" = "Importera profil";
 "views.tv.connection_profiles.web_import_description" = "Dela en profil via iCloud eller välj ”Importera profil” för att visa en QR-kod. Skanna den med Passepartout på din iPhone, iPad eller Mac för att skicka en profil till denna TV, eller använd en webbläsare för att ladda upp en konfigurationsfil.";
-
 "android.search.title" = "Sök";
 "android.search.clear" = "Rensa sökning";
 "android.vpn.settings" = "VPN-inställningar";
 "android.vpn.restore_failed" = "Det gick inte att återställa VPN";
 "android.vpn.restore_help" = "Öppna Passepartout för att konfigurera en giltig profil. Om anslutningar utan VPN blockeras använder du Androids VPN-inställningar för att hantera ständigt aktivt VPN.";
-
 "android.vpn.delete_blocked" = "Hantera ständigt aktivt VPN i Androids VPN-inställningar innan du tar bort profiler.";
-

@@ -122,7 +122,14 @@ private extension AppImportExport {
                 pspLog(.profiles, .error, "Skipping oversized archive entry: \(entry.path)")
                 continue
             }
+            let pathComponents = (entry.path as NSString).pathComponents
+            guard !pathComponents.contains("__MACOSX") else {
+                continue
+            }
             let filename = (entry.path as NSString).lastPathComponent
+            guard !filename.hasPrefix(".") else {
+                continue
+            }
             let ext = (filename as NSString).pathExtension.lowercased()
             guard zipEntryExtensions.contains(ext) else {
                 continue

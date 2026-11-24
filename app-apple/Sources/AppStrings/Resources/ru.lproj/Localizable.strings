@@ -41,6 +41,7 @@
 "errors.app.empty_profile_name" = "Имя профиля пустое.";
 "errors.app.import.binary" = "Импортируется двоичный файл.";
 "errors.app.import.generic" = "Не удалось импортировать профили.";
+"errors.app.import.partial" = "Импортировано %ld из %ld профилей.";
 "errors.app.incompatible_modules" = "Некоторые активные модули несовместимы, попробуйте активировать только один.";
 "errors.app.incomplete_module" = "Пожалуйста, завершите настройку модуля %@.";
 "errors.app.ineligible" = "Требуется покупка";
@@ -454,12 +455,9 @@
 "web_uploader.title" = "Загрузить на Apple TV";
 "views.tv.profiles.import_local" = "Импортировать профиль";
 "views.tv.connection_profiles.web_import_description" = "Поделитесь профилем через iCloud или выберите «Импортировать профиль», чтобы отобразить QR-код. Отсканируйте его с помощью Passepartout на iPhone, iPad или Mac, чтобы отправить профиль на этот телевизор, или загрузите файл конфигурации через веб-браузер.";
-
 "android.search.title" = "Поиск";
 "android.search.clear" = "Очистить поиск";
 "android.vpn.settings" = "Настройки VPN";
 "android.vpn.restore_failed" = "Не удалось восстановить VPN";
 "android.vpn.restore_help" = "Откройте Passepartout, чтобы настроить корректный профиль. Если подключения без VPN заблокированы, используйте настройки VPN в Android для управления постоянным подключением VPN.";
-
 "android.vpn.delete_blocked" = "Прежде чем удалять профили, измените параметры постоянного подключения VPN в настройках VPN в Android.";
-

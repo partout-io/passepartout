@@ -377,6 +377,7 @@
     <string name="errors_app_empty_profile_name">Nazwa profilu jest pusta.</string>
     <string name="errors_app_import_binary">Importowanie pliku binarnego.</string>
     <string name="errors_app_import_generic">Nie można zaimportować profili.</string>
+    <string name="errors_app_import_partial">Zaimportowano %1$d z %2$d profili.</string>
     <string name="errors_app_incompatible_modules">Niektóre aktywne moduły są niekompatybilne. Spróbuj aktywować tylko jeden.</string>
     <string name="errors_app_incomplete_module">Proszę dokończyć konfigurację modułu %1$s.</string>
     <string name="errors_app_ineligible">Wymagana zakup</string>

@@ -377,6 +377,7 @@
     <string name="errors_app_empty_profile_name">Το όνομα του προφίλ είναι κενό.</string>
     <string name="errors_app_import_binary">Γίνεται εισαγωγή δυαδικού αρχείου.</string>
     <string name="errors_app_import_generic">Δεν ήταν δυνατή η εισαγωγή προφίλ.</string>
+    <string name="errors_app_import_partial">Εισήχθησαν %1$d από %2$d προφίλ.</string>
     <string name="errors_app_incompatible_modules">Μερικές ενεργές μονάδες είναι ασύμβατες, δοκιμάστε να ενεργοποιήσετε μόνο μία.</string>
     <string name="errors_app_incomplete_module">Ολοκληρώστε τη ρύθμιση του %1$s module.</string>
     <string name="errors_app_ineligible">Απαιτείται αγορά</string>
