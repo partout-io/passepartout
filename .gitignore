@@ -3,6 +3,7 @@
 build/
 dist/
 tmp/
+/.zig-cache/
 agents
 /node_modules/
 **/*secret*
