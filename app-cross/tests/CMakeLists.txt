@@ -5,7 +5,7 @@ project(PassepartoutTests LANGUAGES CXX)
 # Dependencies: build models and application state without the VPN core library.
 set(PP_BUILD_LIBRARY OFF)
 set(PP_BUILD_CPP_RUNTIME ON)
-set(PP_TEST_CPP_RUNTIME ON)
+set(PP_TEST_CPP_RUNTIME OFF)
 set(PP_TEST_WINRT_RUNTIME OFF)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 
