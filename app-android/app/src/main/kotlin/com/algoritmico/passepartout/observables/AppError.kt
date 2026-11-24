@@ -30,6 +30,7 @@ val Throwable.asAppError: AppError
         is GenericException -> AppError(AppErrorCode.other, this)
         is PartoutException -> AppError(AppErrorCode.partout, this)
         is ProfileImporterException.Binary -> AppError(AppErrorCode.binaryFile, this)
+        is ProfileImporterException.Partial -> AppError(AppErrorCode.importError, this)
         is ProfileImporterException.Failure -> cause?.asAppError ?: AppError(AppErrorCode.importError, this)
         is ProfileImporterException.Null -> AppError(AppErrorCode.importError, this)
         is ProfileManagerException.NotFound -> AppError(AppErrorCode.notFound, this)
