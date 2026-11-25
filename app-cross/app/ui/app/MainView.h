@@ -6,10 +6,11 @@
 #include "../../context/AppContext.h"
 #include "../extensions/ConfigurationPickerFactory.h"
 #include "../theme/Theme.h"
+#include "../platform/MainFrame.h"
 #include "ProfileListView.h"
 #include <deque>
 
-class MainView : public wxFrame {
+class MainView : public Passepartout::MainFrame {
 public:
     MainView(Passepartout::AppContext &context, bool demo,
              Passepartout::Configuration::PickerFactory picker_factory
@@ -18,9 +19,6 @@ public:
     void Quit();
     void Activate(std::shared_ptr<const Passepartout::ConfigurationFiles> files);
 private:
-#ifdef __WXMSW__
-    WXLRESULT MSWWindowProc(WXUINT message, WXWPARAM w_param, WXLPARAM l_param) override;
-#endif
     void Render();
     void UpdateActions();
     void Import();

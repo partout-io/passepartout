@@ -12,14 +12,8 @@
 #include "../../strings/Unlocalized.h"
 #include "../theme/ThemeModal.h"
 #include "../theme/ThemeLongContent.h"
-#ifdef __WXMSW__
-#include <windows.h>
-#endif
 
 namespace {
-#ifdef __WXMSW__
-constexpr unsigned SystemAbout = 0x100;
-#endif
 wxString Text(const std::string &value) {
     return wxString::FromUTF8(value);
 }
@@ -34,7 +28,7 @@ using namespace Passepartout;
 MainView::MainView(AppContext &context, bool demo,
                    Configuration::PickerFactory picker_factory
 )
-    : wxFrame(nullptr, wxID_ANY, Text(context.cross_constants.tags.app) +
+    : MainFrame(nullptr, wxID_ANY, Text(context.cross_constants.tags.app) +
           (demo ? " (" + Text(context.cross_constants.command_line.demo_argument) + ")" : wxString())),
       context_(context), timer_(this), picker_(picker_factory(*this)) {
     Theme::Apply(this);
@@ -86,14 +80,9 @@ MainView::MainView(AppContext &context, bool demo,
         modal.ShowModal();
     }, changelog_id);
     SetMenuBar(menus);
-#ifdef __WXMSW__
-    if (auto menu = GetSystemMenu(static_cast<HWND>(GetHandle()), FALSE)) {
-        const auto title = Localized(StringKey::GlobalNounsAbout) + " " +
-            Text(context.cross_constants.tags.app) + "...";
-        InsertMenuW(menu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, nullptr);
-        InsertMenuW(menu, 0, MF_BYPOSITION | MF_STRING, SystemAbout, title.wc_str());
-    }
-#endif
+    ConfigureSystemMenu(
+        Localized(StringKey::GlobalNounsAbout) + " " + Text(context.cross_constants.tags.app) + "..."
+    );
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
         Import();
     }, wxID_ADD);
@@ -267,15 +256,3 @@ void MainView::Edit(const std::string &id) {
     ProfileCoordinator dialog(this, context_.profiles, editor, *context_.wire_guard_keys);
     dialog.ShowModal();
 }
-
-#ifdef __WXMSW__
-WXLRESULT MainView::MSWWindowProc(WXUINT message, WXWPARAM w_param, WXLPARAM l_param) {
-    if (message == WM_SYSCOMMAND && (w_param & 0xfff0) == SystemAbout) {
-        // Dispatch through the existing About action after native menu handling.
-        auto *event = new wxCommandEvent(wxEVT_MENU, wxID_ABOUT);
-        wxQueueEvent(this, event);
-        return 0;
-    }
-    return wxFrame::MSWWindowProc(message, w_param, l_param);
-}
-#endif
