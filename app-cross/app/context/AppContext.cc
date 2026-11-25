@@ -15,6 +15,9 @@
 #include "SettingsResources.h"
 #include "../business/extensions/DecodeImportResult.h"
 #include "partout.h"
+#ifdef _WIN32
+#include <partout/winrt/WinRTTunnelStrategy.h>
+#endif
 #include <cstdlib>
 #include <stdexcept>
 

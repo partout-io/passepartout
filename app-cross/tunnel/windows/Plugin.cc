@@ -25,6 +25,7 @@
 #include <winrt/base.h>
 
 #include "partout.h"
+#include <partout/winrt/VpnChannelRuntime.h>
 
 namespace {
 
