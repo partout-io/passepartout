@@ -22,24 +22,20 @@ import com.algoritmico.passepartout.ui.Strings
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import io.partout.extensions.interactiveModule
 import io.partout.extensions.moduleType
-import io.partout.extensions.withInteractiveOpenVPNCredentials
-import io.partout.models.OpenVPNCredentialsOTPMethod
-import io.partout.models.OpenVPNModule
+import com.algoritmico.passepartout.business.models.InteractiveLogin
 import io.partout.models.TaggedModule
 import io.partout.models.TaggedModuleOpenVPN
-import io.partout.models.TaggedProfile
 
 @Composable
 fun InteractiveView(
-    profile: TaggedProfile,
+    login: InteractiveLogin,
     onDismiss: () -> Unit,
-    onConnect: (TaggedProfile) -> Unit
+    onConnect: (InteractiveLogin) -> Unit
 ) {
-    when (val module = profile.interactiveModule) {
+    when (val module = login.original.interactiveModule) {
         is TaggedModuleOpenVPN -> {
             InteractiveOpenVPNView(
-                profile = profile,
-                module = module.value,
+                login = login,
                 onDismiss = onDismiss,
                 onConnect = onConnect
             )
@@ -55,24 +51,21 @@ fun InteractiveView(
 
 @Composable
 private fun InteractiveOpenVPNView(
-    profile: TaggedProfile,
-    module: OpenVPNModule,
+    login: InteractiveLogin,
     onDismiss: () -> Unit,
-    onConnect: (TaggedProfile) -> Unit
+    onConnect: (InteractiveLogin) -> Unit
 ) {
-    val credentials = module.credentials
-    val otpMethod = credentials?.otpMethod ?: OpenVPNCredentialsOTPMethod.none
-    var username by remember(profile.id, module.id) {
-        mutableStateOf(credentials?.username.orEmpty())
+    var username by remember(login) {
+        mutableStateOf(login.username)
     }
-    var password by remember(profile.id, module.id) {
-        mutableStateOf(credentials?.password.orEmpty())
+    var password by remember(login) {
+        mutableStateOf(if (login.needsOTP) "" else login.password)
     }
-    var otp by remember(profile.id, module.id) {
+    var otp by remember(login) {
         mutableStateOf("")
     }
     val theme = LocalTheme.current
-    val requiresOTP = otpMethod != OpenVPNCredentialsOTPMethod.none
+    val requiresOTP = login.needsOTP
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -125,13 +118,9 @@ private fun InteractiveOpenVPNView(
                     username.isNotBlank()
                 },
                 onClick = {
-                    onConnect(
-                        profile.withInteractiveOpenVPNCredentials(
-                            username = username,
-                            password = password,
-                            otp = otp
-                        )
-                    )
+                    login.username = username
+                    login.password = if (requiresOTP) otp else password
+                    onConnect(login)
                 }
             ) {
                 Text(stringResource(R.string.global_actions_connect))

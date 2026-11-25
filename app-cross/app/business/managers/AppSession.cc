@@ -401,9 +401,8 @@ void AppSession::Remove(std::vector<std::string> ids) {
     });
 }
 
-void AppSession::Connect(std::string id, std::optional<Partout::Models::OpenVpnCredentials> credentials,
-    std::optional<Profile> original) {
-    Post([this, id = std::move(id), credentials = std::move(credentials), original = std::move(original)] {
+void AppSession::Connect(std::string id, std::optional<Partout::TunnelCredentials> credentials) {
+    Post([this, id = std::move(id), credentials = std::move(credentials)] {
         if (pending_preferences_) {
             if (apply_preferences_) apply_preferences_(*pending_preferences_);
             pending_preferences_.reset();
@@ -412,11 +411,8 @@ void AppSession::Connect(std::string id, std::optional<Partout::Models::OpenVpnC
             if (transaction.id == id) throw std::runtime_error("Profile recovery is still pending.");
         }
         const auto profile = profiles_.Find(id);
-        if (original && profile != *original) throw std::runtime_error("Profile changed during interactive login.");
-        std::optional<Partout::TunnelCredentials> authentication;
-        if (credentials) authentication = Partout::TunnelCredentials{credentials->username, credentials->password};
         pending_profile_.reset();
-        tunnel_->Connect(profile, std::move(authentication));
+        tunnel_->Connect(profile, std::move(credentials));
         pending_profile_ = id;
     }, AppErrorContext::tunnel);
 }

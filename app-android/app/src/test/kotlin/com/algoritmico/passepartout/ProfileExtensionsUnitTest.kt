@@ -4,6 +4,7 @@
 
 package com.algoritmico.passepartout
 
+import com.algoritmico.passepartout.business.models.InteractiveLogin
 import io.partout.extensions.encodedPassword
 import io.partout.extensions.interactiveModule
 import io.partout.extensions.isInteractive
@@ -22,6 +23,25 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ProfileExtensionsUnitTest {
+    @Test
+    fun interactiveLogin_keepsEnteredOTPSeparateFromOriginal() {
+        val original = openVPNProfile(OpenVPNModule(
+            id = MODULE_ID,
+            requiresInteractiveCredentials = true,
+            credentials = OpenVPNCredentials(
+                username = "user", password = "secret", otpMethod = OpenVPNCredentialsOTPMethod.append
+            )
+        ))
+        val login = InteractiveLogin(original)
+        assertTrue(login.needsOTP)
+        assertEquals("", login.password)
+        login.password = "123456"
+        val prepared = login.connectionProfile().interactiveOpenVPNModule()
+        assertEquals("secret123456", prepared?.credentials?.password)
+        assertEquals("secret", original.interactiveOpenVPNModule()?.credentials?.password)
+        assertEquals(OpenVPNCredentialsOTPMethod.append, original.interactiveOpenVPNModule()?.credentials?.otpMethod)
+    }
+
     @Test
     fun withInteractiveOpenVPNCredentials_preservesInteractiveModuleFlags() {
         val profile = openVPNProfile(

@@ -19,12 +19,12 @@ std::optional<InteractiveLogin> InteractiveLogin::FromProfile(const Profile &pro
                 (module.configuration->authUserPass.value_or(false) && missing)))) continue;
         InteractiveLogin login{};
         login.original = profile;
-        login.credentials.otpMethod.value = Partout::Models::OpenVpnCredentialsOTPMethod::none;
-        if (saved) login.credentials = *saved;
-        login.needs_otp = login.credentials.otpMethod.value != Partout::Models::OpenVpnCredentialsOTPMethod::none;
+        if (saved) {
+            login.credentials = {saved->username, saved->password};
+            login.needs_otp = saved->otpMethod.value != Partout::Models::OpenVpnCredentialsOTPMethod::none;
+        }
         // The native adapter receives the raw OTP; Partout applies its encoding.
         if (login.needs_otp) login.credentials.password.clear();
-        login.credentials.otp.reset();
         return login;
     }
     return std::nullopt;

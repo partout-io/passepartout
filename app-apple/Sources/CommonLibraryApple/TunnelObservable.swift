@@ -77,8 +77,18 @@ extension TunnelObservable {
         try await installAndConnect(true, with: profile, force: force)
     }
 
+    public func connect(with login: InteractiveLogin) async throws {
+        // Run installation checks and persistence with the original profile only.
+        _ = try await willInstall?(login.original, true, true)
+        try await installPreparedProfile(login.connectionProfile(), connect: true)
+    }
+
     private func installAndConnect(_ connect: Bool, with preProfile: Profile, force: Bool) async throws {
         let profile = try await willInstall?(preProfile, connect, force) ?? preProfile
+        try await installPreparedProfile(profile, connect: connect)
+    }
+
+    private func installPreparedProfile(_ profile: Profile, connect: Bool) async throws {
         var options: [String: any Sendable] = [Options.isManualKey: true]
         if let preferences {
             let encodedPreferences = try ABI.encode(preferences.serialized())
