@@ -39,15 +39,15 @@ bool Platform::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool Platform::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool Platform::Validate(std::stringstream& msg, const std::string& path_prefix) const
 {
     bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "Platform" : pathPrefix;
+    const std::string model_path = path_prefix.empty() ? "Platform" : path_prefix;
 
     if (value == Platform::ePlatform::INVALID_VALUE_OPENAPI_GENERATED)
     {
         success = false;
-        msg << _pathPrefix << ": has no value;";
+        msg << model_path << ": has no value;";
     }
 
     return success;

@@ -39,47 +39,31 @@ bool Credits::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool Credits::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool Credits::Validate(std::stringstream& msg, const std::string& path_prefix) const
 {
     bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "Credits" : pathPrefix;
+    const std::string model_path = path_prefix.empty() ? "Credits" : path_prefix;
 
-    /* licenses */ {
-        const std::vector<Passepartout::Models::Credits_licenses_inner>& value = licenses;
-        const std::string currentValuePath = _pathPrefix + ".licenses";
-
-        { // Recursive validation of array elements
-            const std::string oldValuePath = currentValuePath;
-            int i = 0;
-            for (const Passepartout::Models::Credits_licenses_inner& value : value)
-            {
-                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
-
-        success = Partout::Models::ValidateModel(value, msg, currentValuePath + ".licenses") && success;
-
-                i++;
-            }
+    {
+        const auto& items = this->licenses;
+        const std::string field_path = model_path + ".licenses";
+        std::size_t index = 0;
+        for (const auto& item : items) {
+            const std::string item_path = field_path + "[" + std::to_string(index) + "]";
+            success = Partout::Models::ValidateModel(item, msg, item_path + ".licenses") && success;
+            ++index;
         }
-
     }
 
-    /* notices */ {
-        const std::vector<Passepartout::Models::Credits_notices_inner>& value = notices;
-        const std::string currentValuePath = _pathPrefix + ".notices";
-
-        { // Recursive validation of array elements
-            const std::string oldValuePath = currentValuePath;
-            int i = 0;
-            for (const Passepartout::Models::Credits_notices_inner& value : value)
-            {
-                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
-
-        success = Partout::Models::ValidateModel(value, msg, currentValuePath + ".notices") && success;
-
-                i++;
-            }
+    {
+        const auto& items = this->notices;
+        const std::string field_path = model_path + ".notices";
+        std::size_t index = 0;
+        for (const auto& item : items) {
+            const std::string item_path = field_path + "[" + std::to_string(index) + "]";
+            success = Partout::Models::ValidateModel(item, msg, item_path + ".notices") && success;
+            ++index;
         }
-
     }
 
     return success;

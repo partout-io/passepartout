@@ -39,45 +39,20 @@ bool Issue::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool Issue::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool Issue::Validate(std::stringstream& msg, const std::string& path_prefix) const
 {
     bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "Issue" : pathPrefix;
+    const std::string model_path = path_prefix.empty() ? "Issue" : path_prefix;
 
-    /* purchasedProducts */ {
-        const std::vector<std::string>& value = purchasedProducts;
-        const std::string currentValuePath = _pathPrefix + ".purchasedProducts";
-
-        { // Recursive validation of array elements
-            const std::string oldValuePath = currentValuePath;
-            int i = 0;
-            for (const std::string& value : value)
-            {
-                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
-
-                i++;
-            }
+    {
+        const auto& items = this->attachments;
+        const std::string field_path = model_path + ".attachments";
+        std::size_t index = 0;
+        for (const auto& item : items) {
+            const std::string item_path = field_path + "[" + std::to_string(index) + "]";
+            success = Partout::Models::ValidateModel(item, msg, item_path + ".attachments") && success;
+            ++index;
         }
-
-    }
-
-    /* attachments */ {
-        const std::vector<Passepartout::Models::IssueAttachment>& value = attachments;
-        const std::string currentValuePath = _pathPrefix + ".attachments";
-
-        { // Recursive validation of array elements
-            const std::string oldValuePath = currentValuePath;
-            int i = 0;
-            for (const Passepartout::Models::IssueAttachment& value : value)
-            {
-                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
-
-        success = Partout::Models::ValidateModel(value, msg, currentValuePath + ".attachments") && success;
-
-                i++;
-            }
-        }
-
     }
 
     return success;

@@ -39,12 +39,9 @@ bool WebReceiverEventUploadFailure::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool WebReceiverEventUploadFailure::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool WebReceiverEventUploadFailure::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "WebReceiverEventUploadFailure" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool WebReceiverEventUploadFailure::operator==(const WebReceiverEventUploadFailure& other) const

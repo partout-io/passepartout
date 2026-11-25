@@ -39,29 +39,9 @@ bool ProfileEventDelete::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool ProfileEventDelete::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool ProfileEventDelete::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "ProfileEventDelete" : pathPrefix;
-
-    /* ids */ {
-        const std::vector<std::string>& value = ids;
-        const std::string currentValuePath = _pathPrefix + ".ids";
-
-        { // Recursive validation of array elements
-            const std::string oldValuePath = currentValuePath;
-            int i = 0;
-            for (const std::string& value : value)
-            {
-                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
-
-                i++;
-            }
-        }
-
-    }
-
-    return success;
+    return true;
 }
 
 bool ProfileEventDelete::operator==(const ProfileEventDelete& other) const

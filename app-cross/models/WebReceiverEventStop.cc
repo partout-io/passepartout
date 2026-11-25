@@ -39,12 +39,9 @@ bool WebReceiverEventStop::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool WebReceiverEventStop::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool WebReceiverEventStop::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "WebReceiverEventStop" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool WebReceiverEventStop::operator==(const WebReceiverEventStop& other) const

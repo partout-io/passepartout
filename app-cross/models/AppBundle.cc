@@ -39,12 +39,9 @@ bool AppBundle::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool AppBundle::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool AppBundle::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "AppBundle" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool AppBundle::operator==(const AppBundle& other) const

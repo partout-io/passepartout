@@ -39,29 +39,9 @@ bool AppConstants_tunnel::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool AppConstants_tunnel::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool AppConstants_tunnel::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "AppConstants_tunnel" : pathPrefix;
-
-    /* dnsFallbackServers */ {
-        const std::vector<std::string>& value = dnsFallbackServers;
-        const std::string currentValuePath = _pathPrefix + ".dnsFallbackServers";
-
-        { // Recursive validation of array elements
-            const std::string oldValuePath = currentValuePath;
-            int i = 0;
-            for (const std::string& value : value)
-            {
-                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
-
-                i++;
-            }
-        }
-
-    }
-
-    return success;
+    return true;
 }
 
 bool AppConstants_tunnel::operator==(const AppConstants_tunnel& other) const

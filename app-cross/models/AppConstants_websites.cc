@@ -39,12 +39,9 @@ bool AppConstants_websites::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool AppConstants_websites::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool AppConstants_websites::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "AppConstants_websites" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool AppConstants_websites::operator==(const AppConstants_websites& other) const

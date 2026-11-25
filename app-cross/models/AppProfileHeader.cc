@@ -39,81 +39,31 @@ bool AppProfileHeader::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool AppProfileHeader::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool AppProfileHeader::Validate(std::stringstream& msg, const std::string& path_prefix) const
 {
     bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "AppProfileHeader" : pathPrefix;
+    const std::string model_path = path_prefix.empty() ? "AppProfileHeader" : path_prefix;
 
-    /* moduleTypes */ {
-        const std::vector<Partout::Models::ModuleType>& value = moduleTypes;
-        const std::string currentValuePath = _pathPrefix + ".moduleTypes";
-
-        { // Recursive validation of array elements
-            const std::string oldValuePath = currentValuePath;
-            int i = 0;
-            for (const Partout::Models::ModuleType& value : value)
-            {
-                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
-
-                i++;
-            }
+    {
+        const auto& items = this->sharingFlags;
+        const std::string field_path = model_path + ".sharingFlags";
+        std::size_t index = 0;
+        for (const auto& item : items) {
+            const std::string item_path = field_path + "[" + std::to_string(index) + "]";
+            success = Partout::Models::ValidateModel(item, msg, item_path) && success;
+            ++index;
         }
-
     }
 
-    /* secondaryModuleTypes */ {
-        const std::vector<Partout::Models::ModuleType>& value = secondaryModuleTypes;
-        const std::string currentValuePath = _pathPrefix + ".secondaryModuleTypes";
-
-        { // Recursive validation of array elements
-            const std::string oldValuePath = currentValuePath;
-            int i = 0;
-            for (const Partout::Models::ModuleType& value : value)
-            {
-                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
-
-                i++;
-            }
+    {
+        const auto& items = this->requiredFeatures;
+        const std::string field_path = model_path + ".requiredFeatures";
+        std::size_t index = 0;
+        for (const auto& item : items) {
+            const std::string item_path = field_path + "[" + std::to_string(index) + "]";
+            success = Partout::Models::ValidateModel(item, msg, item_path) && success;
+            ++index;
         }
-
-    }
-
-    /* sharingFlags */ {
-        const std::vector<Passepartout::Models::ProfileSharingFlag>& value = sharingFlags;
-        const std::string currentValuePath = _pathPrefix + ".sharingFlags";
-
-        { // Recursive validation of array elements
-            const std::string oldValuePath = currentValuePath;
-            int i = 0;
-            for (const Passepartout::Models::ProfileSharingFlag& value : value)
-            {
-                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
-
-        success = Partout::Models::ValidateModel(value, msg, currentValuePath) && success;
-
-                i++;
-            }
-        }
-
-    }
-
-    /* requiredFeatures */ {
-        const std::vector<Passepartout::Models::AppFeature>& value = requiredFeatures;
-        const std::string currentValuePath = _pathPrefix + ".requiredFeatures";
-
-        { // Recursive validation of array elements
-            const std::string oldValuePath = currentValuePath;
-            int i = 0;
-            for (const Passepartout::Models::AppFeature& value : value)
-            {
-                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
-
-        success = Partout::Models::ValidateModel(value, msg, currentValuePath) && success;
-
-                i++;
-            }
-        }
-
     }
 
     return success;
