@@ -137,6 +137,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           submodules: true
+      - uses: partout-io/setup-zig@main
       - name: Configure portable tests and Windows adapter compile check
         run: cmake -S app-cross/tests -B build/cross -DCMAKE_BUILD_TYPE=Debug
       - name: Build

@@ -1,10 +1,14 @@
 cmake_minimum_required(VERSION 3.28)
+if(POLICY CMP0184)
+    cmake_policy(SET CMP0184 NEW)
+endif()
+set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
+set(CMAKE_MSVC_RUNTIME_CHECKS "")
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 project(PassepartoutTests LANGUAGES CXX)
 
-# Dependencies: build models and application state without the VPN core library.
-set(PP_BUILD_LIBRARY OFF)
-set(PP_BUILD_CPP_RUNTIME ON)
+# Dependencies: link application tests against the shared Partout library.
+set(PP_BUILD_LIBRARY ON)
 set(PP_TEST_CPP_RUNTIME OFF)
 set(PP_TEST_WINRT_RUNTIME OFF)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
@@ -34,6 +38,12 @@ foreach(TEST_NAME IN ITEMS models application presentation editor settings activ
         target_compile_options(${TEST_TARGET} PRIVATE /UNDEBUG /utf-8)
     else()
         target_compile_options(${TEST_TARGET} PRIVATE -UNDEBUG)
+    endif()
+    if(WIN32)
+        add_custom_command(TARGET ${TEST_TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_RUNTIME_DLLS:${TEST_TARGET}> $<TARGET_FILE_DIR:${TEST_TARGET}>
+            COMMAND_EXPAND_LISTS)
     endif()
     add_test(NAME passepartout-${TEST_NAME} COMMAND ${TEST_TARGET})
 endforeach()

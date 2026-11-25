@@ -11,7 +11,7 @@ option(PASSEPARTOUT_MODEL_UNITY_BUILD "Batch generated model compilation" ON)
 add_library(passepartout-models STATIC ${MODEL_SOURCES})
 target_compile_features(passepartout-models PUBLIC cxx_std_17)
 target_include_directories(passepartout-models PUBLIC "${CMAKE_CURRENT_LIST_DIR}/models")
-target_link_libraries(passepartout-models PUBLIC Partout::CppRuntime)
+target_link_libraries(passepartout-models PUBLIC Partout::Partout)
 
 # Generated models repeatedly parse the same JSON and model headers. Compile
 # the application models as one unit, keeping handwritten sources independent.
@@ -42,7 +42,7 @@ configure_file("${CMAKE_CURRENT_LIST_DIR}/app/context/SettingsResources.h.in"
 
 add_library(passepartout-core STATIC ${CORE_SOURCES})
 target_link_libraries(passepartout-core
-    PUBLIC passepartout-models Partout::CppRuntime Threads::Threads
+    PUBLIC passepartout-models Partout::Partout Threads::Threads
     PRIVATE Partout::Headers)
 target_include_directories(passepartout-core PUBLIC "${CMAKE_CURRENT_LIST_DIR}/app"
     "${CMAKE_CURRENT_BINARY_DIR}/generated")
