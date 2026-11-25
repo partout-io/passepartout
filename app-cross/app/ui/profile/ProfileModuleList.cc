@@ -10,7 +10,6 @@
 #include <wx/renderer.h>
 #include <wx/settings.h>
 
-namespace Passepartout {
 namespace {
 class ModuleListStore final : public wxDataViewListStore {
 public:
@@ -24,6 +23,9 @@ public:
 
 };
 }
+
+using Passepartout::ProfileModuleList;
+
 ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &editor,
     std::function<void(std::size_t)> selected)
     : ThemeList(parent, wxDV_NO_HEADER) {
@@ -104,5 +106,4 @@ void ProfileModuleList::UpdateMetrics() {
     int width = checkbox_width + title_width;
     width += std::max(0, wxSystemSettings::GetMetric(wxSYS_VSCROLL_X, this));
     SetMinSize(ClientToWindowSize(wxSize(width, GetCharHeight() * 6)));
-}
 }

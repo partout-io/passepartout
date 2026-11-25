@@ -13,7 +13,6 @@
 #include <windows.h>
 #endif
 
-namespace Passepartout {
 namespace {
 std::mutex runtime_mutex;
 struct RuntimeLine {
@@ -24,16 +23,18 @@ std::deque<RuntimeLine> runtime_lines;
 std::atomic_bool logs_private_data{false};
 std::size_t runtime_bytes = 0;
 constexpr std::size_t MaximumLogBytes = 256 * 1024;
-const char *CategoryName(LogCategory category) {
+const char *CategoryName(Passepartout::LogCategory category) {
     switch (category) {
-    case LogCategory::core: return "core";
-    case LogCategory::tunnel: return "tunnel";
-    case LogCategory::profiles: return "profiles";
-    case LogCategory::partout: return "partout";
+    case Passepartout::LogCategory::core: return "core";
+    case Passepartout::LogCategory::tunnel: return "tunnel";
+    case Passepartout::LogCategory::profiles: return "profiles";
+    case Passepartout::LogCategory::partout: return "partout";
     }
     return "unknown";
 }
 }
+
+using Passepartout::AppLogger;
 
 void AppLogger::SetPrivateData(bool enabled) noexcept {
     logs_private_data.store(enabled);
@@ -98,5 +99,4 @@ void AppLogger::Write(LogLevel level, LogCategory category, const std::string &m
     } catch (...) {
         // Diagnostics must not affect the operation being observed.
     }
-}
 }

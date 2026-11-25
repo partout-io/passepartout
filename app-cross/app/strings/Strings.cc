@@ -7,7 +7,6 @@
 #include <map>
 #include <string>
 
-namespace Passepartout {
 namespace {
 struct Entry {
     const char *locale;
@@ -30,7 +29,7 @@ const std::map<std::string, Catalog> &Catalogs() {
 }
 }
 
-wxString Localized(StringKey key, const wxString &locale) {
+wxString Passepartout::Localized(StringKey key, const wxString &locale) {
     auto language = locale;
     language.Replace("-", "_");
     // Apple uses a script identifier for Simplified Chinese.
@@ -45,11 +44,10 @@ wxString Localized(StringKey key, const wxString &locale) {
     return wxString::FromUTF8(StringKeyName(key));
 }
 
-wxString Localized(StringKey key) {
+wxString Passepartout::Localized(StringKey key) {
     static const auto locale = [] {
         const auto *info = wxLocale::GetLanguageInfo(wxLocale::GetSystemLanguage());
         return info ? info->CanonicalName : wxString("en");
     }();
     return Localized(key, locale);
-}
 }

@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <wx/settings.h>
 
-namespace Passepartout {
 namespace {
 class SettingsListStore final : public wxDataViewListStore {
 public:
@@ -26,6 +25,9 @@ public:
 
 };
 }
+
+using Passepartout::SettingsView;
+
 SettingsView::SettingsView(wxWindow *parent, const wxString &update_title,
     SettingsSection initial, std::function<void(SettingsSection)> selected)
     : wxPanel(parent) {
@@ -123,5 +125,4 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &update_title,
     }
     layout->Add(list, 1, wxEXPAND);
     SetSizer(layout);
-}
 }

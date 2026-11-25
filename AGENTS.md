@@ -138,6 +138,13 @@ unrelated refactoring; keep changes within the task's scope.
   APIs and `__WXMSW__` for wxWidgets-port behavior. Keep platform selection out of
   views, behind shared interfaces or Theme components. Update generated source
   lists through `app-cross/scripts/gen-cmake-files.py`, not by hand.
+- In app-cross, declare Windows-only entities under `Passepartout::Windows`
+  (or an existing responsibility-specific namespace beneath it), including
+  named implementation entities in Windows-only files. File-local anonymous
+  helpers follow the shared standalone anonymous-namespace convention. Omit the redundant `Windows`
+  prefix from class names in that namespace. Keep the `Windows` filename prefix
+  for build selection; this is an exception to matching filenames to type names.
+  Shared platform adapters retain their platform-agnostic namespaces.
 - Windows and Linux must maximize their shared wxWidgets look and feel. Reuse
   stock wxWidgets controls, Theme components, layouts, and interactions. Minimize
   platform-specific UI elements; introduce an exception only for a concrete

@@ -21,9 +21,8 @@
 #include <cstdlib>
 #include <stdexcept>
 
-namespace Passepartout {
 namespace {
-class PartoutWireGuardKeyGenerator final : public WireGuardKeyGenerator {
+class PartoutWireGuardKeyGenerator final : public Passepartout::WireGuardKeyGenerator {
 public:
     std::string PublicKey(const std::string &private_key) const override {
         std::unique_ptr<char, decltype(&std::free)> key(partout_wireguard_pubkey(private_key.c_str()), &std::free);
@@ -47,12 +46,12 @@ int BuildNumber(const std::string &version) {
     }
 }
 
-std::unique_ptr<HttpClient> MakeHttp(const Models::AppConstants &constants, bool demo) {
+std::unique_ptr<Passepartout::HttpClient> MakeHttp(const Passepartout::Models::AppConstants &constants, bool demo) {
 #ifdef _WIN32
-    if (!demo) return Windows::MakeHttpClient(std::chrono::milliseconds(
+    if (!demo) return Passepartout::Windows::MakeHttpClient(std::chrono::milliseconds(
         static_cast<std::int64_t>(constants.url.timeoutInterval * 1000)));
 #endif
-    class OfflineHttpClient final : public HttpClient {
+    class OfflineHttpClient final : public Passepartout::HttpClient {
     public:
         std::string Get(const std::string &) override {
             throw std::runtime_error("Remote services are unavailable in this mode.");
@@ -63,40 +62,42 @@ std::unique_ptr<HttpClient> MakeHttp(const Models::AppConstants &constants, bool
     return std::make_unique<OfflineHttpClient>();
 }
 
-bool ReviewIssue(const IssueReport &report) {
+bool ReviewIssue(const Passepartout::IssueReport &report) {
 #ifdef _WIN32
-    return Windows::Issue::Review(report);
+    return Passepartout::Windows::Issue::Review(report);
 #else
     return false;
 #endif
 }
 
-Profile ImportProfile(const std::string &text, const std::string &name) {
+Passepartout::Profile ImportProfile(const std::string &text, const std::string &name) {
     std::unique_ptr<char, decltype(&std::free)> json(
         partout_import_profile(text.c_str(), nullptr, name.c_str()), &std::free);
-    return Imports::DecodeResult(json.get());
+    return Passepartout::Imports::DecodeResult(json.get());
 }
 
-std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const CrossConstants &constants) {
-    if (demo) return std::make_unique<Partout::Tunnel>(std::make_unique<FakeTunnelStrategy>());
+std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const Passepartout::CrossConstants &constants) {
+    if (demo) return std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>());
 #ifdef _WIN32
     return std::make_unique<Partout::Tunnel>(
         std::make_unique<Partout::WinRTTunnelStrategy>(constants.tunnel.server_uri)
     );
 #else
-    return std::make_unique<Partout::Tunnel>(std::make_unique<FakeTunnelStrategy>());
+    return std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>());
 #endif
 }
 
-std::function<void(const Models::AppPreferences &)> TunnelPreferences(bool demo, const Models::AppConstants &constants) {
+std::function<void(const Passepartout::Models::AppPreferences &)> TunnelPreferences(bool demo, const Passepartout::Models::AppConstants &constants) {
 #ifdef _WIN32
     if (!demo) return [servers = constants.tunnel.dnsFallbackServers](const auto &preferences) {
-        Windows::Tunnel::ApplyPreferences(preferences, servers);
+        Passepartout::Windows::Tunnel::ApplyPreferences(preferences, servers);
     };
 #endif
     return {};
 }
 }
+
+using Passepartout::AppContext;
 
 AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
                        Models::AppConstants app_constants, CrossConstants frontend_constants)
@@ -137,4 +138,3 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
 }
 
 AppContext::~AppContext() = default;
-}

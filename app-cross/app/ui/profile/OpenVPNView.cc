@@ -8,7 +8,6 @@
 #include <wx/base64.h>
 #include <wx/numformatter.h>
 
-namespace Passepartout {
 namespace {
 wxString HexKey(const std::string &value) {
     const auto decoded = wxBase64Decode(wxString::FromUTF8(value));
@@ -22,6 +21,9 @@ wxString HexKey(const std::string &value) {
     return text;
 }
 }
+
+using Passepartout::OpenVPNView;
+
 OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule &module,
     OpenModuleContent open_content, std::function<void()> open_credentials, std::function<void()> open_remotes)
     : ModuleDetailView(parent, std::move(open_content), Presentation::Form) {
@@ -150,5 +152,4 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
         Row(StringKey::ModulesOpenvpnRandomizeHostname, c.randomizeHostnames);
     }
     Finish();
-}
 }

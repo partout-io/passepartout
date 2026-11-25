@@ -9,32 +9,31 @@
 #include <wx/numformatter.h>
 #include "../theme/Theme.h"
 
-namespace Passepartout {
 namespace {
 class ProfileListStore final : public wxDataViewListStore {
 public:
     bool IsEnabledByRow(unsigned row, unsigned column) const override {
-        return column != ProfileListView::ToggleColumn || GetItemData(GetItem(row)) != 0;
+        return column != Passepartout::ProfileListView::ToggleColumn || GetItemData(GetItem(row)) != 0;
     }
 };
 wxString Text(const std::string &value) {
     return wxString::FromUTF8(value);
 }
 
-wxString StatusText(Status status) {
+wxString StatusText(Passepartout::Status status) {
     switch (status) {
-        case Status::disconnected: return Localized(StringKey::EntitiesTunnelStatusInactive);
-        case Status::connecting: return Localized(StringKey::EntitiesTunnelStatusActivating);
-        case Status::connected: return Localized(StringKey::EntitiesTunnelStatusActive);
-        case Status::disconnecting: return Localized(StringKey::EntitiesTunnelStatusDeactivating);
-        default: return Localized(StringKey::GlobalNounsUnknown);
+        case Passepartout::Status::disconnected: return Passepartout::Localized(Passepartout::StringKey::EntitiesTunnelStatusInactive);
+        case Passepartout::Status::connecting: return Passepartout::Localized(Passepartout::StringKey::EntitiesTunnelStatusActivating);
+        case Passepartout::Status::connected: return Passepartout::Localized(Passepartout::StringKey::EntitiesTunnelStatusActive);
+        case Passepartout::Status::disconnecting: return Passepartout::Localized(Passepartout::StringKey::EntitiesTunnelStatusDeactivating);
+        default: return Passepartout::Localized(Passepartout::StringKey::GlobalNounsUnknown);
     }
 }
 
-wxString TransferText(const AppSnapshot &state, const std::string &id) {
+wxString TransferText(const Passepartout::AppSnapshot &state, const std::string &id) {
     if (!state.tunnel_available) return {};
     for (const auto &tunnel : state.tunnels) {
-        if (tunnel.id != id || tunnel.status.value != Status::connected || !tunnel.transfer) continue;
+        if (tunnel.id != id || tunnel.status.value != Passepartout::Status::connected || !tunnel.transfer) continue;
         const auto &transfer = *tunnel.transfer;
         if (transfer.received < 0 || transfer.sent < 0) return {};
         return Text(Passepartout::Profiles::TransferText(transfer, [](double value, int precision) {
@@ -44,6 +43,9 @@ wxString TransferText(const AppSnapshot &state, const std::string &id) {
     return {};
 }
 }
+
+using Passepartout::ProfileListView;
+
 ProfileListView::ProfileListView(wxWindow *parent, TunnelObservable &tunnel,
     std::function<void()> selection_changed,
     std::function<void(std::vector<std::string>)> remove,
@@ -211,5 +213,4 @@ void ProfileListView::UpdateProfile(unsigned row, const wxString &name, const wx
     list_->SetTextValue(status, row, 1);
     list_->SetToggleValue(is_on, row, ToggleColumn);
     list_->SetTextValue(transfer, row, TransferColumn);
-}
 }

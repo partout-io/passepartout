@@ -9,15 +9,15 @@
 #include <wx/window.h>
 #include <wx/timer.h>
 
-namespace Passepartout {
+namespace Passepartout::Windows {
 // Owned by the requesting view. Polls on the UI thread and destroys itself
 // after completion; closing the view cancels the native request.
-class WindowsURLLauncher final : public wxWindow {
+class URLLauncher final : public wxWindow {
 public:
-    WindowsURLLauncher(
+    URLLauncher(
         wxWindow *parent, const std::string &url, std::function<void(wxWindow *)> on_error
     );
-    ~WindowsURLLauncher() override;
+    ~URLLauncher() override;
 private:
     std::optional<bool> Poll();
     void OnTimer(wxTimerEvent &event);

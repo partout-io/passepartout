@@ -9,9 +9,9 @@
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.System.h>
 
-namespace Passepartout {
+namespace Passepartout::Windows {
 using namespace winrt::Windows::Foundation;
-struct WindowsURLLauncher::Impl {
+struct URLLauncher::Impl {
     struct Apartment {
         Apartment() {
             winrt::check_hresult(RoInitialize(RO_INIT_SINGLETHREADED));
@@ -39,18 +39,18 @@ struct WindowsURLLauncher::Impl {
     }
 };
 
-WindowsURLLauncher::WindowsURLLauncher(
+URLLauncher::URLLauncher(
     wxWindow *parent, const std::string &url, std::function<void(wxWindow *)> on_error
 ) : wxWindow(parent, wxID_ANY), impl_(std::make_unique<Impl>(url)), timer_(this),
     on_error_(std::move(on_error)) {
     Hide();
-    Bind(wxEVT_TIMER, &WindowsURLLauncher::OnTimer, this);
+    Bind(wxEVT_TIMER, &URLLauncher::OnTimer, this);
     timer_.Start(50);
 }
 
-WindowsURLLauncher::~WindowsURLLauncher() = default;
+URLLauncher::~URLLauncher() = default;
 
-void WindowsURLLauncher::OnTimer(wxTimerEvent &) {
+void URLLauncher::OnTimer(wxTimerEvent &) {
     std::optional<bool> result;
     try {
         result = Poll();
@@ -66,7 +66,7 @@ void WindowsURLLauncher::OnTimer(wxTimerEvent &) {
     if (target) target->Destroy();
 }
 
-std::optional<bool> WindowsURLLauncher::Poll() {
+std::optional<bool> URLLauncher::Poll() {
     if (impl_->operation.Status() != AsyncStatus::Started) return impl_->operation.GetResults();
     if (std::chrono::steady_clock::now() < impl_->deadline) return {};
     impl_->operation.Cancel();

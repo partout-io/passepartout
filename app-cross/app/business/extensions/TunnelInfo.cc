@@ -5,17 +5,17 @@
 #include "TunnelInfo.h"
 #include <stdexcept>
 
-using namespace Passepartout;
+using namespace Passepartout::Models;
 
-std::vector<Models::AppTunnelInfo> Passepartout::Tunnels::Info(const std::vector<Partout::Models::TunnelSnapshot> &snapshots) {
-    std::vector<Models::AppTunnelInfo> result;
+std::vector<AppTunnelInfo> Passepartout::Tunnels::Info(const std::vector<Partout::Models::TunnelSnapshot> &snapshots) {
+    std::vector<AppTunnelInfo> result;
     for (const auto &snapshot : snapshots) {
-        Models::AppTunnelInfo info{};
+        AppTunnelInfo info{};
         info.id = snapshot.id;
         info.isEnabled = snapshot.isEnabled;
         info.onDemand = snapshot.onDemand;
         if (snapshot.environment) {
-            Models::ProfileTransfer transfer{};
+            ProfileTransfer transfer{};
             transfer.received = snapshot.environment->dataCount.received;
             transfer.sent = snapshot.environment->dataCount.sent;
             info.transfer = transfer;

@@ -16,7 +16,6 @@
 #include <winrt/Windows.Storage.Streams.h>
 #endif
 
-namespace Passepartout {
 #ifdef _WIN32
 namespace {
 constexpr wchar_t WindowClass[] = L"Passepartout.FileActivation.1";
@@ -42,16 +41,16 @@ auto Await(const Operation &operation, const std::atomic_bool &canceled) {
     }
     return operation.GetResults();
 }
-class BrokeredFiles final : public ConfigurationFiles {
+class BrokeredFiles final : public Passepartout::ConfigurationFiles {
 public:
     explicit BrokeredFiles(std::vector<winrt::Windows::Storage::StorageFile> files, std::size_t failures)
-        : ConfigurationFiles({}, failures), files_(std::move(files)) {}
+        : Passepartout::ConfigurationFiles({}, failures), files_(std::move(files)) {}
 
     std::size_t Count() const override {
         return files_.size();
     }
 
-    ConfigurationSource Read(std::size_t index) const override {
+    Passepartout::ConfigurationSource Read(std::size_t index) const override {
         if (canceled_.load()) throw std::runtime_error("File activation canceled.");
         const Apartment apartment(winrt::apartment_type::multi_threaded);
         using namespace winrt::Windows::Storage::Streams;
@@ -83,6 +82,12 @@ bool IsSameExecutable(HWND window, DWORD &pid) {
     return CompareStringOrdinal(current.data(), count, target.data(), length, TRUE) == CSTR_EQUAL;
 }
 }
+#endif
+
+using Passepartout::FileActivation;
+
+#ifdef _WIN32
+
 struct FileActivation::Impl {
     FileActivationInbox inbox;
     FileActivationInbox::Handler handler;
@@ -152,7 +157,7 @@ bool FileActivation::Forward(const std::string &service, std::shared_ptr<const C
     return false;
 }
 
-std::shared_ptr<const ConfigurationFiles> FileActivation::ReadFiles() {
+std::shared_ptr<const Passepartout::ConfigurationFiles> FileActivation::ReadFiles() {
     UINT32 size = 0;
     if (GetCurrentPackageFullName(&size, nullptr) == APPMODEL_ERROR_NO_PACKAGE) return {};
     const Apartment apartment(winrt::apartment_type::single_threaded);
@@ -178,10 +183,9 @@ bool FileActivation::Forward(const std::string &, std::shared_ptr<const Configur
     return false;
 }
 
-std::shared_ptr<const ConfigurationFiles> FileActivation::ReadFiles() {
+std::shared_ptr<const Passepartout::ConfigurationFiles> FileActivation::ReadFiles() {
     return {};
 }
 #endif
 
 FileActivation::~FileActivation() = default;
-}

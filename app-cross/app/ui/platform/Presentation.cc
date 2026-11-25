@@ -8,8 +8,6 @@
 #include "WindowsURLLauncher.h"
 #endif
 
-using namespace Passepartout;
-
 void Passepartout::UseSystemAppearance(wxApp &app) {
 #ifdef __WXMSW__
     // Windows needs an explicit opt-in; other ports follow the native theme.
@@ -32,7 +30,7 @@ void Passepartout::OpenURL(wxWindow *parent, const std::string &url) {
             return;
         }
 #ifdef _WIN32
-        new WindowsURLLauncher(parent, url, [](wxWindow *owner) {
+        new Windows::URLLauncher(parent, url, [](wxWindow *owner) {
             PresentError(owner);
         });
 #else

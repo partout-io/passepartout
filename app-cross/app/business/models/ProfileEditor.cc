@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <type_traits>
 
-namespace Passepartout {
 namespace {
 std::string ModuleId(const Partout::Models::TaggedModule &module) {
     return std::visit([](const auto &value) -> std::string {
@@ -19,6 +18,8 @@ std::string ModuleId(const Partout::Models::TaggedModule &module) {
 }
 }
 
+using Passepartout::ProfileEditor;
+
 ProfileEditor::ProfileEditor(Profile profile) : original_(std::move(profile)) {
     state_.draft = original_;
 }
@@ -28,7 +29,7 @@ ProfileEditor::State ProfileEditor::Snapshot() const {
     return state_;
 }
 
-const Profile &ProfileEditor::Original() const {
+const Passepartout::Profile &ProfileEditor::Original() const {
     return original_;
 }
 
@@ -79,5 +80,4 @@ void ProfileEditor::FinishSave(bool succeeded) {
 void ProfileEditor::ClearError() {
     std::lock_guard lock(mutex_);
     state_.failed = false;
-}
 }

@@ -12,7 +12,6 @@
 #include <winrt/Windows.System.Threading.h>
 #include <mutex>
 
-namespace Passepartout {
 namespace {
 constexpr wchar_t ImportFolder[] = L"configuration-imports";
 constexpr std::uint32_t MaxBytes = 1024 * 1024;
@@ -27,17 +26,17 @@ struct RequestDirectory {
     }
     const std::filesystem::path path;
 };
-struct StagedFiles final : ConfigurationFiles {
-    StagedFiles(ConfigurationFiles files, std::shared_ptr<RequestDirectory> owner)
-        : ConfigurationFiles(std::move(files.paths), files.selection_failures), directory(std::move(owner)) {}
+struct StagedFiles final : Passepartout::ConfigurationFiles {
+    StagedFiles(Passepartout::ConfigurationFiles files, std::shared_ptr<RequestDirectory> owner)
+        : Passepartout::ConfigurationFiles(std::move(files.paths), files.selection_failures), directory(std::move(owner)) {}
     const std::shared_ptr<RequestDirectory> directory;
 };
 struct SelectionState {
     std::mutex mutex;
     bool cancelled = false;
-    std::optional<ConfigurationPickerResult> result;
+    std::optional<Passepartout::ConfigurationPickerResult> result;
 
-    void Finish(ConfigurationPickerResult value) {
+    void Finish(Passepartout::ConfigurationPickerResult value) {
         std::lock_guard lock(mutex);
         if (!cancelled) result = std::move(value);
     }
@@ -51,14 +50,14 @@ std::wstring NewRequestId() {
     return text;
 }
 
-ConfigurationPickerResult Collect(const winrt::Windows::Foundation::Collections::IVectorView<winrt::Windows::Storage::StorageFile> &files, const std::wstring &request,
+Passepartout::ConfigurationPickerResult Collect(const winrt::Windows::Foundation::Collections::IVectorView<winrt::Windows::Storage::StorageFile> &files, const std::wstring &request,
                                   const std::shared_ptr<RequestDirectory> &directory) {
     if (!files || !files.Size()) return {};
     const auto count = files.Size();
     const auto root = winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().CreateFolderAsync(
         ImportFolder, winrt::Windows::Storage::CreationCollisionOption::OpenIfExists).get();
     const auto destination = root.CreateFolderAsync(request, winrt::Windows::Storage::CreationCollisionOption::FailIfExists).get();
-    auto selected = Configuration::CollectFiles(count, [&](std::size_t index) {
+    auto selected = Passepartout::Configuration::CollectFiles(count, [&](std::size_t index) {
         const auto file = files.GetAt(static_cast<std::uint32_t>(index));
         const auto stream = file.OpenReadAsync().get();
         if (!stream.Size() || stream.Size() > MaxBytes) throw std::runtime_error("Invalid import file size.");
@@ -73,11 +72,11 @@ ConfigurationPickerResult Collect(const winrt::Windows::Foundation::Collections:
     return {std::make_shared<StagedFiles>(std::move(selected), directory), false};
 }
 
-class WindowsConfigurationPicker final : public ConfigurationPicker {
+class ConfigurationPicker final : public Passepartout::ConfigurationPicker {
 public:
-    explicit WindowsConfigurationPicker(HWND owner) : owner_(owner) {}
+    explicit ConfigurationPicker(HWND owner) : owner_(owner) {}
 
-    ~WindowsConfigurationPicker() override {
+    ~ConfigurationPicker() override {
         Cancel();
     }
 
@@ -122,9 +121,9 @@ public:
         }
     }
 
-    std::optional<ConfigurationPickerResult> Poll() override {
+    std::optional<Passepartout::ConfigurationPickerResult> Poll() override {
         if (!state_) return std::nullopt;
-        std::optional<ConfigurationPickerResult> result;
+        std::optional<Passepartout::ConfigurationPickerResult> result;
         {
             std::lock_guard lock(state_->mutex);
             result = std::move(state_->result);
@@ -155,7 +154,6 @@ private:
 };
 }
 
-std::unique_ptr<ConfigurationPicker> Windows::Configuration::MakePicker(HWND owner) {
-    return std::make_unique<WindowsConfigurationPicker>(owner);
-}
+std::unique_ptr<Passepartout::ConfigurationPicker> Passepartout::Windows::Configuration::MakePicker(HWND owner) {
+    return std::make_unique<::ConfigurationPicker>(owner);
 }

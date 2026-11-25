@@ -7,7 +7,6 @@
 #include <charconv>
 #include <stdexcept>
 
-namespace Passepartout {
 namespace {
 std::optional<std::array<unsigned, 4>> Parse(const std::string &text) {
     std::array<unsigned, 4> parts{};
@@ -24,6 +23,8 @@ std::optional<std::array<unsigned, 4>> Parse(const std::string &text) {
     return {};
 }
 }
+
+using Passepartout::VersionChecker;
 
 VersionChecker::VersionChecker(std::string current, std::unique_ptr<VersionStrategy> strategy,
     std::string destination, std::int64_t rate_limit_seconds, std::optional<std::int64_t> last_checked,
@@ -63,5 +64,4 @@ void VersionChecker::Check(std::int64_t now) {
 
 void VersionChecker::Cancel() noexcept {
     if (strategy_) strategy_->Cancel();
-}
 }

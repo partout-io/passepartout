@@ -11,11 +11,10 @@
 #include <winrt/Windows.Web.Http.h>
 #include <winrt/Windows.Web.Http.Filters.h>
 
-namespace Passepartout {
 namespace {
-class WindowsHttpClient final : public HttpClient {
+class HttpClient final : public Passepartout::HttpClient {
 public:
-    explicit WindowsHttpClient(std::chrono::milliseconds timeout) : timeout_(timeout) {}
+    explicit HttpClient(std::chrono::milliseconds timeout) : timeout_(timeout) {}
 
     std::string Get(const std::string &url) override {
         if (canceled_.load()) throw std::runtime_error("HTTP request canceled.");
@@ -67,7 +66,6 @@ private:
 };
 }
 
-std::unique_ptr<HttpClient> Windows::MakeHttpClient(std::chrono::milliseconds timeout) {
-    return std::make_unique<WindowsHttpClient>(timeout);
-}
+std::unique_ptr<Passepartout::HttpClient> Passepartout::Windows::MakeHttpClient(std::chrono::milliseconds timeout) {
+    return std::make_unique<::HttpClient>(timeout);
 }

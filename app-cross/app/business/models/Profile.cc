@@ -15,7 +15,6 @@
 #include <windows.h>
 #endif
 
-namespace Passepartout {
 namespace {
 std::wstring LowerName(const std::string &name) {
 #ifdef _WIN32
@@ -45,7 +44,7 @@ std::wstring LowerName(const std::string &name) {
 #endif
 }
 
-double LastUpdate(const Profile &profile) {
+double LastUpdate(const Passepartout::Profile &profile) {
     if (profile.userInfo && profile.userInfo->IsObject()) {
         const auto value = profile.userInfo->Find("lastUpdate");
         if (value) {
@@ -64,12 +63,12 @@ double LastUpdate(const Profile &profile) {
 }
 }
 
-std::string ConfigurationName(const std::filesystem::path &path) {
+std::string Passepartout::ConfigurationName(const std::filesystem::path &path) {
     const auto name = path.stem().u8string();
     return std::string(reinterpret_cast<const char *>(name.data()), name.size());
 }
 
-bool IsSafeProfileId(const std::string &id) {
+bool Passepartout::IsSafeProfileId(const std::string &id) {
     auto upper = id;
     std::transform(upper.begin(), upper.end(), upper.begin(), [](unsigned char c) {
         return static_cast<char>(std::toupper(c));
@@ -84,7 +83,7 @@ bool IsSafeProfileId(const std::string &id) {
         });
 }
 
-void SortProfiles(std::vector<Profile> &profiles) {
+void Passepartout::SortProfiles(std::vector<Profile> &profiles) {
     std::sort(profiles.begin(), profiles.end(), [](const auto &a, const auto &b) {
         const auto left = LowerName(a.name);
         const auto right = LowerName(b.name);
@@ -96,12 +95,12 @@ void SortProfiles(std::vector<Profile> &profiles) {
     });
 }
 
-void ValidateProfileIdentity(const Profile &profile) {
+void Passepartout::ValidateProfileIdentity(const Profile &profile) {
     if (!IsSafeProfileId(profile.id) || profile.name.empty())
         throw std::runtime_error("The profile has an invalid identity or an empty name.");
 }
 
-std::string ReadConfiguration(const std::filesystem::path &path) {
+std::string Passepartout::ReadConfiguration(const std::filesystem::path &path) {
     if (!std::filesystem::is_regular_file(path))
         throw std::runtime_error("The configuration is not a regular file.");
     std::ifstream input(path, std::ios::binary);
@@ -116,5 +115,4 @@ std::string ReadConfiguration(const std::filesystem::path &path) {
     if (content.find('\0') != std::string::npos)
         throw std::runtime_error("The configuration contains invalid text.");
     return content;
-}
 }
