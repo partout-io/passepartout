@@ -11,6 +11,7 @@ using Profile = Partout::Models::TaggedProfile;
 constexpr std::size_t MaxConfigurationBytes = 1024 * 1024;
 bool IsSafeProfileId(const std::string &id);
 void ValidateProfileIdentity(const Profile &profile);
+std::string ConfigurationName(const std::filesystem::path &path);
 std::string ReadConfiguration(const std::filesystem::path &path);
 void SortProfiles(std::vector<Profile> &profiles);
 }

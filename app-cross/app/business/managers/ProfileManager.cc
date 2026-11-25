@@ -23,7 +23,7 @@ Profile ProfileManager::Import(const std::filesystem::path &path,
     std::function<void(const Profile &)> register_profile,
     std::function<void(const std::string &)> rollback_registration,
     std::function<void(const Profile &)> validate_registration) {
-    return ImportText(ReadConfiguration(path), path.stem().u8string(), std::move(register_profile),
+    return ImportText(ReadConfiguration(path), ConfigurationName(path), std::move(register_profile),
         std::move(rollback_registration), std::move(validate_registration));
 }
 Profile ProfileManager::ImportText(const std::string &text, const std::string &name,

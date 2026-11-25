@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Davide De Rosa
 // SPDX-License-Identifier: GPL-3.0
 #include "../models/AppProfileHeader.h"
+#include "../models/AppPreferences.h"
+#include <partout/models/OnDemandModule.h>
 #include "../models/AppTunnelInfo.h"
 #include "../models/Event.h"
 #include "../models/Platform.h"
@@ -47,4 +49,24 @@ int main() {
         rejected = true;
     }
     assert(rejected);
+
+    // Generated array validation still checks enums and uniqueness, while
+    // unconstrained primitive arrays require no validation loop.
+    AppPreferences preferences{};
+    preferences.configFlags.emplace_back();
+    std::stringstream errors;
+    assert(!preferences.Validate(errors));
+    assert(errors.str().find("AppPreferences.configFlags[0]") != std::string::npos);
+    preferences.configFlags.clear();
+    assert(preferences.Validate(errors));
+    Partout::Models::OnDemandModule configuration{};
+    const Partout::Models::OnDemandModuleOtherNetwork network{
+        Partout::Models::OnDemandModuleOtherNetwork::ethernet};
+    configuration.withOtherNetworks = {network, network};
+    errors.str("");
+    assert(!configuration.Validate(errors));
+    assert(errors.str().find("may not contain the same item") != std::string::npos);
+    configuration.withOtherNetworks = {network};
+    assert(configuration.Validate(errors));
+    event.Validate();
 }

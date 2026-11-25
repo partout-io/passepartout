@@ -15,6 +15,11 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
 
+# Keep generated C++ warning-clean in the standalone regression build.
+if(MSVC)
+    target_compile_options(passepartout-models PRIVATE /WX)
+endif()
+
 # Portable test executables
 add_executable(passepartout-models-test Models.cc)
 target_link_libraries(passepartout-models-test PRIVATE passepartout-models)

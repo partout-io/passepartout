@@ -63,6 +63,11 @@ double LastUpdate(const Profile &profile) {
 }
 }
 
+std::string ConfigurationName(const std::filesystem::path &path) {
+    const auto name = path.stem().u8string();
+    return std::string(reinterpret_cast<const char *>(name.data()), name.size());
+}
+
 bool IsSafeProfileId(const std::string &id) {
     auto upper = id;
     std::transform(upper.begin(), upper.end(), upper.begin(), [](unsigned char c) {
