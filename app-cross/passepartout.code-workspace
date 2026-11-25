@@ -8,6 +8,9 @@
 		}
 	],
 	"settings": {
+		"cmake.exclude": [
+			"${workspaceFolder:partout}"
+		],
 		"cmake.options.advanced": {
 			"debug": {
 				"statusBarVisibility": "hidden",
