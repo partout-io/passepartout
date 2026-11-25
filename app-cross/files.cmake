@@ -60,6 +60,7 @@ set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/BackgroundWorker.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/Credits.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/FileActivationInbox.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/Paths.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/TunnelInfo.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/AppSession.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ConfigManager.cc"

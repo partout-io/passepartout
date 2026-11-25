@@ -5,6 +5,7 @@
 #pragma once
 #include "CrossConstants.h"
 #include "AppConstants.h"
+#include "../business/extensions/Paths.h"
 #include <algorithm>
 #include <cctype>
 #include <filesystem>
@@ -22,6 +23,6 @@ inline std::filesystem::path Directory(const std::filesystem::path &root,
     if (name.empty() || name == "." || name == ".." ||
         name.find_first_of("/\\:") != std::string::npos)
         throw std::runtime_error("Invalid profile container name.");
-    return root / std::filesystem::u8path(name);
+    return root / Paths::FromUtf8(name);
 }
 }

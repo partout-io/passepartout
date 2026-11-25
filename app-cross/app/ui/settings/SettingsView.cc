@@ -56,7 +56,7 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &update_title,
     append(Localized(StringKey::GlobalNounsTroubleshooting), 0);
     page(StringKey::ViewsDiagnosticsTitle, SettingsSection::Diagnostics);
     unsigned initial_row = 0;
-    for (unsigned row = 0; row < list->GetItemCount(); ++row) {
+    for (int row = 0; row < list->GetItemCount(); ++row) {
         if (list->GetItemData(list->RowToItem(row)) == static_cast<wxUIntPtr>(initial)) initial_row = row;
     }
     list->SelectRow(initial_row);
@@ -98,7 +98,7 @@ SettingsView::SettingsView(wxWindow *parent, const wxString &update_title,
     });
     auto metrics = [list] {
         int width = list->GetCharWidth() * 16;
-        for (unsigned row = 0; row < list->GetItemCount(); ++row) {
+        for (int row = 0; row < list->GetItemCount(); ++row) {
             width = std::max(width, list->GetTextExtent(list->GetTextValue(row, 0)).x + 2 * Theme::Spacing(list));
         }
         list->SetMinSize(wxSize(width, list->GetCharHeight() * 8));

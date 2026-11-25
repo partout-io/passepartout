@@ -3,9 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "FilePath.h"
+#include "../../business/extensions/Paths.h"
 
 namespace Passepartout {
 std::filesystem::path Paths::FromString(const wxString &value) {
-    return std::filesystem::u8path(value.ToStdString(wxConvUTF8));
+    return FromUtf8(value.ToStdString(wxConvUTF8));
 }
 }

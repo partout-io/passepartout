@@ -94,7 +94,7 @@ void ProfileModuleList::UpdateMetrics() {
     const int checkbox_width = std::max(GetCharHeight(), wxRendererNative::Get().GetCheckBoxSize(this).x) + padding;
     GetColumn(0)->SetWidth(checkbox_width);
     int title_width = 0;
-    for (unsigned row = 0; row < GetItemCount(); ++row) {
+    for (int row = 0; row < GetItemCount(); ++row) {
         title_width = std::max(title_width, GetTextExtent(GetTextValue(row, 1)).x);
     }
     title_width += padding;

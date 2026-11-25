@@ -3,6 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#ifdef NDEBUG
+#undef NDEBUG
+#endif
+#include <cassert>
 #include <cstdlib>
 #ifdef _MSC_VER
 #include <crtdbg.h>
