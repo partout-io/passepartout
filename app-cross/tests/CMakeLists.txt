@@ -68,13 +68,13 @@ if(WIN32)
     set_tests_properties(passepartout-development-registration PROPERTIES
         ENVIRONMENT_MODIFICATION "PSModulePath=unset:")
 
-    # Compile the adapter independently of the desktop application.
+    # Compile adapters without wxWidgets independently of the desktop application.
+    # WindowsURLLauncher owns a wxWindow and is compiled with the application.
     add_library(passepartout-windows-integration-check OBJECT
         ../app/business/platform/WindowsTunnelPreferences.cc
         ../app/ui/platform/WindowsConfigurationPicker.cc
         ../app/ui/platform/FileActivation.cc
         ../app/business/platform/WindowsHttpClient.cc
-        ../app/ui/platform/WindowsURLLauncher.cc
         ../app/ui/platform/WindowsIssueHandoff.cc)
     target_link_libraries(passepartout-windows-integration-check PRIVATE
         passepartout-core Partout::Headers)

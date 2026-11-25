@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "WindowsURLLauncher.h"
+#include <wx/weakref.h>
 #include <chrono>
+#include <utility>
 #include <roapi.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.System.h>
@@ -36,9 +38,33 @@ struct WindowsURLLauncher::Impl {
         } catch (...) {}
     }
 };
-WindowsURLLauncher::WindowsURLLauncher(const std::string &url) : impl_(std::make_unique<Impl>(url)) {}
+
+WindowsURLLauncher::WindowsURLLauncher(
+    wxWindow *parent, const std::string &url, std::function<void(wxWindow *)> on_error
+) : wxWindow(parent, wxID_ANY), impl_(std::make_unique<Impl>(url)), timer_(this),
+    on_error_(std::move(on_error)) {
+    Hide();
+    Bind(wxEVT_TIMER, &WindowsURLLauncher::OnTimer, this);
+    timer_.Start(50);
+}
 
 WindowsURLLauncher::~WindowsURLLauncher() = default;
+
+void WindowsURLLauncher::OnTimer(wxTimerEvent &) {
+    std::optional<bool> result;
+    try {
+        result = Poll();
+    } catch (...) {
+        result = false;
+    }
+    if (!result) return;
+    timer_.Stop();
+    // The callback may run a nested event loop and destroy this window.
+    const wxWeakRef<wxWindow> target(this);
+    auto on_error = std::move(on_error_);
+    if (!*result && on_error) on_error(GetParent());
+    if (target) target->Destroy();
+}
 
 std::optional<bool> WindowsURLLauncher::Poll() {
     if (impl_->operation.Status() != AsyncStatus::Started) return impl_->operation.GetResults();

@@ -2,19 +2,28 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
+#include <wx/window.h>
+#include <wx/timer.h>
 
 namespace Passepartout {
-// Start and poll on the foreground UI thread. Destruction cancels the request.
-class WindowsURLLauncher final {
+// Owned by the requesting view. Polls on the UI thread and destroys itself
+// after completion; closing the view cancels the native request.
+class WindowsURLLauncher final : public wxWindow {
 public:
-    explicit WindowsURLLauncher(const std::string &url);
-    ~WindowsURLLauncher();
-    std::optional<bool> Poll();
+    WindowsURLLauncher(
+        wxWindow *parent, const std::string &url, std::function<void(wxWindow *)> on_error
+    );
+    ~WindowsURLLauncher() override;
 private:
+    std::optional<bool> Poll();
+    void OnTimer(wxTimerEvent &event);
     struct Impl;
     std::unique_ptr<Impl> impl_;
+    wxTimer timer_;
+    std::function<void(wxWindow *)> on_error_;
 };
 }
