@@ -9,6 +9,9 @@ project(PassepartoutTests LANGUAGES CXX)
 
 # Dependencies: link application tests against the shared Partout library.
 set(PP_BUILD_LIBRARY ON)
+if(WIN32)
+    set(PP_BUILD_WINRT ON)
+endif()
 set(PP_TEST_CPP_RUNTIME OFF)
 set(PP_TEST_WINRT_RUNTIME OFF)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)

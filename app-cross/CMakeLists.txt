@@ -39,6 +39,9 @@ if(NOT PASSEPARTOUT_WX_PREBUILT_BASE_URL)
 endif()
 
 # Partout configuration
+if(WIN32)
+    set(PP_BUILD_WINRT ON)
+endif()
 set(PP_BUILD_OUTPUT "${OUTPUT_DIR}")
 set(PP_BUILD_USE_OPENSSL ON)
 set(PP_BUILD_USE_MBEDTLS ON)
