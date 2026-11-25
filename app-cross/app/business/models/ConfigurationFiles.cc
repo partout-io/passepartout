@@ -11,7 +11,7 @@ std::size_t ConfigurationFiles::Count() const {
 }
 ConfigurationSource ConfigurationFiles::Read(std::size_t index) const {
     const auto &path = paths.at(index);
-    return {path.stem().u8string(), ReadConfiguration(path)};
+    return {ConfigurationName(path), ReadConfiguration(path)};
 }
 MemoryConfigurationFiles::MemoryConfigurationFiles(std::vector<ConfigurationSource> values, std::size_t failures)
     : ConfigurationFiles({}, failures), sources_(std::move(values)) {}

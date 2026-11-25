@@ -39,12 +39,9 @@ bool ProfileEventSave::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool ProfileEventSave::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool ProfileEventSave::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "ProfileEventSave" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool ProfileEventSave::operator==(const ProfileEventSave& other) const

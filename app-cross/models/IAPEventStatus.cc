@@ -39,12 +39,9 @@ bool IAPEventStatus::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool IAPEventStatus::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool IAPEventStatus::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "IAPEventStatus" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool IAPEventStatus::operator==(const IAPEventStatus& other) const

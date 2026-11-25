@@ -25,7 +25,6 @@
 #include <winrt/base.h>
 
 #include "partout.h"
-#include "partout_winrt.h"
 
 namespace {
 

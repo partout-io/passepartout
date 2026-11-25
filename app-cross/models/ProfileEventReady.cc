@@ -39,12 +39,9 @@ bool ProfileEventReady::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool ProfileEventReady::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool ProfileEventReady::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "ProfileEventReady" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool ProfileEventReady::operator==(const ProfileEventReady& other) const

@@ -39,12 +39,9 @@ bool ProfileEventRefresh::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool ProfileEventRefresh::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool ProfileEventRefresh::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "ProfileEventRefresh" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool ProfileEventRefresh::operator==(const ProfileEventRefresh& other) const

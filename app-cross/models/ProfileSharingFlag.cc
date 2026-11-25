@@ -39,15 +39,15 @@ bool ProfileSharingFlag::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool ProfileSharingFlag::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool ProfileSharingFlag::Validate(std::stringstream& msg, const std::string& path_prefix) const
 {
     bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "ProfileSharingFlag" : pathPrefix;
+    const std::string model_path = path_prefix.empty() ? "ProfileSharingFlag" : path_prefix;
 
     if (value == ProfileSharingFlag::eProfileSharingFlag::INVALID_VALUE_OPENAPI_GENERATED)
     {
         success = false;
-        msg << _pathPrefix << ": has no value;";
+        msg << model_path << ": has no value;";
     }
 
     return success;

@@ -39,12 +39,9 @@ bool ProfileEventStartRemoteImport::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool ProfileEventStartRemoteImport::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool ProfileEventStartRemoteImport::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "ProfileEventStartRemoteImport" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool ProfileEventStartRemoteImport::operator==(const ProfileEventStartRemoteImport& other) const

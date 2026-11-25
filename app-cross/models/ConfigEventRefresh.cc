@@ -39,28 +39,20 @@ bool ConfigEventRefresh::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool ConfigEventRefresh::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool ConfigEventRefresh::Validate(std::stringstream& msg, const std::string& path_prefix) const
 {
     bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "ConfigEventRefresh" : pathPrefix;
+    const std::string model_path = path_prefix.empty() ? "ConfigEventRefresh" : path_prefix;
 
-    /* flags */ {
-        const std::vector<Passepartout::Models::ConfigFlag>& value = flags;
-        const std::string currentValuePath = _pathPrefix + ".flags";
-
-        { // Recursive validation of array elements
-            const std::string oldValuePath = currentValuePath;
-            int i = 0;
-            for (const Passepartout::Models::ConfigFlag& value : value)
-            {
-                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
-
-        success = Partout::Models::ValidateModel(value, msg, currentValuePath) && success;
-
-                i++;
-            }
+    {
+        const auto& items = this->flags;
+        const std::string field_path = model_path + ".flags";
+        std::size_t index = 0;
+        for (const auto& item : items) {
+            const std::string item_path = field_path + "[" + std::to_string(index) + "]";
+            success = Partout::Models::ValidateModel(item, msg, item_path) && success;
+            ++index;
         }
-
     }
 
     return success;

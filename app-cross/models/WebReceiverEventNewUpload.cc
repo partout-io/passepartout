@@ -39,12 +39,9 @@ bool WebReceiverEventNewUpload::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool WebReceiverEventNewUpload::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool WebReceiverEventNewUpload::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "WebReceiverEventNewUpload" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool WebReceiverEventNewUpload::operator==(const WebReceiverEventNewUpload& other) const

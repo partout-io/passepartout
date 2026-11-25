@@ -39,12 +39,9 @@ bool SemanticVersion::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool SemanticVersion::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool SemanticVersion::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "SemanticVersion" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool SemanticVersion::operator==(const SemanticVersion& other) const

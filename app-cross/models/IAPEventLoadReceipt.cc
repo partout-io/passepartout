@@ -39,12 +39,9 @@ bool IAPEventLoadReceipt::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool IAPEventLoadReceipt::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool IAPEventLoadReceipt::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "IAPEventLoadReceipt" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool IAPEventLoadReceipt::operator==(const IAPEventLoadReceipt& other) const

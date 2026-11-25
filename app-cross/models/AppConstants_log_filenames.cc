@@ -39,12 +39,9 @@ bool AppConstants_log_filenames::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool AppConstants_log_filenames::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool AppConstants_log_filenames::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "AppConstants_log_filenames" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool AppConstants_log_filenames::operator==(const AppConstants_log_filenames& other) const

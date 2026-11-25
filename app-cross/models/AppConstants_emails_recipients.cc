@@ -39,12 +39,9 @@ bool AppConstants_emails_recipients::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool AppConstants_emails_recipients::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool AppConstants_emails_recipients::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "AppConstants_emails_recipients" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool AppConstants_emails_recipients::operator==(const AppConstants_emails_recipients& other) const

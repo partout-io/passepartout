@@ -39,12 +39,9 @@ bool AppConstantsTunnelVerificationParameters::Validate(std::stringstream& msg) 
     return Validate(msg, "");
 }
 
-bool AppConstantsTunnelVerificationParameters::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool AppConstantsTunnelVerificationParameters::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "AppConstantsTunnelVerificationParameters" : pathPrefix;
-
-    return success;
+    return true;
 }
 
 bool AppConstantsTunnelVerificationParameters::operator==(const AppConstantsTunnelVerificationParameters& other) const

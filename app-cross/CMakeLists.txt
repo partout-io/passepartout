@@ -61,7 +61,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${OUTPUT_DIR}")
 # Runtime linkage shared by the app, POSIX tunnel, and Windows plugin.
 # The Windows tunnel host loads its plugin without linking Partout directly.
 function(target_link_partout_runtime target)
-    target_link_libraries(${target} PRIVATE Partout::Runtime)
+    target_link_libraries(${target} PRIVATE Partout::Partout)
     if(LINUX)
         target_link_options(${target} PRIVATE
             "LINKER:-rpath-link,${PP_BUILD_OUTPUT}/wg-go/lib"
@@ -99,7 +99,7 @@ if(BUILD_APP)
             app/ui/theme/ThemeButtonRow.cc app/ui/theme/ThemeModal.cc
             app/ui/theme/ThemeContentLink.cc app/strings/Strings.cc)
         target_compile_features(passepartout-ui-test PRIVATE cxx_std_17)
-        target_link_libraries(passepartout-ui-test PRIVATE Partout::Models)
+        target_link_libraries(passepartout-ui-test PRIVATE Partout::Partout)
         if(MSVC)
             target_compile_options(passepartout-ui-test PRIVATE /utf-8)
         endif()

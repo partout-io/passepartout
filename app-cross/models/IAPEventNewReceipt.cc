@@ -39,29 +39,9 @@ bool IAPEventNewReceipt::Validate(std::stringstream& msg) const
     return Validate(msg, "");
 }
 
-bool IAPEventNewReceipt::Validate(std::stringstream& msg, const std::string& pathPrefix) const
+bool IAPEventNewReceipt::Validate(std::stringstream&, const std::string&) const
 {
-    bool success = true;
-    const std::string _pathPrefix = pathPrefix.empty() ? "IAPEventNewReceipt" : pathPrefix;
-
-    /* products */ {
-        const std::vector<std::string>& value = products;
-        const std::string currentValuePath = _pathPrefix + ".products";
-
-        { // Recursive validation of array elements
-            const std::string oldValuePath = currentValuePath;
-            int i = 0;
-            for (const std::string& value : value)
-            {
-                const std::string currentValuePath = oldValuePath + "[" + std::to_string(i) + "]";
-
-                i++;
-            }
-        }
-
-    }
-
-    return success;
+    return true;
 }
 
 bool IAPEventNewReceipt::operator==(const IAPEventNewReceipt& other) const

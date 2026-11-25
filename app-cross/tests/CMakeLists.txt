@@ -1,14 +1,24 @@
 cmake_minimum_required(VERSION 3.28)
+if(POLICY CMP0184)
+    cmake_policy(SET CMP0184 NEW)
+endif()
+set(CMAKE_MSVC_RUNTIME_LIBRARY MultiThreadedDLL)
+set(CMAKE_MSVC_RUNTIME_CHECKS "")
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 project(PassepartoutTests LANGUAGES CXX)
 
-# Dependencies: build models and application state without the VPN core library.
-set(PP_BUILD_LIBRARY OFF)
-set(PP_BUILD_MODELS ON)
-set(PP_TEST_CPP_RUNTIME ON)
+# Dependencies: link application tests against the shared Partout library.
+set(PP_BUILD_LIBRARY ON)
+set(PP_TEST_CPP_RUNTIME OFF)
+set(PP_TEST_WINRT_RUNTIME OFF)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
+
+# Keep generated C++ warning-clean in the standalone regression build.
+if(MSVC)
+    target_compile_options(passepartout-models PRIVATE /WX)
+endif()
 
 # Portable test executables
 add_executable(passepartout-models-test Models.cc)
@@ -34,6 +44,12 @@ foreach(TEST_NAME IN ITEMS models application presentation editor settings activ
     else()
         target_compile_options(${TEST_TARGET} PRIVATE -UNDEBUG)
     endif()
+    if(WIN32)
+        add_custom_command(TARGET ${TEST_TARGET} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                $<TARGET_RUNTIME_DLLS:${TEST_TARGET}> $<TARGET_FILE_DIR:${TEST_TARGET}>
+            COMMAND_EXPAND_LISTS)
+    endif()
     add_test(NAME passepartout-${TEST_NAME} COMMAND ${TEST_TARGET})
 endforeach()
 
@@ -50,24 +66,14 @@ if(WIN32)
 
     # Compile the adapter independently of the desktop application.
     add_library(passepartout-windows-integration-check OBJECT
-        ../../partout/runtimes/windows/winrt/WinRTTunnelStrategy.cc
         ../app/business/platform/WindowsTunnelPreferences.cc
         ../app/ui/platform/WindowsConfigurationPicker.cc
         ../app/ui/platform/FileActivation.cc
         ../app/business/platform/WindowsHttpClient.cc
         ../app/ui/platform/WindowsURLLauncher.cc
         ../app/ui/platform/WindowsIssueHandoff.cc)
-    # Match Partout::WinRTRuntime's public requirement for C++/WinRT headers.
-    target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)
     target_link_libraries(passepartout-windows-integration-check PRIVATE
-        passepartout-core Partout::Headers partout-winrt-backend)
+        passepartout-core Partout::Headers)
+    target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)
     target_compile_options(passepartout-windows-integration-check PRIVATE /EHsc /permissive- /utf-8 /W4)
-
-    # Native settings translation constructs WinRT values without starting a VPN.
-    add_executable(passepartout-windows-settings-test ../../partout/tests/c/windows/winrt/TunSettingsTests.cc)
-    target_link_libraries(passepartout-windows-settings-test PRIVATE partout-winrt-backend Partout::Models)
-    target_compile_features(passepartout-windows-settings-test PRIVATE cxx_std_20)
-    target_compile_options(passepartout-windows-settings-test PRIVATE /UNDEBUG /utf-8 /EHsc /permissive-)
-    add_test(NAME passepartout-windows-settings COMMAND passepartout-windows-settings-test)
-
 endif()

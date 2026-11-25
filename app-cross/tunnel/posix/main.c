@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "partout.h"
-#include "partout_platform.h"
 
 static void stdio_logger(void *ctx, const char *profile_id, int level, const char *message) {
     (void)ctx;
