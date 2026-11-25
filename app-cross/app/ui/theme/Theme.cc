@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "Theme.h"
+#ifdef __WXMSW__
+#include "ThemeSwitchRenderer.h"
+#endif
 #include "AppIconResource.h"
 #include <wx/imagpng.h>
 #include <wx/mstream.h>
@@ -94,12 +97,20 @@ void Theme::Monospace(wxWindow *window) {
     window->SetFont(font);
 }
 
+wxDataViewRenderer *Theme::SwitchRenderer(const wxString &on_label, const wxString &off_label) {
+#ifdef __WXMSW__
+    return new ThemeSwitchRenderer(on_label, off_label);
+#else
+    wxUnusedVar(on_label);
+    wxUnusedVar(off_label);
+    return new wxDataViewToggleRenderer("bool", wxDATAVIEW_CELL_ACTIVATABLE, wxALIGN_CENTER);
+#endif
+}
+
 wxActivityIndicator *Theme::ProgressView(wxWindow *parent) {
     auto *indicator = new wxActivityIndicator(parent, wxID_ANY);
-#ifdef __WXMSW__
-    // Buffer background erasure and dot painting together on Windows.
+    // Buffer background erasure and dot painting together where supported.
     indicator->SetDoubleBuffered(true);
-#endif
     return indicator;
 }
 

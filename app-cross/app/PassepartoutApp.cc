@@ -6,6 +6,7 @@
 #include "business/extensions/AppLogger.h"
 #include "ui/app/MainView.h"
 #include "ui/extensions/FilePath.h"
+#include "ui/platform/Presentation.h"
 #include "strings/Strings.h"
 #include "partout.h"
 #include <wx/stdpaths.h>
@@ -25,10 +26,7 @@ using namespace Passepartout;
 
 bool PassepartoutApp::OnInit() {
     // Configure native appearance, localization, and application identity.
-#ifdef __WXMSW__
-    // Windows needs an explicit opt-in; other ports follow the native theme.
-    SetAppearance(Appearance::System);
-#endif
+    UseSystemAppearance(*this);
     wxUILocale::UseDefault();
     AppLogger startup_logger;
     startup_logger.Write(LogLevel::info, LogCategory::core, "Start application");

@@ -41,6 +41,15 @@ private:
 }
 #endif
 
+void UseSystemAppearance(wxApp &app) {
+#ifdef __WXMSW__
+    // Windows needs an explicit opt-in; other ports follow the native theme.
+    app.SetAppearance(wxApp::Appearance::System);
+#else
+    wxUnusedVar(app);
+#endif
+}
+
 void PresentError(wxWindow *parent, StringKey message) {
     wxMessageDialog dialog(parent, Localized(message), wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
     dialog.SetOKLabel(Localized(StringKey::GlobalNounsOk));

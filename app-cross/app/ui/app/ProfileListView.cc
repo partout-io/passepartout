@@ -7,9 +7,7 @@
 #include "../extensions/AppProfile.h"
 #include <algorithm>
 #include <wx/numformatter.h>
-#ifdef __WXMSW__
-#include "../theme/ThemeSwitchRenderer.h"
-#endif
+#include "../theme/Theme.h"
 
 namespace Passepartout {
 namespace {
@@ -64,15 +62,17 @@ ProfileListView::ProfileListView(wxWindow *parent, TunnelObservable &tunnel,
     list_->AppendTextColumn(Localized(StringKey::GlobalNounsName), wxDATAVIEW_CELL_INERT, parent->FromDIP(230));
     list_->AppendTextColumn(Localized(StringKey::GlobalNounsStatus), wxDATAVIEW_CELL_INERT, parent->FromDIP(140));
     list_->AppendTextColumn(wxString(), wxDATAVIEW_CELL_INERT, parent->FromDIP(190));
-#ifdef __WXMSW__
-    list_->AppendColumn(new wxDataViewColumn(wxString(),
-        new ThemeSwitchRenderer(Localized(StringKey::EntitiesTunnelStatusActive),
-                                Localized(StringKey::EntitiesTunnelStatusInactive)),
-        ToggleColumn, parent->FromDIP(90), wxALIGN_CENTER), "bool");
-#else
-    list_->AppendToggleColumn(wxString(), wxDATAVIEW_CELL_ACTIVATABLE,
-                       parent->FromDIP(90), wxALIGN_CENTER);
-#endif
+    list_->AppendColumn(
+        new wxDataViewColumn(
+            wxString(),
+            Theme::SwitchRenderer(
+                Localized(StringKey::EntitiesTunnelStatusActive),
+                Localized(StringKey::EntitiesTunnelStatusInactive)
+            ),
+            ToggleColumn, parent->FromDIP(90), wxALIGN_CENTER
+        ),
+        "bool"
+    );
     layout->Add(list_, 1, wxEXPAND);
     SetSizer(layout);
     search_->Bind(wxEVT_TEXT, [this](wxCommandEvent &) {
