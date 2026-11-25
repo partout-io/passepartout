@@ -18,6 +18,7 @@ ThemeSplitView::ThemeSplitView(wxWindow *parent)
         // Keep both navigation and content visible.
     });
 }
+
 int ThemeSplitView::InitializePanes() {
     const int width = std::max(GetCharWidth() * 28, sidebar_->GetBestSize().x);
     SplitVertically(sidebar_, detail_, width);

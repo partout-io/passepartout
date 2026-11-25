@@ -8,9 +8,11 @@ namespace Passepartout {
 BackgroundWorker::BackgroundWorker(std::function<void()> cancel) : cancel_(std::move(cancel)), worker_([this] {
     Run();
 }) {}
+
 BackgroundWorker::~BackgroundWorker() {
     Stop();
 }
+
 bool BackgroundWorker::Post(std::function<void()> operation) {
     std::lock_guard lock(mutex_);
     if (stopping_) return false;
@@ -18,6 +20,7 @@ bool BackgroundWorker::Post(std::function<void()> operation) {
     wake_.notify_one();
     return true;
 }
+
 void BackgroundWorker::Stop() {
     {
         std::lock_guard lock(mutex_);
@@ -29,6 +32,7 @@ void BackgroundWorker::Stop() {
     wake_.notify_all();
     if (worker_.joinable()) worker_.join();
 }
+
 void BackgroundWorker::Run() {
     for (;;) {
         std::function<void()> operation;

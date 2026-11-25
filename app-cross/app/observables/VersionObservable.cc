@@ -15,13 +15,16 @@ VersionObservable::VersionObservable(std::unique_ptr<VersionChecker> checker, st
     state_.available = checker_->Available();
     state_.release = checker_->Snapshot();
 }
+
 VersionObservable::~VersionObservable() {
     worker_.Stop();
 }
+
 VersionObservable::State VersionObservable::Snapshot() const {
     std::lock_guard lock(mutex_);
     return state_;
 }
+
 void VersionObservable::Check() {
     std::lock_guard lock(mutex_);
     if (!state_.available || state_.checking) return;

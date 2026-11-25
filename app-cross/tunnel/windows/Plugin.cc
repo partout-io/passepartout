@@ -159,6 +159,7 @@ struct ChannelLease {
     ChannelLease() {
         if (channel_owned.exchange(true)) throw winrt::hresult_illegal_method_call(L"A VPN channel is already active.");
     }
+
     ~ChannelLease() {
         channel_owned.store(false);
     }
@@ -197,6 +198,7 @@ struct ChannelSession {
         runtime = std::make_unique<Partout::VpnChannelRuntime>(
             channel, profile.c_str(), init, options, std::move(controller_options));
     }
+
     void Cancel() noexcept {
         canceled.store(true);
         // FIXME: ### Restore VpnChannelRuntime::Cancel after 39140181 is merged.
@@ -212,6 +214,7 @@ struct PluginState {
 
 struct VpnPlugin : winrt::implements<VpnPlugin, winrt::Windows::Networking::Vpn::IVpnPlugIn> {
     explicit VpnPlugin(std::shared_ptr<PluginState> state) : state_(std::move(state)) {}
+
     void Connect(winrt::Windows::Networking::Vpn::VpnChannel const &channel) {
         Log(L"VPN connect requested", channel);
         std::shared_ptr<ChannelSession> session;
@@ -240,6 +243,7 @@ struct VpnPlugin : winrt::implements<VpnPlugin, winrt::Windows::Networking::Vpn:
             throw;
         }
     }
+
     void Disconnect(winrt::Windows::Networking::Vpn::VpnChannel const &channel) {
         std::shared_ptr<ChannelSession> session;
         bool stop = false;
@@ -254,6 +258,7 @@ struct VpnPlugin : winrt::implements<VpnPlugin, winrt::Windows::Networking::Vpn:
         // callback from Connect/Stop; the last borrowed session releases it.
         if (stop) session->runtime->Disconnect(channel);
     }
+
     void CancelStartup() noexcept {
         try {
             std::scoped_lock lock(state_->mutex);
@@ -262,6 +267,7 @@ struct VpnPlugin : winrt::implements<VpnPlugin, winrt::Windows::Networking::Vpn:
             if (session && session->starting) session->Cancel();
         } catch (...) {}
     }
+
     void GetKeepAlivePayload(winrt::Windows::Networking::Vpn::VpnChannel const &channel, winrt::Windows::Networking::Vpn::VpnPacketBuffer &packet) {
         const auto session = Borrow(channel);
         if (!session) {
@@ -270,16 +276,19 @@ struct VpnPlugin : winrt::implements<VpnPlugin, winrt::Windows::Networking::Vpn:
         }
         session->runtime->GetKeepAlivePayload(channel, packet);
     }
+
     void Encapsulate(winrt::Windows::Networking::Vpn::VpnChannel const &channel, winrt::Windows::Networking::Vpn::VpnPacketBufferList const &packets,
                      winrt::Windows::Networking::Vpn::VpnPacketBufferList const &encapsulated) {
         const auto session = Borrow(channel);
         if (session) session->runtime->Encapsulate(channel, packets, encapsulated);
     }
+
     void Decapsulate(winrt::Windows::Networking::Vpn::VpnChannel const &channel, winrt::Windows::Networking::Vpn::VpnPacketBuffer const &packet,
                      winrt::Windows::Networking::Vpn::VpnPacketBufferList const &decapsulated, winrt::Windows::Networking::Vpn::VpnPacketBufferList const &control) {
         const auto session = Borrow(channel);
         if (session) session->runtime->Decapsulate(channel, packet, decapsulated, control);
     }
+
 private:
     std::shared_ptr<ChannelSession> Borrow(winrt::Windows::Networking::Vpn::VpnChannel const &channel) {
         std::scoped_lock lock(state_->mutex);

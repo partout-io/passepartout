@@ -112,6 +112,7 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     position.y = std::max(work_area.y, std::min(position.y, work_area.GetBottom() - GetSize().y + 1));
     Move(position);
 }
+
 void ProfileCoordinator::ShowSection(wxWindow *page, const wxString &title) {
     wxWindowUpdateLocker update(this);
     pages_->AddPage(page, title, true);
@@ -119,9 +120,11 @@ void ProfileCoordinator::ShowSection(wxWindow *page, const wxString &title) {
     InvalidateBestSize();
     Layout();
 }
+
 void ProfileCoordinator::Dismiss() {
     if (!editor_->Snapshot().saving) EndModal(wxID_CANCEL);
 }
+
 void ProfileCoordinator::SelectSection(std::size_t selection) {
     if (editor_->Snapshot().saving || selection == selection_) return;
     wxWindowUpdateLocker update(this);
@@ -135,6 +138,7 @@ void ProfileCoordinator::SelectSection(std::size_t selection) {
         OpenModule(selection - 1);
     }
 }
+
 void ProfileCoordinator::OpenModule(std::size_t index) {
     const auto module = editor_->Snapshot().draft.modules.at(index);
     const auto open_content = [this](wxString title, wxString content) {
@@ -192,6 +196,7 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
     }, module);
     ShowSection(page, Modules::Title(module));
 }
+
 void ProfileCoordinator::RefreshState() {
     const auto state = editor_->Snapshot();
     if (state.saved) {

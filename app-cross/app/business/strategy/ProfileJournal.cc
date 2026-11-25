@@ -10,9 +10,11 @@ std::vector<ProfileTransaction> MemoryProfileJournal::Fetch() {
     for (const auto &[id, transaction] : transactions_) result.push_back(transaction);
     return result;
 }
+
 void MemoryProfileJournal::Save(const ProfileTransaction &transaction) {
     transactions_[transaction.id] = transaction;
 }
+
 void MemoryProfileJournal::Remove(const std::string &id) {
     transactions_.erase(id);
 }

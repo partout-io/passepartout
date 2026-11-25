@@ -13,12 +13,15 @@ bool ProfileObservable::CanSave(const AppSnapshot &state, const std::string &id)
         return tunnel.id == id && (tunnel.isEnabled || tunnel.status.value != Status::disconnected);
     });
 }
+
 std::shared_ptr<ProfileEditor> ProfileObservable::CreateEditor(const std::string &id) const {
     return session_.CreateEditor(id);
 }
+
 void ProfileObservable::SaveEditor(std::shared_ptr<ProfileEditor> editor) {
     if (editor && CanSave(Snapshot(), editor->Original().id)) session_.SaveEditor(std::move(editor));
 }
+
 bool ProfileObservable::CanRemove(const AppSnapshot &state, const std::vector<std::string> &ids) {
     if (!state.loaded || state.foreground_busy || state.pending_profile || ids.empty()) return false;
     return std::all_of(ids.begin(), ids.end(), [&](const auto &id) {
@@ -29,25 +32,32 @@ bool ProfileObservable::CanRemove(const AppSnapshot &state, const std::vector<st
         });
     });
 }
+
 void ProfileObservable::Load() {
     session_.Load();
 }
+
 void ProfileObservable::Import(std::vector<std::filesystem::path> paths) {
     session_.Import(std::move(paths));
 }
+
 void ProfileObservable::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
     session_.ImportFiles(std::move(files));
 }
+
 void ProfileObservable::ImportFailed() {
     session_.ImportFailed();
 }
+
 void ProfileObservable::Remove(std::vector<std::string> ids) {
     if (!CanRemove(Snapshot(), ids)) return;
     session_.Remove(std::move(ids));
 }
+
 AppSnapshot ProfileObservable::Snapshot() const {
     return session_.Snapshot();
 }
+
 void ProfileObservable::ClearError() {
     session_.ClearError();
 }

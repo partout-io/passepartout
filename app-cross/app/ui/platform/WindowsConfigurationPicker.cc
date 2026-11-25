@@ -19,6 +19,7 @@ constexpr std::uint32_t MaxBytes = 1024 * 1024;
 
 struct RequestDirectory {
     explicit RequestDirectory(std::filesystem::path value) : path(std::move(value)) {}
+
     ~RequestDirectory() {
         // The path is constructed locally from a generated ID.
         std::error_code error;
@@ -75,9 +76,11 @@ ConfigurationPickerResult Collect(const winrt::Windows::Foundation::Collections:
 class WindowsConfigurationPicker final : public ConfigurationPicker {
 public:
     explicit WindowsConfigurationPicker(HWND owner) : owner_(owner) {}
+
     ~WindowsConfigurationPicker() override {
         Cancel();
     }
+
     void Start() override {
         Cancel();
         state_ = std::make_shared<SelectionState>();
@@ -118,6 +121,7 @@ public:
             state->Finish({nullptr, true});
         }
     }
+
     std::optional<ConfigurationPickerResult> Poll() override {
         if (!state_) return std::nullopt;
         std::optional<ConfigurationPickerResult> result;
@@ -129,6 +133,7 @@ public:
         if (result) operation_ = nullptr;
         return result;
     }
+
     void Cancel() override {
         if (state_) {
             std::lock_guard lock(state_->mutex);

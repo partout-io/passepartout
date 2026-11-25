@@ -24,14 +24,17 @@ std::optional<std::array<unsigned, 4>> Parse(const std::string &text) {
     return {};
 }
 }
+
 VersionChecker::VersionChecker(std::string current, std::unique_ptr<VersionStrategy> strategy,
     std::string destination, std::int64_t rate_limit_seconds, std::optional<std::int64_t> last_checked,
     std::optional<std::string> cached, SaveVersion save)
     : current_(std::move(current)), strategy_(std::move(strategy)), destination_(std::move(destination)),
       rate_limit_seconds_(rate_limit_seconds), last_checked_(last_checked), cached_(std::move(cached)), save_(std::move(save)) {}
+
 bool VersionChecker::Available() const {
     return strategy_ && destination_.compare(0, 8, "https://") == 0;
 }
+
 VersionChecker::State VersionChecker::Snapshot() const {
     State state;
     if (!Available() || !cached_) return state;
@@ -43,6 +46,7 @@ VersionChecker::State VersionChecker::Snapshot() const {
     }
     return state;
 }
+
 void VersionChecker::Check(std::int64_t now) {
     if (!Available()) return;
     if (last_checked_ && now >= *last_checked_ && (now - *last_checked_) / 1000 < rate_limit_seconds_) return;
@@ -56,6 +60,7 @@ void VersionChecker::Check(std::int64_t now) {
     cached_ = value;
     if (!parsed) throw std::runtime_error("Invalid release version.");
 }
+
 void VersionChecker::Cancel() noexcept {
     if (strategy_) strategy_->Cancel();
 }

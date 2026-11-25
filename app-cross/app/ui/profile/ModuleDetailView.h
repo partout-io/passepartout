@@ -21,11 +21,13 @@ public:
         const std::optional<wxString> &preview = std::nullopt, bool secure = false) {
         Row(Localized(title), value, long_content, preview, secure);
     }
+
     template<typename T>
     void Row(const wxString &title, const std::optional<T> &value, bool long_content = false,
         const std::optional<wxString> &preview = std::nullopt, bool secure = false) {
         if (value) Row(title, *value, long_content, preview, secure);
     }
+
     template<typename T>
     void Row(const wxString &title, const T &value, bool long_content = false,
         const std::optional<wxString> &preview = std::nullopt, bool secure = false) {
@@ -46,9 +48,11 @@ public:
     static wxString ValueText(const std::string &value) {
         return wxString::FromUTF8(value);
     }
+
     static wxString ValueText(bool value) {
         return Localized(value ? StringKey::GlobalNounsEnabled : StringKey::GlobalNounsDisabled);
     }
+
     template<typename T, std::enable_if_t<std::is_arithmetic_v<T>, int> = 0>
     static wxString ValueText(T value) {
         // Ports and MTUs remain copyable protocol values without grouping separators.
@@ -58,17 +62,21 @@ public:
             return wxNumberFormatter::ToString(static_cast<double>(value), 2, wxNumberFormatter::Style_NoTrailingZeroes);
         }
     }
+
     template<typename T>
     static bool HasContent(const std::optional<T> &value) {
         return value && HasContent(*value);
     }
+
     template<typename T, std::enable_if_t<std::is_arithmetic_v<T>, int> = 0>
     static bool HasContent(T) {
         return true;
     }
+
     static bool HasContent(const std::string &value) {
         return !value.empty();
     }
+
     template<typename T>
     static bool HasContent(const std::vector<T> &value) {
         return !value.empty();

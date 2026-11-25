@@ -23,6 +23,7 @@ AppSession::AppSession(std::unique_ptr<ProfileRepository> repository, ProfileImp
     });
     Load();
 }
+
 AppSession::~AppSession() {
     std::shared_ptr<const ConfigurationFiles> importing;
     {
@@ -37,10 +38,12 @@ AppSession::~AppSession() {
     worker_.join();
     logger_->Write(LogLevel::info, LogCategory::core, "Finished application session");
 }
+
 AppSnapshot AppSession::Snapshot() const {
     std::lock_guard lock(mutex_);
     return snapshot_;
 }
+
 void AppSession::ApplyPreferences(Models::AppPreferences preferences) {
     Post([this, preferences = std::move(preferences)] {
         pending_preferences_ = preferences;
@@ -48,6 +51,7 @@ void AppSession::ApplyPreferences(Models::AppPreferences preferences) {
         pending_preferences_.reset();
     }, AppErrorContext::tunnel);
 }
+
 bool AppSession::Post(std::function<void()> operation, AppErrorContext context, bool foreground) {
     {
         std::lock_guard lock(mutex_);
@@ -61,6 +65,7 @@ bool AppSession::Post(std::function<void()> operation, AppErrorContext context, 
     wake_.notify_all();
     return true;
 }
+
 void AppSession::Run() {
     for (;;) {
         Operation operation;
@@ -175,6 +180,7 @@ std::string AppSession::RecoverProfiles() {
     snapshot_.recovering_profiles = std::move(pending_ids);
     return error;
 }
+
 void AppSession::Publish() {
     std::string reconciliation_error;
     if (Snapshot().loaded) reconciliation_error = RecoverProfiles();
@@ -294,6 +300,7 @@ void AppSession::Load() {
         register_missing_profiles_ = true;
     });
 }
+
 std::shared_ptr<ProfileEditor> AppSession::CreateEditor(const std::string &id) const {
     std::lock_guard lock(mutex_);
     if (!snapshot_.loaded || snapshot_.foreground_busy) return {};
@@ -302,6 +309,7 @@ std::shared_ptr<ProfileEditor> AppSession::CreateEditor(const std::string &id) c
     }
     return {};
 }
+
 void AppSession::SaveEditor(std::shared_ptr<ProfileEditor> editor) {
     if (!editor || !editor->BeginSave()) return;
     if (!Post([this, editor] {
@@ -318,9 +326,11 @@ void AppSession::SaveEditor(std::shared_ptr<ProfileEditor> editor) {
         }
     })) editor->FinishSave(false);
 }
+
 void AppSession::Import(std::vector<std::filesystem::path> paths) {
     ImportFiles(std::make_shared<ConfigurationFiles>(std::move(paths)));
 }
+
 void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
     if (!files || (!files->Count() && !files->selection_failures)) return;
     Post([this, files = std::move(files)] {
@@ -367,11 +377,13 @@ void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
             " configuration(s) could not be imported. Valid imports were saved; existing profiles were preserved.");
     }, AppErrorContext::import);
 }
+
 void AppSession::ImportFailed() {
     Post([] {
         throw std::runtime_error("Configuration selection failed.");
     }, AppErrorContext::import);
 }
+
 void AppSession::Remove(std::vector<std::string> ids) {
     Post([this, ids = std::move(ids)] {
         const std::set<std::string> unique_ids(ids.begin(), ids.end());
@@ -388,6 +400,7 @@ void AppSession::Remove(std::vector<std::string> ids) {
         }
     });
 }
+
 void AppSession::Connect(std::string id, std::optional<Partout::Models::OpenVpnCredentials> credentials,
     std::optional<Profile> original) {
     Post([this, id = std::move(id), credentials = std::move(credentials), original = std::move(original)] {
@@ -407,23 +420,27 @@ void AppSession::Connect(std::string id, std::optional<Partout::Models::OpenVpnC
         pending_profile_ = id;
     }, AppErrorContext::tunnel);
 }
+
 void AppSession::Disconnect(std::string id) {
     Post([this, id = std::move(id)] {
         pending_profile_.reset();
         tunnel_->Disconnect(id);
     }, AppErrorContext::tunnel);
 }
+
 void AppSession::Refresh() {
     // Keep an actionable error visible until acknowledged or a user action.
     const auto state = Snapshot();
     if (state.busy || !state.error.empty()) return;
     Post([] {}, AppErrorContext::general, false);
 }
+
 void AppSession::ClearError() {
     std::lock_guard lock(mutex_);
     snapshot_.error.clear();
     ++snapshot_.revision;
 }
+
 bool AppSession::WaitIdle(std::chrono::milliseconds timeout) {
     std::unique_lock lock(mutex_);
     return wake_.wait_for(lock, timeout, [&] {

@@ -8,6 +8,7 @@
 namespace Passepartout {
 ModuleDetailView::ModuleDetailView(wxWindow *parent, OpenModuleContent open_content, Presentation presentation)
     : ThemeDetailView(parent, presentation), open_content_(std::move(open_content)) {}
+
 void ModuleDetailView::Row(const wxString &title, const std::vector<std::string> &values, bool long_content,
     const std::optional<wxString> &preview, bool secure) {
     std::vector<wxString> items;
@@ -23,6 +24,7 @@ void ModuleDetailView::Row(const wxString &title, const std::vector<std::string>
     if (IsForm() && !long_content) Items(title, items);
     else Row(title, text.ToStdString(wxConvUTF8), long_content, preview, secure);
 }
+
 void ModuleDetailView::Duration(StringKey title, const std::optional<double> &value) {
     if (!value) return;
     auto text = Localized(StringKey::GlobalNounsNSeconds);
@@ -33,6 +35,7 @@ void ModuleDetailView::Duration(StringKey title, const std::optional<double> &va
     text.Replace("%d", quantity);
     Field(Localized(title), text);
 }
+
 void ModuleDetailView::IP(const wxString &title, const std::optional<Partout::Models::IPSettings> &settings,
     const std::optional<std::vector<Partout::Models::Route>> &additional_routes, bool open_vpn) {
     const auto &ip = settings.value_or(Partout::Models::IPSettings{});

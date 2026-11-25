@@ -11,17 +11,20 @@ class ModalConfigurationPicker final : public ConfigurationPicker {
 public:
     explicit ModalConfigurationPicker(std::function<ConfigurationPickerResult()> select)
         : select_(std::move(select)) {}
+
     void Start() override {
         Cancel();
         const auto generation = generation_;
         auto result = select_();
         if (generation == generation_) result_ = std::move(result);
     }
+
     std::optional<ConfigurationPickerResult> Poll() override {
         auto result = std::move(result_);
         result_.reset();
         return result;
     }
+
     void Cancel() override {
         ++generation_;
         result_.reset();

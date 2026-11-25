@@ -23,6 +23,7 @@ constexpr unsigned SystemAbout = 0x100;
 wxString Text(const std::string &value) {
     return wxString::FromUTF8(value);
 }
+
 wxString QuitTitle() {
     return wxGetStockLabel(wxID_EXIT) + "\tCtrl+Q";
 }
@@ -144,10 +145,12 @@ MainView::MainView(AppContext &context, bool demo,
     Render();
     timer_.Start(200);
 }
+
 MainView::~MainView() {
     picker_->Cancel();
     timer_.Stop();
 }
+
 void MainView::Render() {
     const bool tunnel_unavailable = !snapshot_.tunnel_error.empty() || !snapshot_.reconciliation_error.empty();
     message_->SetLabel(Localized(tunnel_unavailable ? StringKey::ErrorsAppTunnel : StringKey::ViewsAppFoldersNoProfiles));
@@ -159,6 +162,7 @@ void MainView::Render() {
     UpdateActions();
     GetChildren().GetFirst()->GetData()->Layout();
 }
+
 void MainView::UpdateActions() {
     collection_->Render(snapshot_, picking_);
     const bool idle = !picking_ && !snapshot_.foreground_busy && !snapshot_.pending_profile && snapshot_.loaded;
@@ -167,6 +171,7 @@ void MainView::UpdateActions() {
     GetMenuBar()->Enable(wxID_ADD, idle);
     remove_->Enable(!picking_ && ProfileObservable::CanRemove(snapshot_, selected));
 }
+
 void MainView::Tick(wxTimerEvent &) {
     PresentInteractiveLogin();
     if (picking_) {
@@ -206,6 +211,7 @@ void MainView::Tick(wxTimerEvent &) {
         context_.tunnel.Refresh();
     }
 }
+
 void MainView::PresentInteractiveLogin() {
     auto login = context_.tunnel.TakeInteractiveLogin();
     if (!login) return;
@@ -220,6 +226,7 @@ void MainView::PresentInteractiveLogin() {
     if (result == wxID_OK) context_.tunnel.CompleteInteractiveLogin(std::move(*login));
     timer_.Start(200);
 }
+
 void MainView::Import() {
     if (picking_ || context_.profiles.Snapshot().busy) return;
     picking_ = true;
@@ -233,6 +240,7 @@ void MainView::Import() {
         UpdateActions();
     }
 }
+
 void MainView::Remove(std::vector<std::string> ids) {
     if (picking_ || !ProfileObservable::CanRemove(context_.profiles.Snapshot(), ids)) return;
     wxMessageDialog dialog(this, Localized(StringKey::ThemeConfirmationMessage),
@@ -241,14 +249,17 @@ void MainView::Remove(std::vector<std::string> ids) {
     if (dialog.ShowModal() != wxID_OK) return;
     context_.profiles.Remove(ids);
 }
+
 void MainView::Quit() {
     Close();
 }
+
 void MainView::Activate(std::shared_ptr<const ConfigurationFiles> files) {
     if (files && (files->Count() || files->selection_failures)) activations_.push_back(std::move(files));
     if (IsIconized()) Iconize(false);
     Raise();
 }
+
 void MainView::Edit(const std::string &id) {
     if (picking_ || context_.profiles.Snapshot().foreground_busy) return;
     const auto editor = context_.profiles.CreateEditor(id);

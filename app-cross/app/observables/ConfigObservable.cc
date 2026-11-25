@@ -12,10 +12,12 @@ ConfigObservable::ConfigObservable(std::unique_ptr<ConfigManager> manager)
 ConfigObservable::~ConfigObservable() {
     worker_.Stop();
 }
+
 ConfigObservable::State ConfigObservable::Snapshot() const {
     std::lock_guard lock(mutex_);
     return state_;
 }
+
 void ConfigObservable::Refresh() {
     std::lock_guard lock(mutex_);
     if (state_.refreshing) return;

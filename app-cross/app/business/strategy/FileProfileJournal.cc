@@ -14,10 +14,12 @@ FileProfileJournal::FileProfileJournal(std::filesystem::path directory)
     std::filesystem::permissions(directory_, std::filesystem::perms::owner_all);
 #endif
 }
+
 std::filesystem::path FileProfileJournal::Path(const std::string &id) const {
     if (!IsSafeProfileId(id)) throw std::runtime_error("Invalid transaction identity.");
     return directory_ / (id + ".json");
 }
+
 std::vector<ProfileTransaction> FileProfileJournal::Fetch() {
     std::vector<ProfileTransaction> result;
     for (const auto &entry : std::filesystem::directory_iterator(directory_)) {
@@ -46,6 +48,7 @@ std::vector<ProfileTransaction> FileProfileJournal::Fetch() {
     }
     return result;
 }
+
 void FileProfileJournal::Save(const ProfileTransaction &transaction) {
     Partout::Json json = {{"version", 1}, {"id", transaction.id},
         {"removal", transaction.removal}, {"previous", nullptr}};
@@ -54,6 +57,7 @@ void FileProfileJournal::Save(const ProfileTransaction &transaction) {
     if (text.size() > MaxConfigurationBytes) throw std::runtime_error("Profile recovery data exceeds 1 MiB.");
     AtomicFile::Write(Path(transaction.id), text);
 }
+
 void FileProfileJournal::Remove(const std::string &id) {
     // Persist completion before deleting the record. If deletion is interrupted,
     // a completed update must never be mistaken for work requiring rollback.

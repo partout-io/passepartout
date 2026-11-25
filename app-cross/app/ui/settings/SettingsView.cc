@@ -19,6 +19,7 @@ public:
         attr.SetBold(true);
         return true;
     }
+
     bool IsEnabledByRow(unsigned row, unsigned) const override {
         return GetItemData(GetItem(row)) != 0;
     }

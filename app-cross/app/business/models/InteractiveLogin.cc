@@ -29,6 +29,7 @@ std::optional<InteractiveLogin> InteractiveLogin::FromProfile(const Profile &pro
     }
     return std::nullopt;
 }
+
 bool InteractiveLogin::CanSubmit() const {
     const auto &value = needs_otp ? credentials.password : credentials.username;
     return value.find_first_not_of(" \t\r\n") != std::string::npos;

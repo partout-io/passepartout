@@ -15,6 +15,7 @@ RuntimeLogView::RuntimeLogView(wxWindow *parent, DiagnosticsObservable &diagnost
     UpdateContent();
     timer_.Start(1000);
 }
+
 void RuntimeLogView::UpdateContent() {
     const auto log = tunnel_ ? diagnostics_.TunnelLog() : std::optional(diagnostics_.ApplicationLog());
     const auto text = log ? wxString::FromUTF8(*log) : Localized(StringKey::ViewsDiagnosticsRuntimeUnavailable);

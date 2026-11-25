@@ -44,6 +44,7 @@ std::wstring LowerName(const std::string &name) {
     return wide;
 #endif
 }
+
 double LastUpdate(const Profile &profile) {
     if (profile.userInfo && profile.userInfo->IsObject()) {
         const auto value = profile.userInfo->Find("lastUpdate");

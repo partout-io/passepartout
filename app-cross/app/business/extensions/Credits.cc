@@ -13,6 +13,7 @@ Models::Platform::ePlatform Credits::CurrentPlatform() {
     return Models::Platform::unixLike;
 #endif
 }
+
 void Credits::Filter(Models::Credits &credits, Models::Platform::ePlatform platform) {
     auto &licenses = credits.licenses;
     licenses.erase(std::remove_if(licenses.begin(), licenses.end(), [platform](const auto &license) {

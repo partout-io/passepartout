@@ -28,6 +28,7 @@ public:
     Passepartout::Models::AppPreferences Fetch() override {
         return value;
     }
+
     void Save(const Passepartout::Models::AppPreferences &next) override {
         if (fails) throw std::runtime_error("Save failed");
         value = next;
@@ -43,6 +44,7 @@ public:
         if (fails) throw std::runtime_error("Offline");
         return response;
     }
+
     void Cancel() noexcept override {}
 };
 class FakeVersion final : public Passepartout::VersionStrategy {
@@ -55,6 +57,7 @@ public:
         if (fails) throw std::runtime_error("Offline");
         return value;
     }
+
     void Cancel() noexcept override {}
 };
 struct BlockingState {
@@ -66,6 +69,7 @@ struct BlockingState {
 class BlockingHttp final : public Passepartout::HttpClient {
 public:
     explicit BlockingHttp(std::shared_ptr<BlockingState> state) : state_(std::move(state)) {}
+
     std::string Get(const std::string &) override {
         std::unique_lock lock(state_->mutex);
         state_->entered = true;
@@ -73,6 +77,7 @@ public:
         state_->changed.wait(lock, [&] { return state_->canceled; });
         throw std::runtime_error("Canceled");
     }
+
     void Cancel() noexcept override {
         std::lock_guard lock(state_->mutex);
         state_->canceled = true;

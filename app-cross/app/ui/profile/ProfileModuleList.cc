@@ -17,6 +17,7 @@ public:
     bool HasValue(const wxDataViewItem &item, unsigned column) const override {
         return column != 0 || GetRow(item) != 0;
     }
+
     bool IsEnabledByRow(unsigned, unsigned column) const override {
         return column != 0;
     }
@@ -89,6 +90,7 @@ ProfileModuleList::ProfileModuleList(wxWindow *parent, const ProfileEditor &edit
         event.Skip();
     });
 }
+
 void ProfileModuleList::UpdateMetrics() {
     const int padding = 2 * Theme::Spacing(this);
     const int checkbox_width = std::max(GetCharHeight(), wxRendererNative::Get().GetCheckBoxSize(this).x) + padding;

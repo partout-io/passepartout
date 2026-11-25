@@ -10,6 +10,7 @@ class ThemeSplitView final : public wxSplitterWindow {
 public:
     explicit ThemeSplitView(wxWindow *parent);
     wxPanel *Sidebar() const { return sidebar_; }
+
     wxPanel *Detail() const { return detail_; }
     int InitializePanes();
 private:

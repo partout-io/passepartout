@@ -15,6 +15,7 @@ LicenseView::LicenseView(wxWindow *parent, CreditsObservable &credits, std::stri
     timer_.Start(100);
     UpdateContent();
 }
+
 void LicenseView::UpdateContent() {
     const auto state = credits_.License(url_);
     const auto text = state.loading ? Localized(StringKey::GlobalNounsLoading) : state.failed

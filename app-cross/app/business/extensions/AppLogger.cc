@@ -34,9 +34,11 @@ const char *CategoryName(LogCategory category) {
     return "unknown";
 }
 }
+
 void AppLogger::SetPrivateData(bool enabled) noexcept {
     logs_private_data.store(enabled);
 }
+
 std::string AppLogger::RuntimeLog(bool include_private_data) {
     std::lock_guard lock(runtime_mutex);
     std::string result;
@@ -46,7 +48,9 @@ std::string AppLogger::RuntimeLog(bool include_private_data) {
     }
     return result;
 }
+
 AppLogger::AppLogger(LogSink sink) : sink_(std::move(sink)) {}
+
 void AppLogger::PartoutMessage(void *, const char *profile_id, int level, const char *message) noexcept {
     // Partout holds this process-wide callback; no application-owned context may dangle.
     static AppLogger logger;
@@ -62,6 +66,7 @@ void AppLogger::PartoutMessage(void *, const char *profile_id, int level, const 
         // Never throw through the native logging callback.
     }
 }
+
 void AppLogger::Write(LogLevel level, LogCategory category, const std::string &message) noexcept {
     try {
         std::lock_guard lock(mutex_);

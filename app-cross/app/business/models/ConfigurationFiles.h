@@ -18,6 +18,7 @@ struct ConfigurationSource {
 struct ConfigurationFiles {
     explicit ConfigurationFiles(std::vector<std::filesystem::path> values, std::size_t failures = 0)
         : paths(std::move(values)), selection_failures(failures) {}
+
     virtual ~ConfigurationFiles() = default;
     virtual std::size_t Count() const;
     virtual ConfigurationSource Read(std::size_t index) const;

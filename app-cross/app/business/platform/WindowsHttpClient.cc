@@ -16,6 +16,7 @@ namespace {
 class WindowsHttpClient final : public HttpClient {
 public:
     explicit WindowsHttpClient(std::chrono::milliseconds timeout) : timeout_(timeout) {}
+
     std::string Get(const std::string &url) override {
         if (canceled_.load()) throw std::runtime_error("HTTP request canceled.");
         winrt::init_apartment(winrt::apartment_type::multi_threaded);
@@ -44,9 +45,11 @@ public:
         }
         return result;
     }
+
     void Cancel() noexcept override {
         canceled_.store(true);
     }
+
 private:
     template<typename Operation>
     auto Await(Operation operation, std::chrono::steady_clock::time_point deadline) {
@@ -63,6 +66,7 @@ private:
     std::atomic_bool canceled_{false};
 };
 }
+
 std::unique_ptr<HttpClient> Windows::MakeHttpClient(std::chrono::milliseconds timeout) {
     return std::make_unique<WindowsHttpClient>(timeout);
 }

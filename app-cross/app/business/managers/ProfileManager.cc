@@ -11,6 +11,7 @@ namespace Passepartout {
 ProfileManager::ProfileManager(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
     std::unique_ptr<ProfileJournal> journal)
     : repository_(std::move(repository)), importer_(std::move(importer)), journal_(std::move(journal)) {}
+
 void ProfileManager::Load() {
     // Repair the authoritative objects/index before exposing a collection.
     // Native recovery can remain pending without hiding unrelated local profiles.
@@ -19,6 +20,7 @@ void ProfileManager::Load() {
     profiles_ = std::move(profiles);
     loaded_ = true;
 }
+
 Profile ProfileManager::Import(const std::filesystem::path &path,
     std::function<void(const Profile &)> register_profile,
     std::function<void(const std::string &)> rollback_registration,
@@ -26,6 +28,7 @@ Profile ProfileManager::Import(const std::filesystem::path &path,
     return ImportText(ReadConfiguration(path), ConfigurationName(path), std::move(register_profile),
         std::move(rollback_registration), std::move(validate_registration));
 }
+
 Profile ProfileManager::ImportText(const std::string &text, const std::string &name,
     std::function<void(const Profile &)> register_profile,
     std::function<void(const std::string &)> rollback_registration,
@@ -73,18 +76,22 @@ Profile ProfileManager::ImportText(const std::string &text, const std::string &n
     profiles_.swap(committed);
     return profile;
 }
+
 void ProfileManager::RequireReady(const std::string &id) {
     for (const auto &transaction : journal_->Fetch()) {
         if (transaction.id == id) throw std::runtime_error("Profile recovery is still pending.");
     }
 }
+
 std::vector<ProfileTransaction> ProfileManager::PendingTransactions() {
     return journal_->Fetch();
 }
+
 void ProfileManager::RestoreLocal(const ProfileTransaction &transaction) {
     if (transaction.previous && !transaction.removal) repository_->Save(*transaction.previous);
     else repository_->Remove(transaction.id);
 }
+
 void ProfileManager::Recover(const ProfileTransaction &transaction,
     std::function<void(const ProfileTransaction &)> recover_registration) {
     RestoreLocal(transaction);
@@ -92,6 +99,7 @@ void ProfileManager::Recover(const ProfileTransaction &transaction,
     journal_->Remove(transaction.id);
     profiles_ = repository_->Fetch();
 }
+
 void ProfileManager::Update(const Profile &original, const Profile &replacement,
     std::function<void(const Profile &)> save_registration,
     std::function<void(const Profile &)> validate_registration) {
@@ -131,6 +139,7 @@ void ProfileManager::Update(const Profile &original, const Profile &replacement,
     }
     profiles_.swap(committed);
 }
+
 void ProfileManager::Remove(const std::string &id) {
     Find(id);
     RequireReady(id);
@@ -140,12 +149,14 @@ void ProfileManager::Remove(const std::string &id) {
         return p.id == id;
     }), profiles_.end());
 }
+
 const Profile &ProfileManager::Find(const std::string &id) const {
     for (const auto &profile : profiles_) {
         if (profile.id == id) return profile;
     }
     throw std::runtime_error("The profile no longer exists.");
 }
+
 const std::vector<Profile> &ProfileManager::Profiles() const {
     return profiles_;
 }

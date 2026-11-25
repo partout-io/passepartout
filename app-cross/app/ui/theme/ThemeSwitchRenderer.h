@@ -19,13 +19,16 @@ public:
         is_on_ = value.GetBool();
         return true;
     }
+
     bool GetValue(wxVariant &value) const override {
         value = is_on_;
         return true;
     }
+
     wxSize GetSize() const override {
         return GetView()->FromDIP(wxSize(40, 24));
     }
+
     bool Render(wxRect cell, wxDC *dc, int) override {
         const auto size = GetView()->FromDIP(wxSize(36, 18));
         const auto track = wxRect(size).CentreIn(cell);
@@ -55,6 +58,7 @@ public:
         }
         return true;
     }
+
     bool ActivateCell(const wxRect &, wxDataViewModel *model, const wxDataViewItem &item,
                       unsigned column, const wxMouseEvent *) override {
         if (!model->IsEnabled(item, column)) return false;
@@ -62,6 +66,7 @@ public:
         model->GetValue(value, item, column);
         return model->ChangeValue(wxVariant(!value.GetBool()), item, column);
     }
+
 #if wxUSE_ACCESSIBILITY
     wxString GetAccessibleDescription() const override {
         return is_on_ ? on_label_ : off_label_;

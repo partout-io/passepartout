@@ -14,6 +14,7 @@ void TunnelObservable::Connect(std::string id) {
     interactive_login_ = InteractiveLogin::FromProfile(editor->Original());
     if (!interactive_login_) session_.Connect(std::move(id));
 }
+
 TunnelObservable::ToggleState TunnelObservable::StateForProfile(const AppSnapshot &state, const std::string &id) {
     ToggleState result;
     for (const auto &tunnel : state.tunnels) {
@@ -31,28 +32,34 @@ TunnelObservable::ToggleState TunnelObservable::StateForProfile(const AppSnapsho
         result.status != Status::disconnecting;
     return result;
 }
+
 void TunnelObservable::SetEnabled(const std::string &id, bool enabled) {
     const auto state = StateForProfile(Snapshot(), id);
     if (!state.can_interact || state.is_on == enabled) return;
     if (enabled) Connect(id);
     else Disconnect(id);
 }
+
 std::optional<InteractiveLogin> TunnelObservable::TakeInteractiveLogin() {
     auto login = std::move(interactive_login_);
     interactive_login_.reset();
     return login;
 }
+
 void TunnelObservable::CompleteInteractiveLogin(InteractiveLogin login) {
     if (!login.CanSubmit() || !StateForProfile(Snapshot(), login.original.id).can_interact) return;
     const auto id = login.original.id;
     session_.Connect(id, std::move(login.credentials), std::move(login.original));
 }
+
 void TunnelObservable::Disconnect(std::string id) {
     session_.Disconnect(std::move(id));
 }
+
 void TunnelObservable::Refresh() {
     session_.Refresh();
 }
+
 AppSnapshot TunnelObservable::Snapshot() const {
     return session_.Snapshot();
 }

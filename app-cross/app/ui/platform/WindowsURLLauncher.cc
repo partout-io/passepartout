@@ -14,6 +14,7 @@ struct WindowsURLLauncher::Impl {
         Apartment() {
             winrt::check_hresult(RoInitialize(RO_INIT_SINGLETHREADED));
         }
+
         ~Apartment() {
             RoUninitialize();
         }
@@ -28,6 +29,7 @@ struct WindowsURLLauncher::Impl {
         // reliably resolve the user's browser association from this process.
         operation = winrt::Windows::System::Launcher::LaunchUriAsync(uri);
     }
+
     ~Impl() {
         try {
             if (operation && operation.Status() == AsyncStatus::Started) operation.Cancel();
@@ -35,7 +37,9 @@ struct WindowsURLLauncher::Impl {
     }
 };
 WindowsURLLauncher::WindowsURLLauncher(const std::string &url) : impl_(std::make_unique<Impl>(url)) {}
+
 WindowsURLLauncher::~WindowsURLLauncher() = default;
+
 std::optional<bool> WindowsURLLauncher::Poll() {
     if (impl_->operation.Status() != AsyncStatus::Started) return impl_->operation.GetResults();
     if (std::chrono::steady_clock::now() < impl_->deadline) return {};

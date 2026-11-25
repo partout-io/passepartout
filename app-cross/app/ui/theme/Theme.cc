@@ -24,6 +24,7 @@ wxIcon Theme::AppIcon(wxWindow *window, int size_dip) {
     icon.CopyFromBitmap(wxBitmap(image));
     return icon;
 }
+
 namespace {
 wxIcon WindowIcon(wxWindow *window, const wxArtID &art, const wxString &fallback_svg) {
     const int metric = wxSystemSettings::GetMetric(wxSYS_SMALLICON_X, window);
@@ -37,14 +38,17 @@ wxIcon WindowIcon(wxWindow *window, const wxArtID &art, const wxString &fallback
     return icon;
 }
 }
+
 wxIcon Theme::SettingsIcon(wxWindow *window) {
     return WindowIcon(window, "preferences-system",
         R"svg(<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="%s" fill-rule="evenodd" d="M19.500 12.000 L21.808 13.951 L21.239 15.827 L18.236 16.167 L17.303 17.303 L17.556 20.315 L15.827 21.239 L13.463 19.356 L12.000 19.500 L10.049 21.808 L8.173 21.239 L7.833 18.236 L6.697 17.303 L3.685 17.556 L2.761 15.827 L4.644 13.463 L4.500 12.000 L2.192 10.049 L2.761 8.173 L5.764 7.833 L6.697 6.697 L6.444 3.685 L8.173 2.761 L10.537 4.644 L12.000 4.500 L13.951 2.192 L15.827 2.761 L16.167 5.764 L17.303 6.697 L20.315 6.444 L21.239 8.173 L19.356 10.537 Z M16 12 A4 4 0 1 0 8 12 A4 4 0 1 0 16 12 Z"/></svg>)svg");
 }
+
 wxIcon Theme::ProfileIcon(wxWindow *window) {
     return WindowIcon(window, wxART_NORMAL_FILE,
         R"svg(<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><g fill="none" stroke="%s" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3h9l5 5v13H5z M14 3v5h5 M8 12h8 M8 16h8"/></g></svg>)svg");
 }
+
 int Theme::Spacing(wxWindow *window, Space space) {
     constexpr int unit = 6;
     switch (space) {
@@ -55,6 +59,7 @@ int Theme::Spacing(wxWindow *window, Space space) {
     }
     return window->FromDIP(2 * unit);
 }
+
 void Theme::Apply(wxWindow *window, Background background) {
     const auto update = [window, background] {
         const bool content = background == Background::Content;
@@ -68,6 +73,7 @@ void Theme::Apply(wxWindow *window, Background background) {
         event.Skip();
     });
 }
+
 void Theme::SecondaryText(wxWindow *window) {
     window->SetForegroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_GRAYTEXT));
     window->Bind(wxEVT_SYS_COLOUR_CHANGED, [window](wxSysColourChangedEvent &event) {
@@ -76,6 +82,7 @@ void Theme::SecondaryText(wxWindow *window) {
         event.Skip();
     });
 }
+
 void Theme::Monospace(wxWindow *window) {
     const auto inherited = window->GetFont();
     // Request a scalable monospace family at the inherited UI text size.
@@ -86,6 +93,7 @@ void Theme::Monospace(wxWindow *window) {
         .Style(inherited.GetStyle()));
     window->SetFont(font);
 }
+
 wxActivityIndicator *Theme::ProgressView(wxWindow *parent) {
     auto *indicator = new wxActivityIndicator(parent, wxID_ANY);
 #ifdef __WXMSW__
@@ -94,6 +102,7 @@ wxActivityIndicator *Theme::ProgressView(wxWindow *parent) {
 #endif
     return indicator;
 }
+
 wxStaticText *Theme::EmptyMessage(wxWindow *parent, const wxString &message) {
     return new wxStaticText(parent, wxID_ANY, message, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
 }

@@ -10,6 +10,7 @@ namespace Passepartout {
 ConfigManager::ConfigManager(std::unique_ptr<HttpClient> client, std::string url, int build,
                              std::chrono::seconds ttl)
     : client_(std::move(client)), url_(std::move(url)), build_(build), ttl_(ttl) {}
+
 bool ConfigManager::Refresh() {
     const auto now = std::chrono::steady_clock::now();
     if (refreshed_ && now - *refreshed_ < ttl_) return false;
@@ -36,9 +37,11 @@ bool ConfigManager::Refresh() {
     refreshed_ = now;
     return true;
 }
+
 const ConfigManager::Flags &ConfigManager::ActiveFlags() const {
     return flags_;
 }
+
 void ConfigManager::Cancel() noexcept {
     client_->Cancel();
 }

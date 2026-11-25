@@ -37,6 +37,7 @@ std::string ApplicationVersion() {
     return {};
 #endif
 }
+
 int BuildNumber(const std::string &version) {
     const auto last = version.find_last_of('.');
     try {
@@ -45,6 +46,7 @@ int BuildNumber(const std::string &version) {
         return 0;
     }
 }
+
 std::unique_ptr<HttpClient> MakeHttp(const Models::AppConstants &constants, bool demo) {
 #ifdef _WIN32
     if (!demo) return Windows::MakeHttpClient(std::chrono::milliseconds(
@@ -55,10 +57,12 @@ std::unique_ptr<HttpClient> MakeHttp(const Models::AppConstants &constants, bool
         std::string Get(const std::string &) override {
             throw std::runtime_error("Remote services are unavailable in this mode.");
         }
+
         void Cancel() noexcept override {}
     };
     return std::make_unique<OfflineHttpClient>();
 }
+
 bool ReviewIssue(const IssueReport &report) {
 #ifdef _WIN32
     return Windows::Issue::Review(report);
@@ -66,6 +70,7 @@ bool ReviewIssue(const IssueReport &report) {
     return false;
 #endif
 }
+
 Profile ImportProfile(const std::string &text, const std::string &name) {
     std::unique_ptr<char, decltype(&std::free)> json(
         partout_import_profile(text.c_str(), nullptr, name.c_str()), &std::free);
@@ -130,5 +135,6 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
     config.Refresh();
     logger_->Write(LogLevel::info, LogCategory::core, demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
 }
+
 AppContext::~AppContext() = default;
 }

@@ -30,6 +30,7 @@ std::string FileActivationInbox::Encode(const std::string &id, const Configurati
     if (result.size() > MaximumBytes) throw std::runtime_error("Activation is too large.");
     return result;
 }
+
 bool FileActivationInbox::Accept(const std::string &message, const Handler &handler) {
     if (message.size() > MaximumBytes) return false;
     try {

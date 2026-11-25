@@ -39,6 +39,7 @@ Passepartout::Profile Example() {
     profile.userInfo = {{"unknown-metadata", "keep"}};
     return profile;
 }
+
 void Wait(Passepartout::AppSession &session) {
     assert(session.WaitIdle(std::chrono::seconds(5)));
 }
@@ -52,22 +53,27 @@ public:
     std::vector<Partout::Models::TunnelSnapshot> Fetch() override {
         return fake.Fetch();
     }
+
     void Save(const Passepartout::Profile &profile) override {
         ++saves;
         if (rejects) throw std::runtime_error("Save rejected");
         saved = profile;
         fake.Save(profile);
     }
+
     void Connect(const std::string &id) override {
         fake.Connect(id);
     }
+
     void ConnectWithCredentials(const std::string &id, const Partout::TunnelCredentials &credentials) override {
         connection_credentials = credentials;
         fake.Connect(id);
     }
+
     void Disconnect(const std::string &id) override {
         fake.Disconnect(id);
     }
+
     void Remove(const std::string &id) override {
         fake.Remove(id);
     }

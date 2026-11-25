@@ -18,21 +18,26 @@ std::string ModuleId(const Partout::Models::TaggedModule &module) {
     }, module);
 }
 }
+
 ProfileEditor::ProfileEditor(Profile profile) : original_(std::move(profile)) {
     state_.draft = original_;
 }
+
 ProfileEditor::State ProfileEditor::Snapshot() const {
     std::lock_guard lock(mutex_);
     return state_;
 }
+
 const Profile &ProfileEditor::Original() const {
     return original_;
 }
+
 void ProfileEditor::Rename(std::string name) {
     std::lock_guard lock(mutex_);
     if (state_.saving || state_.saved) return;
     state_.draft.name = std::move(name);
 }
+
 void ProfileEditor::UpdateModule(const Partout::Models::TaggedModule &module) {
     std::lock_guard lock(mutex_);
     if (state_.saving || state_.saved) return;
@@ -45,14 +50,17 @@ void ProfileEditor::UpdateModule(const Partout::Models::TaggedModule &module) {
         }
     }
 }
+
 bool ProfileEditor::IsValidChange() const {
     return !state_.saving && !state_.saved && state_.draft != original_ &&
         state_.draft.name.find_first_not_of(" \t\r\n") != std::string::npos;
 }
+
 bool ProfileEditor::CanSave() const {
     std::lock_guard lock(mutex_);
     return IsValidChange();
 }
+
 bool ProfileEditor::BeginSave() {
     std::lock_guard lock(mutex_);
     if (!IsValidChange()) return false;
@@ -60,12 +68,14 @@ bool ProfileEditor::BeginSave() {
     state_.failed = false;
     return true;
 }
+
 void ProfileEditor::FinishSave(bool succeeded) {
     std::lock_guard lock(mutex_);
     state_.saving = false;
     state_.saved = succeeded;
     state_.failed = !succeeded;
 }
+
 void ProfileEditor::ClearError() {
     std::lock_guard lock(mutex_);
     state_.failed = false;

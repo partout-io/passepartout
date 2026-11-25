@@ -79,6 +79,7 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     position.y = std::max(work_area.y, std::min(position.y, work_area.GetBottom() - GetSize().y + 1));
     Move(position);
 }
+
 void SettingsCoordinator::SelectSection(SettingsSection section) {
     if (section == SettingsSection::Update) {
         OpenURL(this, context_.version.Snapshot().release.download_url);
@@ -117,6 +118,7 @@ void SettingsCoordinator::SelectSection(SettingsSection section) {
             break;
     }
 }
+
 void SettingsCoordinator::ReportIssue() {
     IssueReportView *view = nullptr;
     ThemeModal modal(this, Localized(StringKey::ViewsDiagnosticsReportIssueTitle),
@@ -134,6 +136,7 @@ void SettingsCoordinator::ReportIssue() {
         PresentError(this);
     }
 }
+
 void SettingsCoordinator::ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> make_page) {
     wxWindowUpdateLocker update(this);
     auto *page = make_page(pages_);

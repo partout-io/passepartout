@@ -25,6 +25,7 @@ struct Apartment {
     explicit Apartment(winrt::apartment_type type) {
         winrt::init_apartment(type);
     }
+
     ~Apartment() {
         winrt::uninit_apartment();
     }
@@ -45,9 +46,11 @@ class BrokeredFiles final : public ConfigurationFiles {
 public:
     explicit BrokeredFiles(std::vector<winrt::Windows::Storage::StorageFile> files, std::size_t failures)
         : ConfigurationFiles({}, failures), files_(std::move(files)) {}
+
     std::size_t Count() const override {
         return files_.size();
     }
+
     ConfigurationSource Read(std::size_t index) const override {
         if (canceled_.load()) throw std::runtime_error("File activation canceled.");
         const Apartment apartment(winrt::apartment_type::multi_threaded);
@@ -61,6 +64,7 @@ public:
         const auto name = std::filesystem::path(file.Name().c_str()).stem().wstring();
         return {winrt::to_string(name), std::string(reinterpret_cast<const char *>(buffer.data()), buffer.Length())};
     }
+
     void Cancel() const noexcept override {
         canceled_.store(true);
     }
@@ -100,6 +104,7 @@ struct FileActivation::Impl {
         }
         return DefWindowProcW(window, message, parameter, data);
     }
+
     Impl(const std::wstring &service, FileActivationInbox::Handler on_files) : handler(std::move(on_files)) {
         WNDCLASSW type{};
         type.hInstance = GetModuleHandleW(nullptr);
@@ -110,12 +115,14 @@ struct FileActivation::Impl {
             nullptr, type.hInstance, this);
         if (!window) throw std::runtime_error("Unable to receive file activation.");
     }
+
     ~Impl() {
         if (window) DestroyWindow(window);
     }
 };
 FileActivation::FileActivation(const std::string &service, FileActivationInbox::Handler handler)
     : impl_(std::make_unique<Impl>(std::wstring(winrt::to_hstring(service).c_str()), std::move(handler))) {}
+
 bool FileActivation::Forward(const std::string &service, std::shared_ptr<const ConfigurationFiles> files) {
     try {
         GUID uuid{};
@@ -144,6 +151,7 @@ bool FileActivation::Forward(const std::string &service, std::shared_ptr<const C
     } catch (...) {}
     return false;
 }
+
 std::shared_ptr<const ConfigurationFiles> FileActivation::ReadFiles() {
     UINT32 size = 0;
     if (GetCurrentPackageFullName(&size, nullptr) == APPMODEL_ERROR_NO_PACKAGE) return {};
@@ -165,12 +173,15 @@ std::shared_ptr<const ConfigurationFiles> FileActivation::ReadFiles() {
 #else
 struct FileActivation::Impl {};
 FileActivation::FileActivation(const std::string &, FileActivationInbox::Handler) {}
+
 bool FileActivation::Forward(const std::string &, std::shared_ptr<const ConfigurationFiles>) {
     return false;
 }
+
 std::shared_ptr<const ConfigurationFiles> FileActivation::ReadFiles() {
     return {};
 }
 #endif
+
 FileActivation::~FileActivation() = default;
 }

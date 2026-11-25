@@ -21,6 +21,7 @@ ThemeButtonRow::ThemeButtonRow(wxWindow *parent, const wxString &title,
     Add(explanation_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT,
         Theme::Spacing(parent, Theme::Space::Columns));
 }
+
 void ThemeButtonRow::AlignButtons(const std::vector<wxButton *> &buttons) {
     int width = 0;
     for (auto *button : buttons) {

@@ -13,9 +13,11 @@ IssueReportView::IssueReportView(wxWindow *parent) : ThemeDetailView(parent) {
     Finish();
     SetMinSize(GetSizer()->GetMinSize());
 }
+
 std::string IssueReportView::Comment() const {
     return comment_->GetValue().ToStdString(wxConvUTF8);
 }
+
 bool IssueReportView::CanSubmit() const {
     return !comment_->GetValue().empty();
 }

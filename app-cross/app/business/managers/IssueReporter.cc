@@ -10,6 +10,7 @@
 namespace Passepartout {
 IssueReporter::IssueReporter(std::string recipient, std::string version, Handoff handoff)
     : recipient_(std::move(recipient)), version_(std::move(version)), handoff_(std::move(handoff)) {}
+
 bool IssueReporter::Report(const std::string &comment, const std::string &runtime_log) {
     if (comment.size() > 64 * 1024) throw std::invalid_argument("The comment is too long.");
     std::random_device random;

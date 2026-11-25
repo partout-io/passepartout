@@ -16,6 +16,7 @@ public:
     wxButton *Button() const {
         return button_;
     }
+
     wxStaticText *Explanation() const {
         return explanation_;
     }

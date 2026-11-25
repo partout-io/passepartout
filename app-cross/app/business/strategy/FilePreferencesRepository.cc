@@ -10,6 +10,7 @@ namespace Passepartout {
 FilePreferencesRepository::FilePreferencesRepository(std::filesystem::path path) : path_(std::move(path)) {
     std::filesystem::create_directories(path_.parent_path());
 }
+
 Models::AppPreferences FilePreferencesRepository::Fetch() {
     auto defaults = Preferences::Defaults();
     if (!std::filesystem::exists(path_)) return defaults;
@@ -21,6 +22,7 @@ Models::AppPreferences FilePreferencesRepository::Fetch() {
     preferences.cryptoBackend = defaults.cryptoBackend;
     return preferences;
 }
+
 void FilePreferencesRepository::Save(const Models::AppPreferences &preferences) {
     AtomicFile::Write(path_, preferences.ToJson().Encode());
 }

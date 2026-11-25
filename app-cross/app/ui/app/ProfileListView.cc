@@ -22,6 +22,7 @@ public:
 wxString Text(const std::string &value) {
     return wxString::FromUTF8(value);
 }
+
 wxString StatusText(Status status) {
     switch (status) {
         case Status::disconnected: return Localized(StringKey::EntitiesTunnelStatusInactive);
@@ -31,6 +32,7 @@ wxString StatusText(Status status) {
         default: return Localized(StringKey::GlobalNounsUnknown);
     }
 }
+
 wxString TransferText(const AppSnapshot &state, const std::string &id) {
     if (!state.tunnel_available) return {};
     for (const auto &tunnel : state.tunnels) {
@@ -97,11 +99,13 @@ ProfileListView::ProfileListView(wxWindow *parent, TunnelObservable &tunnel,
         ShowContextMenu(wxGetMousePosition());
     });
 }
+
 void ProfileListView::Render(const AppSnapshot &state, bool picking) {
     snapshot_ = state;
     picking_ = picking;
     RenderRows();
 }
+
 std::vector<std::string> ProfileListView::SelectedIds() const {
     std::vector<std::string> ids;
     wxDataViewItemArray selected;
@@ -112,6 +116,7 @@ std::vector<std::string> ProfileListView::SelectedIds() const {
     }
     return ids;
 }
+
 void ProfileListView::RenderRows() {
     rendering_ = true;
     const auto selected = SelectedIds();
@@ -142,6 +147,7 @@ void ProfileListView::RenderRows() {
     list_->Thaw();
     rendering_ = false;
 }
+
 void ProfileListView::RestoreSelection(const std::vector<std::string> &ids) {
     const bool was_rendering = rendering_;
     rendering_ = true;
@@ -152,6 +158,7 @@ void ProfileListView::RestoreSelection(const std::vector<std::string> &ids) {
     }
     rendering_ = was_rendering;
 }
+
 void ProfileListView::ToggleProfile(wxDataViewEvent &event) {
     if (picking_ || rendering_ || event.GetColumn() != ProfileListView::ToggleColumn) return;
     const auto row = list_->ItemToRow(event.GetItem());
@@ -162,10 +169,12 @@ void ProfileListView::ToggleProfile(wxDataViewEvent &event) {
     snapshot_ = tunnel_.Snapshot();
     RenderRows();
 }
+
 bool ProfileListView::HasCollectionFocus() const {
     auto *focus = wxWindow::FindFocus();
     return focus && (focus == list_ || list_->IsDescendant(focus));
 }
+
 void ProfileListView::ShowContextMenu(const wxPoint &screen_position) {
     const auto ids = SelectedIds();
     if (ids.empty()) return;
@@ -186,6 +195,7 @@ void ProfileListView::ShowContextMenu(const wxPoint &screen_position) {
     if (action == wxID_DELETE) remove_(ids);
     else if (action == wxID_EDIT && ids.size() == 1) edit_(ids.front());
 }
+
 void ProfileListView::AppendProfile(const wxString &name, const wxString &status, bool is_on, bool enabled, const wxString &transfer) {
     wxVector<wxVariant> values;
     values.push_back(wxVariant(name));
@@ -194,6 +204,7 @@ void ProfileListView::AppendProfile(const wxString &name, const wxString &status
     values.push_back(wxVariant(is_on));
     list_->AppendItem(values, enabled ? 1 : 0);
 }
+
 void ProfileListView::UpdateProfile(unsigned row, const wxString &name, const wxString &status, bool is_on, bool enabled, const wxString &transfer) {
     list_->SetItemData(list_->RowToItem(row), enabled ? 1 : 0);
     list_->SetTextValue(name, row, 0);

@@ -17,6 +17,7 @@ ThemeLongContent::ThemeLongContent(wxWindow *parent, const wxString &title, cons
     layout->Add(text_, 1, wxEXPAND | wxALL, Theme::Spacing(this));
     SetSizer(layout);
 }
+
 void ThemeLongContent::SetContent(const wxString &content) {
     if (text_->GetValue() == content) return;
     long from = 0, to = 0;
