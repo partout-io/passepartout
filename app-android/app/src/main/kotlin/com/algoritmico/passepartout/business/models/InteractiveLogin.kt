@@ -10,7 +10,7 @@ import io.partout.models.OpenVPNCredentialsOTPMethod
 import io.partout.models.TaggedModuleOpenVPN
 import io.partout.models.TaggedProfile
 
-/** Input for one connection attempt; never saved to the profile repository. */
+/** Input for one prompt; the prepared profile is persisted when submitted. */
 class InteractiveLogin(val original: TaggedProfile) {
     private val saved = (original.interactiveModule as? TaggedModuleOpenVPN)?.value?.credentials
     val needsOTP = saved?.otpMethod?.let { it != OpenVPNCredentialsOTPMethod.none } ?: false

@@ -5,6 +5,7 @@
 package com.algoritmico.passepartout
 
 import com.algoritmico.passepartout.business.models.InteractiveLogin
+import com.algoritmico.passepartout.business.strategy.FileProfileRepository
 import io.partout.extensions.interactiveModule
 import io.partout.extensions.isInteractive
 import io.partout.extensions.withInteractiveLogin
@@ -18,22 +19,31 @@ import io.partout.models.OpenVPNModule
 import io.partout.models.TaggedModuleOpenVPN
 import io.partout.models.TaggedProfile
 import kotlinx.serialization.json.Json
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 
 class ProfileExtensionsUnitTest {
+    @get:Rule
+    val temporaryFolder = TemporaryFolder()
+
     @Test
-    fun interactiveLogin_clearsEachPromptAndPreservesSavedOTPPassword() {
+    fun interactiveLogin_clearsEachPromptAndPreservesPersistedOTPPassword() = runBlocking {
         for (method in OpenVPNCredentialsOTPMethod.entries) {
             val original = openVPNProfile(OpenVPNModule(
                 id = MODULE_ID,
                 requiresInteractiveCredentials = true,
                 credentials = OpenVPNCredentials(username = "user", password = "saved-secret", otpMethod = method)
             ))
-            val login = InteractiveLogin(original)
+            val directory = temporaryFolder.newFolder(method.name)
+            val repository = FileProfileRepository("InteractiveLoginTest", directory)
+            repository.saveProfile(original)
+            val login = InteractiveLogin(repository.fetchProfiles().single())
             assertEquals("", login.password)
             assertEquals("user", login.username)
             login.password = "123456"
@@ -45,12 +55,19 @@ class ProfileExtensionsUnitTest {
             }
             assertEquals(expected, prepared?.credentials?.password)
             assertEquals("saved-secret", original.interactiveOpenVPNModule()?.credentials?.password)
-            val restored = tunnelJson.decodeFromString<TaggedProfile>(tunnelJson.encodeToString(login.connectionProfile()))
+            repository.saveProfile(login.connectionProfile())
+            // Reopen the actual app repository, as after an app restart.
+            val restored = FileProfileRepository("InteractiveLoginTest", directory).fetchProfiles().single()
+            assertEquals(login.connectionProfile(), restored)
             val repeated = InteractiveLogin(restored)
             assertEquals("", repeated.password)
             assertEquals(method != OpenVPNCredentialsOTPMethod.none, repeated.needsOTP)
+            assertEquals("user", repeated.username)
             repeated.password = "654321"
-            val next = repeated.connectionProfile().interactiveOpenVPNModule()?.credentials
+            repository.saveProfile(repeated.connectionProfile())
+            val nextProfile = FileProfileRepository("InteractiveLoginTest", directory).fetchProfiles().single()
+            assertEquals("", InteractiveLogin(nextProfile).password)
+            val next = nextProfile.interactiveOpenVPNModule()?.credentials
             assertEquals(method, next?.otpMethod)
             assertEquals(if (repeated.needsOTP) "saved-secret" else "654321", next?.password)
             assertEquals(if (repeated.needsOTP) "654321" else null, next?.otp)

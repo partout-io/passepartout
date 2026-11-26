@@ -56,7 +56,7 @@ sealed class TunnelObservableException: Exception() {
 class TunnelObservable(
     private val logTag: String,
     private val tunnel: PartoutTunnel,
-    profileManager: ProfileManager,
+    private val profileManager: ProfileManager,
     storeFlow: Flow<Preferences>,
     coroutineScope: CoroutineScope
 ) : Closeable {
@@ -81,7 +81,9 @@ class TunnelObservable(
     }
 
     suspend fun connect(login: InteractiveLogin) {
-        connect(login.connectionProfile(), force = true)
+        val profile = login.connectionProfile()
+        profileManager.save(profile)
+        connect(profile, force = true)
     }
 
     suspend fun connect(profile: TaggedProfile, force: Boolean = false) {
