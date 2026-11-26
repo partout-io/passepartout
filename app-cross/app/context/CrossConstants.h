@@ -14,7 +14,7 @@ struct CrossConstantsType {
     } tags;
     struct Storage {
         std::string demo_prefix = "demo-";
-        std::wstring preferences_key = L"tunnel.preferences";
+        std::wstring preferences_key = L"AppPreferences";
     } storage;
     struct Tunnel {
         std::string server_uri = "https://passepartout.profile";
