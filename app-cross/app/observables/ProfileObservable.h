@@ -5,7 +5,7 @@
 #pragma once
 #include "AppProfileHeader.h"
 #include "../business/managers/ProfileManager.h"
-#include "../business/models/ConfigurationFiles.h"
+#include "../business/strategy/ConfigurationFiles.h"
 #include "../context/AppLogger.h"
 #include "SerialExecutor.h"
 #include "ProfileEditor.h"

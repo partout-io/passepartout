@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "business/models/ConfigurationFiles.h"
+#include "business/strategy/ConfigurationFiles.h"
 #include "business/managers/ProfileManager.h"
 #include "business/strategy/FileProfileRepository.h"
 #include "business/extensions/Models+Business.h"

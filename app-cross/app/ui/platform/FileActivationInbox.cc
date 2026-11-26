@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "../../business/models/ConfigurationFiles.h"
+#include "../../business/strategy/ConfigurationFiles.h"
 #include "FileActivationInbox.h"
 #include <partout/Json.h>
 #include <stdexcept>
