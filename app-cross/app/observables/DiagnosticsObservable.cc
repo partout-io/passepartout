@@ -13,8 +13,7 @@ std::string DiagnosticsObservable::ApplicationLog() const {
 }
 
 std::optional<std::string> DiagnosticsObservable::TunnelLog() const {
-    // The isolated VPN host uses Windows channel diagnostics and debugger output.
-    // Never substitute frontend logs or retained files for another process's log.
+    // FIXME: ###, Tunnel runtime logs are not available to the frontend process.
     return {};
 }
 

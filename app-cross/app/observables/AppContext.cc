@@ -54,6 +54,7 @@ std::unique_ptr<Passepartout::HttpClient> MakeHttp(const Passepartout::Models::A
     return Passepartout::Windows::MakeHttpClient(std::chrono::milliseconds(
         static_cast<std::int64_t>(constants.url.timeoutInterval * 1000)));
 #else
+    // FIXME: ###, Implement on .unixLike
     return std::make_unique<Passepartout::OfflineHttpClient>();
 #endif
 }
@@ -62,6 +63,7 @@ bool ReviewIssue(const std::string &recipient, const Passepartout::Models::Issue
 #ifdef _WIN32
     return Passepartout::Windows::Issue::Review(recipient, issue);
 #else
+    // FIXME: ###, Implement on .unixLike
     return false;
 #endif
 }
@@ -79,6 +81,7 @@ std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const Passepartout::Cross
         std::make_unique<Partout::WinRTTunnelStrategy>(constants.tunnel.server_uri)
     );
 #else
+    // FIXME: ###, Implement on .unixLike
     return std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>());
 #endif
 }
