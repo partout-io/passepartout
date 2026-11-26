@@ -24,23 +24,11 @@ public struct InteractiveLogin: Sendable {
     }
 
     public func connectionProfile() throws -> Profile {
-        var builder = original.builder()
-        guard let index = builder.modules.firstIndex(where: {
-            $0.id == moduleId
-        }), let module = builder.modules[index] as? OpenVPNModule else {
-            throw ABI.AppError.interactiveLogin
-        }
-        var moduleBuilder = module.builder()
-        var credentials = module.credentials?.builder() ?? OpenVPN.Credentials.Builder()
-        credentials.username = username
-        if needsOTP {
-            credentials.otp = password
-        } else {
-            credentials.password = password
-            credentials.otp = nil
-        }
-        moduleBuilder.credentials = credentials.build()
-        builder.modules[index] = try moduleBuilder.build()
-        return try builder.build()
+        guard moduleId != nil else { throw ABI.AppError.interactiveLogin }
+        return try original.withInteractiveLogin(
+            username: username,
+            password: password,
+            otp: needsOTP ? password : nil
+        )
     }
 }
