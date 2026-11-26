@@ -18,7 +18,7 @@
 namespace Passepartout {
 SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     : wxDialog(parent, wxID_ANY, Localized(StringKey::ViewsSettingsTitle), wxDefaultPosition,
-        wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER), context_(context) {
+        wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER), context_(context), observer_([this] { UpdateVersion(); }) {
     Theme::Apply(this);
     SetIcon(Theme::SettingsIcon(this));
     Bind(wxEVT_SYS_COLOUR_CHANGED, [this](wxSysColourChangedEvent &event) {
@@ -37,18 +37,14 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     auto *detail = new wxBoxSizer(wxVERTICAL);
     detail->Add(pages_, 1, wxEXPAND);
     detail_panel->SetSizer(detail);
-    const auto version = context.version.Snapshot();
-    wxString update_title;
-    if (version.release.latest) {
-        update_title = Localized(StringKey::ViewsSettingsLinksUpdate);
-        update_title.Replace("%@", wxString::FromUTF8(*version.release.latest));
-    }
     const auto initial = SettingsSection::Preferences;
     auto *sidebar = new wxBoxSizer(wxVERTICAL);
-    sidebar->Add(new SettingsView(splitter->Sidebar(),
-        update_title, initial, [this](SettingsSection section) {
+    sidebar_ = new SettingsView(splitter->Sidebar(),
+        {}, initial, [this](SettingsSection section) {
             SelectSection(section);
-        }), 1, wxEXPAND | wxALL, Theme::Spacing(this));
+        }
+    );
+    sidebar->Add(sidebar_, 1, wxEXPAND | wxALL, Theme::Spacing(this));
     splitter->Sidebar()->SetSizer(sidebar);
     const int sidebar_width = splitter->InitializePanes();
     layout->Add(splitter, 1, wxEXPAND);
@@ -59,6 +55,8 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     layout->Add(buttons, 0, wxALIGN_RIGHT | wxALL, Theme::Spacing(this));
     SetSizer(layout);
     SetEscapeId(wxID_CANCEL);
+    observer_.Observe(context_.version.changes);
+    UpdateVersion();
     SelectSection(initial);
     GetSizer()->SetSizeHints(this);
     const wxSize viewport(GetCharWidth() * 90, GetCharHeight() * 28);
@@ -73,6 +71,16 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     position.x = std::max(work_area.x, std::min(position.x, work_area.GetRight() - GetSize().x + 1));
     position.y = std::max(work_area.y, std::min(position.y, work_area.GetBottom() - GetSize().y + 1));
     Move(position);
+}
+
+void SettingsCoordinator::UpdateVersion() {
+    const auto version = context_.version.Snapshot();
+    wxString title;
+    if (version.release.latest) {
+        title = Localized(StringKey::ViewsSettingsLinksUpdate);
+        title.Replace("%@", wxString::FromUTF8(*version.release.latest));
+    }
+    sidebar_->SetUpdateTitle(title);
 }
 
 void SettingsCoordinator::SelectSection(SettingsSection section) {

@@ -6,12 +6,15 @@
 #include <functional>
 
 namespace Passepartout {
+class ThemeContentLink;
 enum class SettingsSection { Preferences = 1, Links, Credits, Diagnostics, Update };
 class SettingsView final : public wxPanel {
 public:
     SettingsView(wxWindow *parent, const wxString &update_title,
         SettingsSection initial, std::function<void(SettingsSection)> selected);
+    void SetUpdateTitle(const wxString &title);
 private:
+    ThemeContentLink *update_;
     unsigned selected_row_ = 0;
 };
 }

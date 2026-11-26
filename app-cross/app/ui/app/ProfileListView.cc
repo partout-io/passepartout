@@ -16,6 +16,7 @@ public:
         return column != Passepartout::ProfileListView::ToggleColumn || GetItemData(GetItem(row)) != 0;
     }
 };
+
 wxString Text(const std::string &value) {
     return wxString::FromUTF8(value);
 }
@@ -140,14 +141,16 @@ void ProfileListView::RenderRows() {
     visible_ids_ = std::move(ids);
     unsigned row = 0;
     for (const auto &profile : profiles_.profiles) {
-        if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
+        if (row == visible_ids_.size()) break;
+        if (profile.id != visible_ids_[row]) continue;
         const auto toggle = Tunnels::StateForProfile(tunnels_, profile.id);
         const auto status = tunnels_.available &&
             tunnels_.errors.unobservable_profiles.find(profile.id) == tunnels_.errors.unobservable_profiles.end()
             ? StatusText(toggle.status) : wxString();
         const auto transfer = TransferText(tunnels_, profile.id);
-        if (rebuild) AppendProfile(Text(profile.name), status, toggle.is_on, toggle.can_interact && !profiles_.busy && !picking_, transfer);
-        else UpdateProfile(row, Text(profile.name), status, toggle.is_on, toggle.can_interact && !profiles_.busy && !picking_, transfer);
+        const bool enabled = toggle.can_interact && !profiles_.busy && !picking_;
+        if (rebuild) AppendProfile(Text(profile.name), status, toggle.is_on, enabled, transfer);
+        else UpdateProfile(row, Text(profile.name), status, toggle.is_on, enabled, transfer);
         ++row;
     }
     if (rebuild) RestoreSelection(selected);
@@ -156,18 +159,16 @@ void ProfileListView::RenderRows() {
 }
 
 void ProfileListView::RestoreSelection(const std::vector<std::string> &ids) {
-    const bool was_rendering = rendering_;
-    rendering_ = true;
     list_->UnselectAll();
     for (std::size_t row = 0; row < visible_ids_.size(); ++row) {
         if (std::find(ids.begin(), ids.end(), visible_ids_[row]) == ids.end()) continue;
         list_->SelectRow(static_cast<unsigned>(row));
     }
-    rendering_ = was_rendering;
 }
 
 void ProfileListView::ToggleProfile(wxDataViewEvent &event) {
-    if (picking_ || profiles_observable_.Snapshot().busy || rendering_ || event.GetColumn() != ProfileListView::ToggleColumn) return;
+    if (rendering_ || event.GetColumn() != ToggleColumn || picking_) return;
+    if (profiles_observable_.Snapshot().busy) return;
     const auto row = list_->ItemToRow(event.GetItem());
     if (row < 0 || static_cast<std::size_t>(row) >= visible_ids_.size()) return;
     const auto profile = profiles_observable_.FindProfile(visible_ids_[row]);
@@ -189,9 +190,8 @@ bool ProfileListView::HasCollectionFocus() const {
 void ProfileListView::ShowContextMenu(const wxPoint &screen_position) {
     const auto ids = SelectedIds();
     if (ids.empty()) return;
-    wxWindow *collection = list_;
     wxPoint position;
-    if (screen_position != wxDefaultPosition) position = collection->ScreenToClient(screen_position);
+    if (screen_position != wxDefaultPosition) position = list_->ScreenToClient(screen_position);
     else position = list_->GetItemRect(list_->GetCurrentItem()).GetBottomLeft();
     wxMenu menu;
     if (ids.size() == 1) {
@@ -199,10 +199,10 @@ void ProfileListView::ShowContextMenu(const wxPoint &screen_position) {
         menu.Enable(wxID_EDIT, !picking_ && !profiles_.busy);
     }
     menu.Append(wxID_DELETE, Localized(StringKey::GlobalActionsRemove));
-    menu.Enable(wxID_DELETE, !picking_ && ProfileObservable::CanRemove(profiles_, ids) && !tunnels_.pending_profile && !profiles_.busy);
+    menu.Enable(wxID_DELETE, !picking_ && ProfileObservable::CanRemove(profiles_, ids) && !tunnels_.pending_profile);
     // Popup menus run a nested event loop: retain the captured IDs even when
     // background snapshots change the visible rows or selection.
-    const auto action = collection->GetPopupMenuSelectionFromUser(menu, position);
+    const auto action = list_->GetPopupMenuSelectionFromUser(menu, position);
     if (action == wxID_DELETE) remove_(ids);
     else if (action == wxID_EDIT && ids.size() == 1) edit_(ids.front());
 }
