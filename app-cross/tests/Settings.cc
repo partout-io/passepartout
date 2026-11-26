@@ -4,6 +4,7 @@
 
 #include "business/strategy/FilePreferencesRepository.h"
 #include "business/managers/ConfigManager.h"
+#include "observables/VersionObservable.h"
 #include "business/strategy/GitHubConfigStrategy.h"
 #include "business/strategy/GitHubReleaseStrategy.h"
 #include "business/managers/VersionChecker.h"
@@ -71,10 +72,17 @@ public:
     std::string value = "1.2.3.4";
     bool fails = false;
     unsigned requests = 0;
+    unsigned changelog_requests = 0;
     std::string LatestVersion() override {
         ++requests;
         if (fails) throw std::runtime_error("Offline");
         return value;
+    }
+
+    std::vector<Passepartout::Models::ChangelogEntry> FetchChangelog(const std::string &build) override {
+        ++changelog_requests;
+        if (fails) throw std::runtime_error("Offline");
+        return {{1, build, 42}};
     }
 
     void Cancel() noexcept override {}
@@ -220,7 +228,13 @@ int main() {
 
         auto release_http = std::make_unique<FakeHttp>();
         auto *release_remote = release_http.get();
-        GitHubReleaseStrategy github(std::move(release_http), "https://example.invalid/releases/latest");
+        GitHubReleaseStrategy github(std::move(release_http), "https://example.invalid/releases/latest",
+            [](const std::string &build) {
+                Models::AppConstants_github constants;
+                constants.rawURL = "https://example.invalid";
+                return Constants::ChangelogURL(constants, build);
+            }
+        );
         release_remote->response = R"({"name":"1.2.3.4","tag_name":"unrelated-tag"})";
         assert(github.LatestVersion() == "1.2.3.4");
         assert(release_remote->requested_url == "https://example.invalid/releases/latest");
@@ -230,6 +244,18 @@ int main() {
         }
         release_remote->fails = true;
         Fails([&] { github.LatestVersion(); });
+        Fails([&] { github.FetchChangelog("123"); });
+        release_remote->fails = false;
+        release_remote->response = "Title\n\n* First (#123)\r\n* Plain\n* Invalid (#oops)\n* Overflow (#999999999999999)\nIgnored\n";
+        const auto entries = github.FetchChangelog("123");
+        assert(release_remote->requested_url == "https://example.invalid/refs/tags/builds/123/app-cross/CHANGELOG.txt");
+        assert(entries.size() == 4 && entries[0].id == 1);
+        assert(entries[0].comment == "First" && entries[0].issue == 123);
+        assert(entries[1].comment == "Plain" && !entries[1].issue);
+        assert(entries[2].comment == "Invalid (#oops)" && !entries[2].issue);
+        assert(!entries[3].issue);
+        release_remote->response = "Title\n\n";
+        assert(github.FetchChangelog("124").empty());
         github.Cancel();
         assert(release_remote->canceled);
 
@@ -249,6 +275,60 @@ int main() {
         releases->value = "not-a-release";
         Fails([&] { version.Check(201000); });
         assert(!stored && !version.Snapshot().latest);
+
+        // Changelog fetching works independently of update-download availability.
+        auto changelog_strategy = std::make_unique<FakeVersion>();
+        auto *changelog_remote = changelog_strategy.get();
+        changelog_remote->fails = true;
+        Models::AppConstants_github github_constants;
+        github_constants.issuesURL = "https://example.invalid/issues";
+        std::string changelog_log;
+        auto changelog_logger = std::make_shared<AppLogger>([&](auto, auto, const std::string &message) {
+            changelog_log = message;
+        });
+        VersionObservable changelog(std::make_unique<VersionChecker>("1.0.0.7", std::move(changelog_strategy),
+            "", 60, std::nullopt, std::nullopt, [](auto, auto) {}), "1.0.0.7", "7", github_constants, changelog_logger
+        );
+        assert(!changelog.Snapshot().available);
+        const auto wait_changelog = [&] {
+            const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+            while (changelog.Snapshot().changelog.loading && std::chrono::steady_clock::now() < deadline) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+            assert(!changelog.Snapshot().changelog.loading);
+        };
+        changelog.LoadChangelog();
+        wait_changelog();
+        assert(changelog.Snapshot().changelog.operation_failed);
+        assert(changelog.Snapshot().changelog.entries.empty());
+        assert(changelog_log == "Unable to load changelog for build 7");
+        changelog_remote->fails = false;
+        changelog.LoadChangelog();
+        wait_changelog();
+        assert(!changelog.Snapshot().changelog.operation_failed);
+        assert(changelog.Snapshot().changelog.entries[0].comment == "7");
+        assert(changelog.IssueURL(changelog.Snapshot().changelog.entries[0]) == "https://example.invalid/issues/42");
+        assert(!changelog.IssueURL({1, "No issue", std::nullopt}));
+        changelog.LoadChangelog();
+        wait_changelog();
+        assert(changelog_remote->changelog_requests == 3); // Reopening refetches successful content.
+        assert(changelog_remote->requests == 0); // Never requests the latest release for a changelog.
+
+        auto blocked_changelog = std::make_shared<BlockingState>();
+        {
+            VersionObservable pending(std::make_unique<VersionChecker>("1.0.0.7",
+                std::make_unique<GitHubReleaseStrategy>(std::make_unique<BlockingHttp>(blocked_changelog),
+                    "https://example.invalid/releases/latest", [](const std::string &) {
+                        return "https://example.invalid/changelog";
+                    }), "", 60, std::nullopt, std::nullopt, [](auto, auto) {}), "1.0.0.7", "7", github_constants, changelog_logger
+            );
+            pending.LoadChangelog();
+            std::unique_lock lock(blocked_changelog->mutex);
+            assert(blocked_changelog->changed.wait_for(lock, std::chrono::seconds(2), [&] {
+                return blocked_changelog->entered;
+            }));
+        }
+        assert(blocked_changelog->canceled);
 
         CreditsObservable credits(CreditsResource, std::make_unique<FakeHttp>(), Models::Platform::unixLike);
         assert(!credits.HasLoadError());

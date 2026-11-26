@@ -11,7 +11,7 @@
 #include "../settings/VersionView.h"
 #include "../../strings/Unlocalized.h"
 #include "../theme/ThemeModal.h"
-#include "../theme/ThemeLongContent.h"
+#include "../settings/ChangelogView.h"
 
 namespace {
 wxString Text(const std::string &value) {
@@ -73,9 +73,8 @@ MainView::MainView(AppContext &context, bool demo,
     const auto changelog_id = wxWindow::NewControlId();
     help->Append(changelog_id, Strings::Unlocalized::Changelog);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
-        const auto content = Text(context_.version.Snapshot().changelog);
-        ThemeModal modal(this, Strings::Unlocalized::Changelog, [content](wxWindow *parent) {
-            return new ThemeLongContent(parent, Strings::Unlocalized::Changelog, content);
+        ThemeModal modal(this, Strings::Unlocalized::Changelog, [this](wxWindow *parent) {
+            return new ChangelogView(parent, context_.version);
         });
         modal.ShowModal();
     }, changelog_id);

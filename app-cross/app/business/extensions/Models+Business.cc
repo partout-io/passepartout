@@ -331,3 +331,55 @@ std::string Issues::Body(const Models::Issue &issue, const std::string &text) {
     return body;
 }
 }
+
+namespace Passepartout::Constants {
+std::string IssueURL(const Models::AppConstants_github &github, int32_t issue) {
+    return github.issuesURL + "/" + std::to_string(issue);
+}
+
+std::string ChangelogURL(const Models::AppConstants_github &github, const std::string &build) {
+    return github.rawURL + "/refs/tags/builds/" + build + "/app-cross/CHANGELOG.txt";
+}
+}
+
+namespace Passepartout::Changelogs {
+std::vector<Models::ChangelogEntry> Parse(const std::string &text) {
+    std::vector<Models::ChangelogEntry> entries;
+    std::istringstream lines(text);
+    std::string line;
+    int32_t index = 0;
+    while (std::getline(lines, line)) {
+        if (!line.empty() && line.back() == '\r') line.pop_back();
+        if (line.empty()) continue;
+        const auto id = index++;
+        if (line.compare(0, 2, "* ") != 0) continue;
+        std::istringstream words(line.substr(2));
+        std::vector<std::string> components;
+        std::string word;
+        while (words >> word) components.push_back(word);
+        Models::ChangelogEntry entry{};
+        entry.id = id;
+        if (components.size() >= 2) {
+            const auto &last = components.back();
+            if (last.size() > 3 && last.compare(0, 2, "(#") == 0 && last.back() == ')') {
+                try {
+                    const auto number = last.substr(2, last.size() - 3);
+                    std::size_t count = 0;
+                    const auto issue = std::stoi(number, &count);
+                    if (count == number.size()) {
+                        entry.issue = issue;
+                        components.pop_back();
+                    }
+                } catch (const std::invalid_argument &) {
+                } catch (const std::out_of_range &) {}
+            }
+        }
+        for (const auto &component : components) {
+            if (!entry.comment.empty()) entry.comment += " ";
+            entry.comment += component;
+        }
+        entries.push_back(std::move(entry));
+    }
+    return entries;
+}
+}

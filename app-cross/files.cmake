@@ -26,6 +26,7 @@ set(APP_SOURCES
     app/ui/profile/modules/OpenVPNCredentialsView.cc
     app/ui/profile/modules/OpenVPNView.cc
     app/ui/profile/modules/WireGuardView.cc
+    app/ui/settings/ChangelogView.cc
     app/ui/settings/CreditsView.cc
     app/ui/settings/LicenseView.cc
     app/ui/settings/LinksView.cc

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "VersionView.h"
-#include "../theme/ThemeLongContent.h"
+#include "ChangelogView.h"
 #include "../../strings/Strings.h"
 #include "../../strings/Unlocalized.h"
 
@@ -18,9 +18,9 @@ VersionView::VersionView(wxWindow *parent, VersionObservable &version, const wxS
     author.Replace("%@", name, false);
     author.Replace("%@", wxString::FromUTF8(Strings::Unlocalized::AuthorName), false);
     Message(author);
-    ContentLink(wxString(Strings::Unlocalized::Changelog).Upper(), [present, content = state.changelog] {
-        present(Strings::Unlocalized::Changelog, [content](wxWindow *parent) {
-            return new ThemeLongContent(parent, Strings::Unlocalized::Changelog, wxString::FromUTF8(content));
+    ContentLink(wxString(Strings::Unlocalized::Changelog).Upper(), [present, &version] {
+        present(Strings::Unlocalized::Changelog, [&version](wxWindow *parent) {
+            return new ChangelogView(parent, version);
         });
     });
     Finish();

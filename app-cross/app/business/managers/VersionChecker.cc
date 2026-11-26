@@ -62,6 +62,11 @@ void VersionChecker::Check(std::int64_t now) {
     if (!parsed) throw std::runtime_error("Invalid release version.");
 }
 
+std::vector<Passepartout::Models::ChangelogEntry> VersionChecker::FetchChangelog(const std::string &build) {
+    if (!strategy_) throw std::runtime_error("Changelog service is unavailable.");
+    return strategy_->FetchChangelog(build);
+}
+
 void VersionChecker::Cancel() noexcept {
     if (strategy_) strategy_->Cancel();
 }

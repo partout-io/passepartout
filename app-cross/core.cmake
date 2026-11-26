@@ -31,11 +31,9 @@ function(configure_application_core)
         "${CMAKE_CURRENT_BINARY_DIR}/generated/AppConstantsResource.h" @ONLY)
 
     set(APP_CREDITS_PATH "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../resources/credits.json")
-    set(APP_CHANGELOG_PATH "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/CHANGELOG.txt")
     set(APP_ISSUE_PATH "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../resources/issue.txt")
-    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${APP_CREDITS_PATH}" "${APP_CHANGELOG_PATH}" "${APP_ISSUE_PATH}")
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${APP_CREDITS_PATH}" "${APP_ISSUE_PATH}")
     file(READ "${APP_CREDITS_PATH}" APP_CREDITS_JSON)
-    file(READ "${APP_CHANGELOG_PATH}" APP_CHANGELOG)
     file(READ "${APP_ISSUE_PATH}" APP_ISSUE_TEMPLATE)
     configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/app/context/SettingsResources.h.in"
         "${CMAKE_CURRENT_BINARY_DIR}/generated/SettingsResources.h" @ONLY)

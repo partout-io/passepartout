@@ -26,6 +26,7 @@ public:
     State Snapshot() const;
     // Epoch milliseconds, matching AppPreferences on the other frontends.
     void Check(std::int64_t now);
+    std::vector<Models::ChangelogEntry> FetchChangelog(const std::string &build);
     void Cancel() noexcept;
 private:
     std::string current_;
