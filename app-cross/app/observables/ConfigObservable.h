@@ -7,7 +7,7 @@
 #include "BackgroundWorker.h"
 
 namespace Passepartout {
-class ConfigObservable {
+class ConfigObservable final {
 public:
     struct State {
         ConfigManager::Flags flags;

@@ -7,7 +7,7 @@
 #include <mutex>
 
 namespace Passepartout {
-class ProfileEditor {
+class ProfileEditor final {
 public:
     struct State {
         Profile draft;

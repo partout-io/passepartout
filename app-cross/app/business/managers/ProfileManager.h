@@ -11,7 +11,7 @@
 namespace Passepartout {
 // Keep import/configuration conversion in Partout, including in tests.
 using ProfileImporter = std::function<Profile(const std::string &, const std::string &)>;
-class ProfileManager {
+class ProfileManager final {
 public:
     ProfileManager(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
         std::unique_ptr<ProfileJournal> journal = std::make_unique<MemoryProfileJournal>());

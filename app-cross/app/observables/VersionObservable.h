@@ -7,7 +7,7 @@
 #include "BackgroundWorker.h"
 
 namespace Passepartout {
-class VersionObservable {
+class VersionObservable final {
 public:
     struct State {
         std::string current;

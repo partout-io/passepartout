@@ -9,7 +9,7 @@
 #include <mutex>
 
 namespace Passepartout {
-class UserPreferencesObservable {
+class UserPreferencesObservable final {
 public:
     explicit UserPreferencesObservable(std::unique_ptr<PreferencesRepository> repository,
         std::function<bool()> can_change_private_data = [] { return true; });

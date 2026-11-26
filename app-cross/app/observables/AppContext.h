@@ -17,7 +17,7 @@
 namespace Passepartout {
 class AppLogger;
 class AppSession;
-class AppContext {
+class AppContext final {
 public:
     const Models::AppConstants constants;
     const CrossConstants cross_constants;

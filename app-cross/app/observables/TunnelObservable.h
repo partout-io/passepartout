@@ -9,7 +9,7 @@
 namespace Passepartout {
 class AppSession;
 
-class TunnelObservable {
+class TunnelObservable final {
 public:
     struct ToggleState {
         bool is_on = false;

@@ -12,7 +12,7 @@
 namespace Passepartout {
 // Owned by one observable. Stop cancels its external work before joining, and
 // callers stop it before destroying any state captured by queued operations.
-class BackgroundWorker {
+class BackgroundWorker final {
 public:
     explicit BackgroundWorker(std::function<void()> cancel = {});
     ~BackgroundWorker();

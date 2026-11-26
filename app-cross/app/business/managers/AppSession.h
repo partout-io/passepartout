@@ -17,7 +17,7 @@
 namespace Passepartout {
 // Shared serial executor for profile/tunnel transactions. Snapshots are copied
 // under a lock; UI consumers never retain references into worker-owned models.
-class AppSession {
+class AppSession final {
 public:
     AppSession(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
                std::unique_ptr<Partout::Tunnel> tunnel,

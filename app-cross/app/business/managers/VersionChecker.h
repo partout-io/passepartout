@@ -16,7 +16,7 @@ public:
     virtual std::string LatestVersion() = 0;
     virtual void Cancel() noexcept = 0;
 };
-class VersionChecker {
+class VersionChecker final {
 public:
     struct State {
         std::optional<std::string> latest;

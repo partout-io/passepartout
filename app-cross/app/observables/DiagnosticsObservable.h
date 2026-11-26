@@ -8,7 +8,7 @@
 #include <optional>
 
 namespace Passepartout {
-class DiagnosticsObservable {
+class DiagnosticsObservable final {
 public:
     explicit DiagnosticsObservable(std::unique_ptr<IssueReporter> reporter);
     std::string ApplicationLog() const;

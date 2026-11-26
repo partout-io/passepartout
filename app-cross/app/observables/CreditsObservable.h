@@ -9,7 +9,7 @@
 #include <map>
 
 namespace Passepartout {
-class CreditsObservable {
+class CreditsObservable final {
 public:
     struct Content {
         std::string text;

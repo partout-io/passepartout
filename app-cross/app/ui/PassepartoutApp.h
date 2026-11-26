@@ -8,7 +8,7 @@
 #include "../observables/AppContext.h"
 #include "platform/FileActivation.h"
 
-class PassepartoutApp : public wxApp {
+class PassepartoutApp final : public wxApp {
 public:
     bool OnInit() override;
     int OnExit() override;

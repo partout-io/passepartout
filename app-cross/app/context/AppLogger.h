@@ -12,7 +12,7 @@ namespace Passepartout {
 enum class LogLevel { debug, info, error };
 enum class LogCategory { core, tunnel, profiles, partout };
 using LogSink = std::function<void(LogLevel, LogCategory, const std::string &)>;
-class AppLogger {
+class AppLogger final {
 public:
     explicit AppLogger(LogSink sink = {});
     static void PartoutMessage(void *context, const char *profile_id, int level, const char *message) noexcept;

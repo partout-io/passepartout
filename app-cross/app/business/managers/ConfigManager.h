@@ -10,7 +10,7 @@
 #include <map>
 
 namespace Passepartout {
-class ConfigManager {
+class ConfigManager final {
 public:
     using Flags = std::map<Models::ConfigFlag::eConfigFlag, Partout::Json>;
     ConfigManager(std::unique_ptr<HttpClient> client, std::string url, int build,

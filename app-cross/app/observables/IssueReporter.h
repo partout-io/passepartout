@@ -8,7 +8,7 @@
 #include <string>
 
 namespace Passepartout {
-class IssueReporter {
+class IssueReporter final {
 public:
     using Handoff = std::function<bool(const std::string &, const Models::Issue &)>;
     IssueReporter(std::string recipient, std::string version, Handoff handoff);

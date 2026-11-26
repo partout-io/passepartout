@@ -10,7 +10,7 @@
 namespace Passepartout {
 class AppSession;
 
-class ProfileObservable {
+class ProfileObservable final {
 public:
     explicit ProfileObservable(AppSession &session) : session_(session) {}
     static bool CanRemove(const AppSnapshot &state, const std::vector<std::string> &ids);

@@ -10,7 +10,7 @@
 #include "ProfileListView.h"
 #include <deque>
 
-class MainView : public Passepartout::MainFrame {
+class MainView final : public Passepartout::MainFrame {
 public:
     MainView(Passepartout::AppContext &context, bool demo,
              Passepartout::Configuration::PickerFactory picker_factory

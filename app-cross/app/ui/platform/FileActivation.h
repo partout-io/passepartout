@@ -7,7 +7,7 @@
 #include <string>
 
 namespace Passepartout {
-class FileActivation {
+class FileActivation final {
 public:
     FileActivation(const std::string &service, FileActivationInbox::Handler handler);
     ~FileActivation();
