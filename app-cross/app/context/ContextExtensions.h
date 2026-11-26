@@ -4,7 +4,12 @@
 
 #pragma once
 #include "AppConstants.h"
+#include "Platform.h"
 #include <filesystem>
+
+namespace Passepartout {
+Models::Platform::ePlatform ApplicationPlatform();
+}
 
 namespace Passepartout::Constants {
 Models::AppConstants Load();

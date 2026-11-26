@@ -17,7 +17,7 @@ public:
         bool operation_failed = false;
     };
     CreditsObservable(std::string resource, std::unique_ptr<HttpClient> client,
-                      Models::Platform::ePlatform platform = Credits::CurrentPlatform());
+                      Models::Platform::ePlatform platform);
     ~CreditsObservable();
     const Models::Credits &Snapshot() const;
     bool HasLoadError() const;

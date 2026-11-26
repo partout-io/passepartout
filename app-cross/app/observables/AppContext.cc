@@ -24,14 +24,6 @@
 #include <stdexcept>
 
 namespace {
-Passepartout::Models::Platform::ePlatform ApplicationPlatform() {
-#ifdef _WIN32
-    return Passepartout::Models::Platform::windows;
-#else
-    return Passepartout::Models::Platform::unixLike;
-#endif
-}
-
 std::string ApplicationVersion() {
 #ifdef PASSEPARTOUT_APP_VERSION
     return PASSEPARTOUT_APP_VERSION;
@@ -136,7 +128,7 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
           preferences.Snapshot().lastCheckedVersion, [this](auto timestamp, auto latest) {
               preferences.SetLastCheckedVersion(timestamp, std::move(latest));
           }), application_version, ChangelogResource),
-      credits(CreditsResource, MakeHttp(constants)),
+      credits(CreditsResource, MakeHttp(constants), ApplicationPlatform()),
       diagnostics(std::make_unique<IssueReporter>(constants.emails.recipients.beta + "@" + constants.emails.domain,
           application_version, ReviewIssue)) {
     try {

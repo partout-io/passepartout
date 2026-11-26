@@ -41,7 +41,6 @@ Models::AppPreferences FromJson(const Partout::Json &data);
 }
 
 namespace Credits {
-Models::Platform::ePlatform CurrentPlatform();
 void Filter(Models::Credits &credits, Models::Platform::ePlatform platform);
 }
 

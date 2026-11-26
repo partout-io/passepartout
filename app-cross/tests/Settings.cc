@@ -250,7 +250,7 @@ int main() {
         Fails([&] { version.Check(201000); });
         assert(!stored && !version.Snapshot().latest);
 
-        CreditsObservable credits(CreditsResource, std::make_unique<FakeHttp>());
+        CreditsObservable credits(CreditsResource, std::make_unique<FakeHttp>(), Models::Platform::unixLike);
         assert(!credits.HasLoadError());
         assert(!credits.Snapshot().licenses.empty());
         Models::Credits sample;

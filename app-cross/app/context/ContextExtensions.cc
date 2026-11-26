@@ -9,6 +9,16 @@
 #include <cctype>
 #include <stdexcept>
 
+namespace Passepartout {
+Models::Platform::ePlatform ApplicationPlatform() {
+#ifdef _WIN32
+    return Models::Platform::windows;
+#else
+    return Models::Platform::unixLike;
+#endif
+}
+}
+
 namespace Passepartout::Constants {
 Models::AppConstants Load() {
     return Models::AppConstants::FromJson(Partout::Json::Parse(AppConstantsResource));
