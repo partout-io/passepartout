@@ -11,11 +11,11 @@ def classify(path):
     if path.parts[0] == "models":
         return "MODEL_SOURCES", None
     target = "CORE_SOURCES" if path.parts[1] in CORE_FOLDERS else "APP_SOURCES"
-    condition = None
     if path.parent.name == "platform":
-        condition = next((value for prefix, value in PLATFORMS.items()
-                          if path.name.startswith(prefix)), None)
-    return target, condition
+        for prefix, condition in PLATFORMS.items():
+            if path.name.startswith(prefix):
+                return target, condition
+    return target, None
 
 
 def render_sources(target, paths, condition=None):
