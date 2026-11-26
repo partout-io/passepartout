@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ProfileModuleList.h"
-#include "../extensions/ModelsExtensions.h"
+#include "../extensions/Models+UI.h"
 #include "../../strings/Strings.h"
 #include "../theme/Theme.h"
 #include <algorithm>

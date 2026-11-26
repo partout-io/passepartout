@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "ModelsExtensions.h"
+#include "Models+UI.h"
 #include <algorithm>
 #include <iomanip>
 #include <sstream>
@@ -33,3 +33,4 @@ std::string Profiles::TransferText(const Models::ProfileTransfer &transfer, Data
            " \xe2\x86\x91" + DataUnits::Format(transfer.sent, formatter);
 }
 }
+

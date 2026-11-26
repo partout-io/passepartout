@@ -15,7 +15,7 @@
 #include "modules/WireGuardView.h"
 #include "../theme/ThemeLongContent.h"
 #include "../platform/Presentation.h"
-#include "../extensions/ModelsExtensions.h"
+#include "../extensions/Models+UI.h"
 #include <algorithm>
 #include <type_traits>
 #include <wx/display.h>

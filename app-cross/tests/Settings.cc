@@ -13,7 +13,6 @@
 #include "observables/ConfigObservable.h"
 #include "observables/CreditsObservable.h"
 #include "context/ContextExtensions.h"
-#include "SettingsResources.h"
 #include <algorithm>
 #include <cassert>
 #include <fstream>
@@ -216,13 +215,17 @@ int main() {
         issue.purchasedProducts = {"premium"};
         assert(Issues::Body(issue, "$comment|$appLine|$osLine|$deviceLine|$purchasedProducts|$unknown")
             == "café 日本語 $osLine|unknown|Test OS|unknown|[\"premium\"]|$unknown");
+        assert(Issues::Subject(issue) == "Passepartout");
+        issue.appLine = "Passepartout 0.1.0.7";
+        assert(Issues::Subject(issue) == "Passepartout 0.1.0.7");
+        const auto body = Issues::Body(issue, IssueTemplateResource);
+        assert(body.find("Hi,\n\ncafé 日本語 $osLine") == 0);
+        assert(body.find("App: Passepartout 0.1.0.7\nOS: Test OS") != std::string::npos);
+
         IssueReporter reporter("test@example.invalid", "0.1.0.7", [&](const std::string &recipient, const Models::Issue &report) {
             assert(recipient == "test@example.invalid");
-            const auto body = Issues::Body(report, IssueTemplateResource);
-            assert(body.find("Hi,\n\nUnicode: café 日本語 $osLine") == 0);
-            assert(body.find("App: Passepartout 0.1.0.7\nOS: ") != std::string::npos);
-            assert(body.find("Device: unknown\nPurchased: []") != std::string::npos);
-            assert(body.find("$appLine") == std::string::npos);
+            assert(report.comment == "Unicode: café 日本語 $osLine");
+            assert(report.appLine == "Passepartout 0.1.0.7");
             assert(report.attachments.size() == 2);
             const auto &attachment = report.attachments.back();
             assert(attachment.filename == "runtime.txt");

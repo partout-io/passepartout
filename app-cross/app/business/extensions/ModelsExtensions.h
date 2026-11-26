@@ -26,10 +26,6 @@ std::string ReadConfiguration(const std::filesystem::path &path);
 void Sort(std::vector<Profile> &profiles);
 }
 
-namespace Issues {
-std::string Body(const Models::Issue &issue, const std::string &text);
-}
-
 namespace Preferences {
 Models::AppPreferences Defaults();
 }
@@ -67,4 +63,9 @@ inline Profile DecodeResult(const char *json) {
         throw std::runtime_error("Partout could not import this configuration.");
     }
 }
+}
+
+namespace Passepartout::Issues {
+std::string Subject(const Models::Issue &issue);
+std::string Body(const Models::Issue &issue, const std::string &text);
 }

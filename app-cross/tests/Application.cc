@@ -13,7 +13,7 @@
 #include "observables/ProfileObservable.h"
 #include "observables/TunnelObservable.h"
 #include "ui/platform/ModalConfigurationPicker.h"
-#include "ui/extensions/ModelsExtensions.h"
+#include "ui/extensions/Models+UI.h"
 #include <algorithm>
 #include <cassert>
 #include <fstream>

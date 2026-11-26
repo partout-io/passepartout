@@ -10,10 +10,10 @@ set(APP_SOURCES
     app/ui/diagnostics/DiagnosticsView.cc
     app/ui/diagnostics/IssueReportView.cc
     app/ui/diagnostics/RuntimeLogView.cc
-    app/ui/extensions/ModelsExtensions.cc
+    app/ui/extensions/Models+Formatting.cc
+    app/ui/extensions/Models+UI.cc
     app/ui/platform/ConfigurationPicker.cc
     app/ui/platform/FileActivation.cc
-    app/ui/platform/ModelsExtensions.cc
     app/ui/platform/Presentation.cc
     app/ui/profile/ModuleDetailView.cc
     app/ui/profile/ProfileCoordinator.cc

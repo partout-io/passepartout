@@ -264,6 +264,10 @@ void AtomicFile::Write(const std::filesystem::path &path, const std::string &con
 }
 
 namespace Passepartout {
+std::string Issues::Subject(const Models::Issue &issue) {
+    return issue.appLine.value_or("Passepartout");
+}
+
 std::string Issues::Body(const Models::Issue &issue, const std::string &text) {
     std::ostringstream products;
     products << '[';

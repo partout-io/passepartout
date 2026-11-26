@@ -34,8 +34,9 @@ add_executable(passepartout-settings-test Settings.cc)
 target_link_libraries(passepartout-settings-test PRIVATE passepartout-core)
 add_executable(passepartout-activation-test Activation.cc)
 target_link_libraries(passepartout-activation-test PRIVATE passepartout-core)
+# Compile only portable UI formatting; native UI helpers remain in the frontend.
 add_executable(passepartout-presentation-test Presentation.cc
-    ../app/ui/extensions/ModelsExtensions.cc)
+    ../app/ui/extensions/Models+Formatting.cc)
 target_link_libraries(passepartout-presentation-test PRIVATE passepartout-core)
 
 # Keep assertions enabled in every build configuration.

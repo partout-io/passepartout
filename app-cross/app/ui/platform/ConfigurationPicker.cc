@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Davide De Rosa
 // SPDX-License-Identifier: GPL-3.0
 
-#include "../extensions/ModelsExtensions.h"
+#include "../extensions/Models+UI.h"
 #ifdef _WIN32
 #include "WindowsConfigurationPicker.h"
 #include <wx/window.h>

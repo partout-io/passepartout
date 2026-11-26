@@ -5,7 +5,7 @@
 #include "PassepartoutApp.h"
 #include "../context/AppLogger.h"
 #include "app/MainView.h"
-#include "extensions/ModelsExtensions.h"
+#include "extensions/Models+UI.h"
 #include "platform/Presentation.h"
 #include "../strings/Strings.h"
 #include "partout.h"

@@ -42,7 +42,7 @@ bool Windows::Issue::Review(const std::string &recipient_address, const Models::
         }
     } cleanup{directory};
     auto recipient = std::wstring(winrt::to_hstring("SMTP:" + recipient_address));
-    auto subject = std::wstring(winrt::to_hstring(issue.appLine.value_or("Passepartout")));
+    auto subject = std::wstring(winrt::to_hstring(Issues::Subject(issue)));
     auto body = std::wstring(winrt::to_hstring(Issues::Body(issue, IssueTemplateResource)));
     MapiRecipDescW address{};
     address.ulRecipClass = MAPI_TO;
