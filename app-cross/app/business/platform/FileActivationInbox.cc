@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "../models/MemoryConfigurationFiles.h"
 #include "FileActivationInbox.h"
 #include <partout/Json.h>
 #include <stdexcept>

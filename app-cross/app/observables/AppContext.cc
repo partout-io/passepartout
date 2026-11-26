@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "AppContext.h"
+#include "../business/strategy/GitHubConfigStrategy.h"
 #include "../context/ContextExtensions.h"
 #include "../business/managers/AppSession.h"
 #include "../business/strategy/FileProfileRepository.h"
@@ -119,9 +120,10 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
                       return info.status.value == Status::disconnected;
                   });
           }),
-      config(std::make_unique<ConfigManager>(MakeHttp(constants, demo),
-          constants.websites.partoutURL + "/passepartout-config/v1/bundle.json", BuildNumber(application_version),
-          std::chrono::seconds(static_cast<std::int64_t>(constants.websites.configTTL * constants.websites.betaTTLFactor)))),
+      config(std::make_unique<ConfigManager>(std::make_unique<GitHubConfigStrategy>(MakeHttp(constants, demo),
+          constants.websites.partoutURL + "/passepartout-config/v1/bundle.json",
+          std::chrono::seconds(static_cast<std::int64_t>(constants.websites.configTTL * constants.websites.betaTTLFactor))),
+          BuildNumber(application_version))),
       version(std::make_unique<VersionChecker>(application_version, nullptr, std::string(),
           static_cast<std::int64_t>(constants.url.versionRateLimit), preferences.Snapshot().lastCheckedVersionTimestamp,
           preferences.Snapshot().lastCheckedVersion, [this](auto timestamp, auto latest) {

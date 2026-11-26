@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "ConfigurationFiles.h"
+#include "MemoryConfigurationFiles.h"
+#include <utility>
 
 namespace Passepartout {
 MemoryConfigurationFiles::MemoryConfigurationFiles(std::vector<ConfigurationSource> values, std::size_t failures)

@@ -26,7 +26,7 @@ std::optional<std::array<unsigned, 4>> Parse(const std::string &text) {
 
 using Passepartout::VersionChecker;
 
-VersionChecker::VersionChecker(std::string current, std::unique_ptr<VersionStrategy> strategy,
+VersionChecker::VersionChecker(std::string current, std::unique_ptr<VersionCheckerStrategy> strategy,
     std::string destination, std::int64_t rate_limit_seconds, std::optional<std::int64_t> last_checked,
     std::optional<std::string> cached, SaveVersion save)
     : current_(std::move(current)), strategy_(std::move(strategy)), destination_(std::move(destination)),

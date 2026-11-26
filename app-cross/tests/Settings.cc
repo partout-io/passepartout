@@ -4,6 +4,8 @@
 
 #include "business/strategy/FilePreferencesRepository.h"
 #include "business/managers/ConfigManager.h"
+#include "business/strategy/GitHubConfigStrategy.h"
+#include "business/strategy/GitHubReleaseStrategy.h"
 #include "business/managers/VersionChecker.h"
 #include "observables/IssueReporter.h"
 #include "SettingsResources.h"
@@ -39,15 +41,32 @@ public:
     std::string response = "{}";
     bool fails = false;
     unsigned requests = 0;
-    std::string Get(const std::string &) override {
+    bool canceled = false;
+    std::string requested_url;
+    std::string Get(const std::string &url) override {
+        requested_url = url;
         ++requests;
         if (fails) throw std::runtime_error("Offline");
         return response;
     }
 
+    void Cancel() noexcept override {
+        canceled = true;
+    }
+};
+class FixedConfig final : public Passepartout::ConfigManagerStrategy {
+public:
+    std::optional<Passepartout::ConfigBundle> Bundle() override {
+        Passepartout::Models::ConfigBundleConfig config;
+        config.rate = 100;
+        config.minBuild = 7;
+        return Passepartout::ConfigBundle{{Passepartout::Models::ConfigFlag::appNotWorking, config}};
+    }
+
     void Cancel() noexcept override {}
 };
-class FakeVersion final : public Passepartout::VersionStrategy {
+
+class FakeVersion final : public Passepartout::VersionCheckerStrategy {
 public:
     std::string value = "1.2.3.4";
     bool fails = false;
@@ -136,10 +155,15 @@ int main() {
         UserPreferencesObservable broken(std::make_unique<FilePreferencesRepository>(directory / "preferences.json"));
         assert(broken.HasLoadError() && broken.Snapshot().dnsFallsBack);
 
+        ConfigManager fixed(std::make_unique<FixedConfig>(), 7);
+        assert(fixed.Refresh() && fixed.ActiveFlags().count(Models::ConfigFlag::appNotWorking));
+        ConfigManager old_build(std::make_unique<FixedConfig>(), 6);
+        assert(old_build.Refresh() && old_build.ActiveFlags().empty());
+
         auto http = std::make_unique<FakeHttp>();
         auto *remote = http.get();
         remote->response = R"({"futureFlag": {}, "appNotWorking": {"rate":100,"minBuild":7,"platforms":["windows"],"data":{"reason":"test"}}})";
-        ConfigManager config(std::move(http), "https://example.invalid", 7, std::chrono::seconds(0));
+        ConfigManager config(std::make_unique<GitHubConfigStrategy>(std::move(http), "https://example.invalid", std::chrono::seconds(0)), 7);
         assert(config.Refresh());
         assert(config.ActiveFlags().at(Models::ConfigFlag::appNotWorking).At("reason") == "test");
         remote->fails = true;
@@ -152,17 +176,35 @@ int main() {
         }
         auto throttled_http = std::make_unique<FakeHttp>();
         auto *throttled_remote = throttled_http.get();
-        ConfigManager throttled(std::move(throttled_http), "https://example.invalid", 7, std::chrono::hours(1));
-        assert(throttled.Refresh() && !throttled.Refresh() && throttled_remote->requests == 1);
+        ConfigManager throttled(std::make_unique<GitHubConfigStrategy>(std::move(throttled_http), "https://example.invalid", std::chrono::hours(1)), 7);
+        throttled_remote->response = "[]";
+        Fails([&] { throttled.Refresh(); });
+        throttled_remote->response = "{}";
+        assert(throttled.Refresh() && !throttled.Refresh() && throttled_remote->requests == 2);
         auto blocked = std::make_shared<BlockingState>();
         {
-            ConfigObservable observable(std::make_unique<ConfigManager>(std::make_unique<BlockingHttp>(blocked),
-                "https://example.invalid", 7, std::chrono::hours(1)));
+            ConfigObservable observable(std::make_unique<ConfigManager>(std::make_unique<GitHubConfigStrategy>(std::make_unique<BlockingHttp>(blocked),
+                "https://example.invalid", std::chrono::hours(1)), 7));
             observable.Refresh();
             std::unique_lock lock(blocked->mutex);
             assert(blocked->changed.wait_for(lock, std::chrono::seconds(2), [&] { return blocked->entered; }));
         }
         assert(blocked->canceled); // Destruction cancels before joining the blocked worker.
+
+        auto release_http = std::make_unique<FakeHttp>();
+        auto *release_remote = release_http.get();
+        GitHubReleaseStrategy github(std::move(release_http), "https://example.invalid/releases/latest");
+        release_remote->response = R"({"name":"1.2.3.4","tag_name":"unrelated-tag"})";
+        assert(github.LatestVersion() == "1.2.3.4");
+        assert(release_remote->requested_url == "https://example.invalid/releases/latest");
+        for (const auto &response : {"invalid JSON", "[]", "{}", R"({"name":null})", R"({"name":12})"}) {
+            release_remote->response = response;
+            Fails([&] { github.LatestVersion(); });
+        }
+        release_remote->fails = true;
+        Fails([&] { github.LatestVersion(); });
+        github.Cancel();
+        assert(release_remote->canceled);
 
         auto strategy = std::make_unique<FakeVersion>();
         auto *releases = strategy.get();
