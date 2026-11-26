@@ -9,20 +9,6 @@ namespace Passepartout {
 ConfigManager::ConfigManager(std::unique_ptr<ConfigManagerStrategy> strategy, int build, Models::Platform::ePlatform platform)
     : strategy_(std::move(strategy)), build_(build), platform_(platform) {}
 
-std::size_t ConfigManager::Subscribe(EventHandler handler) {
-    const auto subscription = ++next_subscription_;
-    handlers_.emplace(subscription, std::move(handler));
-    return subscription;
-}
-
-void ConfigManager::Unsubscribe(std::size_t subscription) {
-    handlers_.erase(subscription);
-}
-
-void ConfigManager::Emit(const Models::Event &event) {
-    for (const auto &[subscription, handler] : handlers_) handler(event);
-}
-
 bool ConfigManager::Refresh() {
     const auto bundle = strategy_->Bundle();
     if (!bundle) return false;
@@ -45,7 +31,7 @@ bool ConfigManager::Refresh() {
         if (!value.IsNull()) data.emplace(flag.ToString(), value);
     }
     event.data = Partout::Json(data);
-    Emit(event);
+    events.Emit(event);
     return true;
 }
 

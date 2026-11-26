@@ -32,20 +32,6 @@ VersionChecker::VersionChecker(std::string current, std::unique_ptr<VersionCheck
     : current_(std::move(current)), strategy_(std::move(strategy)), destination_(std::move(destination)),
       rate_limit_seconds_(rate_limit_seconds), last_checked_(last_checked), cached_(std::move(cached)), save_(std::move(save)) {}
 
-std::size_t VersionChecker::Subscribe(EventHandler handler) {
-    const auto subscription = ++next_subscription_;
-    handlers_.emplace(subscription, std::move(handler));
-    return subscription;
-}
-
-void VersionChecker::Unsubscribe(std::size_t subscription) {
-    handlers_.erase(subscription);
-}
-
-void VersionChecker::Emit(const Models::Event &event) {
-    for (const auto &[subscription, handler] : handlers_) handler(event);
-}
-
 bool VersionChecker::Available() const {
     return strategy_ && destination_.compare(0, 8, "https://") == 0;
 }
@@ -89,7 +75,7 @@ void VersionChecker::PublishRelease() {
     event.release.version.minor = static_cast<std::int32_t>((*version)[1]);
     event.release.version.patch = static_cast<std::int32_t>((*version)[2]);
     event.release.url = state.download_url;
-    Emit(event);
+    events.Emit(event);
 }
 
 std::vector<Passepartout::Models::ChangelogEntry> VersionChecker::FetchChangelog(const std::string &build) {

@@ -213,7 +213,7 @@ int main() {
         remote->response = R"({"futureFlag": {}, "appNotWorking": {"rate":100,"minBuild":7,"platforms":["windows"],"data":{"reason":"test"}}})";
         ConfigManager config(std::make_unique<GitHubConfigStrategy>(std::move(http), "https://example.invalid", std::chrono::seconds(0)), 7, Models::Platform::windows);
         std::vector<Models::Event> config_events;
-        const auto config_subscription = config.Subscribe([&](const auto &event) { config_events.push_back(event); });
+        const auto config_subscription = config.events.Subscribe([&](const auto &event) { config_events.push_back(event); });
         assert(config.Refresh());
         assert(config_events.size() == 1);
         const auto &refresh = std::get<Models::ConfigEventRefresh>(config_events.back());
@@ -233,7 +233,7 @@ int main() {
             const auto &empty = std::get<Models::ConfigEventRefresh>(config_events.back());
             assert(empty.flags.empty() && empty.data.IsObject() && empty.data.Size() == 0);
         }
-        config.Unsubscribe(config_subscription);
+        config.events.Unsubscribe(config_subscription);
         const auto config_event_count = config_events.size();
         assert(config.Refresh());
         assert(config_events.size() == config_event_count);
@@ -346,7 +346,7 @@ int main() {
         VersionChecker version("1.0.0.0", std::move(strategy), "https://example.invalid/windows", 60, {}, {},
             [&](auto, auto value) { stored = std::move(value); });
         std::vector<Models::Event> version_events;
-        const auto version_subscription = version.Subscribe([&](const auto &event) { version_events.push_back(event); });
+        const auto version_subscription = version.events.Subscribe([&](const auto &event) { version_events.push_back(event); });
         version.Check(100000);
         assert(version_events.size() == 1);
         const auto &release_event = std::get<Models::VersionEventNew>(version_events.back());
@@ -368,7 +368,7 @@ int main() {
         releases->value = "1.0.0.0";
         version.Check(300000);
         assert(version_events.size() == 2);
-        version.Unsubscribe(version_subscription);
+        version.events.Unsubscribe(version_subscription);
         releases->value = "2.0.0";
         version.Check(400000);
         assert(version.Snapshot().latest == "2.0.0" && version_events.size() == 2);

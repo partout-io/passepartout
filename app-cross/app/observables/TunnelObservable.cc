@@ -17,11 +17,11 @@ bool TunnelObservable::State::HasActivity() const {
 TunnelObservable::TunnelObservable(
     Worker &executor, std::unique_ptr<Partout::Tunnel> tunnel, ProfileManager &profiles
 ) : profiles_(profiles),
-    profile_subscription_(profiles.Subscribe([this](const Models::Event &event) { OnUpdate(event); })),
+    profile_subscription_(profiles.events.Subscribe([this](const Models::Event &event) { OnUpdate(event); })),
     executor_(executor), tunnel_(std::move(tunnel)) {}
 
 TunnelObservable::~TunnelObservable() {
-    profiles_.Unsubscribe(profile_subscription_);
+    profiles_.events.Unsubscribe(profile_subscription_);
 }
 
 void TunnelObservable::OnUpdate(const Models::Event &event) {

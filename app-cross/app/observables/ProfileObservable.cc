@@ -12,10 +12,10 @@
 namespace Passepartout {
 ProfileObservable::ProfileObservable(Worker &executor, ProfileManager &manager)
     : executor_(executor), manager_(manager),
-      profile_subscription_(manager.Subscribe([this](const Models::Event &event) { OnUpdate(event); })) {}
+      profile_subscription_(manager.events.Subscribe([this](const Models::Event &event) { OnUpdate(event); })) {}
 
 ProfileObservable::~ProfileObservable() {
-    manager_.Unsubscribe(profile_subscription_);
+    manager_.events.Unsubscribe(profile_subscription_);
 }
 
 void ProfileObservable::Cancel() {

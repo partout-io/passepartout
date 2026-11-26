@@ -4,9 +4,8 @@
 
 #pragma once
 #include "../strategy/ProfileRepository.h"
-#include "Event.h"
+#include "../extensions/EventEmitter.h"
 #include <functional>
-#include <map>
 #include <memory>
 
 namespace Passepartout {
@@ -14,10 +13,7 @@ namespace Passepartout {
 using ProfileImporter = std::function<Profile(const std::string &, const std::string &)>;
 class ProfileManager final {
 public:
-    using EventHandler = std::function<void(const Models::Event &)>;
-    // Subscribe before starting the shared worker; unsubscribe after stopping it.
-    std::size_t Subscribe(EventHandler handler);
-    void Unsubscribe(std::size_t subscription);
+    EventEmitter events;
     ProfileManager(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer);
     void Load();
     Profile Import(const std::filesystem::path &path);
@@ -27,9 +23,6 @@ public:
     const Profile &Find(const std::string &id) const;
     const std::vector<Profile> &Profiles() const;
 private:
-    void Emit(const Models::Event &event);
-    std::map<std::size_t, EventHandler> handlers_;
-    std::size_t next_subscription_ = 0;
     std::unique_ptr<ProfileRepository> repository_;
     ProfileImporter importer_;
     std::vector<Profile> profiles_;

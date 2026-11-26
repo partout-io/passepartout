@@ -452,7 +452,7 @@ void TestProfileEvents(const std::filesystem::path &root) {
     Passepartout::ProfileManager manager(std::move(failing), {});
     manager.Load();
     std::vector<Passepartout::Models::Event> events;
-    const auto subscription = manager.Subscribe([&](const auto &event) { events.push_back(event); });
+    const auto subscription = manager.events.Subscribe([&](const auto &event) { events.push_back(event); });
     Rejects([&] { manager.Remove(original.id); });
     assert(events.empty());
     storage->fail_remove = false;
@@ -460,7 +460,7 @@ void TestProfileEvents(const std::filesystem::path &root) {
     assert(events.size() == 1);
     assert(std::get<Passepartout::Models::ProfileEventDelete>(events.front()).ids ==
         std::vector<std::string>{original.id});
-    manager.Unsubscribe(subscription);
+    manager.events.Unsubscribe(subscription);
     storage->stored = {original};
     manager.Load();
     manager.Remove(original.id);

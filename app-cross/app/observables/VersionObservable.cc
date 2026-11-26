@@ -11,14 +11,14 @@ VersionObservable::VersionObservable(std::unique_ptr<VersionChecker> checker)
     : checker_(std::move(checker)), worker_([this] {
         checker_->Cancel();
     }) {
-    subscription_ = checker_->Subscribe([this](const Models::Event &event) { OnUpdate(event); });
+    subscription_ = checker_->events.Subscribe([this](const Models::Event &event) { OnUpdate(event); });
     state_.available = checker_->Available();
     state_.release = checker_->Snapshot();
 }
 
 VersionObservable::~VersionObservable() {
     worker_.Stop();
-    checker_->Unsubscribe(subscription_);
+    checker_->events.Unsubscribe(subscription_);
 }
 
 void VersionObservable::OnUpdate(const Models::Event &event) {
