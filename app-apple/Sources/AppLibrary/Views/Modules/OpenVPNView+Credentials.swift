@@ -157,6 +157,7 @@ private extension OpenVPNCredentialsGroup {
         if isAuthenticating {
             switch builder.otpMethod {
             case .none:
+                builder.password = ""
                 focusedField = .username
             default:
                 focusedField = .otp

@@ -20,7 +20,7 @@ public struct InteractiveLogin: Sendable {
         let credentials = module?.credentials
         username = credentials?.username ?? ""
         needsOTP = credentials.map { $0.otpMethod != .none } ?? false
-        password = needsOTP ? "" : credentials?.password ?? ""
+        password = ""
     }
 
     public func connectionProfile() throws -> Profile {

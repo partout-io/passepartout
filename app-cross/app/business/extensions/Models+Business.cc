@@ -109,11 +109,10 @@ std::optional<Passepartout::InteractiveLogin> Passepartout::Profiles::Interactiv
         Passepartout::InteractiveLogin login{};
         login.original = profile;
         if (saved) {
-            login.credentials = {saved->username, saved->password};
+            login.credentials.username = saved->username;
             login.needs_otp = saved->otpMethod.value != Partout::Models::OpenVpnCredentialsOTPMethod::none;
         }
-        // The native adapter receives the raw OTP; Partout applies its encoding.
-        if (login.needs_otp) login.credentials.password.clear();
+        // Start every prompt empty; the original retains the base password for OTP.
         return login;
     }
     return std::nullopt;

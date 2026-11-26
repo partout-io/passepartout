@@ -16,7 +16,7 @@ class InteractiveLogin(val original: TaggedProfile) {
     val needsOTP = saved?.otpMethod?.let { it != OpenVPNCredentialsOTPMethod.none } ?: false
     var username: String = saved?.username.orEmpty()
     // Carries the raw OTP when needsOTP is true.
-    var password: String = if (needsOTP) "" else saved?.password.orEmpty()
+    var password: String = ""
 
     fun connectionProfile(): TaggedProfile = original.withInteractiveLogin(
         username = username,
