@@ -34,11 +34,6 @@ std::wstring LowerName(const std::string &name) {
     if (!wide_size) throw std::runtime_error("Invalid UTF-8 profile name.");
     std::wstring wide(wide_size, L'\0');
     MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name.data(), static_cast<int>(name.size()), wide.data(), wide_size);
-#else
-    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-    auto wide = converter.from_bytes(name);
-#endif
-#ifdef _WIN32
     if (wide.empty()) return wide;
     const int size = LCMapStringEx(LOCALE_NAME_INVARIANT, LCMAP_LOWERCASE,
         wide.data(), static_cast<int>(wide.size()), nullptr, 0, nullptr, nullptr, 0);
@@ -48,6 +43,8 @@ std::wstring LowerName(const std::string &name) {
         wide.data(), static_cast<int>(wide.size()), lower.data(), size, nullptr, nullptr, 0);
     return lower;
 #else
+    std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+    auto wide = converter.from_bytes(name);
     static const std::locale locale("");
     const auto &facet = std::use_facet<std::ctype<wchar_t>>(locale);
     if (!wide.empty()) facet.tolower(wide.data(), wide.data() + wide.size());
