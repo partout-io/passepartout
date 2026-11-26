@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../models/ConfigurationFiles.h"
+#include "../../business/models/ConfigurationFiles.h"
 #include <functional>
 #include <set>
 

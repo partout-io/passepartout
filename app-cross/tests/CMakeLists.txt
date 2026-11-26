@@ -32,7 +32,8 @@ add_executable(passepartout-editor-test Editor.cc ObservableFixture.cc)
 target_link_libraries(passepartout-editor-test PRIVATE passepartout-core)
 add_executable(passepartout-settings-test Settings.cc)
 target_link_libraries(passepartout-settings-test PRIVATE passepartout-core)
-add_executable(passepartout-activation-test Activation.cc)
+add_executable(passepartout-activation-test Activation.cc
+    ../app/ui/platform/FileActivationInbox.cc)
 target_link_libraries(passepartout-activation-test PRIVATE passepartout-core)
 
 # UI implementation tests require the frontend toolkit and are excluded here.

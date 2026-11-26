@@ -13,6 +13,7 @@ set(APP_SOURCES
     app/ui/extensions/Models+UI.cc
     app/ui/platform/ConfigurationPicker.cc
     app/ui/platform/FileActivation.cc
+    app/ui/platform/FileActivationInbox.cc
     app/ui/platform/Presentation.cc
     app/ui/profile/ModuleDetailView.cc
     app/ui/profile/ProfileCoordinator.cc
@@ -63,7 +64,6 @@ set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/business/models/InteractiveLogin.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/models/MemoryConfigurationFiles.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FakeTunnelStrategy.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FileActivationInbox.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FilePreferencesRepository.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FileProfileRepository.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/GitHubConfigStrategy.cc"
