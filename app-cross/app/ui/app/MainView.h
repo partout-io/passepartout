@@ -27,9 +27,9 @@ private:
     void Edit(const std::string &id);
     void Remove(std::vector<std::string> ids);
     void UpdateState();
+    void PresentOperationError();
     void ProcessActivations();
     void PollPicker(wxTimerEvent &);
-    void RefreshTunnel(wxTimerEvent &);
     Passepartout::AppContext &context_;
     Passepartout::ProfileObservable::State profiles_;
     Passepartout::TunnelObservable::State tunnels_;

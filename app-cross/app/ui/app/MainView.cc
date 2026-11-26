@@ -126,7 +126,9 @@ MainView::MainView(AppContext &context, bool demo,
             event.Skip();
         }
     });
-    Bind(wxEVT_TIMER, &MainView::RefreshTunnel, this, tunnel_timer_.GetId());
+    Bind(wxEVT_TIMER, [this](wxTimerEvent &) {
+        context_.tunnel.Refresh();
+    }, tunnel_timer_.GetId());
     Bind(wxEVT_TIMER, &MainView::PollPicker, this, picker_timer_.GetId());
     const auto icon = Theme::AppIcon(this);
     if (icon.IsOk()) SetIcon(icon);
@@ -149,6 +151,7 @@ MainView::~MainView() {
 }
 
 void MainView::Render() {
+    collection_->Render(profiles_, tunnels_, picking_);
     const bool tunnel_unavailable = profiles_.loaded && !tunnels_.available;
     message_->SetLabel(Localized(tunnel_unavailable ? StringKey::ErrorsAppTunnel : StringKey::ViewsAppFoldersNoProfiles));
     message_->Show(tunnel_unavailable || (profiles_.loaded && profiles_.profiles.empty()));
@@ -161,16 +164,11 @@ void MainView::Render() {
 }
 
 void MainView::UpdateActions() {
-    collection_->Render(profiles_, tunnels_, picking_);
     const bool idle = !picking_ && !profiles_.busy && !tunnels_.busy && !tunnels_.pending_profile && profiles_.loaded;
     const auto selected = collection_->SelectedIds();
     import_->Enable(idle);
     GetMenuBar()->Enable(wxID_ADD, idle);
     remove_->Enable(!picking_ && ProfileObservable::CanRemove(profiles_, selected) && !tunnels_.pending_profile);
-}
-
-void MainView::RefreshTunnel(wxTimerEvent &) {
-    context_.tunnel.Refresh();
 }
 
 void MainView::PollPicker(wxTimerEvent &) {
@@ -180,7 +178,6 @@ void MainView::PollPicker(wxTimerEvent &) {
         if (result->failed) context_.profiles.ImportFailed();
         else if (result->files) context_.profiles.ImportFiles(std::move(result->files));
         UpdateState();
-        UpdateActions();
     }
 }
 
@@ -189,6 +186,11 @@ void MainView::UpdateState() {
     profiles_ = context_.profiles.Snapshot();
     tunnels_ = context_.tunnel.Snapshot();
     Render();
+    PresentOperationError();
+    ProcessActivations();
+}
+
+void MainView::PresentOperationError() {
     // Background observation can recover on the next poll. Keep its error
     // inline; reserve modal alerts for failed actions or local loading.
     if ((profiles_.operation_error.has_value() || tunnels_.errors.operation) && !profiles_.busy && !tunnels_.busy) {
@@ -209,7 +211,6 @@ void MainView::UpdateState() {
         presenting_ = false;
         tunnel_timer_.Start(2000);
     }
-    ProcessActivations();
 }
 
 void MainView::ProcessActivations() {
@@ -241,7 +242,7 @@ void MainView::PresentInteractiveLogin(InteractiveLogin login) {
 void MainView::Import() {
     if (picking_ || context_.profiles.Snapshot().busy) return;
     picking_ = true;
-    UpdateActions();
+    Render();
     try {
         picker_->Start();
         picker_timer_.Start(200);
@@ -249,7 +250,7 @@ void MainView::Import() {
         picking_ = false;
         picker_->Cancel();
         context_.profiles.ImportFailed();
-        UpdateActions();
+        Render();
     }
 }
 
