@@ -12,7 +12,6 @@ class ObservableFixture final {
 public:
     ObservableFixture(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
                       std::unique_ptr<Partout::Tunnel> tunnel,
-                      std::shared_ptr<AppLog> logger = std::make_shared<AppLog>(),
                       std::function<void(const Models::AppPreferences &)> apply_preferences = {}
     );
     ~ObservableFixture();

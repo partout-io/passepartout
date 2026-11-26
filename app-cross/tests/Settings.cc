@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "ScopedLogSink.h"
 #include "business/strategy/FilePreferencesRepository.h"
 #include "business/managers/ConfigManager.h"
 #include "observables/VersionObservable.h"
@@ -276,59 +277,62 @@ int main() {
         Fails([&] { version.Check(201000); });
         assert(!stored && !version.Snapshot().latest);
 
-        // Changelog fetching works independently of update-download availability.
-        auto changelog_strategy = std::make_unique<FakeVersion>();
-        auto *changelog_remote = changelog_strategy.get();
-        changelog_remote->fails = true;
-        Models::AppConstants_github github_constants;
-        github_constants.issuesURL = "https://example.invalid/issues";
-        std::string changelog_log;
-        auto changelog_logger = std::make_shared<AppLog>([&](auto, auto, const std::string &message) {
-            changelog_log = message;
-        });
-        VersionObservable changelog(std::make_unique<VersionChecker>("1.0.0.7", std::move(changelog_strategy),
-            "", 60, std::nullopt, std::nullopt, [](auto, auto) {}), "1.0.0.7", "7", github_constants, changelog_logger
-        );
-        assert(!changelog.Snapshot().available);
-        const auto wait_changelog = [&] {
-            const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
-            while (changelog.Snapshot().changelog.loading && std::chrono::steady_clock::now() < deadline) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            }
-            assert(!changelog.Snapshot().changelog.loading);
-        };
-        changelog.LoadChangelog();
-        wait_changelog();
-        assert(changelog.Snapshot().changelog.operation_failed);
-        assert(changelog.Snapshot().changelog.entries.empty());
-        assert(changelog_log == "Unable to load changelog for build 7");
-        changelog_remote->fails = false;
-        changelog.LoadChangelog();
-        wait_changelog();
-        assert(!changelog.Snapshot().changelog.operation_failed);
-        assert(changelog.Snapshot().changelog.entries[0].comment == "7");
-        assert(changelog.IssueURL(changelog.Snapshot().changelog.entries[0]) == "https://example.invalid/issues/42");
-        assert(!changelog.IssueURL({1, "No issue", std::nullopt}));
-        changelog.LoadChangelog();
-        wait_changelog();
-        assert(changelog_remote->changelog_requests == 3); // Reopening refetches successful content.
-        assert(changelog_remote->requests == 0); // Never requests the latest release for a changelog.
-
-        auto blocked_changelog = std::make_shared<BlockingState>();
         {
-            VersionObservable pending(std::make_unique<VersionChecker>("1.0.0.7",
-                std::make_unique<GitHubReleaseStrategy>(std::make_unique<BlockingHttp>(blocked_changelog),
-                    "https://example.invalid/releases/latest", [](const std::string &) {
-                        return "https://example.invalid/changelog";
-                    }), "", 60, std::nullopt, std::nullopt, [](auto, auto) {}), "1.0.0.7", "7", github_constants, changelog_logger
+            // Changelog fetching works independently of update-download availability.
+            auto changelog_strategy = std::make_unique<FakeVersion>();
+            auto *changelog_remote = changelog_strategy.get();
+            changelog_remote->fails = true;
+            Models::AppConstants_github github_constants;
+            github_constants.issuesURL = "https://example.invalid/issues";
+            std::string changelog_log;
+            Tests::ScopedLogSink log_sink([&](auto, auto, const std::string &message) {
+                changelog_log = message;
+            });
+            VersionObservable changelog(std::make_unique<VersionChecker>("1.0.0.7", std::move(changelog_strategy),
+                "", 60, std::nullopt, std::nullopt, [](auto, auto) {}), "1.0.0.7", "7", github_constants
             );
-            pending.LoadChangelog();
-            std::unique_lock lock(blocked_changelog->mutex);
-            assert(blocked_changelog->changed.wait_for(lock, std::chrono::seconds(2), [&] {
-                return blocked_changelog->entered;
-            }));
+            assert(!changelog.Snapshot().available);
+            const auto wait_changelog = [&] {
+                const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+                while (changelog.Snapshot().changelog.loading && std::chrono::steady_clock::now() < deadline) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                }
+                assert(!changelog.Snapshot().changelog.loading);
+            };
+            changelog.LoadChangelog();
+            wait_changelog();
+            assert(changelog.Snapshot().changelog.operation_failed);
+            assert(changelog.Snapshot().changelog.entries.empty());
+            assert(changelog_log == "Unable to load changelog for build 7");
+            changelog_remote->fails = false;
+            changelog.LoadChangelog();
+            wait_changelog();
+            assert(!changelog.Snapshot().changelog.operation_failed);
+            assert(changelog.Snapshot().changelog.entries[0].comment == "7");
+            assert(changelog.IssueURL(changelog.Snapshot().changelog.entries[0]) == "https://example.invalid/issues/42");
+            assert(!changelog.IssueURL({1, "No issue", std::nullopt}));
+            changelog.LoadChangelog();
+            wait_changelog();
+            assert(changelog_remote->changelog_requests == 3); // Reopening refetches successful content.
+            assert(changelog_remote->requests == 0); // Never requests the latest release for a changelog.
+
+            auto blocked_changelog = std::make_shared<BlockingState>();
+            {
+                VersionObservable pending(std::make_unique<VersionChecker>("1.0.0.7",
+                    std::make_unique<GitHubReleaseStrategy>(std::make_unique<BlockingHttp>(blocked_changelog),
+                        "https://example.invalid/releases/latest", [](const std::string &) {
+                            return "https://example.invalid/changelog";
+                        }), "", 60, std::nullopt, std::nullopt, [](auto, auto) {}), "1.0.0.7", "7", github_constants
+                );
+                pending.LoadChangelog();
+                std::unique_lock lock(blocked_changelog->mutex);
+                assert(blocked_changelog->changed.wait_for(lock, std::chrono::seconds(2), [&] {
+                    return blocked_changelog->entered;
+                }));
+            }
+            assert(blocked_changelog->canceled);
+
         }
-        assert(blocked_changelog->canceled);
 
         CreditsObservable credits(CreditsResource, std::make_unique<FakeHttp>(), Models::Platform::unixLike);
         assert(!credits.HasLoadError());
@@ -350,11 +354,37 @@ int main() {
         assert(unix_credits.Snapshot().licenses.size() == 2);
         assert(unix_credits.Snapshot().licenses[0].name == "Common");
         assert(unix_credits.Snapshot().licenses[1].name == "Unix");
-        AppLog logger;
+        {
+            unsigned calls = 0;
+            Tests::ScopedLogSink outer([&](LogLevel, LogCategory, const std::string &) {
+                ++calls;
+            });
+            AppLog::Write(LogLevel::info, LogCategory::core, "outer");
+            try {
+                Tests::ScopedLogSink inner([](LogLevel, LogCategory, const std::string &) {
+                    throw std::runtime_error("Sink failure");
+                });
+                AppLog::Write(LogLevel::info, LogCategory::core, "must not throw");
+                throw std::runtime_error("Unwind sink scope");
+            } catch (const std::runtime_error &) {}
+            AppLog::Write(LogLevel::info, LogCategory::core, "restored");
+            assert(calls == 2);
+            std::vector<std::thread> writers;
+            for (int i = 0; i < 4; ++i) {
+                writers.emplace_back([] {
+                    for (int j = 0; j < 100; ++j) {
+                        AppLog::Write(LogLevel::debug, LogCategory::core, "concurrent");
+                    }
+                });
+            }
+            for (auto &writer : writers) writer.join();
+            assert(calls == 402);
+        }
+        // Leaving the override restores the default runtime buffer sink.
         AppLog::SetPrivateData(false);
-        logger.Write(LogLevel::info, LogCategory::core, "public marker");
+        AppLog::Write(LogLevel::info, LogCategory::core, "public marker");
         AppLog::SetPrivateData(true);
-        logger.Write(LogLevel::info, LogCategory::core, "private marker");
+        AppLog::Write(LogLevel::info, LogCategory::core, "private marker");
         AppLog::SetPrivateData(false);
         assert(AppLog::RuntimeLog().find("private marker") != std::string::npos);
         assert(AppLog::RuntimeLog(false).find("private marker") == std::string::npos);

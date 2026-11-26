@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "ScopedLogSink.h"
 #include "business/strategy/ConfigurationFiles.h"
 #include "business/managers/ProfileManager.h"
 #include "business/strategy/FileProfileRepository.h"
@@ -312,7 +313,7 @@ void TestPreferencesRetry(const std::filesystem::path &root) {
     auto strategy = std::make_unique<ControlledTunnel>();
     auto *backend = strategy.get();
     Passepartout::Tests::ObservableFixture session(std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)),
-        std::make_shared<Passepartout::AppLog>(), [backend](const auto &preferences) { backend->ApplyPreferences(preferences); });
+        [backend](const auto &preferences) { backend->ApplyPreferences(preferences); });
     Wait(session);
     backend->events.clear();
     backend->fail_preferences = true;
@@ -876,43 +877,46 @@ int main() {
         activity.tunnels[0].status.value = Status::connected;
         assert(!activity.HasActivity());
 
-        // Record background errors once, preserve actual availability on cleanup failure, and log recovery/shutdown.
-        std::vector<std::string> messages;
-        auto logger = std::make_shared<AppLog>([&](LogLevel, LogCategory, const std::string &message) {
-            messages.push_back(message);
-        });
         {
-            auto logging_backend = std::make_unique<ControlledTunnel>();
-            auto *backend = logging_backend.get();
-            backend->fail_fetch = true;
-            Tests::ObservableFixture logged(std::make_unique<FileProfileRepository>(root / "logging"), importer,
-                std::make_unique<Partout::Tunnel>(std::move(logging_backend)), logger);
-            Wait(logged);
-            const auto count = messages.size();
-            logged.tunnel.Refresh();
-            Wait(logged);
-            assert(messages.size() == count);
-            backend->fail_fetch = false;
-            backend->fake.Save(Example("orphan"));
-            backend->fail_remove = true;
-            logged.tunnel.Refresh();
-            Wait(logged);
-            assert(logged.tunnel.Snapshot().available);
-            assert(logged.tunnel.Snapshot().observation_error.empty());
-            assert(!logged.tunnel.Snapshot().synchronization_error.empty());
-            backend->fail_remove = false;
-            logged.tunnel.Refresh();
-            Wait(logged);
-            assert(logged.tunnel.Snapshot().synchronization_error.empty());
+            // Record background errors once, preserve actual availability on cleanup failure, and log recovery/shutdown.
+            std::vector<std::string> messages;
+            Tests::ScopedLogSink log_sink([&](LogLevel, LogCategory, const std::string &message) {
+                messages.push_back(message);
+            });
+            {
+                auto logging_backend = std::make_unique<ControlledTunnel>();
+                auto *backend = logging_backend.get();
+                backend->fail_fetch = true;
+                Tests::ObservableFixture logged(std::make_unique<FileProfileRepository>(root / "logging"), importer,
+                    std::make_unique<Partout::Tunnel>(std::move(logging_backend)));
+                Wait(logged);
+                const auto count = messages.size();
+                logged.tunnel.Refresh();
+                Wait(logged);
+                assert(messages.size() == count);
+                backend->fail_fetch = false;
+                backend->fake.Save(Example("orphan"));
+                backend->fail_remove = true;
+                logged.tunnel.Refresh();
+                Wait(logged);
+                assert(logged.tunnel.Snapshot().available);
+                assert(logged.tunnel.Snapshot().observation_error.empty());
+                assert(!logged.tunnel.Snapshot().synchronization_error.empty());
+                backend->fail_remove = false;
+                logged.tunnel.Refresh();
+                Wait(logged);
+                assert(logged.tunnel.Snapshot().synchronization_error.empty());
+            }
+            const auto contains_log = [&](const std::string &part) {
+                return std::any_of(messages.begin(), messages.end(), [&](const auto &message) { return message.find(part) != std::string::npos; });
+            };
+            assert(contains_log("Reload local profiles"));
+            assert(contains_log("Unable to fetch tunnel state"));
+            assert(contains_log("Tunnel observation recovered"));
+            assert(contains_log("Unable to remove VPN registration orphan"));
+            assert(contains_log("Profile synchronization succeeded"));
+
         }
-        const auto contains_log = [&](const std::string &part) {
-            return std::any_of(messages.begin(), messages.end(), [&](const auto &message) { return message.find(part) != std::string::npos; });
-        };
-        assert(contains_log("Reload local profiles"));
-        assert(contains_log("Unable to fetch tunnel state"));
-        assert(contains_log("Tunnel observation recovered"));
-        assert(contains_log("Unable to remove VPN registration orphan"));
-        assert(contains_log("Profile synchronization succeeded"));
 
         auto failed = std::make_unique<ControlledTunnel>();
         auto *session_strategy = failed.get();

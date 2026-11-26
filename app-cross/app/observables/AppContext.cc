@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "AppContext.h"
+#include "../context/AppLog.h"
 #include "../business/strategy/GitHubReleaseStrategy.h"
 #include "../business/strategy/GitHubConfigStrategy.h"
 #include "../business/strategy/OfflineHttpClient.h"
@@ -91,10 +92,9 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
     : constants(std::move(app_constants)), cross_constants(std::move(frontend_constants)),
       application_version(cross_constants.app.version_number),
       wire_guard_keys(std::make_unique<PartoutWireGuardKeyGenerator>()),
-      logger_(std::make_shared<AppLog>()),
       profiles(executor_, std::make_unique<ProfileManager>(std::make_unique<FileProfileRepository>(
-          Profiles::Directory(data_root, constants)), ImportProfile), logger_),
-      tunnel(executor_, MakeTunnel(demo, cross_constants), logger_, ApplyLoggingPreferences),
+          Profiles::Directory(data_root, constants)), ImportProfile)),
+      tunnel(executor_, MakeTunnel(demo, cross_constants), ApplyLoggingPreferences),
       preferences(MakePreferencesRepository(
           Profiles::Directory(data_root, constants), cross_constants), [this] {
               const auto state = tunnel.Snapshot();
@@ -115,7 +115,7 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
           static_cast<std::int64_t>(constants.url.versionRateLimit), preferences.Snapshot().lastCheckedVersionTimestamp,
           preferences.Snapshot().lastCheckedVersion, [this](auto timestamp, auto latest) {
               preferences.SetLastCheckedVersion(timestamp, std::move(latest));
-          }), application_version, std::to_string(cross_constants.app.build_number), constants.github, logger_),
+          }), application_version, std::to_string(cross_constants.app.build_number), constants.github),
       credits(CreditsResource, MakeHttp(constants), ApplicationPlatform()),
       diagnostics(std::make_unique<IssueReporter>(constants.emails.recipients.beta + "@" + constants.emails.domain,
           application_version, ReviewIssue)) {
@@ -128,7 +128,7 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
             tunnel.ApplyPreferences(value);
         });
         config.Refresh();
-        logger_->Write(LogLevel::info, LogCategory::core, demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
+        AppLog::Write(LogLevel::info, LogCategory::core, demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
     } catch (...) {
         executor_.RequestStop();
         profiles.Cancel();

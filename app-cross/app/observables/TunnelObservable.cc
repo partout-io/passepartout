@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "TunnelObservable.h"
+#include "../context/AppLog.h"
 #include <algorithm>
 #include <stdexcept>
 
@@ -15,9 +16,8 @@ bool TunnelObservable::State::HasActivity() const {
 }
 
 TunnelObservable::TunnelObservable(SerialExecutor &executor, std::unique_ptr<Partout::Tunnel> tunnel,
-                                   std::shared_ptr<AppLog> logger,
                                    std::function<void(const Models::AppPreferences &)> apply_preferences
-) : executor_(executor), tunnel_(std::move(tunnel)), logger_(std::move(logger)),
+) : executor_(executor), tunnel_(std::move(tunnel)),
     apply_preferences_(std::move(apply_preferences)) {
 }
 
@@ -62,7 +62,7 @@ bool TunnelObservable::Post(std::function<void()> operation, bool foreground, bo
             error = "The VPN operation failed.";
             pending_profile_.reset();
         }
-        if (!error.empty()) logger_->Write(LogLevel::error, LogCategory::tunnel, "Unable to execute VPN operation");
+        if (!error.empty()) AppLog::Write(LogLevel::error, LogCategory::tunnel, "Unable to execute VPN operation");
         {
             std::lock_guard lock(mutex_);
             if (!error.empty()) {
@@ -85,7 +85,7 @@ void TunnelObservable::Observe() {
         error = "Unable to read VPN state.";
     }
     if (error != last_observation_error_) {
-        logger_->Write(error.empty() ? LogLevel::info : LogLevel::error, LogCategory::tunnel,
+        AppLog::Write(error.empty() ? LogLevel::info : LogLevel::error, LogCategory::tunnel,
             error.empty() ? "Tunnel observation recovered" : "Unable to fetch tunnel state");
         last_observation_error_ = error;
     }
@@ -138,7 +138,7 @@ void TunnelObservable::Publish() {
     auto synchronization_error = SynchronizeProfiles(tunnels);
     tunnels = Tunnels::Info(tunnel_->Fetch());
     if (synchronization_error != last_synchronization_error_) {
-        logger_->Write(synchronization_error.empty() ? LogLevel::info : LogLevel::error, LogCategory::profiles,
+        AppLog::Write(synchronization_error.empty() ? LogLevel::info : LogLevel::error, LogCategory::profiles,
             synchronization_error.empty() ? "Profile synchronization succeeded" : synchronization_error);
         last_synchronization_error_ = synchronization_error;
     }
@@ -147,18 +147,18 @@ void TunnelObservable::Publish() {
     for (const auto &[id, error] : observation_errors) {
         const auto old = previous.observation_errors.find(id);
         if (old == previous.observation_errors.end() || old->second != error)
-            logger_->Write(LogLevel::error, LogCategory::tunnel, "Unable to observe profile " + id + ": " + error);
+            AppLog::Write(LogLevel::error, LogCategory::tunnel, "Unable to observe profile " + id + ": " + error);
     }
     for (const auto &[id, error] : previous.observation_errors) {
         if (observation_errors.find(id) == observation_errors.end())
-            logger_->Write(LogLevel::info, LogCategory::tunnel, "Profile observation error cleared: " + id);
+            AppLog::Write(LogLevel::info, LogCategory::tunnel, "Profile observation error cleared: " + id);
     }
     for (const auto &tunnel : tunnels) {
         const auto old = std::find_if(previous.tunnels.begin(), previous.tunnels.end(), [&](const auto &value) {
             return value.id == tunnel.id;
         });
         if (old == previous.tunnels.end() || old->status != tunnel.status)
-            logger_->Write(LogLevel::info, LogCategory::tunnel, "Profile " + tunnel.id + " status: " + tunnel.status.ToJson().Encode());
+            AppLog::Write(LogLevel::info, LogCategory::tunnel, "Profile " + tunnel.id + " status: " + tunnel.status.ToJson().Encode());
     }
     // The requested target is presentation state; Partout owns the handover.
     if (pending_profile_ && std::any_of(tunnels.begin(), tunnels.end(), [&](const auto &tunnel) {

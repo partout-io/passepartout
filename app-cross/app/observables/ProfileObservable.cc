@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ProfileObservable.h"
+#include "../context/AppLog.h"
 #include "../business/strategy/ConfigurationFiles.h"
 #include <algorithm>
 #include <set>
@@ -10,10 +11,8 @@
 #include <type_traits>
 
 namespace Passepartout {
-ProfileObservable::ProfileObservable(SerialExecutor &executor, std::unique_ptr<ProfileManager> manager,
-                                     std::shared_ptr<AppLog> logger
-) : executor_(executor), manager_(std::move(manager)), logger_(std::move(logger)) {
-}
+ProfileObservable::ProfileObservable(SerialExecutor &executor, std::unique_ptr<ProfileManager> manager)
+    : executor_(executor), manager_(std::move(manager)) {}
 
 void ProfileObservable::OnChange(ChangeHandler handler) {
     executor_.Dispatch([this, handler = std::move(handler)] {
@@ -45,7 +44,7 @@ bool ProfileObservable::Post(std::function<void()> operation, OperationErrorCont
         } catch (...) {
             error = "The operation failed.";
         }
-        if (!error.empty()) logger_->Write(LogLevel::error, LogCategory::profiles, "Unable to execute profile operation");
+        if (!error.empty()) AppLog::Write(LogLevel::error, LogCategory::profiles, "Unable to execute profile operation");
         {
             std::lock_guard lock(mutex_);
             snapshot_.operation_error = std::move(error);
@@ -155,9 +154,9 @@ void ProfileObservable::Load() {
             std::lock_guard lock(mutex_);
             snapshot_.loaded = false;
         }
-        logger_->Write(LogLevel::info, LogCategory::profiles, "Reload local profiles...");
+        AppLog::Write(LogLevel::info, LogCategory::profiles, "Reload local profiles...");
         manager_->Load();
-        logger_->Write(LogLevel::info, LogCategory::profiles, "Reloaded local profiles: " + std::to_string(manager_->Profiles().size()));
+        AppLog::Write(LogLevel::info, LogCategory::profiles, "Reloaded local profiles: " + std::to_string(manager_->Profiles().size()));
         {
             std::lock_guard lock(mutex_);
             snapshot_.loaded = true;
@@ -202,12 +201,12 @@ void ProfileObservable::ImportFiles(std::shared_ptr<const ConfigurationFiles> fi
                 if (executor_.IsStopping()) return;
             }
             try {
-                logger_->Write(LogLevel::info, LogCategory::profiles, "Import profile...");
+                AppLog::Write(LogLevel::info, LogCategory::profiles, "Import profile...");
                 const auto source = files->Read(index);
                 manager_->ImportText(source.text, source.name);
-                logger_->Write(LogLevel::info, LogCategory::profiles, "Finished saving profile");
+                AppLog::Write(LogLevel::info, LogCategory::profiles, "Finished saving profile");
             } catch (const std::exception &) {
-                logger_->Write(LogLevel::error, LogCategory::profiles, "Unable to import profile");
+                AppLog::Write(LogLevel::error, LogCategory::profiles, "Unable to import profile");
                 ++failures;
             } catch (...) {
                 ++failures;
@@ -231,7 +230,7 @@ void ProfileObservable::Remove(std::vector<std::string> ids) {
         // request before deleting anything, on the same worker as mutations.
         for (const auto &id : unique_ids) manager_->Find(id);
         for (const auto &id : unique_ids) {
-            logger_->Write(LogLevel::info, LogCategory::profiles, "Remove profile");
+            AppLog::Write(LogLevel::info, LogCategory::profiles, "Remove profile");
             manager_->Remove(id);
         }
     });

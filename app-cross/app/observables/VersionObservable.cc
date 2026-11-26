@@ -3,14 +3,15 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "VersionObservable.h"
+#include "../context/AppLog.h"
 #include "../business/extensions/Models+Business.h"
 #include <chrono>
 
 namespace Passepartout {
 VersionObservable::VersionObservable(std::unique_ptr<VersionChecker> checker, std::string current, std::string build,
-                                     Models::AppConstants_github github, std::shared_ptr<AppLog> logger
+                                     Models::AppConstants_github github
 )
-    : checker_(std::move(checker)), build_(std::move(build)), github_(std::move(github)), logger_(std::move(logger)), worker_([this] {
+    : checker_(std::move(checker)), build_(std::move(build)), github_(std::move(github)), worker_([this] {
         checker_->Cancel();
     }) {
     state_.current = std::move(current);
@@ -57,7 +58,7 @@ void VersionObservable::LoadChangelog() {
         try {
             result.entries = checker_->FetchChangelog(build_);
         } catch (...) {
-            logger_->Write(LogLevel::error, LogCategory::core, "Unable to load changelog for build " + build_);
+            AppLog::Write(LogLevel::error, LogCategory::core, "Unable to load changelog for build " + build_);
             result.operation_failed = true;
         }
         std::lock_guard lock(mutex_);

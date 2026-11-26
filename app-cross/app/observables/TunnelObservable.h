@@ -5,7 +5,6 @@
 #pragma once
 #include "../business/extensions/Models+Business.h"
 #include "../business/models/InteractiveLogin.h"
-#include "../context/AppLog.h"
 #include "SerialExecutor.h"
 #include "AppPreferences.h"
 #include <partout/tunnel/Tunnel.h>
@@ -33,7 +32,6 @@ public:
         Status status = Status::disconnected;
     };
     TunnelObservable(SerialExecutor &executor, std::unique_ptr<Partout::Tunnel> tunnel,
-                     std::shared_ptr<AppLog> logger,
                      std::function<void(const Models::AppPreferences &)> apply_preferences = {}
     );
     void SetProfiles(std::vector<Profile> profiles, bool loaded);
@@ -57,7 +55,6 @@ private:
     std::string SynchronizeProfiles(const std::vector<Models::AppTunnelInfo> &tunnels);
     SerialExecutor &executor_;
     std::unique_ptr<Partout::Tunnel> tunnel_;
-    std::shared_ptr<AppLog> logger_;
     std::function<void(const Models::AppPreferences &)> apply_preferences_;
     std::optional<Models::AppPreferences> pending_preferences_;
     std::map<std::string, Profile> synchronized_profiles_;

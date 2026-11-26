@@ -9,6 +9,8 @@
 #include <sstream>
 #include <deque>
 #include <atomic>
+#include <mutex>
+#include <utility>
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -30,6 +32,8 @@ struct RuntimeLogState final {
 };
 
 RuntimeLogState runtime;
+std::mutex sink_mutex;
+Passepartout::LogSink sink;
 
 const char *CategoryName(Passepartout::LogCategory category) {
     switch (category) {
@@ -66,13 +70,13 @@ void WriteRuntime(Passepartout::LogLevel level, Passepartout::LogCategory catego
 }
 }
 
-using Passepartout::AppLog;
+namespace Passepartout::AppLog {
 
-void AppLog::SetPrivateData(bool enabled) noexcept {
+void SetPrivateData(bool enabled) noexcept {
     runtime.includes_private_data.store(enabled);
 }
 
-std::string AppLog::RuntimeLog(bool include_private_data) {
+std::string RuntimeLog(bool include_private_data) {
     std::lock_guard lock(runtime.mutex);
     std::string result;
     result.reserve(runtime.bytes);
@@ -82,11 +86,12 @@ std::string AppLog::RuntimeLog(bool include_private_data) {
     return result;
 }
 
-AppLog::AppLog(LogSink sink) : sink_(sink ? std::move(sink) : WriteRuntime) {}
+LogSink SetSink(LogSink replacement) {
+    std::lock_guard lock(sink_mutex);
+    return std::exchange(sink, std::move(replacement));
+}
 
-void AppLog::PartoutMessage(void *, const char *profile_id, int level, const char *message) noexcept {
-    // Partout holds this process-wide callback; no application-owned context may dangle.
-    static AppLog logger;
+void PartoutMessage(void *, const char *profile_id, int level, const char *message) noexcept {
     if (!message) return;
     try {
         const auto text = profile_id && runtime.includes_private_data.load()
@@ -94,17 +99,19 @@ void AppLog::PartoutMessage(void *, const char *profile_id, int level, const cha
         const auto log_level = level <= PartoutLogLevelError ? LogLevel::error
             : level <= PartoutLogLevelInfo ? LogLevel::info
             : LogLevel::debug;
-        logger.Write(log_level, LogCategory::partout, text);
+        Write(log_level, LogCategory::partout, text);
     } catch (...) {
         // Never throw through the native logging callback.
     }
 }
 
-void AppLog::Write(LogLevel level, LogCategory category, const std::string &message) noexcept {
+void Write(LogLevel level, LogCategory category, const std::string &message) noexcept {
     try {
-        std::lock_guard lock(mutex_);
-        sink_(level, category, message);
+        std::lock_guard lock(sink_mutex);
+        if (sink) sink(level, category, message);
+        else WriteRuntime(level, category, message);
     } catch (...) {
         // Diagnostics must not affect the operation being observed.
     }
+}
 }

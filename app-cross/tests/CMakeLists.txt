@@ -27,11 +27,11 @@ endif()
 # Test executables
 add_executable(passepartout-models-test Models.cc)
 target_link_libraries(passepartout-models-test PRIVATE passepartout-models)
-add_executable(passepartout-application-test Application.cc ObservableFixture.cc)
+add_executable(passepartout-application-test Application.cc ObservableFixture.cc ScopedLogSink.cc)
 target_link_libraries(passepartout-application-test PRIVATE passepartout-core)
 add_executable(passepartout-editor-test Editor.cc ObservableFixture.cc)
 target_link_libraries(passepartout-editor-test PRIVATE passepartout-core)
-add_executable(passepartout-settings-test Settings.cc)
+add_executable(passepartout-settings-test Settings.cc ScopedLogSink.cc)
 target_link_libraries(passepartout-settings-test PRIVATE passepartout-core)
 add_executable(passepartout-activation-test Activation.cc
     ../app/ui/platform/FileActivationInbox.cc)
