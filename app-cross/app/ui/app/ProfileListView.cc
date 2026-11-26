@@ -31,7 +31,7 @@ wxString StatusText(Passepartout::Status status) {
 }
 
 wxString TransferText(const Passepartout::TunnelObservable::State &state, const std::string &id) {
-    if (!state.tunnel_available) return {};
+    if (!state.available) return {};
     for (const auto &tunnel : state.tunnels) {
         if (tunnel.id != id || tunnel.status.value != Passepartout::Status::connected || !tunnel.transfer) continue;
         const auto &transfer = *tunnel.transfer;
@@ -141,8 +141,8 @@ void ProfileListView::RenderRows() {
     for (const auto &profile : profiles_.profiles) {
         if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
         const auto toggle = TunnelObservable::StateForProfile(tunnels_, profile.id);
-        const auto status = tunnels_.tunnel_available &&
-            tunnels_.tunnel_observation_errors.find(profile.id) == tunnels_.tunnel_observation_errors.end()
+        const auto status = tunnels_.available &&
+            tunnels_.observation_errors.find(profile.id) == tunnels_.observation_errors.end()
             ? StatusText(toggle.status) : wxString();
         const auto transfer = TransferText(tunnels_, profile.id);
         if (rebuild) AppendProfile(Text(profile.name), status, toggle.is_on, toggle.can_interact && !picking_, transfer);

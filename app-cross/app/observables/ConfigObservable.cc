@@ -23,15 +23,15 @@ void ConfigObservable::Refresh() {
     if (state_.refreshing) return;
     state_.refreshing = true;
     worker_.Post([this] {
-        bool failed = false;
+        bool operation_failed = false;
         try {
             manager_->Refresh();
         } catch (...) {
-            failed = true;
+            operation_failed = true;
         }
         std::lock_guard lock(mutex_);
         state_.flags = manager_->ActiveFlags();
-        state_.failed = failed;
+        state_.operation_failed = operation_failed;
         state_.refreshing = false;
     });
 }

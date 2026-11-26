@@ -12,7 +12,7 @@ public:
     struct State {
         ConfigFlags flags;
         bool refreshing = false;
-        bool failed = false;
+        bool operation_failed = false;
     };
     explicit ConfigObservable(std::unique_ptr<ConfigManager> manager);
     ~ConfigObservable();

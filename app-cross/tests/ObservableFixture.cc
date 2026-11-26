@@ -23,8 +23,8 @@ ObservableFixture::~ObservableFixture() {
     executor.Join();
 }
 
-void ObservableFixture::ClearError() {
-    profiles.ClearError();
-    tunnel.ClearError();
+void ObservableFixture::ClearOperationErrors() {
+    profiles.ClearOperationError();
+    tunnel.ClearOperationError();
 }
 }

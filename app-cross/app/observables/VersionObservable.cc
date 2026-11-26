@@ -30,17 +30,17 @@ void VersionObservable::Check() {
     if (!state_.available || state_.checking) return;
     state_.checking = true;
     worker_.Post([this] {
-        bool failed = false;
+        bool operation_failed = false;
         try {
             const auto now = std::chrono::duration_cast<std::chrono::milliseconds>(
                 std::chrono::system_clock::now().time_since_epoch()).count();
             checker_->Check(now);
         } catch (...) {
-            failed = true;
+            operation_failed = true;
         }
         std::lock_guard lock(mutex_);
         state_.release = checker_->Snapshot();
-        state_.failed = failed;
+        state_.operation_failed = operation_failed;
         state_.checking = false;
     });
 }

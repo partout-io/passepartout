@@ -143,7 +143,7 @@ MainView::~MainView() {
 }
 
 void MainView::Render() {
-    const bool tunnel_unavailable = !tunnels_.tunnel_error.empty() || !tunnels_.synchronization_error.empty();
+    const bool tunnel_unavailable = !tunnels_.observation_error.empty() || !tunnels_.synchronization_error.empty();
     message_->SetLabel(Localized(tunnel_unavailable ? StringKey::ErrorsAppTunnel : StringKey::ViewsAppFoldersNoProfiles));
     message_->Show(tunnel_unavailable || (profiles_.loaded && profiles_.profiles.empty()));
     const bool activity = activity_.foreground || tunnels_.HasActivity();
@@ -184,11 +184,11 @@ void MainView::Tick(wxTimerEvent &) {
         Render();
         // Background observation can recover on the next poll. Keep its error
         // inline; reserve modal alerts for failed actions or local loading.
-        if ((!profiles_.error.empty() || !tunnels_.error.empty()) && !activity_.busy) {
+        if ((!profiles_.operation_error.empty() || !tunnels_.operation_error.empty()) && !activity_.busy) {
             // Pause polling while the alert runs its nested event loop.
             timer_.Stop();
-            const bool profile_error = !profiles_.error.empty();
-            const bool importing = profile_error && profiles_.error_context == ProfileObservable::ErrorContext::import;
+            const bool profile_error = !profiles_.operation_error.empty();
+            const bool importing = profile_error && profiles_.operation_error_context == ProfileObservable::OperationErrorContext::import;
             // FIXME: ### Map typed failure reasons to localized recovery guidance without exposing raw native errors or secrets.
             const auto message = Localized(importing ? StringKey::ErrorsAppImportGeneric :
                 !profile_error ? StringKey::ErrorsAppTunnel : StringKey::ErrorsAppOther);
@@ -196,8 +196,8 @@ void MainView::Tick(wxTimerEvent &) {
                 importing ? Localized(StringKey::ViewsAppToolbarImportFile) : wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
             dialog.SetOKLabel(Localized(StringKey::GlobalNounsOk));
             dialog.ShowModal();
-            if (profile_error) context_.profiles.ClearError();
-            else context_.tunnel.ClearError();
+            if (profile_error) context_.profiles.ClearOperationError();
+            else context_.tunnel.ClearOperationError();
             timer_.Start(200);
         }
     }

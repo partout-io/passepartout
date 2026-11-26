@@ -15,13 +15,13 @@ class TunnelObservable final {
 public:
     struct State final {
         std::vector<Models::AppTunnelInfo> tunnels;
-        std::map<std::string, std::string> tunnel_observation_errors;
+        std::map<std::string, std::string> observation_errors;
         std::vector<std::string> profile_ids;
         bool profiles_loaded = false;
-        bool tunnel_available = false;
+        bool available = false;
         std::optional<std::string> pending_profile;
-        std::string error;
-        std::string tunnel_error;
+        std::string operation_error;
+        std::string observation_error;
         std::string synchronization_error;
         std::uint64_t revision = 0;
         SerialExecutor::Activity activity;
@@ -48,7 +48,7 @@ public:
     void CompleteInteractiveLogin(InteractiveLogin login);
     void Disconnect(std::string id);
     void Refresh();
-    void ClearError();
+    void ClearOperationError();
     State Snapshot() const;
 private:
     bool Post(std::function<void()> operation, bool foreground = true, bool dispatch = false);

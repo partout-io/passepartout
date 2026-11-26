@@ -211,8 +211,8 @@ void ProfileCoordinator::RefreshState() {
     if (progress_->Show(state.saving)) Layout();
     cancel_->Enable(!state.saving);
     save_->Enable(editor_->CanSave() && ProfileObservable::CanSave(profiles_.Snapshot(), state.draft.id));
-    if (state.failed) {
-        editor_->ClearError();
+    if (state.operation_failed) {
+        editor_->ClearOperationError();
         PresentError(this);
     }
 }

@@ -13,7 +13,7 @@ public:
         Profile draft;
         bool saving = false;
         bool saved = false;
-        bool failed = false;
+        bool operation_failed = false;
     };
     explicit ProfileEditor(Profile profile);
     State Snapshot() const;
@@ -23,7 +23,7 @@ public:
     bool CanSave() const;
     bool BeginSave();
     void FinishSave(bool succeeded);
-    void ClearError();
+    void ClearOperationError();
 private:
     bool IsValidChange() const;
     const Profile original_;

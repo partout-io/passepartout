@@ -14,7 +14,7 @@ public:
     struct Content {
         std::string text;
         bool loading = false;
-        bool failed = false;
+        bool operation_failed = false;
     };
     CreditsObservable(std::string resource, std::unique_ptr<HttpClient> client,
                       Models::Platform::ePlatform platform = Credits::CurrentPlatform());

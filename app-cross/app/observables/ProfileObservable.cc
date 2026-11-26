@@ -34,8 +34,8 @@ void ProfileObservable::Cancel() {
     if (importing) importing->Cancel();
 }
 
-bool ProfileObservable::Post(std::function<void()> operation, ErrorContext context) {
-    ClearError();
+bool ProfileObservable::Post(std::function<void()> operation, OperationErrorContext context) {
+    ClearOperationError();
     return executor_.Post([this, operation = std::move(operation), context] {
         std::string error;
         try {
@@ -48,8 +48,8 @@ bool ProfileObservable::Post(std::function<void()> operation, ErrorContext conte
         if (!error.empty()) logger_->Write(LogLevel::error, LogCategory::profiles, "Unable to execute profile operation");
         {
             std::lock_guard lock(mutex_);
-            snapshot_.error = std::move(error);
-            snapshot_.error_context = context;
+            snapshot_.operation_error = std::move(error);
+            snapshot_.operation_error_context = context;
             ++snapshot_.revision;
         }
         Publish();
@@ -143,8 +143,8 @@ void ProfileObservable::Publish() {
         if (handler) handler(manager_->Profiles(), loaded);
     } catch (...) {
         std::lock_guard lock(mutex_);
-        snapshot_.error = "Unable to publish saved profiles.";
-        snapshot_.error_context = ErrorContext::general;
+        snapshot_.operation_error = "Unable to publish saved profiles.";
+        snapshot_.operation_error_context = OperationErrorContext::general;
         ++snapshot_.revision;
     }
 }
@@ -215,13 +215,13 @@ void ProfileObservable::ImportFiles(std::shared_ptr<const ConfigurationFiles> fi
         }
         if (failures) throw std::runtime_error(std::to_string(failures) +
             " configuration(s) could not be imported. Valid imports were saved; existing profiles were preserved.");
-    }, ErrorContext::import);
+    }, OperationErrorContext::import);
 }
 
 void ProfileObservable::ImportFailed() {
     Post([] {
         throw std::runtime_error("Configuration selection failed.");
-    }, ErrorContext::import);
+    }, OperationErrorContext::import);
 }
 
 void ProfileObservable::Remove(std::vector<std::string> ids) {
@@ -245,9 +245,9 @@ ProfileObservable::State ProfileObservable::Snapshot() const {
     return result;
 }
 
-void ProfileObservable::ClearError() {
+void ProfileObservable::ClearOperationError() {
     std::lock_guard lock(mutex_);
-    snapshot_.error.clear();
+    snapshot_.operation_error.clear();
     ++snapshot_.revision;
 }
 }

@@ -15,7 +15,7 @@ public:
         VersionChecker::State release;
         bool available = false;
         bool checking = false;
-        bool failed = false;
+        bool operation_failed = false;
     };
     VersionObservable(std::unique_ptr<VersionChecker> checker, std::string current, std::string changelog);
     ~VersionObservable();

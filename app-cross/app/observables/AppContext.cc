@@ -111,8 +111,8 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
       preferences(MakePreferencesRepository(
           Profiles::Directory(data_root, constants), cross_constants), [this] {
               const auto state = tunnel.Snapshot();
-              return profiles.Snapshot().loaded && !state.activity.busy && !state.pending_profile && state.tunnel_available &&
-                  state.tunnel_observation_errors.empty() && std::all_of(state.tunnels.begin(), state.tunnels.end(), [](const auto &info) {
+              return profiles.Snapshot().loaded && !state.activity.busy && !state.pending_profile && state.available &&
+                  state.observation_errors.empty() && std::all_of(state.tunnels.begin(), state.tunnels.end(), [](const auto &info) {
                       return info.status.value == Status::disconnected;
                   });
           }),

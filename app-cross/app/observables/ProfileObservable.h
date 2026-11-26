@@ -13,12 +13,12 @@
 namespace Passepartout {
 class ProfileObservable final {
 public:
-    enum class ErrorContext { general, import };
+    enum class OperationErrorContext { general, import };
     struct State final {
         std::vector<Models::AppProfileHeader> profiles;
         bool loaded = false;
-        std::string error;
-        ErrorContext error_context = ErrorContext::general;
+        std::string operation_error;
+        OperationErrorContext operation_error_context = OperationErrorContext::general;
         std::uint64_t revision = 0;
         SerialExecutor::Activity activity;
     };
@@ -40,9 +40,9 @@ public:
     void ImportFailed();
     void Remove(std::vector<std::string> ids);
     State Snapshot() const;
-    void ClearError();
+    void ClearOperationError();
 private:
-    bool Post(std::function<void()> operation, ErrorContext context = ErrorContext::general);
+    bool Post(std::function<void()> operation, OperationErrorContext context = OperationErrorContext::general);
     void Publish();
     SerialExecutor &executor_;
     std::unique_ptr<ProfileManager> manager_;

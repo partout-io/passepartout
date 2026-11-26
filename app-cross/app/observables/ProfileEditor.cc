@@ -66,7 +66,7 @@ bool ProfileEditor::BeginSave() {
     std::lock_guard lock(mutex_);
     if (!IsValidChange()) return false;
     state_.saving = true;
-    state_.failed = false;
+    state_.operation_failed = false;
     return true;
 }
 
@@ -74,10 +74,10 @@ void ProfileEditor::FinishSave(bool succeeded) {
     std::lock_guard lock(mutex_);
     state_.saving = false;
     state_.saved = succeeded;
-    state_.failed = !succeeded;
+    state_.operation_failed = !succeeded;
 }
 
-void ProfileEditor::ClearError() {
+void ProfileEditor::ClearOperationError() {
     std::lock_guard lock(mutex_);
-    state_.failed = false;
+    state_.operation_failed = false;
 }

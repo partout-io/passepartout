@@ -9,7 +9,7 @@
 namespace Passepartout {
 bool TunnelObservable::State::HasActivity() const {
     if (activity.foreground || pending_profile) return true;
-    return tunnel_available && std::any_of(tunnels.begin(), tunnels.end(), [](const auto &tunnel) {
+    return available && std::any_of(tunnels.begin(), tunnels.end(), [](const auto &tunnel) {
         return tunnel.status.value == Status::connecting || tunnel.status.value == Status::disconnecting;
     });
 }
@@ -49,7 +49,7 @@ void TunnelObservable::ApplyPreferences(Models::AppPreferences preferences) {
 }
 
 bool TunnelObservable::Post(std::function<void()> operation, bool foreground, bool dispatch) {
-    if (foreground) ClearError();
+    if (foreground) ClearOperationError();
     auto task = [this, operation = std::move(operation)] {
         std::string error;
         try {
@@ -66,7 +66,7 @@ bool TunnelObservable::Post(std::function<void()> operation, bool foreground, bo
         {
             std::lock_guard lock(mutex_);
             if (!error.empty()) {
-                snapshot_.error = std::move(error);
+                snapshot_.operation_error = std::move(error);
             }
             ++snapshot_.revision;
         }
@@ -90,9 +90,9 @@ void TunnelObservable::Observe() {
         last_observation_error_ = error;
     }
     std::lock_guard lock(mutex_);
-    if (!error.empty()) snapshot_.tunnel_available = false;
+    if (!error.empty()) snapshot_.available = false;
     snapshot_.pending_profile = pending_profile_;
-    snapshot_.tunnel_error = std::move(error);
+    snapshot_.observation_error = std::move(error);
     ++snapshot_.revision;
 }
 
@@ -145,11 +145,11 @@ void TunnelObservable::Publish() {
     const auto previous = Snapshot();
     const auto observation_errors = tunnel_->ObservationErrors();
     for (const auto &[id, error] : observation_errors) {
-        const auto old = previous.tunnel_observation_errors.find(id);
-        if (old == previous.tunnel_observation_errors.end() || old->second != error)
+        const auto old = previous.observation_errors.find(id);
+        if (old == previous.observation_errors.end() || old->second != error)
             logger_->Write(LogLevel::error, LogCategory::tunnel, "Unable to observe profile " + id + ": " + error);
     }
-    for (const auto &[id, error] : previous.tunnel_observation_errors) {
+    for (const auto &[id, error] : previous.observation_errors) {
         if (observation_errors.find(id) == observation_errors.end())
             logger_->Write(LogLevel::info, LogCategory::tunnel, "Profile observation error cleared: " + id);
     }
@@ -167,8 +167,8 @@ void TunnelObservable::Publish() {
     std::lock_guard lock(mutex_);
     snapshot_.pending_profile = pending_profile_;
     snapshot_.tunnels = std::move(tunnels);
-    snapshot_.tunnel_available = true;
-    snapshot_.tunnel_observation_errors = observation_errors;
+    snapshot_.available = true;
+    snapshot_.observation_errors = observation_errors;
     snapshot_.synchronization_error = std::move(synchronization_error);
 }
 
@@ -197,8 +197,8 @@ TunnelObservable::ToggleState TunnelObservable::StateForProfile(const State &sta
     const bool exists = std::any_of(state.profile_ids.begin(), state.profile_ids.end(), [&](const auto &profile_id) {
         return profile_id == id;
     });
-    result.can_interact = exists && state.profiles_loaded && !state.activity.foreground && !state.pending_profile && state.tunnel_available &&
-        state.tunnel_observation_errors.find(id) == state.tunnel_observation_errors.end() &&
+    result.can_interact = exists && state.profiles_loaded && !state.activity.foreground && !state.pending_profile && state.available &&
+        state.observation_errors.find(id) == state.observation_errors.end() &&
         result.status != Status::disconnecting;
     return result;
 }
@@ -262,13 +262,13 @@ void TunnelObservable::Disconnect(std::string id) {
 
 void TunnelObservable::Refresh() {
     const auto state = Snapshot();
-    if (state.activity.busy || !state.error.empty()) return;
+    if (state.activity.busy || !state.operation_error.empty()) return;
     Post([] {}, false);
 }
 
-void TunnelObservable::ClearError() {
+void TunnelObservable::ClearOperationError() {
     std::lock_guard lock(mutex_);
-    snapshot_.error.clear();
+    snapshot_.operation_error.clear();
     ++snapshot_.revision;
 }
 

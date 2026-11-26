@@ -16,7 +16,7 @@ public:
                       std::function<void(const Models::AppPreferences &)> apply_preferences = {}
     );
     ~ObservableFixture();
-    void ClearError();
+    void ClearOperationErrors();
     SerialExecutor executor;
     ProfileObservable profiles;
     TunnelObservable tunnel;

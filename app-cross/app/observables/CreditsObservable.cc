@@ -53,7 +53,7 @@ void CreditsObservable::LoadLicense(const std::string &url) {
         try {
             result.text = client_->Get(url);
         } catch (...) {
-            result.failed = true;
+            result.operation_failed = true;
         }
         std::lock_guard lock(mutex_);
         content_[url] = std::move(result);

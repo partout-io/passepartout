@@ -118,7 +118,7 @@ int main() {
     editor.Rename("Ignored while saving");
     assert(editor.Snapshot().draft.name == "Renamed");
     editor.FinishSave(false);
-    assert(editor.CanSave() && editor.Snapshot().failed);
+    assert(editor.CanSave() && editor.Snapshot().operation_failed);
     const auto draft = editor.Snapshot().draft;
     assert(draft.id == original.id && draft.userInfo == original.userInfo);
     assert(draft.modules.back() == original.modules.back());
@@ -164,17 +164,17 @@ int main() {
         backend->rejects = true;
         profiles.SaveEditor(pending);
         Wait(session);
-        assert(pending->Snapshot().saved && !pending->Snapshot().failed);
+        assert(pending->Snapshot().saved && !pending->Snapshot().operation_failed);
         assert(repository.Fetch().front().name == "Retry name");
         assert(!session.tunnel.Snapshot().synchronization_error.empty());
         assert(ProfileObservable::CanSave(session.profiles.Snapshot(), original.id));
         backend->connection_credentials.reset();
         session.tunnel.ConnectProfile(original.id);
         Wait(session);
-        assert(!session.tunnel.Snapshot().error.empty());
+        assert(!session.tunnel.Snapshot().operation_error.empty());
         assert(!backend->connection_credentials);
         assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
-        session.ClearError();
+        session.ClearOperationErrors();
         backend->rejects = false;
         session.tunnel.Refresh();
         Wait(session);
@@ -188,7 +188,7 @@ int main() {
         stale->Rename("Stale");
         profiles.SaveEditor(stale);
         Wait(session);
-        assert(stale->Snapshot().failed && repository.Fetch().front().name == "Retry name");
+        assert(stale->Snapshot().operation_failed && repository.Fetch().front().name == "Retry name");
         backend->fake.Connect(original.id);
         session.tunnel.Refresh();
         Wait(session);
