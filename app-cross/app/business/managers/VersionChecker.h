@@ -4,7 +4,9 @@
 
 #pragma once
 #include "../strategy/VersionCheckerStrategy.h"
+#include "Event.h"
 #include <functional>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -13,6 +15,10 @@
 namespace Passepartout {
 class VersionChecker final {
 public:
+    using EventHandler = std::function<void(const Models::Event &)>;
+    // Subscribe before starting work; unsubscribe after stopping it.
+    std::size_t Subscribe(EventHandler handler);
+    void Unsubscribe(std::size_t subscription);
     struct State final {
         std::optional<std::string> latest;
         std::string download_url;
@@ -29,6 +35,10 @@ public:
     std::vector<Models::ChangelogEntry> FetchChangelog(const std::string &build);
     void Cancel() noexcept;
 private:
+    void Emit(const Models::Event &event);
+    void PublishRelease();
+    std::map<std::size_t, EventHandler> handlers_;
+    std::size_t next_subscription_ = 0;
     std::string current_;
     std::unique_ptr<VersionCheckerStrategy> strategy_;
     std::string destination_;

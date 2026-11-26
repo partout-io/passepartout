@@ -212,16 +212,31 @@ int main() {
         auto *remote = http.get();
         remote->response = R"({"futureFlag": {}, "appNotWorking": {"rate":100,"minBuild":7,"platforms":["windows"],"data":{"reason":"test"}}})";
         ConfigManager config(std::make_unique<GitHubConfigStrategy>(std::move(http), "https://example.invalid", std::chrono::seconds(0)), 7, Models::Platform::windows);
+        std::vector<Models::Event> config_events;
+        const auto config_subscription = config.Subscribe([&](const auto &event) { config_events.push_back(event); });
         assert(config.Refresh());
+        assert(config_events.size() == 1);
+        const auto &refresh = std::get<Models::ConfigEventRefresh>(config_events.back());
+        assert(refresh.flags.size() == 1 && refresh.flags.front().value == Models::ConfigFlag::appNotWorking);
+        assert(refresh.data.At("appNotWorking").At("reason") == "test");
         assert(config.ActiveFlags().at(Models::ConfigFlag::appNotWorking).At("reason") == "test");
         remote->fails = true;
         Fails([&] { config.Refresh(); });
         assert(config.ActiveFlags().size() == 1);
+        assert(config_events.size() == 1);
         remote->fails = false;
         for (const auto &value : {R"({"rate":99})", R"({"rate":100,"minBuild":8})", R"({"rate":100,"platforms":["android"]})"}) {
             remote->response = std::string("{\"appNotWorking\":") + value + "}";
+            const auto count = config_events.size();
             assert(config.Refresh() && config.ActiveFlags().empty());
+            assert(config_events.size() == count + 1);
+            const auto &empty = std::get<Models::ConfigEventRefresh>(config_events.back());
+            assert(empty.flags.empty() && empty.data.IsObject() && empty.data.Size() == 0);
         }
+        config.Unsubscribe(config_subscription);
+        const auto config_event_count = config_events.size();
+        assert(config.Refresh());
+        assert(config_events.size() == config_event_count);
         for (const auto platform : {Models::Platform::windows, Models::Platform::unixLike}) {
             auto platform_http = std::make_unique<FakeHttp>();
             auto *platform_remote = platform_http.get();
@@ -247,8 +262,15 @@ int main() {
                 std::move(client), "https://example.invalid", std::chrono::seconds(0)
             ), 7, Models::Platform::windows);
             assert(manager->Refresh());
+            auto *config_manager = manager.get();
             ConfigObservable observable(std::move(manager));
             assert(observable.Snapshot().flags.at(Models::ConfigFlag::appNotWorking).At("reason") == "test");
+            remote->response = "{}";
+            assert(config_manager->Refresh());
+            assert(observable.Snapshot().flags.empty());
+            remote->response = R"({"appNotWorking":{"rate":100,"data":{"reason":"test"}}})";
+            assert(config_manager->Refresh());
+            assert(observable.Snapshot().flags.count(Models::ConfigFlag::appNotWorking));
             const auto refresh = [&] {
                 observable.Refresh();
                 const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
@@ -323,10 +345,18 @@ int main() {
         std::optional<std::string> stored;
         VersionChecker version("1.0.0.0", std::move(strategy), "https://example.invalid/windows", 60, {}, {},
             [&](auto, auto value) { stored = std::move(value); });
+        std::vector<Models::Event> version_events;
+        const auto version_subscription = version.Subscribe([&](const auto &event) { version_events.push_back(event); });
         version.Check(100000);
+        assert(version_events.size() == 1);
+        const auto &release_event = std::get<Models::VersionEventNew>(version_events.back());
+        assert(release_event.release.version.major == 1 && release_event.release.version.minor == 2 &&
+            release_event.release.version.patch == 3);
+        assert(release_event.release.url == "https://example.invalid/windows");
         assert(stored == "1.2.3.4" && version.Snapshot().latest == stored);
         version.Check(101000);
         assert(releases->requests == 1);
+        assert(version_events.size() == 2);
         releases->fails = true;
         Fails([&] { version.Check(200000); });
         assert(version.Snapshot().latest == stored);
@@ -334,6 +364,45 @@ int main() {
         releases->value = "not-a-release";
         Fails([&] { version.Check(201000); });
         assert(!stored && !version.Snapshot().latest);
+        assert(version_events.size() == 2);
+        releases->value = "1.0.0.0";
+        version.Check(300000);
+        assert(version_events.size() == 2);
+        version.Unsubscribe(version_subscription);
+        releases->value = "2.0.0";
+        version.Check(400000);
+        assert(version.Snapshot().latest == "2.0.0" && version_events.size() == 2);
+
+        {
+            auto strategy = std::make_unique<FakeVersion>();
+            auto *remote = strategy.get();
+            auto checker = std::make_unique<VersionChecker>(
+                "1.0.0", std::move(strategy), "https://example.invalid/download", 0,
+                std::nullopt, std::nullopt, [](auto, auto) {}
+            );
+            auto *manager = checker.get();
+            VersionObservable observable(std::move(checker));
+            manager->Check(100000);
+            assert(observable.Snapshot().release.latest == "1.2.3.4");
+            const auto check = [&] {
+                observable.Check();
+                const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+                while (observable.Snapshot().checking && std::chrono::steady_clock::now() < deadline) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                }
+                assert(!observable.Snapshot().checking);
+                return observable.Snapshot();
+            };
+            remote->value = "1.0.0";
+            assert(!check().release.latest);
+            remote->value = "2.0.0";
+            assert(check().release.latest == "2.0.0");
+            remote->fails = true;
+            const auto failed = check();
+            assert(failed.operation_failed && !failed.release.latest);
+            remote->fails = false;
+            assert(check().release.latest == "2.0.0");
+        }
 
         {
             // Changelog fetching works independently of update-download availability.

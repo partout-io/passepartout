@@ -9,6 +9,18 @@ ConfigObservable::ConfigObservable(std::unique_ptr<ConfigManager> manager)
     : manager_(std::move(manager)), worker_([this] {
         manager_->Cancel();
     }) {
+    subscription_ = manager_->Subscribe([this](const Models::Event &event) { OnUpdate(event); });
+    state_.flags = manager_->ActiveFlags();
+}
+
+ConfigObservable::~ConfigObservable() {
+    worker_.Stop();
+    manager_->Unsubscribe(subscription_);
+}
+
+void ConfigObservable::OnUpdate(const Models::Event &event) {
+    if (!std::holds_alternative<Models::ConfigEventRefresh>(event)) return;
+    std::lock_guard lock(mutex_);
     state_.flags = manager_->ActiveFlags();
 }
 
@@ -22,15 +34,15 @@ void ConfigObservable::Refresh() {
     if (state_.refreshing) return;
     state_.refreshing = true;
     worker_.Post([this] {
-        State result;
+        bool operation_failed = false;
         try {
             manager_->Refresh();
         } catch (...) {
-            result.operation_failed = true;
+            operation_failed = true;
         }
-        result.flags = manager_->ActiveFlags();
         std::lock_guard lock(mutex_);
-        state_ = std::move(result);
+        state_.operation_failed = operation_failed;
+        state_.refreshing = false;
     });
 }
 }

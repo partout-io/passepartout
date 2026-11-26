@@ -14,10 +14,13 @@ public:
         bool refreshing = false;
         bool operation_failed = false;
     };
+    ~ConfigObservable();
     explicit ConfigObservable(std::unique_ptr<ConfigManager> manager);
     State Snapshot() const;
     void Refresh();
 private:
+    void OnUpdate(const Models::Event &event);
+    std::size_t subscription_;
     std::unique_ptr<ConfigManager> manager_;
     mutable std::mutex mutex_;
     State state_;

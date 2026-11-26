@@ -11,7 +11,19 @@ VersionObservable::VersionObservable(std::unique_ptr<VersionChecker> checker)
     : checker_(std::move(checker)), worker_([this] {
         checker_->Cancel();
     }) {
+    subscription_ = checker_->Subscribe([this](const Models::Event &event) { OnUpdate(event); });
     state_.available = checker_->Available();
+    state_.release = checker_->Snapshot();
+}
+
+VersionObservable::~VersionObservable() {
+    worker_.Stop();
+    checker_->Unsubscribe(subscription_);
+}
+
+void VersionObservable::OnUpdate(const Models::Event &event) {
+    if (!std::holds_alternative<Models::VersionEventNew>(event)) return;
+    std::lock_guard lock(mutex_);
     state_.release = checker_->Snapshot();
 }
 
@@ -24,6 +36,7 @@ void VersionObservable::Check() {
     std::lock_guard lock(mutex_);
     if (!state_.available || state_.checking) return;
     state_.checking = true;
+    state_.release = {};
     worker_.Post([this] {
         bool operation_failed = false;
         try {
@@ -34,7 +47,6 @@ void VersionObservable::Check() {
             operation_failed = true;
         }
         std::lock_guard lock(mutex_);
-        state_.release = checker_->Snapshot();
         state_.operation_failed = operation_failed;
         state_.checking = false;
     });

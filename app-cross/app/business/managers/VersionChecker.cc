@@ -32,6 +32,20 @@ VersionChecker::VersionChecker(std::string current, std::unique_ptr<VersionCheck
     : current_(std::move(current)), strategy_(std::move(strategy)), destination_(std::move(destination)),
       rate_limit_seconds_(rate_limit_seconds), last_checked_(last_checked), cached_(std::move(cached)), save_(std::move(save)) {}
 
+std::size_t VersionChecker::Subscribe(EventHandler handler) {
+    const auto subscription = ++next_subscription_;
+    handlers_.emplace(subscription, std::move(handler));
+    return subscription;
+}
+
+void VersionChecker::Unsubscribe(std::size_t subscription) {
+    handlers_.erase(subscription);
+}
+
+void VersionChecker::Emit(const Models::Event &event) {
+    for (const auto &[subscription, handler] : handlers_) handler(event);
+}
+
 bool VersionChecker::Available() const {
     return strategy_ && destination_.compare(0, 8, "https://") == 0;
 }
@@ -50,7 +64,10 @@ VersionChecker::State VersionChecker::Snapshot() const {
 
 void VersionChecker::Check(std::int64_t now) {
     if (!Available()) return;
-    if (last_checked_ && now >= *last_checked_ && (now - *last_checked_) / 1000 < rate_limit_seconds_) return;
+    if (last_checked_ && now >= *last_checked_ && (now - *last_checked_) / 1000 < rate_limit_seconds_) {
+        PublishRelease();
+        return;
+    }
     // Network failures leave the last successful result intact. Malformed
     // releases clear it, so a stale release is never offered as a fresh result.
     const auto latest = strategy_->LatestVersion();
@@ -60,6 +77,19 @@ void VersionChecker::Check(std::int64_t now) {
     last_checked_ = now;
     cached_ = value;
     if (!parsed) throw std::runtime_error("Invalid release version.");
+    PublishRelease();
+}
+
+void VersionChecker::PublishRelease() {
+    const auto state = Snapshot();
+    if (!state.latest) return;
+    const auto version = Parse(*state.latest);
+    Models::VersionEventNew event;
+    event.release.version.major = static_cast<std::int32_t>((*version)[0]);
+    event.release.version.minor = static_cast<std::int32_t>((*version)[1]);
+    event.release.version.patch = static_cast<std::int32_t>((*version)[2]);
+    event.release.url = state.download_url;
+    Emit(event);
 }
 
 std::vector<Passepartout::Models::ChangelogEntry> VersionChecker::FetchChangelog(const std::string &build) {
