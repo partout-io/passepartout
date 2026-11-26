@@ -3,12 +3,16 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "WindowsIssueHandoff.h"
+#include "../../business/extensions/ModelsExtensions.h"
+#include "SettingsResources.h"
+#include <random>
+#include <stdexcept>
 #include <windows.h>
 #include <mapi.h>
 #include <winrt/base.h>
 
 namespace Passepartout {
-bool Windows::Issue::Review(const IssueReport &report) {
+bool Windows::Issue::Review(const std::string &recipient_address, const Models::Issue &issue) {
     const auto module = LoadLibraryExW(L"mapi32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if (!module) return false;
     struct Library {
@@ -19,14 +23,40 @@ bool Windows::Issue::Review(const IssueReport &report) {
     } library{module};
     const auto send = reinterpret_cast<LPMAPISENDMAILW>(GetProcAddress(module, "MAPISendMailW"));
     if (!send) return false;
-    auto recipient = std::wstring(winrt::to_hstring("SMTP:" + report.recipient));
-    auto subject = std::wstring(winrt::to_hstring(report.subject));
-    auto body = std::wstring(winrt::to_hstring(report.body));
+    std::random_device random;
+    std::filesystem::path directory;
+    for (int attempt = 0; attempt < 20; ++attempt) {
+        auto candidate = std::filesystem::temp_directory_path() /
+            ("passepartout-report-" + std::to_string(random()) + "-" + std::to_string(random()));
+        if (std::filesystem::create_directory(candidate)) {
+            directory = std::move(candidate);
+            break;
+        }
+    }
+    if (directory.empty()) throw std::runtime_error("Unable to prepare issue report.");
+    struct Cleanup {
+        std::filesystem::path directory;
+        ~Cleanup() {
+            std::error_code ignored;
+            std::filesystem::remove_all(directory, ignored);
+        }
+    } cleanup{directory};
+    auto recipient = std::wstring(winrt::to_hstring("SMTP:" + recipient_address));
+    auto subject = std::wstring(winrt::to_hstring(issue.appLine.value_or("Passepartout")));
+    auto body = std::wstring(winrt::to_hstring(Issues::Body(issue, IssueTemplateResource)));
     MapiRecipDescW address{};
     address.ulRecipClass = MAPI_TO;
     address.lpszAddress = recipient.data();
     std::vector<std::wstring> paths;
-    for (const auto &path : report.attachments) paths.push_back(path.wstring());
+    for (const auto &attachment : issue.attachments) {
+        const auto filename = Paths::FromUtf8(attachment.filename);
+        if (filename.empty() || filename.has_parent_path() || filename == "." || filename == "..") {
+            throw std::invalid_argument("Invalid issue attachment filename.");
+        }
+        const auto path = directory / filename;
+        AtomicFile::Write(path, attachment.content);
+        paths.push_back(path.wstring());
+    }
     std::vector<MapiFileDescW> files;
     for (auto &path : paths) {
         MapiFileDescW file{};

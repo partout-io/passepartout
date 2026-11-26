@@ -3,24 +3,16 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include <filesystem>
+#include "Issue.h"
 #include <functional>
 #include <string>
-#include <vector>
 
 namespace Passepartout {
-struct IssueReport {
-    std::string recipient;
-    std::string subject;
-    std::string body;
-    std::vector<std::filesystem::path> attachments;
-};
-
 class IssueReporter {
 public:
-    using Handoff = std::function<bool(const IssueReport &)>;
+    using Handoff = std::function<bool(const std::string &, const Models::Issue &)>;
     IssueReporter(std::string recipient, std::string version, Handoff handoff);
-    // The native handler must present a draft; attachments live through its return.
+    // The native handler must present a draft and own temporary attachment files.
     bool Report(const std::string &comment, const std::string &runtime_log);
 private:
     std::string recipient_;

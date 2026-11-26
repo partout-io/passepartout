@@ -62,9 +62,9 @@ std::unique_ptr<Passepartout::HttpClient> MakeHttp(const Passepartout::Models::A
     return std::make_unique<OfflineHttpClient>();
 }
 
-bool ReviewIssue(const Passepartout::IssueReport &report) {
+bool ReviewIssue(const std::string &recipient, const Passepartout::Models::Issue &issue) {
 #ifdef _WIN32
-    return Passepartout::Windows::Issue::Review(report);
+    return Passepartout::Windows::Issue::Review(recipient, issue);
 #else
     return false;
 #endif

@@ -5,7 +5,6 @@
 #include "IssueReporter.h"
 #include "../business/extensions/ModelsExtensions.h"
 #include "SettingsResources.h"
-#include <random>
 #include <stdexcept>
 
 namespace Passepartout {
@@ -14,37 +13,16 @@ IssueReporter::IssueReporter(std::string recipient, std::string version, Handoff
 
 bool IssueReporter::Report(const std::string &comment, const std::string &runtime_log) {
     if (comment.size() > 64 * 1024) throw std::invalid_argument("The comment is too long.");
-    std::random_device random;
-    std::filesystem::path directory;
-    for (int attempt = 0; attempt < 20; ++attempt) {
-        auto candidate = std::filesystem::temp_directory_path() /
-            ("passepartout-report-" + std::to_string(random()) + "-" + std::to_string(random()));
-        if (std::filesystem::create_directory(candidate)) {
-            directory = std::move(candidate);
-            break;
-        }
-    }
-    if (directory.empty()) throw std::runtime_error("Unable to prepare issue report.");
-    struct Cleanup {
-        std::filesystem::path directory;
-        ~Cleanup() {
-            std::error_code ignored;
-            std::filesystem::remove_all(directory, ignored);
-        }
-    } cleanup{directory};
-    const auto metadata = directory / "application.txt";
-    AtomicFile::Write(metadata, "Passepartout " + version_ + "\nPlatform: " + IssuePlatform + "\nCrypto: mbedTLS\n"
-        "Tunnel runtime log: unavailable in frontend process\n");
     Models::Issue issue;
     issue.comment = comment;
     issue.appLine = "Passepartout " + version_;
     issue.osLine = IssuePlatform;
-    IssueReport report{recipient_, *issue.appLine, Issues::Body(issue, IssueTemplateResource), {metadata}};
+    issue.attachments.push_back({"application.txt",
+        *issue.appLine + "\nPlatform: " + issue.osLine + "\nCrypto: mbedTLS\n"
+        "Tunnel runtime log: unavailable in frontend process\n"});
     if (!runtime_log.empty()) {
-        const auto log = directory / "runtime.txt";
-        AtomicFile::Write(log, runtime_log);
-        report.attachments.push_back(log);
+        issue.attachments.push_back({"runtime.txt", runtime_log});
     }
-    return handoff_(report);
+    return handoff_(recipient_, issue);
 }
 }

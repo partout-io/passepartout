@@ -6,6 +6,7 @@
 #include "business/managers/ConfigManager.h"
 #include "business/managers/VersionChecker.h"
 #include "observables/IssueReporter.h"
+#include "SettingsResources.h"
 #include "context/AppLogger.h"
 #include "business/extensions/ModelsExtensions.h"
 #include "observables/UserPreferencesObservable.h"
@@ -215,20 +216,21 @@ int main() {
         issue.purchasedProducts = {"premium"};
         assert(Issues::Body(issue, "$comment|$appLine|$osLine|$deviceLine|$purchasedProducts|$unknown")
             == "café 日本語 $osLine|unknown|Test OS|unknown|[\"premium\"]|$unknown");
-        std::filesystem::path attachment;
-        IssueReporter reporter("test@example.invalid", "0.1.0.7", [&](const IssueReport &report) {
-            assert(report.body.find("Hi,\n\nUnicode: café 日本語 $osLine") == 0);
-            assert(report.body.find("App: Passepartout 0.1.0.7\nOS: ") != std::string::npos);
-            assert(report.body.find("Device: unknown\nPurchased: []") != std::string::npos);
-            assert(report.body.find("$appLine") == std::string::npos);
+        IssueReporter reporter("test@example.invalid", "0.1.0.7", [&](const std::string &recipient, const Models::Issue &report) {
+            assert(recipient == "test@example.invalid");
+            const auto body = Issues::Body(report, IssueTemplateResource);
+            assert(body.find("Hi,\n\nUnicode: café 日本語 $osLine") == 0);
+            assert(body.find("App: Passepartout 0.1.0.7\nOS: ") != std::string::npos);
+            assert(body.find("Device: unknown\nPurchased: []") != std::string::npos);
+            assert(body.find("$appLine") == std::string::npos);
             assert(report.attachments.size() == 2);
-            attachment = report.attachments.back();
-            assert(Profiles::ReadConfiguration(attachment).find("public marker") != std::string::npos);
-            assert(Profiles::ReadConfiguration(attachment).find("private marker") == std::string::npos);
-            return false; // No mail provider; preparation still cleans up.
+            const auto &attachment = report.attachments.back();
+            assert(attachment.filename == "runtime.txt");
+            assert(attachment.content.find("public marker") != std::string::npos);
+            assert(attachment.content.find("private marker") == std::string::npos);
+            return false; // No mail provider.
         });
         assert(!reporter.Report("Unicode: café 日本語 $osLine", AppLogger::RuntimeLog(false)));
-        assert(!std::filesystem::exists(attachment.parent_path()));
     } catch (const std::exception &error) {
         std::cerr << error.what() << std::endl;
         std::filesystem::remove_all(directory);
