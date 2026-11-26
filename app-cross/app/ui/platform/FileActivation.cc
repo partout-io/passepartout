@@ -44,7 +44,11 @@ auto Await(const Operation &operation, const std::atomic_bool &canceled) {
 class BrokeredFiles final : public Passepartout::ConfigurationFiles {
 public:
     explicit BrokeredFiles(std::vector<winrt::Windows::Storage::StorageFile> files, std::size_t failures)
-        : Passepartout::ConfigurationFiles({}, failures), files_(std::move(files)) {}
+        : files_(std::move(files)), failures_(failures) {}
+
+    std::size_t SelectionFailures() const override {
+        return failures_;
+    }
 
     std::size_t Count() const override {
         return files_.size();
@@ -69,6 +73,7 @@ public:
     }
 private:
     const std::vector<winrt::Windows::Storage::StorageFile> files_;
+    const std::size_t failures_;
     mutable std::atomic_bool canceled_{false};
 };
 bool IsSameExecutable(HWND window, DWORD &pid) {

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "../business/models/FileConfigurationFiles.h"
 #include "PassepartoutApp.h"
 #include "../context/AppLogger.h"
 #include "app/MainView.h"
@@ -47,9 +48,9 @@ bool PassepartoutApp::OnInit() {
         activation_files = FileActivation::ReadFiles();
     } catch (...) {
         startup_logger.Write(LogLevel::error, LogCategory::core, "Unable to read activation files");
-        activation_files = std::make_shared<ConfigurationFiles>(std::vector<std::filesystem::path>{}, 1);
+        activation_files = std::make_shared<FileConfigurationFiles>(std::vector<std::filesystem::path>{}, 1);
     }
-    if (!activation_files) activation_files = std::make_shared<ConfigurationFiles>(files);
+    if (!activation_files) activation_files = std::make_shared<FileConfigurationFiles>(files);
 
     // Forward to the existing instance, or claim this launch as the primary instance.
     const auto data_root = Paths::FromString(wxStandardPaths::Get().GetUserLocalDataDir());

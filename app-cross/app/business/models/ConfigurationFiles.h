@@ -16,21 +16,20 @@ struct ConfigurationSource {
 // A selected batch can own temporary files. Its lifetime extends through the
 // queued import, including failures; ordinary command-line files need no cleanup.
 struct ConfigurationFiles {
-    explicit ConfigurationFiles(std::vector<std::filesystem::path> values, std::size_t failures = 0)
-        : paths(std::move(values)), selection_failures(failures) {}
-
     virtual ~ConfigurationFiles() = default;
-    virtual std::size_t Count() const;
-    virtual ConfigurationSource Read(std::size_t index) const;
-    virtual void Cancel() const noexcept {}
-    const std::vector<std::filesystem::path> paths;
-    const std::size_t selection_failures;
+    virtual std::size_t Count() const = 0;
+    virtual std::size_t SelectionFailures() const = 0;
+    virtual ConfigurationSource Read(std::size_t index) const = 0;
+    virtual void Cancel() const noexcept = 0;
 };
 struct MemoryConfigurationFiles final : ConfigurationFiles {
     explicit MemoryConfigurationFiles(std::vector<ConfigurationSource> values, std::size_t failures = 0);
     std::size_t Count() const override;
+    std::size_t SelectionFailures() const override;
+    void Cancel() const noexcept override;
     ConfigurationSource Read(std::size_t index) const override;
 private:
     const std::vector<ConfigurationSource> sources_;
+    const std::size_t failures_;
 };
 }

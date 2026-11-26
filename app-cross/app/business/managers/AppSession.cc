@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "../models/FileConfigurationFiles.h"
 #include "AppSession.h"
 #include <stdexcept>
 #include <algorithm>
@@ -329,11 +330,11 @@ bool AppSession::SaveProfile(Profile original, Profile draft, std::function<void
 }
 
 void AppSession::Import(std::vector<std::filesystem::path> paths) {
-    ImportFiles(std::make_shared<ConfigurationFiles>(std::move(paths)));
+    ImportFiles(std::make_shared<FileConfigurationFiles>(std::move(paths)));
 }
 
 void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
-    if (!files || (!files->Count() && !files->selection_failures)) return;
+    if (!files || (!files->Count() && !files->SelectionFailures())) return;
     Post([this, files = std::move(files)] {
         {
             std::lock_guard lock(mutex_);
@@ -348,7 +349,7 @@ void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
             }
         } release{*this};
         // Process every supplied activation, even if one configuration fails.
-        std::size_t failures = files->selection_failures;
+        std::size_t failures = files->SelectionFailures();
         for (std::size_t index = 0; index < files->Count(); ++index) {
             {
                 std::lock_guard lock(mutex_);

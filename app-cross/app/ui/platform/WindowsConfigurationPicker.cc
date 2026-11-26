@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "WindowsConfigurationPicker.h"
+#include "../../business/models/FileConfigurationFiles.h"
 #include "../extensions/Models+UI.h"
 #include <shobjidl.h>
 #include <roapi.h>
@@ -27,8 +28,25 @@ struct RequestDirectory {
     const std::filesystem::path path;
 };
 struct StagedFiles final : Passepartout::ConfigurationFiles {
-    StagedFiles(Passepartout::ConfigurationFiles files, std::shared_ptr<RequestDirectory> owner)
-        : Passepartout::ConfigurationFiles(std::move(files.paths), files.selection_failures), directory(std::move(owner)) {}
+    StagedFiles(Passepartout::FileConfigurationFiles files, std::shared_ptr<RequestDirectory> owner)
+        : files_(std::move(files)), directory(std::move(owner)) {}
+
+    std::size_t Count() const override {
+        return files_.Count();
+    }
+
+    std::size_t SelectionFailures() const override {
+        return files_.SelectionFailures();
+    }
+
+    Passepartout::ConfigurationSource Read(std::size_t index) const override {
+        return files_.Read(index);
+    }
+
+    void Cancel() const noexcept override {
+        files_.Cancel();
+    }
+    const Passepartout::FileConfigurationFiles files_;
     const std::shared_ptr<RequestDirectory> directory;
 };
 struct SelectionState {

@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Davide De Rosa
 // SPDX-License-Identifier: GPL-3.0
 
+#include "../../business/models/FileConfigurationFiles.h"
 #include "../extensions/Models+UI.h"
 #ifdef _WIN32
 #include "WindowsConfigurationPicker.h"
@@ -26,7 +27,7 @@ std::unique_ptr<ConfigurationPicker> Configuration::MakePicker(wxWindow &owner) 
         dialog.GetPaths(selected);
         std::vector<std::filesystem::path> paths;
         for (const auto &path : selected) paths.push_back(Paths::FromString(path));
-        return {std::make_shared<ConfigurationFiles>(std::move(paths)), false};
+        return {std::make_shared<FileConfigurationFiles>(std::move(paths)), false};
     });
 }
 }

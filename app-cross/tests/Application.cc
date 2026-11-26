@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "../app/business/models/FileConfigurationFiles.h"
 #include "business/managers/ProfileManager.h"
 #include "business/strategy/FileProfileRepository.h"
 #include "business/extensions/Models+Business.h"
@@ -213,7 +214,15 @@ private:
 class CancelableFiles final : public Passepartout::ConfigurationFiles {
 public:
     explicit CancelableFiles(std::shared_ptr<Cancellation> cancellation)
-        : Passepartout::ConfigurationFiles({"unused"}), cancellation_(std::move(cancellation)) {}
+        : cancellation_(std::move(cancellation)) {}
+
+    std::size_t Count() const override {
+        return 1;
+    }
+
+    std::size_t SelectionFailures() const override {
+        return 0;
+    }
 
     Passepartout::ConfigurationSource Read(std::size_t) const override {
         cancellation_->Block();
@@ -402,13 +411,13 @@ void TestModalPicker() {
         assert(!active->Poll());
         if (cancel) active->Cancel();
         if (dismiss) return {};
-        return {std::make_shared<Passepartout::ConfigurationFiles>(
+        return {std::make_shared<Passepartout::FileConfigurationFiles>(
             std::vector<std::filesystem::path>{"selected.conf"}), false};
     });
     active = &picker;
     picker.Start();
     auto result = picker.Poll();
-    assert(result && result->files && result->files->paths.front() == "selected.conf");
+    assert(result && result->files && result->files->Count() == 1);
     assert(!picker.Poll());
     dismiss = true;
     picker.Start();
@@ -439,14 +448,14 @@ void TestSelectionFailures(const std::filesystem::path &root) {
         throw std::runtime_error("Native staging failed");
     });
     assert(visited.size() == 5);
-    assert(selected.paths.size() == 2 && selected.selection_failures == 3);
+    assert(selected.paths.size() == 2 && selected.SelectionFailures() == 3);
     Passepartout::AppSession session(std::make_unique<Passepartout::FileProfileRepository>(root / "selection-store"),
         [](const std::string &text, const std::string &) {
             if (text != "valid") throw std::runtime_error("Invalid configuration");
             return Example("selected-valid");
         }, std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
     Wait(session);
-    session.ImportFiles(std::make_shared<Passepartout::ConfigurationFiles>(std::move(selected)));
+    session.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(selected)));
     Wait(session);
     auto snapshot = session.Snapshot();
     assert(snapshot.profiles.size() == 1 && snapshot.profiles.front().id == "selected-valid");
@@ -457,7 +466,7 @@ void TestSelectionFailures(const std::filesystem::path &root) {
     auto failed = Passepartout::Configuration::CollectFiles(2, [](std::size_t) -> std::filesystem::path {
         throw std::runtime_error("Unreadable file");
     });
-    session.ImportFiles(std::make_shared<Passepartout::ConfigurationFiles>(std::move(failed)));
+    session.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(failed)));
     Wait(session);
     assert(session.Snapshot().error.find("2 configuration(s)") != std::string::npos);
     assert(session.Snapshot().profiles.size() == 1);
@@ -466,7 +475,7 @@ void TestSelectionFailures(const std::filesystem::path &root) {
         return {};
     });
     const auto revision = session.Snapshot().revision;
-    session.ImportFiles(std::make_shared<Passepartout::ConfigurationFiles>(std::move(empty)));
+    session.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(empty)));
     assert(session.Snapshot().revision == revision);
 }
 
@@ -477,13 +486,13 @@ void TestLargeSelection(const std::filesystem::path &root) {
         std::ofstream(path) << "batch-" << index;
         return path;
     });
-    assert(selected.paths.size() == count && selected.selection_failures == 0);
+    assert(selected.paths.size() == count && selected.SelectionFailures() == 0);
     Passepartout::AppSession session(std::make_unique<Passepartout::FileProfileRepository>(root / "large-selection-store"),
         [](const std::string &text, const std::string &) {
             return Example(text);
         }, std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
     Wait(session);
-    session.ImportFiles(std::make_shared<Passepartout::ConfigurationFiles>(std::move(selected)));
+    session.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(selected)));
     Wait(session);
     const auto snapshot = session.Snapshot();
     assert(snapshot.error.empty());
@@ -500,14 +509,31 @@ void TestLargeSelection(const std::filesystem::path &root) {
 class TemporaryConfigurationFiles final : public Passepartout::ConfigurationFiles {
 public:
     TemporaryConfigurationFiles(const std::filesystem::path &path, std::shared_ptr<std::promise<void>> destroyed)
-        : Passepartout::ConfigurationFiles({path}), destroyed_(std::move(destroyed)) {}
+        : files_({path}), destroyed_(std::move(destroyed)) {}
 
     ~TemporaryConfigurationFiles() override {
         std::error_code error;
-        std::filesystem::remove(paths.front(), error);
+        std::filesystem::remove(files_.paths.front(), error);
         destroyed_->set_value();
     }
+
+    std::size_t Count() const override {
+        return files_.Count();
+    }
+
+    std::size_t SelectionFailures() const override {
+        return files_.SelectionFailures();
+    }
+
+    Passepartout::ConfigurationSource Read(std::size_t index) const override {
+        return files_.Read(index);
+    }
+
+    void Cancel() const noexcept override {
+        files_.Cancel();
+    }
 private:
+    Passepartout::FileConfigurationFiles files_;
     std::shared_ptr<std::promise<void>> destroyed_;
 };
 void TestSelectedFiles(const std::filesystem::path &root, bool fail) {
@@ -545,7 +571,7 @@ void TestSelectedFiles(const std::filesystem::path &root, bool fail) {
     observable.ClearError();
     const auto revision = observable.Snapshot().revision;
     observable.ImportFiles(nullptr);
-    observable.ImportFiles(std::make_shared<Passepartout::ConfigurationFiles>(std::vector<std::filesystem::path>{}));
+    observable.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::vector<std::filesystem::path>{}));
     assert(observable.Snapshot().revision == revision);
     observable.ImportFailed();
     Wait(session);

@@ -59,6 +59,7 @@ set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/VersionChecker.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/models/AppSnapshot.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/models/ConfigurationFiles.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/models/FileConfigurationFiles.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/models/InteractiveLogin.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/platform/FileActivationInbox.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FakeTunnelStrategy.cc"

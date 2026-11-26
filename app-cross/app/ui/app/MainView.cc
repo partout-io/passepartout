@@ -244,7 +244,7 @@ void MainView::Quit() {
 }
 
 void MainView::Activate(std::shared_ptr<const ConfigurationFiles> files) {
-    if (files && (files->Count() || files->selection_failures)) activations_.push_back(std::move(files));
+    if (files && (files->Count() || files->SelectionFailures())) activations_.push_back(std::move(files));
     if (IsIconized()) Iconize(false);
     Raise();
 }
