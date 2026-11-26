@@ -6,12 +6,12 @@
 
 namespace Passepartout::Tests {
 ObservableFixture::ObservableFixture(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
-                                     std::unique_ptr<Partout::Tunnel> backend,
-                                     std::function<void(const Models::AppPreferences &)> apply_preferences
+                                     std::unique_ptr<Partout::Tunnel> backend
 ) : profiles(executor, std::make_unique<ProfileManager>(std::move(repository), std::move(importer))),
-    tunnel(executor, std::move(backend), std::move(apply_preferences)) {
-    profiles.OnChange([this](std::vector<Profile> values, bool loaded) {
-        tunnel.SetProfiles(std::move(values), loaded);
+    tunnel(executor, std::move(backend)) {
+    tunnel.Refresh();
+    profiles.OnRemove([this](const std::string &id) {
+        tunnel.Remove(id);
     });
     profiles.Load();
 }

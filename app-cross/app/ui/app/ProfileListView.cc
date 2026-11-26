@@ -46,11 +46,11 @@ wxString TransferText(const Passepartout::TunnelObservable::State &state, const 
 
 using Passepartout::ProfileListView;
 
-ProfileListView::ProfileListView(wxWindow *parent, TunnelObservable &tunnel,
+ProfileListView::ProfileListView(wxWindow *parent, ProfileObservable &profiles, TunnelObservable &tunnel,
     std::function<void()> selection_changed,
     std::function<void(std::vector<std::string>)> remove,
     std::function<void(std::string)> edit)
-    : wxPanel(parent), tunnel_(tunnel), selection_changed_(std::move(selection_changed)),
+    : wxPanel(parent), profiles_observable_(profiles), tunnel_(tunnel), selection_changed_(std::move(selection_changed)),
       remove_(std::move(remove)), edit_(std::move(edit)) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
     search_ = new wxSearchCtrl(this, wxID_ANY);
@@ -169,7 +169,8 @@ void ProfileListView::ToggleProfile(wxDataViewEvent &event) {
     if (picking_ || rendering_ || event.GetColumn() != ProfileListView::ToggleColumn) return;
     const auto row = list_->ItemToRow(event.GetItem());
     if (row < 0 || static_cast<std::size_t>(row) >= visible_ids_.size()) return;
-    tunnel_.SetEnabled(visible_ids_[row], list_->GetToggleValue(row, ProfileListView::ToggleColumn));
+    const auto profile = profiles_observable_.FindProfile(visible_ids_[row]);
+    if (profile) tunnel_.SetEnabled(*profile, list_->GetToggleValue(row, ProfileListView::ToggleColumn));
     // Restore observed state immediately; the next snapshot supplies completion
     // or failure instead of displaying an optimistic connection as successful.
     tunnels_ = tunnel_.Snapshot();

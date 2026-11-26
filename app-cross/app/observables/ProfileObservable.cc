@@ -13,10 +13,9 @@ namespace Passepartout {
 ProfileObservable::ProfileObservable(Worker &executor, std::unique_ptr<ProfileManager> manager)
     : executor_(executor), manager_(std::move(manager)) {}
 
-void ProfileObservable::OnChange(ChangeHandler handler) {
+void ProfileObservable::OnRemove(RemovalHandler handler) {
     executor_.Dispatch([this, handler = std::move(handler)] {
-        on_change_ = handler;
-        Publish();
+        on_remove_ = handler;
     }, false);
 }
 
@@ -90,15 +89,11 @@ void ProfileObservable::Publish() {
         for (const auto &profile : profiles) {
             headers.push_back(Profiles::Header(profile));
         }
-        const auto handler = on_change_;
-        bool loaded;
         {
             std::lock_guard lock(mutex_);
             snapshot_.profiles = std::move(headers);
             published_profiles_ = profiles;
-            loaded = snapshot_.loaded;
         }
-        if (handler) handler(profiles, loaded);
     } catch (...) {
         std::lock_guard lock(mutex_);
         snapshot_.operation_error = "Unable to publish saved profiles.";
@@ -186,6 +181,7 @@ void ProfileObservable::Remove(std::vector<std::string> ids) {
         for (const auto &id : unique_ids) {
             AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Remove profile");
             manager_->Remove(id);
+            if (on_remove_) on_remove_(id);
         }
     });
 }

@@ -140,13 +140,13 @@ int main() {
         assert(repository.Fetch().front() == original && backend->saves == 0);
         auto &profiles = session.profiles;
         auto &tunnel = session.tunnel;
-        tunnel.Connect(original.id);
+        tunnel.Connect(original);
         auto canceled_login = tunnel.TakeInteractiveLogin();
         assert(canceled_login && !tunnel.TakeInteractiveLogin());
         assert(!backend->connection_credentials);
         assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
         canceled_login.reset();
-        tunnel.Connect(original.id);
+        tunnel.Connect(original);
         auto submitted_login = tunnel.TakeInteractiveLogin();
         assert(submitted_login);
         submitted_login->credentials.password = "connection-only-secret";
@@ -165,19 +165,17 @@ int main() {
         Wait(session);
         assert(pending->Snapshot().saved && !pending->Snapshot().operation_failed);
         assert(repository.Fetch().front().name == "Retry name");
-        assert(session.tunnel.Snapshot().synchronization_error.empty());
         assert(ProfileObservable::CanSave(session.profiles.Snapshot(), original.id));
         backend->connection_credentials.reset();
-        session.tunnel.ConnectProfile(original.id);
+        session.tunnel.ConnectProfile(*profiles.FindProfile(original.id));
         Wait(session);
         assert(!session.tunnel.Snapshot().operation_error.empty());
         assert(!backend->connection_credentials);
         assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
         session.ClearOperationErrors();
         backend->rejects = false;
-        session.tunnel.ConnectProfile(original.id);
+        session.tunnel.ConnectProfile(*profiles.FindProfile(original.id));
         Wait(session);
-        assert(session.tunnel.Snapshot().synchronization_error.empty());
         assert(pending->Snapshot().saved);
         assert(repository.Fetch().front().name == "Retry name");
         assert(backend->saved.name == "Retry name");
@@ -203,10 +201,10 @@ int main() {
         session.tunnel.Refresh();
         Wait(session);
         assert(backend->saved.name == "Retry name");
-        session.tunnel.ConnectProfile(original.id);
+        session.tunnel.ConnectProfile(*profiles.FindProfile(original.id));
         Wait(session);
         assert(backend->saved.name == "Saved while active");
-        // Reload removes obsolete registrations without installing unused profiles.
+        // Reload changes stored profiles only; deletion explicitly removes native registrations.
         auto imported = original;
         imported.id = "saved-import";
         repository.Save(imported);
@@ -216,11 +214,12 @@ int main() {
         session.profiles.Load();
         Wait(session);
         assert(repository.Fetch().size() == 2);
-        assert(backend->fake.Fetch().size() == 1);
+        assert(backend->fake.Fetch().size() == 2);
         session.profiles.Remove({original.id, imported.id});
         Wait(session);
         assert(repository.Fetch().empty());
-        assert(backend->fake.Fetch().empty());
+        assert(backend->fake.Fetch().size() == 1);
+        assert(backend->fake.Fetch().front().id == "untracked");
     } catch (const std::exception &error) {
         std::cerr << error.what() << std::endl;
         std::filesystem::remove_all(root);

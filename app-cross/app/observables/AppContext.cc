@@ -104,7 +104,7 @@ AppContext::AppContext(
             ImportProfile
         )
     ),
-    tunnel(executor_, MakeTunnel(demo, cross_constants), ApplyLoggingPreferences),
+    tunnel(executor_, MakeTunnel(demo, cross_constants)),
     preferences(
         MakePreferencesRepository(Profiles::Directory(data_root, constants), cross_constants),
         [this] {
@@ -153,12 +153,13 @@ AppContext::AppContext(
         return ReviewIssue(recipient, issue);
     }) {
     try {
-        profiles.OnChange([this](std::vector<Profile> values, bool loaded) {
-            tunnel.SetProfiles(std::move(values), loaded);
+        tunnel.Refresh();
+        profiles.OnRemove([this](const std::string &id) {
+            tunnel.Remove(id);
         });
         profiles.Load();
         preferences.OnChange([this](const auto &value) {
-            tunnel.ApplyPreferences(value);
+            executor_.Post([value] { ApplyLoggingPreferences(value); });
         });
         config.Refresh();
         AppLog::Write(

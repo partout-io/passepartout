@@ -36,7 +36,7 @@ MainView::MainView(AppContext &context, bool demo,
     Theme::Apply(panel);
     const auto gap = Theme::Spacing(panel);
     auto *layout = new wxBoxSizer(wxVERTICAL);
-    collection_ = new ProfileListView(panel, context.tunnel,
+    collection_ = new ProfileListView(panel, context.profiles, context.tunnel,
         [this] {
             UpdateActions();
         },
@@ -142,7 +142,7 @@ MainView::~MainView() {
 }
 
 void MainView::Render() {
-    const bool tunnel_unavailable = !tunnels_.observation_error.empty() || !tunnels_.synchronization_error.empty();
+    const bool tunnel_unavailable = !tunnels_.observation_error.empty();
     message_->SetLabel(Localized(tunnel_unavailable ? StringKey::ErrorsAppTunnel : StringKey::ViewsAppFoldersNoProfiles));
     message_->Show(tunnel_unavailable || (profiles_.loaded && profiles_.profiles.empty()));
     const bool activity = activity_.foreground || tunnels_.HasActivity();

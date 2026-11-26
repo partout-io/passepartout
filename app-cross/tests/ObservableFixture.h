@@ -11,8 +11,7 @@ namespace Passepartout::Tests {
 class ObservableFixture final {
 public:
     ObservableFixture(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
-                      std::unique_ptr<Partout::Tunnel> tunnel,
-                      std::function<void(const Models::AppPreferences &)> apply_preferences = {}
+                      std::unique_ptr<Partout::Tunnel> tunnel
     );
     ~ObservableFixture();
     void ClearOperationErrors();
