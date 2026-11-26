@@ -7,34 +7,18 @@
 #include "../context/AppLog.h"
 #include "../business/strategy/GitHubReleaseStrategy.h"
 #include "../business/strategy/GitHubConfigStrategy.h"
-#include "../business/strategy/OfflineHttpClient.h"
 #include "../business/strategy/PartoutWireGuardKeyGenerator.h"
 #include "../context/ContextExtensions.h"
 #include "../business/managers/ProfileManager.h"
 #include "../business/strategy/FileProfileRepository.h"
-#include "../business/strategy/FakeTunnelStrategy.h"
-#include "../business/strategy/FilePreferencesRepository.h"
-#include "../business/platform/WindowsHttpClient.h"
 #include "../ui/platform/WindowsIssueHandoff.h"
 #include "SettingsResources.h"
 #include "../business/extensions/Models+Business.h"
 #include "partout.h"
-#ifdef _WIN32
-#include <partout/winrt/WinRTTunnelStrategy.h>
-#include "../business/platform/WindowsPreferencesRepository.h"
-#endif
 #include <cstdlib>
 #include <stdexcept>
 
 namespace {
-std::unique_ptr<Passepartout::HttpClient> MakeHttp(const Passepartout::Models::AppConstants &constants) {
-#ifdef _WIN32
-    return Passepartout::Windows::MakeHttpClient(Passepartout::Constants::HTTPTimeout(constants.url));
-#else
-    // FIXME: ###, Implement on .unixLike
-    return std::make_unique<Passepartout::OfflineHttpClient>();
-#endif
-}
 
 bool ReviewIssue(const std::string &recipient, const Passepartout::Models::Issue &issue) {
 #ifdef _WIN32
@@ -52,28 +36,7 @@ Passepartout::Profile ImportProfile(const std::string &text, const std::string &
     return Passepartout::Imports::DecodeResult(json.get());
 }
 
-std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const Passepartout::CrossConstantsType &constants) {
-    if (demo) return std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>());
-#ifdef _WIN32
-    return std::make_unique<Partout::Tunnel>(
-        std::make_unique<Partout::WinRTTunnelStrategy>(constants.tunnel.server_uri)
-    );
-#else
-    // FIXME: ###, Implement on .unixLike
-    return std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>());
-#endif
-}
 
-std::unique_ptr<Passepartout::PreferencesRepository> MakePreferencesRepository(
-    const std::filesystem::path &directory,
-    const Passepartout::CrossConstantsType &constants
-) {
-#ifdef _WIN32
-    return std::make_unique<Passepartout::Windows::PreferencesRepository>(constants.storage.preferences_key);
-#else
-    return std::make_unique<Passepartout::FilePreferencesRepository>(directory / constants.storage.preferences_file);
-#endif
-}
 
 }
 
@@ -110,7 +73,7 @@ AppContext::AppContext(
     config(
         std::make_unique<ConfigManager>(
             std::make_unique<GitHubConfigStrategy>(
-                MakeHttp(constants),
+                MakeHttpClient(constants),
                 Constants::ConfigURL(constants.websites),
                 Constants::ConfigTTL(constants.websites)
             ),
@@ -122,7 +85,7 @@ AppContext::AppContext(
         std::make_unique<VersionChecker>(
             cross_constants.app.version_number,
             std::make_unique<GitHubReleaseStrategy>(
-                MakeHttp(constants),
+                MakeHttpClient(constants),
                 constants.github.latestReleaseURL,
                 [github = constants.github](const std::string &build) {
                     return Constants::ChangelogURL(github, build);
@@ -137,7 +100,7 @@ AppContext::AppContext(
             }
         )
     ),
-    credits(CreditsResource, MakeHttp(constants), ApplicationPlatform()),
+    credits(CreditsResource, MakeHttpClient(constants), ApplicationPlatform()),
     diagnostics([recipient = Constants::BetaEmail(constants.emails)](const Models::Issue &issue) {
         return ReviewIssue(recipient, issue);
     }) {

@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../../observables/AppContext.h"
-#include "../extensions/Models+UI.h"
+#include "../platform/ConfigurationPicker.h"
 #include "../theme/Theme.h"
 #include "../platform/MainFrame.h"
 #include "ProfileListView.h"

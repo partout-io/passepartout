@@ -49,16 +49,6 @@ struct StagedFiles final : Passepartout::ConfigurationFiles {
     const Passepartout::FileConfigurationFiles files_;
     const std::shared_ptr<RequestDirectory> directory;
 };
-struct SelectionState {
-    std::mutex mutex;
-    bool cancelled = false;
-    std::optional<Passepartout::ConfigurationPickerResult> result;
-
-    void Finish(Passepartout::ConfigurationPickerResult value) {
-        std::lock_guard lock(mutex);
-        if (!cancelled) result = std::move(value);
-    }
-};
 
 std::wstring NewRequestId() {
     GUID identifier{};
@@ -90,88 +80,85 @@ Passepartout::ConfigurationPickerResult Collect(const winrt::Windows::Foundation
     return {std::make_shared<StagedFiles>(std::move(selected), directory), false};
 }
 
-class ConfigurationPicker final : public Passepartout::ConfigurationPicker {
-public:
-    explicit ConfigurationPicker(HWND owner) : owner_(owner) {}
-
-    ~ConfigurationPicker() override {
-        Cancel();
-    }
-
-    void Start() override {
-        Cancel();
-        state_ = std::make_shared<SelectionState>();
-        const auto state = state_;
-        try {
-            // Balance WinRT initialization on the owner's STA thread.
-            winrt::check_hresult(RoInitialize(RO_INIT_SINGLETHREADED));
-            struct Apartment {
-                ~Apartment() {
-                    RoUninitialize();
-                }
-            } apartment;
-            const auto request = NewRequestId();
-            const auto temporary = winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().Path();
-            auto directory = std::make_shared<RequestDirectory>(
-                std::filesystem::path(temporary.c_str()) / ImportFolder / request);
-            // Use the owner's native window without depending on its UI toolkit.
-            winrt::Windows::Storage::Pickers::FileOpenPicker picker;
-            winrt::check_hresult(picker.as<IInitializeWithWindow>()->Initialize(owner_));
-            picker.FileTypeFilter().Append(L"*");
-            operation_ = picker.PickMultipleFilesAsync();
-            operation_.Completed([state, directory, request](const auto &completed, auto) {
-                // Completion may run on the STA. Keep filesystem I/O off the UI
-                // thread and never capture the picker or its owner in callbacks.
-                try {
-                    winrt::Windows::System::Threading::ThreadPool::RunAsync([state, directory, request, completed](auto) {
-                        try {
-                            state->Finish(Collect(completed.GetResults(), request, directory));
-                        } catch (...) {
-                            state->Finish({nullptr, true});
-                        }
-                    });
-                } catch (...) {
-                    state->Finish({nullptr, true});
-                }
-            });
-        } catch (...) {
-            state->Finish({nullptr, true});
-        }
-    }
-
-    std::optional<Passepartout::ConfigurationPickerResult> Poll() override {
-        if (!state_) return std::nullopt;
-        std::optional<Passepartout::ConfigurationPickerResult> result;
-        {
-            std::lock_guard lock(state_->mutex);
-            result = std::move(state_->result);
-            state_->result.reset();
-        }
-        if (result) operation_ = nullptr;
-        return result;
-    }
-
-    void Cancel() override {
-        if (state_) {
-            std::lock_guard lock(state_->mutex);
-            state_->cancelled = true;
-            state_->result.reset();
-        }
-        if (operation_) {
-            try {
-                operation_.Cancel();
-            } catch (...) {}
-            operation_ = nullptr;
-        }
-        state_.reset();
-    }
-private:
-    const HWND owner_;
-    std::shared_ptr<SelectionState> state_;
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Windows::Storage::StorageFile>> operation_{nullptr};
-};
 }
 
-std::unique_ptr<Passepartout::ConfigurationPicker> Passepartout::Windows::Configuration::MakePicker(HWND owner) {
-    return std::make_unique<::ConfigurationPicker>(owner);
+namespace Passepartout::Windows {
+void ConfigurationPicker::SelectionState::Finish(ConfigurationPickerResult value) {
+    std::lock_guard lock(mutex);
+    if (!cancelled) result = std::move(value);
+}
+
+ConfigurationPicker::ConfigurationPicker(HWND owner) : owner_(owner) {}
+
+ConfigurationPicker::~ConfigurationPicker() {
+    Cancel();
+}
+
+void ConfigurationPicker::Start() {
+    Cancel();
+    state_ = std::make_shared<SelectionState>();
+    const auto state = state_;
+    try {
+        // Balance WinRT initialization on the owner's STA thread.
+        winrt::check_hresult(RoInitialize(RO_INIT_SINGLETHREADED));
+        struct Apartment {
+            ~Apartment() {
+                RoUninitialize();
+            }
+        } apartment;
+        const auto request = NewRequestId();
+        const auto temporary = winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().Path();
+        auto directory = std::make_shared<RequestDirectory>(
+            std::filesystem::path(temporary.c_str()) / ImportFolder / request);
+        // Use the owner's native window without depending on its UI toolkit.
+        winrt::Windows::Storage::Pickers::FileOpenPicker picker;
+        winrt::check_hresult(picker.as<IInitializeWithWindow>()->Initialize(owner_));
+        picker.FileTypeFilter().Append(L"*");
+        operation_ = picker.PickMultipleFilesAsync();
+        operation_.Completed([state, directory, request](const auto &completed, auto) {
+            // Completion may run on the STA. Keep filesystem I/O off the UI
+            // thread and never capture the picker or its owner in callbacks.
+            try {
+                winrt::Windows::System::Threading::ThreadPool::RunAsync([state, directory, request, completed](auto) {
+                    try {
+                        state->Finish(Collect(completed.GetResults(), request, directory));
+                    } catch (...) {
+                        state->Finish({nullptr, true});
+                    }
+                });
+            } catch (...) {
+                state->Finish({nullptr, true});
+            }
+        });
+    } catch (...) {
+        state->Finish({nullptr, true});
+    }
+}
+
+std::optional<ConfigurationPickerResult> ConfigurationPicker::Poll() {
+    if (!state_) return std::nullopt;
+    std::optional<Passepartout::ConfigurationPickerResult> result;
+    {
+        std::lock_guard lock(state_->mutex);
+        result = std::move(state_->result);
+        state_->result.reset();
+    }
+    if (result) operation_ = nullptr;
+    return result;
+}
+
+void ConfigurationPicker::Cancel() {
+    if (state_) {
+        std::lock_guard lock(state_->mutex);
+        state_->cancelled = true;
+        state_->result.reset();
+    }
+    if (operation_) {
+        try {
+            operation_.Cancel();
+        } catch (...) {}
+        operation_ = nullptr;
+    }
+    state_.reset();
+}
 }

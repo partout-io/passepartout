@@ -4,6 +4,10 @@
 #pragma once
 #include "../../business/strategy/ConfigurationFiles.h"
 #include <optional>
+#include <functional>
+#include <memory>
+
+class wxWindow;
 
 namespace Passepartout {
 struct ConfigurationPickerResult {
@@ -20,4 +24,12 @@ public:
     virtual std::optional<ConfigurationPickerResult> Poll() = 0;
     virtual void Cancel() = 0;
 };
+}
+
+namespace Passepartout::Configuration {
+using PickerFactory = std::function<std::unique_ptr<ConfigurationPicker>(wxWindow &)>;
+}
+
+namespace Passepartout {
+std::unique_ptr<ConfigurationPicker> MakeConfigurationPicker(wxWindow &owner);
 }

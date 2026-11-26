@@ -8,6 +8,7 @@
 #include "app/MainView.h"
 #include "extensions/Models+UI.h"
 #include "platform/Presentation.h"
+#include "platform/ConfigurationPicker.h"
 #include "../strings/Strings.h"
 #include <wx/stdpaths.h>
 #include <wx/weakref.h>
@@ -70,7 +71,7 @@ bool PassepartoutApp::OnInit() {
         );
         stage = "creating main window";
         AppLog::Write(AppLog::Level::debug, AppLog::Category::core, "Create main window");
-        auto *view = new MainView(*context_, demo, Configuration::MakePicker);
+        auto *view = new MainView(*context_, demo, MakeConfigurationPicker);
         SetTopWindow(view);
 
         // Receive subsequent activations before processing the initial import.

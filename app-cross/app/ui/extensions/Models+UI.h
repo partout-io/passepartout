@@ -11,10 +11,8 @@
 #include "ProfileTransfer.h"
 #include <filesystem>
 #include <partout/models/TaggedModule.h>
-#include "../platform/ConfigurationPicker.h"
 
 class wxString;
-class wxWindow;
 
 namespace Passepartout::DataUnits {
 using NumberFormatter = std::function<std::string(double, int)>;
@@ -34,9 +32,6 @@ wxString Title(const Partout::Models::TaggedModule &module);
 }
 
 namespace Passepartout::Configuration {
-using PickerFactory = std::function<std::unique_ptr<ConfigurationPicker>(wxWindow &)>;
-std::unique_ptr<ConfigurationPicker> MakePicker(wxWindow &owner);
-
 // Keep failures from individual native file reads separate from batch failures.
 template<typename Stage>
 FileConfigurationFiles CollectFiles(std::size_t count, Stage stage) {
