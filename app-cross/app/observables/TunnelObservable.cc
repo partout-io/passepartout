@@ -106,27 +106,10 @@ void TunnelObservable::Observe() {
     ++snapshot_.revision;
 }
 
-std::string TunnelObservable::SynchronizeProfiles(const std::vector<Models::AppTunnelInfo> &tunnels, bool &changed) {
+std::string TunnelObservable::RemoveDeletedProfiles(const std::vector<Models::AppTunnelInfo> &tunnels, bool &changed) {
     if (!ProfilesLoaded()) return {};
     const auto unavailable = tunnel_->ObservationErrors();
     std::string error;
-    for (const auto &profile : profiles_) {
-        if (unavailable.count(profile.id)) continue;
-        const auto native = std::find_if(tunnels.begin(), tunnels.end(), [&](const auto &value) {
-            return value.id == profile.id;
-        });
-        // Preserve a running connection; apply saved edits after it disconnects.
-        if (native != tunnels.end() && (native->isEnabled || native->status.value != Status::disconnected)) continue;
-        const auto synchronized = synchronized_profiles_.find(profile.id);
-        if (native != tunnels.end() && synchronized != synchronized_profiles_.end() && synchronized->second == profile) continue;
-        try {
-            changed = true;
-            tunnel_->Save(profile);
-            synchronized_profiles_[profile.id] = profile;
-        } catch (...) {
-            error = "Unable to synchronize saved VPN profile " + profile.id + ".";
-        }
-    }
     // Fetch exposes only this app's registrations. Never clean up after a failed local load.
     for (const auto &native : tunnels) {
         if (unavailable.count(native.id)) continue;
@@ -137,7 +120,6 @@ std::string TunnelObservable::SynchronizeProfiles(const std::vector<Models::AppT
         try {
             changed = true;
             tunnel_->Remove(native.id);
-            synchronized_profiles_.erase(native.id);
         } catch (...) {
             error = "Unable to remove VPN registration " + native.id + ".";
         }
@@ -148,7 +130,7 @@ std::string TunnelObservable::SynchronizeProfiles(const std::vector<Models::AppT
 void TunnelObservable::Publish() {
     auto tunnels = Tunnels::Info(tunnel_->Fetch());
     bool changed = false;
-    auto synchronization_error = SynchronizeProfiles(tunnels, changed);
+    auto synchronization_error = RemoveDeletedProfiles(tunnels, changed);
     if (changed) tunnels = Tunnels::Info(tunnel_->Fetch());
     if (synchronization_error != last_synchronization_error_) {
         AppLog::Write(synchronization_error.empty() ? AppLog::Level::info : AppLog::Level::error, AppLog::Category::profiles,
@@ -249,15 +231,9 @@ void TunnelObservable::ConnectProfile(std::string id, std::optional<Partout::Tun
         const bool already_active = std::any_of(native.begin(), native.end(), [&](const auto &value) {
             return value.id == id && value.status.value == Partout::Models::TunnelStatus::active;
         });
-        const auto synchronized = synchronized_profiles_.find(id);
-        const bool installed = std::any_of(native.begin(), native.end(), [&](const auto &value) {
-            return value.id == id;
-        });
-        if (!already_active && (!installed || synchronized == synchronized_profiles_.end() || synchronized->second != profile)) {
-            // Never connect using an older native configuration after a synchronization failure.
-            tunnel_->Save(profile);
-            synchronized_profiles_[id] = profile;
-        }
+        // Install the latest saved configuration only when connecting. Editing
+        // a stored profile never interrupts its running connection.
+        if (!already_active) tunnel_->Save(profile);
         tunnel_->Connect(profile, std::move(credentials));
         pending_profile_ = id;
     });
@@ -272,7 +248,7 @@ void TunnelObservable::Disconnect(std::string id) {
 
 void TunnelObservable::Refresh() {
     const auto state = Snapshot();
-    if (state.activity.busy || !state.operation_error.empty()) return;
+    if (state.activity.busy) return;
     Post([] {}, false);
 }
 

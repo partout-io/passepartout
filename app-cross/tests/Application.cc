@@ -307,6 +307,35 @@ void TestIndependentObservableState(const std::filesystem::path &root) {
     assert(context.profiles.Snapshot().revision == profile_revision);
 }
 
+void TestObservationAfterOperationFailure(const std::filesystem::path &root) {
+    auto repository = std::make_unique<Passepartout::FileProfileRepository>(root / "observe-after-failure");
+    repository->Save(Example());
+    auto strategy = std::make_unique<ControlledTunnel>();
+    auto *backend = strategy.get();
+    Passepartout::Tests::ObservableFixture context(
+        std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::move(strategy))
+    );
+    Wait(context);
+    backend->fail_connect = true;
+    context.tunnel.ConnectProfile("test-id");
+    Wait(context);
+    const auto operation_error = context.tunnel.Snapshot().operation_error;
+    assert(!operation_error.empty());
+    backend->fail_fetch = true;
+    context.tunnel.Refresh();
+    Wait(context);
+    assert(!context.tunnel.Snapshot().observation_error.empty());
+    assert(context.tunnel.Snapshot().operation_error == operation_error);
+    backend->fail_fetch = false;
+    backend->fake.Connect("test-id");
+    context.tunnel.Refresh();
+    Wait(context);
+    const auto state = context.tunnel.Snapshot();
+    assert(state.available && state.observation_error.empty());
+    assert(state.operation_error == operation_error);
+    assert(state.tunnels.front().status.value == Passepartout::Status::connected);
+}
+
 void TestPreferencesRetry(const std::filesystem::path &root) {
     auto repository = std::make_unique<Passepartout::FileProfileRepository>(root / "preferences-retry");
     repository->Save(Example());
@@ -328,7 +357,7 @@ void TestPreferencesRetry(const std::filesystem::path &root) {
     session.tunnel.ConnectProfile("test-id");
     Wait(session);
     assert(session.tunnel.Snapshot().operation_error.empty());
-    assert((backend->events == std::vector<std::string>{"preferences", "preferences", "preferences", "connect:test-id"}));
+    assert((backend->events == std::vector<std::string>{"preferences", "preferences", "preferences", "save:test-id", "connect:test-id"}));
 }
 
 void TestRemovalObservation() {
@@ -366,6 +395,7 @@ void TestPendingActivation(const std::filesystem::path &root) {
         std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::move(strategy))
     );
     Wait(session);
+    backend->fake.Save(Example("first"));
     backend->fake.Connect("first");
     session.tunnel.ConnectProfile("second");
     Wait(session);
@@ -681,6 +711,7 @@ int main() {
         TestShutdown(root);
         TestObservableOrdering(root);
         TestIndependentObservableState(root);
+        TestObservationAfterOperationFailure(root);
         TestPreferencesRetry(root);
         const auto selection_root = root / "selection";
         std::filesystem::create_directories(selection_root);
@@ -952,8 +983,8 @@ int main() {
             imported.tunnel.Refresh();
             Wait(imported);
             assert(imported.profiles.Snapshot().operation_error.empty());
-            assert(registration->events == std::vector<std::string>{"save:imported"});
-            assert(imported.tunnel.Snapshot().tunnels.at(0).status.value == Status::disconnected);
+            assert(registration->events.empty());
+            assert(imported.tunnel.Snapshot().tunnels.empty());
             imported.tunnel.ConnectProfile("imported");
             Wait(imported);
             assert((registration->events == std::vector<std::string>{"save:imported", "connect:imported"}));
@@ -961,11 +992,14 @@ int main() {
             imported.profiles.Import({another});
             Wait(imported);
             assert(imported.profiles.Snapshot().operation_error.empty());
-            assert(!imported.tunnel.Snapshot().synchronization_error.empty());
+            assert(imported.tunnel.Snapshot().synchronization_error.empty());
+            imported.tunnel.ConnectProfile("batch-id");
+            Wait(imported);
+            assert(!imported.tunnel.Snapshot().operation_error.empty());
             assert(FileProfileRepository(root / "registration").Fetch().size() == 2);
             assert(imported.profiles.Snapshot().profiles.size() == 2);
             registration->fail_save = false;
-            imported.tunnel.Refresh();
+            imported.tunnel.ConnectProfile("batch-id");
             Wait(imported);
             assert(imported.profiles.Snapshot().operation_error.empty());
             assert(imported.tunnel.Snapshot().tunnels.size() == 2);

@@ -134,10 +134,10 @@ int main() {
         repository.Save(original);
         auto strategy = std::make_unique<RejectingTunnel>();
         auto *backend = strategy.get();
-        backend->fake.Save(draft); // Startup synchronizes the authoritative saved profile.
+        backend->fake.Save(draft); // Existing registration is refreshed only on connection.
         Tests::ObservableFixture session(std::make_unique<FileProfileRepository>(store), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)));
         Wait(session);
-        assert(repository.Fetch().front() == original && backend->saved == original);
+        assert(repository.Fetch().front() == original && backend->saves == 0);
         auto &profiles = session.profiles;
         auto &tunnel = session.tunnel;
         tunnel.Connect(original.id);
@@ -166,7 +166,7 @@ int main() {
         Wait(session);
         assert(pending->Snapshot().saved && !pending->Snapshot().operation_failed);
         assert(repository.Fetch().front().name == "Retry name");
-        assert(!session.tunnel.Snapshot().synchronization_error.empty());
+        assert(session.tunnel.Snapshot().synchronization_error.empty());
         assert(ProfileObservable::CanSave(session.profiles.Snapshot(), original.id));
         backend->connection_credentials.reset();
         session.tunnel.ConnectProfile(original.id);
@@ -176,13 +176,13 @@ int main() {
         assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
         session.ClearOperationErrors();
         backend->rejects = false;
-        session.tunnel.Refresh();
+        session.tunnel.ConnectProfile(original.id);
         Wait(session);
         assert(session.tunnel.Snapshot().synchronization_error.empty());
         assert(pending->Snapshot().saved);
         assert(repository.Fetch().front().name == "Retry name");
         assert(backend->saved.name == "Retry name");
-        assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
+        assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::active);
         // An old editor cannot silently overwrite a more recent save.
         auto stale = std::make_shared<ProfileEditor>(original);
         stale->Rename("Stale");
@@ -203,8 +203,11 @@ int main() {
         backend->fake.Disconnect(original.id);
         session.tunnel.Refresh();
         Wait(session);
+        assert(backend->saved.name == "Retry name");
+        session.tunnel.ConnectProfile(original.id);
+        Wait(session);
         assert(backend->saved.name == "Saved while active");
-        // Reload synchronizes stored profiles and removes obsolete app-owned registrations.
+        // Reload removes obsolete registrations without installing unused profiles.
         auto imported = original;
         imported.id = "saved-import";
         repository.Save(imported);
@@ -214,7 +217,7 @@ int main() {
         session.profiles.Load();
         Wait(session);
         assert(repository.Fetch().size() == 2);
-        assert(backend->fake.Fetch().size() == 2);
+        assert(backend->fake.Fetch().size() == 1);
         session.profiles.Remove({original.id, imported.id});
         Wait(session);
         assert(repository.Fetch().empty());

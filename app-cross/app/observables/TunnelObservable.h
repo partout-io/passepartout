@@ -54,12 +54,11 @@ private:
     bool ProfilesLoaded() const;
     void ApplyPendingPreferences();
     void Publish();
-    std::string SynchronizeProfiles(const std::vector<Models::AppTunnelInfo> &tunnels, bool &changed);
+    std::string RemoveDeletedProfiles(const std::vector<Models::AppTunnelInfo> &tunnels, bool &changed);
     Worker &executor_;
     std::unique_ptr<Partout::Tunnel> tunnel_;
     std::function<void(const Models::AppPreferences &)> apply_preferences_;
     std::optional<Models::AppPreferences> pending_preferences_;
-    std::map<std::string, Profile> synchronized_profiles_;
     std::vector<Profile> profiles_;
     std::optional<std::string> pending_profile_;
     std::optional<InteractiveLogin> interactive_login_;
