@@ -116,8 +116,8 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
               preferences.SetLastCheckedVersion(timestamp, std::move(latest));
           }), cross_constants.app.version_number, std::to_string(cross_constants.app.build_number), constants.github),
       credits(CreditsResource, MakeHttp(constants), ApplicationPlatform()),
-      diagnostics(std::make_unique<IssueReporter>(constants.emails.recipients.beta + "@" + constants.emails.domain,
-          cross_constants.app.version_number, ReviewIssue)) {
+      diagnostics(constants.emails.recipients.beta + "@" + constants.emails.domain,
+          cross_constants.app, constants.log.filenames.app, ReviewIssue) {
     try {
         profiles.OnChange([this](std::vector<Profile> values, bool loaded) {
             tunnel.SetProfiles(std::move(values), loaded);

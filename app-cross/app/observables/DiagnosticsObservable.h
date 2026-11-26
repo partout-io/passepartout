@@ -3,18 +3,27 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "IssueReporter.h"
-#include <memory>
+#include "Issue.h"
+#include "../context/CrossConstants.h"
+#include <functional>
+#include <string>
 #include <optional>
 
 namespace Passepartout {
 class DiagnosticsObservable final {
 public:
-    explicit DiagnosticsObservable(std::unique_ptr<IssueReporter> reporter);
+    using Handoff = std::function<bool(const std::string &, const Models::Issue &)>;
+    DiagnosticsObservable(std::string recipient, CrossConstantsType::App app,
+                          std::string app_log_filename, Handoff handoff
+    );
     std::string ApplicationLog() const;
     std::optional<std::string> TunnelLog() const;
+    // The native handler must present a draft and own temporary attachment files.
     bool Report(const std::string &comment);
 private:
-    std::unique_ptr<IssueReporter> reporter_;
+    std::string recipient_;
+    CrossConstantsType::App app_;
+    std::string app_log_filename_;
+    Handoff handoff_;
 };
 }

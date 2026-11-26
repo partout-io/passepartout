@@ -9,7 +9,7 @@
 #include "business/strategy/GitHubConfigStrategy.h"
 #include "business/strategy/GitHubReleaseStrategy.h"
 #include "business/managers/VersionChecker.h"
-#include "observables/IssueReporter.h"
+#include "observables/DiagnosticsObservable.h"
 #include "SettingsResources.h"
 #include "context/AppLog.h"
 #include "business/extensions/Models+Business.h"
@@ -401,18 +401,19 @@ int main() {
         assert(body.find("Hi,\n\ncafé 日本語 $osLine") == 0);
         assert(body.find("App: Passepartout 0.1.0.7\nOS: Test OS") != std::string::npos);
 
-        IssueReporter reporter("test@example.invalid", "0.1.0.7", [&](const std::string &recipient, const Models::Issue &report) {
+        DiagnosticsObservable diagnostics("test@example.invalid", {"Test App", "0.1.0", 4199}, "app.log", [&](const std::string &recipient, const Models::Issue &report) {
             assert(recipient == "test@example.invalid");
             assert(report.comment == "Unicode: café 日本語 $osLine");
-            assert(report.appLine == "Passepartout 0.1.0.7");
-            assert(report.attachments.size() == 2);
+            assert(report.appLine == "Test App 0.1.0 (4199)");
+            assert(Issues::Body(report, IssueTemplateResource).find("Test App 0.1.0 (4199)") != std::string::npos);
+            assert(report.attachments.size() == 1);
             const auto &attachment = report.attachments.back();
-            assert(attachment.filename == "runtime.txt");
+            assert(attachment.filename == "app.log");
             assert(attachment.content.find("public marker") != std::string::npos);
             assert(attachment.content.find("private marker") == std::string::npos);
             return false; // No mail provider.
         });
-        assert(!reporter.Report("Unicode: café 日本語 $osLine", AppLog::RuntimeLog(false)));
+        assert(!diagnostics.Report("Unicode: café 日本語 $osLine"));
     } catch (const std::exception &error) {
         std::cerr << error.what() << std::endl;
         std::filesystem::remove_all(directory);
