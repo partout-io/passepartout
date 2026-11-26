@@ -6,8 +6,8 @@
 #include <algorithm>
 
 namespace Passepartout {
-ConfigManager::ConfigManager(std::unique_ptr<ConfigManagerStrategy> strategy, int build)
-    : strategy_(std::move(strategy)), build_(build) {}
+ConfigManager::ConfigManager(std::unique_ptr<ConfigManagerStrategy> strategy, int build, Models::Platform::ePlatform platform)
+    : strategy_(std::move(strategy)), build_(build), platform_(platform) {}
 
 bool ConfigManager::Refresh() {
     const auto bundle = strategy_->Bundle();
@@ -16,8 +16,8 @@ bool ConfigManager::Refresh() {
     for (const auto &entry : *bundle) {
         const auto &config = entry.second;
         if (config.rate != 100 || (config.minBuild && *config.minBuild > build_)) continue;
-        if (config.platforms && std::none_of(config.platforms->begin(), config.platforms->end(), [](const auto &platform) {
-            return platform.value == Models::Platform::windows;
+        if (config.platforms && std::none_of(config.platforms->begin(), config.platforms->end(), [this](const auto &platform) {
+            return platform.value == platform_;
         })) continue;
         flags.emplace(entry.first, config.data.value_or(Partout::Json()));
     }

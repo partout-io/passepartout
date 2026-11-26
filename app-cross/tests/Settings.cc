@@ -165,15 +165,15 @@ int main() {
         UserPreferencesObservable broken(std::make_unique<FilePreferencesRepository>(directory / "preferences.json"));
         assert(broken.HasLoadError() && broken.Snapshot().dnsFallsBack);
 
-        ConfigManager fixed(std::make_unique<FixedConfig>(), 7);
+        ConfigManager fixed(std::make_unique<FixedConfig>(), 7, Models::Platform::windows);
         assert(fixed.Refresh() && fixed.ActiveFlags().count(Models::ConfigFlag::appNotWorking));
-        ConfigManager old_build(std::make_unique<FixedConfig>(), 6);
+        ConfigManager old_build(std::make_unique<FixedConfig>(), 6, Models::Platform::windows);
         assert(old_build.Refresh() && old_build.ActiveFlags().empty());
 
         auto http = std::make_unique<FakeHttp>();
         auto *remote = http.get();
         remote->response = R"({"futureFlag": {}, "appNotWorking": {"rate":100,"minBuild":7,"platforms":["windows"],"data":{"reason":"test"}}})";
-        ConfigManager config(std::make_unique<GitHubConfigStrategy>(std::move(http), "https://example.invalid", std::chrono::seconds(0)), 7);
+        ConfigManager config(std::make_unique<GitHubConfigStrategy>(std::move(http), "https://example.invalid", std::chrono::seconds(0)), 7, Models::Platform::windows);
         assert(config.Refresh());
         assert(config.ActiveFlags().at(Models::ConfigFlag::appNotWorking).At("reason") == "test");
         remote->fails = true;
@@ -184,9 +184,26 @@ int main() {
             remote->response = std::string("{\"appNotWorking\":") + value + "}";
             assert(config.Refresh() && config.ActiveFlags().empty());
         }
+        for (const auto platform : {Models::Platform::windows, Models::Platform::unixLike}) {
+            auto platform_http = std::make_unique<FakeHttp>();
+            auto *platform_remote = platform_http.get();
+            ConfigManager platform_config(std::make_unique<GitHubConfigStrategy>(std::move(platform_http),
+                "https://example.invalid", std::chrono::seconds(0)), 7, platform
+            );
+            for (const auto target : {"windows", "unixLike"}) {
+                platform_remote->response = std::string("{\"appNotWorking\":{\"rate\":100,\"platforms\":[\"") + target + "\"]}}";
+                assert(platform_config.Refresh());
+                const bool expected = (platform == Models::Platform::windows) == (std::string(target) == "windows");
+                assert(!platform_config.ActiveFlags().empty() == expected);
+            }
+            platform_remote->response = R"({"appNotWorking":{"rate":100}})";
+            assert(platform_config.Refresh() && !platform_config.ActiveFlags().empty());
+            platform_remote->response = R"({"appNotWorking":{"rate":100,"platforms":[]}})";
+            assert(platform_config.Refresh() && platform_config.ActiveFlags().empty());
+        }
         auto throttled_http = std::make_unique<FakeHttp>();
         auto *throttled_remote = throttled_http.get();
-        ConfigManager throttled(std::make_unique<GitHubConfigStrategy>(std::move(throttled_http), "https://example.invalid", std::chrono::hours(1)), 7);
+        ConfigManager throttled(std::make_unique<GitHubConfigStrategy>(std::move(throttled_http), "https://example.invalid", std::chrono::hours(1)), 7, Models::Platform::windows);
         throttled_remote->response = "[]";
         Fails([&] { throttled.Refresh(); });
         throttled_remote->response = "{}";
@@ -194,7 +211,7 @@ int main() {
         auto blocked = std::make_shared<BlockingState>();
         {
             ConfigObservable observable(std::make_unique<ConfigManager>(std::make_unique<GitHubConfigStrategy>(std::make_unique<BlockingHttp>(blocked),
-                "https://example.invalid", std::chrono::hours(1)), 7));
+                "https://example.invalid", std::chrono::hours(1)), 7, Models::Platform::windows));
             observable.Refresh();
             std::unique_lock lock(blocked->mutex);
             assert(blocked->changed.wait_for(lock, std::chrono::seconds(2), [&] { return blocked->entered; }));

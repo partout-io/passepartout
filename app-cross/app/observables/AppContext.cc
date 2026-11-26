@@ -24,6 +24,14 @@
 #include <stdexcept>
 
 namespace {
+Passepartout::Models::Platform::ePlatform ApplicationPlatform() {
+#ifdef _WIN32
+    return Passepartout::Models::Platform::windows;
+#else
+    return Passepartout::Models::Platform::unixLike;
+#endif
+}
+
 std::string ApplicationVersion() {
 #ifdef PASSEPARTOUT_APP_VERSION
     return PASSEPARTOUT_APP_VERSION;
@@ -119,7 +127,7 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
       config(std::make_unique<ConfigManager>(std::make_unique<GitHubConfigStrategy>(MakeHttp(constants),
           constants.websites.partoutURL + "/passepartout-config/v1/bundle.json",
           std::chrono::seconds(static_cast<std::int64_t>(constants.websites.configTTL * constants.websites.betaTTLFactor))),
-          BuildNumber(application_version))),
+          BuildNumber(application_version), ApplicationPlatform())),
       version(std::make_unique<VersionChecker>(application_version, nullptr, std::string(),
           static_cast<std::int64_t>(constants.url.versionRateLimit), preferences.Snapshot().lastCheckedVersionTimestamp,
           preferences.Snapshot().lastCheckedVersion, [this](auto timestamp, auto latest) {
