@@ -14,7 +14,8 @@ class ProfileModuleList;
 class ProfileCoordinator final : public wxDialog {
 public:
     ProfileCoordinator(wxWindow *parent, ProfileObservable &profiles,
-        std::shared_ptr<ProfileEditor> editor, const WireGuardKeyGenerator &keys);
+        std::shared_ptr<ProfileEditor> editor, const WireGuardKeyGenerator &wireguard_keygen
+    );
 private:
     void SelectSection(std::size_t selection);
     void OpenModule(std::size_t index);
@@ -23,7 +24,7 @@ private:
     void RefreshState();
     ProfileObservable &profiles_;
     std::shared_ptr<ProfileEditor> editor_;
-    const WireGuardKeyGenerator &keys_;
+    const WireGuardKeyGenerator &wireguard_keygen_;
     wxSimplebook *pages_;
     ProfileModuleList *modules_;
     std::size_t selection_ = 0;

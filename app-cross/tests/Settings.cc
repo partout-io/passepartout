@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "business/extensions/AppConstantsExtensions.h"
 #include "ScopedLogSink.h"
 #include "business/strategy/FilePreferencesRepository.h"
 #include "business/managers/ConfigManager.h"
@@ -133,6 +134,32 @@ int main() {
         ("passepartout-settings-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     std::filesystem::create_directory(directory);
     try {
+        {
+            Models::AppConstants_url url{};
+            url.timeoutInterval = 1.25;
+            assert(Constants::HTTPTimeout(url) == std::chrono::milliseconds(1250));
+            Models::AppConstants_websites websites{};
+            websites.configTTL = 3600;
+            websites.betaTTLFactor = 0.1;
+            assert(Constants::ConfigTTL(websites) == std::chrono::seconds(3600));
+            websites.partoutURL = "https://example.invalid/";
+            websites.homeURL = "https://home.invalid";
+            assert(Constants::ConfigURL(websites) == "https://example.invalid/passepartout-config/v1/bundle.json");
+            assert(Constants::BlogURL(websites) == "https://example.invalid/blog");
+            assert(Constants::FAQURL(websites) == "https://home.invalid/faq");
+            Models::AppConstants_github github{};
+            github.rawURL = "https://raw.invalid///";
+            github.issuesURL = "https://example.invalid/issues/";
+            assert(Constants::IssueURL(github, 42) == "https://example.invalid/issues/42");
+            assert(Constants::ChangelogURL(github, "4199") == "https://raw.invalid/refs/tags/builds/4199/app-cross/CHANGELOG.txt");
+            Models::AppConstants_emails emails{};
+            emails.domain = "example.invalid";
+            emails.recipients.issues = "support";
+            emails.recipients.beta = "beta";
+            assert(Constants::IssuesEmail(emails) == "support@example.invalid");
+            assert(Constants::BetaEmail(emails) == "beta@example.invalid");
+        }
+
         FilePreferencesRepository repository(directory / "preferences.json");
         auto persisted = repository.Fetch();
         assert(persisted.dnsFallsBack && !persisted.logsPrivateData);

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "../business/extensions/AppConstantsExtensions.h"
 #include "AppContext.h"
 #include "../context/AppLog.h"
 #include "../business/strategy/GitHubReleaseStrategy.h"
@@ -28,8 +29,7 @@
 namespace {
 std::unique_ptr<Passepartout::HttpClient> MakeHttp(const Passepartout::Models::AppConstants &constants) {
 #ifdef _WIN32
-    return Passepartout::Windows::MakeHttpClient(std::chrono::milliseconds(
-        static_cast<std::int64_t>(constants.url.timeoutInterval * 1000)));
+    return Passepartout::Windows::MakeHttpClient(Passepartout::Constants::HTTPTimeout(constants.url));
 #else
     // FIXME: ###, Implement on .unixLike
     return std::make_unique<Passepartout::OfflineHttpClient>();
@@ -108,8 +108,8 @@ AppContext::AppContext(
                   });
           }),
       config(std::make_unique<ConfigManager>(std::make_unique<GitHubConfigStrategy>(MakeHttp(constants),
-          constants.websites.partoutURL + "/passepartout-config/v1/bundle.json",
-          std::chrono::seconds(static_cast<std::int64_t>(constants.websites.configTTL * constants.websites.betaTTLFactor))),
+          Constants::ConfigURL(constants.websites),
+          Constants::ConfigTTL(constants.websites)),
           cross_constants.app.build_number, ApplicationPlatform())),
       version(std::make_unique<VersionChecker>(cross_constants.app.version_number,
           std::make_unique<GitHubReleaseStrategy>(MakeHttp(constants), constants.github.latestReleaseURL,
@@ -121,7 +121,7 @@ AppContext::AppContext(
               preferences.SetLastCheckedVersion(timestamp, std::move(latest));
           }), cross_constants.app.version_number, std::to_string(cross_constants.app.build_number), constants.github),
       credits(CreditsResource, MakeHttp(constants), ApplicationPlatform()),
-      diagnostics(constants.emails.recipients.beta + "@" + constants.emails.domain,
+      diagnostics(Constants::BetaEmail(constants.emails),
           cross_constants.app, constants.log.filenames.app, ReviewIssue) {
     try {
         profiles.OnChange([this](std::vector<Profile> values, bool loaded) {

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "../../business/extensions/AppConstantsExtensions.h"
 #include "LinksView.h"
 #include "../platform/Presentation.h"
 #include "../../strings/Unlocalized.h"
@@ -14,15 +15,15 @@ LinksView::LinksView(wxWindow *parent, const Models::AppConstants &constants) : 
         });
     };
     Section(Localized(StringKey::ViewsSettingsLinksSectionsSupport));
-    ExternalLink(Strings::Unlocalized::FAQ, [this, url = constants.websites.homeURL + "/faq"] {
+    ExternalLink(Strings::Unlocalized::FAQ, [this, url = Constants::FAQURL(constants.websites)] {
         OpenURL(this, url);
     });
     link(StringKey::ViewsSettingsLinksRowsOpenDiscussion, constants.github.discussionsURL);
     Section(Localized(StringKey::ViewsSettingsLinksSectionsWeb));
     link(StringKey::ViewsSettingsLinksRowsHomePage, constants.websites.homeURL);
-    link(StringKey::ViewsSettingsLinksRowsBlog, constants.websites.partoutURL + "/blog");
-    link(StringKey::ViewsSettingsLinksRowsDisclaimer, constants.websites.homeURL + "/disclaimer");
-    link(StringKey::ViewsSettingsLinksRowsPrivacyPolicy, constants.websites.homeURL + "/privacy");
+    link(StringKey::ViewsSettingsLinksRowsBlog, Constants::BlogURL(constants.websites));
+    link(StringKey::ViewsSettingsLinksRowsDisclaimer, Constants::DisclaimerURL(constants.websites));
+    link(StringKey::ViewsSettingsLinksRowsPrivacyPolicy, Constants::PrivacyPolicyURL(constants.websites));
     Finish();
 }
 }

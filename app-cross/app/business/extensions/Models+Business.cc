@@ -333,16 +333,6 @@ std::string Issues::Body(const Models::Issue &issue, const std::string &text) {
 }
 }
 
-namespace Passepartout::Constants {
-std::string IssueURL(const Models::AppConstants_github &github, int32_t issue) {
-    return github.issuesURL + "/" + std::to_string(issue);
-}
-
-std::string ChangelogURL(const Models::AppConstants_github &github, const std::string &build) {
-    return github.rawURL + "/refs/tags/builds/" + build + "/app-cross/CHANGELOG.txt";
-}
-}
-
 namespace Passepartout::Changelogs {
 std::vector<Models::ChangelogEntry> Parse(const std::string &text) {
     std::vector<Models::ChangelogEntry> entries;

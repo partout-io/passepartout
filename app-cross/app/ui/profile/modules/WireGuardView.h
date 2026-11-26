@@ -10,7 +10,8 @@
 namespace Passepartout {
 class WireGuardView final : public ModuleDetailView {
 public:
-    WireGuardView(wxWindow *parent, const Partout::Models::WireGuardModule &module, OpenModuleContent open_content, const WireGuardKeyGenerator &keys,
-        std::function<void(wxString, std::vector<std::string>)> open_list);
+    WireGuardView(wxWindow *parent, const Partout::Models::WireGuardModule &module, OpenModuleContent open_content, const WireGuardKeyGenerator &wireguard_keygen,
+        std::function<void(wxString, std::vector<std::string>)> open_list
+    );
 };
 }

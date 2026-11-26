@@ -7,8 +7,9 @@
 #include <wx/numformatter.h>
 
 namespace Passepartout {
-WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardModule &module, OpenModuleContent open_content, const WireGuardKeyGenerator &keys,
-    std::function<void(wxString, std::vector<std::string>)> open_list)
+WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardModule &module, OpenModuleContent open_content, const WireGuardKeyGenerator &wireguard_keygen,
+    std::function<void(wxString, std::vector<std::string>)> open_list
+)
     : ModuleDetailView(parent, std::move(open_content), Presentation::Form) {
     using namespace Strings::Unlocalized;
     if (!module.configuration) return;
@@ -30,7 +31,7 @@ WireGuardView::WireGuardView(wxWindow *parent, const Partout::Models::WireGuardM
     };
     Section(Localized(StringKey::ModulesWireguardInterface));
     Row(StringKey::GlobalNounsPrivateKey, local.privateKey, true, std::nullopt, true);
-    Row(StringKey::GlobalNounsPublicKey, keys.PublicKey(local.privateKey));
+    Row(StringKey::GlobalNounsPublicKey, wireguard_keygen.PublicKey(local.privateKey));
     list_row(StringKey::GlobalNounsAddresses, local.addresses);
     Row(MTU, local.mtu);
     if (local.dns.has_value()) {

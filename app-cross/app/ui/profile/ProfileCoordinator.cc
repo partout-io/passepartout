@@ -25,10 +25,11 @@
 
 namespace Passepartout {
 ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &profiles,
-    std::shared_ptr<ProfileEditor> editor, const WireGuardKeyGenerator &keys)
+    std::shared_ptr<ProfileEditor> editor, const WireGuardKeyGenerator &wireguard_keygen
+)
     : wxDialog(parent, wxID_ANY, Localized(StringKey::GlobalNounsProfile), wxDefaultPosition,
         wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
-      profiles_(profiles), editor_(std::move(editor)), keys_(keys), timer_(this) {
+      profiles_(profiles), editor_(std::move(editor)), wireguard_keygen_(wireguard_keygen), timer_(this) {
     Theme::Apply(this);
     SetIcon(Theme::ProfileIcon(this));
     Bind(wxEVT_SYS_COLOUR_CHANGED, [this](wxSysColourChangedEvent &event) {
@@ -160,7 +161,7 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
         else if constexpr (std::is_same_v<Tag, TaggedModuleOnDemand>) return new OnDemandView(pages_, tagged.value);
         else if constexpr (std::is_same_v<Tag, TaggedModuleHTTPProxy>) return new HTTPProxyView(pages_, tagged.value, open_content);
         else if constexpr (std::is_same_v<Tag, TaggedModuleIp>) return new IPView(pages_, tagged.value, open_content);
-        else if constexpr (std::is_same_v<Tag, TaggedModuleWireGuard>) return new WireGuardView(pages_, tagged.value, open_content, keys_, open_list);
+        else if constexpr (std::is_same_v<Tag, TaggedModuleWireGuard>) return new WireGuardView(pages_, tagged.value, open_content, wireguard_keygen_, open_list);
         else if constexpr (std::is_same_v<Tag, TaggedModuleOpenVpn>) {
             return new OpenVPNView(pages_, tagged.value, open_content, [this, index] {
                 const auto module = std::get<TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));

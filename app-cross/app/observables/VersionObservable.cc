@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "../business/extensions/AppConstantsExtensions.h"
 #include "VersionObservable.h"
 #include "../context/AppLog.h"
 #include "../business/extensions/Models+Business.h"

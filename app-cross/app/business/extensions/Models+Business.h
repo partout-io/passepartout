@@ -9,7 +9,6 @@
 #include <filesystem>
 #include "AppPreferences.h"
 #include "AppProfileHeader.h"
-#include "AppConstants_github.h"
 #include "ChangelogEntry.h"
 #include "ConfigBundleConfig.h"
 #include "ConfigFlag.h"
@@ -68,11 +67,6 @@ Profile DecodeResult(const char *json);
 namespace Passepartout::Issues {
 std::string Subject(const Models::Issue &issue);
 std::string Body(const Models::Issue &issue, const std::string &text);
-}
-
-namespace Passepartout::Constants {
-std::string IssueURL(const Models::AppConstants_github &github, int32_t issue);
-std::string ChangelogURL(const Models::AppConstants_github &github, const std::string &build);
 }
 
 namespace Passepartout::Changelogs {
