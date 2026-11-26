@@ -21,7 +21,9 @@ public:
         std::function<void(std::string)> edit);
     static constexpr unsigned TransferColumn = 2;
     static constexpr unsigned ToggleColumn = 3;
-    void Render(const AppSnapshot &state, bool picking);
+    void Render(const ProfileObservable::State &profiles, const TunnelObservable::State &tunnel,
+                const SerialExecutor::Activity &activity, bool picking
+    );
     std::vector<std::string> SelectedIds() const;
     bool HasCollectionFocus() const;
     void ShowContextMenu(const wxPoint &screen_position);
@@ -37,7 +39,9 @@ private:
     std::function<void(std::string)> edit_;
     wxSearchCtrl *search_;
     ThemeList *list_;
-    AppSnapshot snapshot_;
+    ProfileObservable::State profiles_;
+    TunnelObservable::State tunnels_;
+    SerialExecutor::Activity activity_;
     std::vector<std::string> visible_ids_;
     bool picking_ = false;
     bool rendering_ = false;

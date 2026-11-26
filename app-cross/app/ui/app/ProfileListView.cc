@@ -30,7 +30,7 @@ wxString StatusText(Passepartout::Status status) {
     }
 }
 
-wxString TransferText(const Passepartout::AppSnapshot &state, const std::string &id) {
+wxString TransferText(const Passepartout::TunnelObservable::State &state, const std::string &id) {
     if (!state.tunnel_available) return {};
     for (const auto &tunnel : state.tunnels) {
         if (tunnel.id != id || tunnel.status.value != Passepartout::Status::connected || !tunnel.transfer) continue;
@@ -102,8 +102,12 @@ ProfileListView::ProfileListView(wxWindow *parent, TunnelObservable &tunnel,
     });
 }
 
-void ProfileListView::Render(const AppSnapshot &state, bool picking) {
-    snapshot_ = state;
+void ProfileListView::Render(const ProfileObservable::State &profiles, const TunnelObservable::State &tunnel,
+                             const SerialExecutor::Activity &activity, bool picking
+) {
+    profiles_ = profiles;
+    tunnels_ = tunnel;
+    activity_ = activity;
     picking_ = picking;
     RenderRows();
 }
@@ -125,7 +129,7 @@ void ProfileListView::RenderRows() {
     list_->Freeze();
     const auto query = search_->GetValue().Lower();
     std::vector<std::string> ids;
-    for (const auto &profile : snapshot_.profiles) {
+    for (const auto &profile : profiles_.profiles) {
         if (query.empty() || Text(profile.name).Lower().Contains(query)) ids.push_back(profile.id);
     }
     const bool rebuild = ids != visible_ids_;
@@ -134,13 +138,13 @@ void ProfileListView::RenderRows() {
     }
     visible_ids_ = std::move(ids);
     unsigned row = 0;
-    for (const auto &profile : snapshot_.profiles) {
+    for (const auto &profile : profiles_.profiles) {
         if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
-        const auto toggle = TunnelObservable::StateForProfile(snapshot_, profile.id);
-        const auto status = snapshot_.tunnel_available &&
-            snapshot_.tunnel_observation_errors.find(profile.id) == snapshot_.tunnel_observation_errors.end()
+        const auto toggle = TunnelObservable::StateForProfile(tunnels_, profile.id);
+        const auto status = tunnels_.tunnel_available &&
+            tunnels_.tunnel_observation_errors.find(profile.id) == tunnels_.tunnel_observation_errors.end()
             ? StatusText(toggle.status) : wxString();
-        const auto transfer = TransferText(snapshot_, profile.id);
+        const auto transfer = TransferText(tunnels_, profile.id);
         if (rebuild) AppendProfile(Text(profile.name), status, toggle.is_on, toggle.can_interact && !picking_, transfer);
         else UpdateProfile(row, Text(profile.name), status, toggle.is_on, toggle.can_interact && !picking_, transfer);
         ++row;
@@ -168,7 +172,8 @@ void ProfileListView::ToggleProfile(wxDataViewEvent &event) {
     tunnel_.SetEnabled(visible_ids_[row], list_->GetToggleValue(row, ProfileListView::ToggleColumn));
     // Restore observed state immediately; the next snapshot supplies completion
     // or failure instead of displaying an optimistic connection as successful.
-    snapshot_ = tunnel_.Snapshot();
+    tunnels_ = tunnel_.Snapshot();
+    activity_ = tunnels_.activity;
     RenderRows();
 }
 
@@ -187,10 +192,10 @@ void ProfileListView::ShowContextMenu(const wxPoint &screen_position) {
     wxMenu menu;
     if (ids.size() == 1) {
         menu.Append(wxID_EDIT, Localized(StringKey::GlobalActionsEdit));
-        menu.Enable(wxID_EDIT, !picking_ && !snapshot_.foreground_busy);
+        menu.Enable(wxID_EDIT, !picking_ && !activity_.foreground);
     }
     menu.Append(wxID_DELETE, Localized(StringKey::GlobalActionsRemove));
-    menu.Enable(wxID_DELETE, !picking_ && ProfileObservable::CanRemove(tunnel_.Snapshot(), ids));
+    menu.Enable(wxID_DELETE, !picking_ && ProfileObservable::CanRemove(profiles_, ids) && !tunnels_.pending_profile && !activity_.foreground);
     // Popup menus run a nested event loop: retain the captured IDs even when
     // background snapshots change the visible rows or selection.
     const auto action = collection->GetPopupMenuSelectionFromUser(menu, position);

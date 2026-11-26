@@ -56,11 +56,9 @@ else()
 endif()
 set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/Models+Business.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/AppSession.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ConfigManager.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ProfileManager.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/VersionChecker.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/models/AppSnapshot.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/models/FileConfigurationFiles.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/models/InteractiveLogin.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/models/MemoryConfigurationFiles.cc"
@@ -81,6 +79,7 @@ set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/IssueReporter.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/ProfileEditor.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/ProfileObservable.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/observables/SerialExecutor.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/TunnelObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/UserPreferencesObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/VersionObservable.cc"

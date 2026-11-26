@@ -16,7 +16,6 @@
 
 namespace Passepartout {
 class AppLogger;
-class AppSession;
 class AppContext final {
 public:
     const Models::AppConstants constants;
@@ -25,13 +24,14 @@ public:
     const std::unique_ptr<WireGuardKeyGenerator> wire_guard_keys;
 private:
     std::shared_ptr<AppLogger> logger_;
-    std::unique_ptr<AppSession> session_;
+    SerialExecutor executor_;
 public:
     AppContext(const std::filesystem::path &data_root, bool demo,
                Models::AppConstants constants = Constants::Load(),
                CrossConstantsType cross_constants = CrossConstants
     );
     ~AppContext();
+    SerialExecutor::Activity Activity() const;
     ProfileObservable profiles;
     TunnelObservable tunnel;
     UserPreferencesObservable preferences;

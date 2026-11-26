@@ -10,7 +10,8 @@
 #include "context/ContextExtensions.h"
 #include <partout/tunnel/Tunnel.h>
 #include "business/strategy/FakeTunnelStrategy.h"
-#include "business/managers/AppSession.h"
+#include "ObservableFixture.h"
+#include "business/models/MemoryConfigurationFiles.h"
 #include "observables/ProfileObservable.h"
 #include "observables/TunnelObservable.h"
 #include "ui/platform/ModalConfigurationPicker.h"
@@ -161,8 +162,8 @@ private:
     std::shared_ptr<Gate> gate_;
     Passepartout::FakeTunnelStrategy fake_;
 };
-void Wait(Passepartout::AppSession &session) {
-    assert(session.WaitIdle(std::chrono::seconds(5)));
+void Wait(Passepartout::Tests::ObservableFixture &session) {
+    assert(session.executor.WaitIdle(std::chrono::seconds(5)));
 }
 struct Cancellation {
     std::mutex mutex;
@@ -238,20 +239,73 @@ private:
 void TestShutdown(const std::filesystem::path &root) {
     const auto tunnel = std::make_shared<Cancellation>();
     {
-        Passepartout::AppSession session(std::make_unique<Passepartout::FileProfileRepository>(root / "cancel-tunnel"), {},
+        Passepartout::Tests::ObservableFixture session(std::make_unique<Passepartout::FileProfileRepository>(root / "cancel-tunnel"), {},
             std::make_unique<Partout::Tunnel>(std::make_unique<CancelableTunnel>(tunnel)));
         tunnel->WaitForEntry();
     }
     assert(tunnel->canceled);
     const auto files = std::make_shared<Cancellation>();
     {
-        Passepartout::AppSession session(std::make_unique<Passepartout::FileProfileRepository>(root / "cancel-files"), {},
+        Passepartout::Tests::ObservableFixture session(std::make_unique<Passepartout::FileProfileRepository>(root / "cancel-files"), {},
             std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
         Wait(session);
-        session.ImportFiles(std::make_shared<CancelableFiles>(files));
+        session.profiles.ImportFiles(std::make_shared<CancelableFiles>(files));
         files->WaitForEntry();
     }
     assert(files->canceled);
+}
+
+void TestObservableOrdering(const std::filesystem::path &root) {
+    auto strategy = std::make_unique<ControlledTunnel>();
+    auto *backend = strategy.get();
+    Passepartout::Tests::ObservableFixture context(
+        std::make_unique<Passepartout::FileProfileRepository>(root / "observable-ordering"),
+        [](const std::string &, const std::string &) {
+            return Example("queued-import");
+        },
+        std::make_unique<Partout::Tunnel>(std::move(strategy))
+    );
+    Wait(context);
+    auto gate = std::make_shared<Gate>();
+    auto entered = gate->entered.get_future();
+    context.executor.Post([gate] {
+        gate->entered.set_value();
+        gate->release.get_future().wait();
+    });
+    assert(entered.wait_for(std::chrono::seconds(5)) == std::future_status::ready);
+    context.profiles.ImportFiles(std::make_shared<Passepartout::MemoryConfigurationFiles>(
+        std::vector<Passepartout::ConfigurationSource>{{"queued", "configuration"}}
+    ));
+    context.tunnel.ConnectProfile("queued-import");
+    assert(context.executor.Snapshot().foreground);
+    gate->release.set_value();
+    Wait(context);
+    assert(context.profiles.Snapshot().error.empty());
+    assert(context.profiles.Snapshot().profiles.size() == 1);
+    assert(context.tunnel.Snapshot().tunnels.front().status.value == Passepartout::Status::connected);
+    assert((backend->events == std::vector<std::string>{"save:queued-import", "connect:queued-import"}));
+}
+
+void TestIndependentObservableState(const std::filesystem::path &root) {
+    Passepartout::Tests::ObservableFixture context(
+        std::make_unique<Passepartout::FileProfileRepository>(root / "independent-state"), {},
+        std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>())
+    );
+    Wait(context);
+    context.profiles.ImportFailed();
+    context.tunnel.ConnectProfile("missing");
+    Wait(context);
+    assert(!context.profiles.Snapshot().error.empty());
+    assert(!context.tunnel.Snapshot().error.empty());
+    const auto tunnel_revision = context.tunnel.Snapshot().revision;
+    context.profiles.ClearError();
+    assert(context.profiles.Snapshot().error.empty());
+    assert(!context.tunnel.Snapshot().error.empty());
+    assert(context.tunnel.Snapshot().revision == tunnel_revision);
+    const auto profile_revision = context.profiles.Snapshot().revision;
+    context.tunnel.ClearError();
+    assert(context.tunnel.Snapshot().error.empty());
+    assert(context.profiles.Snapshot().revision == profile_revision);
 }
 
 void TestPreferencesRetry(const std::filesystem::path &root) {
@@ -259,22 +313,22 @@ void TestPreferencesRetry(const std::filesystem::path &root) {
     repository->Save(Example());
     auto strategy = std::make_unique<ControlledTunnel>();
     auto *backend = strategy.get();
-    Passepartout::AppSession session(std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)),
+    Passepartout::Tests::ObservableFixture session(std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)),
         std::make_shared<Passepartout::AppLogger>(), [backend](const auto &preferences) { backend->ApplyPreferences(preferences); });
     Wait(session);
     backend->events.clear();
     backend->fail_preferences = true;
-    session.ApplyPreferences({});
+    session.tunnel.ApplyPreferences({});
     Wait(session);
-    assert(!session.Snapshot().error.empty());
-    session.Connect("test-id");
+    assert(!session.tunnel.Snapshot().error.empty());
+    session.tunnel.ConnectProfile("test-id");
     Wait(session);
-    assert(!session.Snapshot().error.empty());
+    assert(!session.tunnel.Snapshot().error.empty());
     assert((backend->events == std::vector<std::string>{"preferences", "preferences"}));
     backend->fail_preferences = false;
-    session.Connect("test-id");
+    session.tunnel.ConnectProfile("test-id");
     Wait(session);
-    assert(session.Snapshot().error.empty());
+    assert(session.tunnel.Snapshot().error.empty());
     assert((backend->events == std::vector<std::string>{"preferences", "preferences", "preferences", "connect:test-id"}));
 }
 
@@ -309,55 +363,54 @@ void TestPendingActivation(const std::filesystem::path &root) {
     auto *backend = strategy.get();
     backend->delayed_disconnect = true;
     backend->delayed_connect = true;
-    Passepartout::AppSession session(
+    Passepartout::Tests::ObservableFixture session(
         std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::move(strategy))
     );
     Wait(session);
     backend->fake.Connect("first");
-    session.Connect("second");
+    session.tunnel.ConnectProfile("second");
     Wait(session);
-    assert(session.Snapshot().pending_profile == "second");
-    assert(!Passepartout::TunnelObservable::StateForProfile(session.Snapshot(), "second").can_interact);
-    session.Refresh();
+    assert(session.tunnel.Snapshot().pending_profile == "second");
+    assert(!Passepartout::TunnelObservable::StateForProfile(session.tunnel.Snapshot(), "second").can_interact);
+    session.tunnel.Refresh();
     Wait(session);
-    assert(session.Snapshot().pending_profile == "second");
+    assert(session.tunnel.Snapshot().pending_profile == "second");
     backend->fake.Disconnect("first");
-    session.Refresh();
+    session.tunnel.Refresh();
     Wait(session);
-    assert(session.Snapshot().pending_profile == "second");
+    assert(session.tunnel.Snapshot().pending_profile == "second");
     backend->fake.Connect("second");
-    session.Refresh();
+    session.tunnel.Refresh();
     Wait(session);
-    assert(!session.Snapshot().pending_profile);
-    assert(Passepartout::TunnelObservable::StateForProfile(session.Snapshot(), "second").can_interact);
+    assert(!session.tunnel.Snapshot().pending_profile);
+    assert(Passepartout::TunnelObservable::StateForProfile(session.tunnel.Snapshot(), "second").can_interact);
 
     // Failed activation clears the UI request and retains the tunnel error context.
     backend->delayed_disconnect = false;
-    session.Connect("first");
+    session.tunnel.ConnectProfile("first");
     Wait(session);
-    assert(session.Snapshot().pending_profile == "first");
+    assert(session.tunnel.Snapshot().pending_profile == "first");
     backend->fake.Disconnect("first");
-    session.Refresh();
+    session.tunnel.Refresh();
     Wait(session);
-    assert(!session.Snapshot().pending_profile);
-    assert(!session.Snapshot().error.empty());
-    assert(session.Snapshot().error_context == Passepartout::AppErrorContext::tunnel);
+    assert(!session.tunnel.Snapshot().pending_profile);
+    assert(!session.tunnel.Snapshot().error.empty());
 
-    session.Connect("second");
+    session.tunnel.ConnectProfile("second");
     Wait(session);
-    assert(session.Snapshot().pending_profile == "second");
-    session.Disconnect("second");
+    assert(session.tunnel.Snapshot().pending_profile == "second");
+    session.tunnel.Disconnect("second");
     Wait(session);
-    assert(!session.Snapshot().pending_profile && session.Snapshot().error.empty());
-    session.Connect("second");
+    assert(!session.tunnel.Snapshot().pending_profile && session.tunnel.Snapshot().error.empty());
+    session.tunnel.ConnectProfile("second");
     Wait(session);
-    session.Remove({"second"});
+    session.profiles.Remove({"second"});
     Wait(session);
-    assert(!session.Snapshot().pending_profile && session.Snapshot().error.empty());
-    session.Refresh();
+    assert(!session.tunnel.Snapshot().pending_profile && session.tunnel.Snapshot().error.empty());
+    session.tunnel.Refresh();
     Wait(session);
-    assert(session.Snapshot().tunnels.size() == 1);
-    assert(session.Snapshot().tunnels.front().id == "first");
+    assert(session.tunnel.Snapshot().tunnels.size() == 1);
+    assert(session.tunnel.Snapshot().tunnels.front().id == "first");
 }
 
 void TestRemovalTargets(const std::filesystem::path &root) {
@@ -365,27 +418,24 @@ void TestRemovalTargets(const std::filesystem::path &root) {
     auto repository = std::make_unique<Passepartout::FileProfileRepository>(directory);
     repository->Save(Example("first"));
     repository->Save(Example("second"));
-    Passepartout::AppSession session(std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
-    Passepartout::ProfileObservable profiles(session);
+    Passepartout::Tests::ObservableFixture session(std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
+    auto &profiles = session.profiles;
     Wait(session);
     const std::vector<std::string> targets{"first", "second"};
     auto state = profiles.Snapshot();
     assert(Passepartout::ProfileObservable::CanRemove(state, targets));
     assert(!Passepartout::ProfileObservable::CanRemove(state, {}));
     assert(!Passepartout::ProfileObservable::CanRemove(state, {"missing"}));
-    state.busy = true;
+    state.activity.busy = true;
     assert(Passepartout::ProfileObservable::CanRemove(state, targets)); // Background polling is not a conflicting action.
-    state.foreground_busy = true;
+    state.activity.foreground = true;
     assert(!Passepartout::ProfileObservable::CanRemove(state, targets));
-    state.foreground_busy = false;
-    state.pending_profile = "first";
-    assert(!Passepartout::ProfileObservable::CanRemove(state, targets));
-    state.pending_profile.reset();
+    state.activity.foreground = false;
     state.loaded = false;
     assert(!Passepartout::ProfileObservable::CanRemove(state, targets));
 
     // A stale target invalidates the whole batch before any local mutation.
-    session.Remove({"first", "missing"});
+    session.profiles.Remove({"first", "missing"});
     Wait(session);
     assert(!profiles.Snapshot().error.empty());
     assert(Passepartout::FileProfileRepository(directory).Fetch().size() == 2);
@@ -448,34 +498,34 @@ void TestSelectionFailures(const std::filesystem::path &root) {
     });
     assert(visited.size() == 5);
     assert(selected.paths.size() == 2 && selected.SelectionFailures() == 3);
-    Passepartout::AppSession session(std::make_unique<Passepartout::FileProfileRepository>(root / "selection-store"),
+    Passepartout::Tests::ObservableFixture session(std::make_unique<Passepartout::FileProfileRepository>(root / "selection-store"),
         [](const std::string &text, const std::string &) {
             if (text != "valid") throw std::runtime_error("Invalid configuration");
             return Example("selected-valid");
         }, std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
     Wait(session);
-    session.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(selected)));
+    session.profiles.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(selected)));
     Wait(session);
-    auto snapshot = session.Snapshot();
+    auto snapshot = session.profiles.Snapshot();
     assert(snapshot.profiles.size() == 1 && snapshot.profiles.front().id == "selected-valid");
-    assert(snapshot.error_context == Passepartout::AppErrorContext::import);
+    assert(snapshot.error_context == Passepartout::ProfileObservable::ErrorContext::import);
     assert(snapshot.error.find("4 configuration(s)") != std::string::npos);
     assert(Passepartout::FileProfileRepository(root / "selection-store").Fetch().size() == 1);
 
     auto failed = Passepartout::Configuration::CollectFiles(2, [](std::size_t) -> std::filesystem::path {
         throw std::runtime_error("Unreadable file");
     });
-    session.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(failed)));
+    session.profiles.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(failed)));
     Wait(session);
-    assert(session.Snapshot().error.find("2 configuration(s)") != std::string::npos);
-    assert(session.Snapshot().profiles.size() == 1);
+    assert(session.profiles.Snapshot().error.find("2 configuration(s)") != std::string::npos);
+    assert(session.profiles.Snapshot().profiles.size() == 1);
     auto empty = Passepartout::Configuration::CollectFiles(0, [](std::size_t) -> std::filesystem::path {
         assert(false);
         return {};
     });
-    const auto revision = session.Snapshot().revision;
-    session.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(empty)));
-    assert(session.Snapshot().revision == revision);
+    const auto revision = session.profiles.Snapshot().revision;
+    session.profiles.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(empty)));
+    assert(session.profiles.Snapshot().revision == revision);
 }
 
 void TestLargeSelection(const std::filesystem::path &root) {
@@ -486,14 +536,14 @@ void TestLargeSelection(const std::filesystem::path &root) {
         return path;
     });
     assert(selected.paths.size() == count && selected.SelectionFailures() == 0);
-    Passepartout::AppSession session(std::make_unique<Passepartout::FileProfileRepository>(root / "large-selection-store"),
+    Passepartout::Tests::ObservableFixture session(std::make_unique<Passepartout::FileProfileRepository>(root / "large-selection-store"),
         [](const std::string &text, const std::string &) {
             return Example(text);
         }, std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
     Wait(session);
-    session.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(selected)));
+    session.profiles.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(selected)));
     Wait(session);
-    const auto snapshot = session.Snapshot();
+    const auto snapshot = session.profiles.Snapshot();
     assert(snapshot.error.empty());
     assert(snapshot.profiles.size() == count);
     const auto saved = Passepartout::FileProfileRepository(root / "large-selection-store").Fetch();
@@ -542,7 +592,7 @@ void TestSelectedFiles(const std::filesystem::path &root, bool fail) {
     auto entered = gate->entered.get_future();
     auto destroyed = std::make_shared<std::promise<void>>();
     auto cleanup = destroyed->get_future();
-    Passepartout::AppSession session(std::make_unique<Passepartout::FileProfileRepository>(root / "store"),
+    Passepartout::Tests::ObservableFixture session(std::make_unique<Passepartout::FileProfileRepository>(root / "store"),
         [gate, fail](const std::string &text, const std::string &name) {
             assert(text == "selected configuration");
             assert(name == "selected");
@@ -552,7 +602,7 @@ void TestSelectedFiles(const std::filesystem::path &root, bool fail) {
             return Example();
         }, std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>()));
     Wait(session);
-    Passepartout::ProfileObservable observable(session);
+    auto &observable = session.profiles;
     auto files = std::make_shared<TemporaryConfigurationFiles>(input, destroyed);
     std::weak_ptr<const Passepartout::ConfigurationFiles> lifetime = files;
     observable.ImportFiles(files);
@@ -565,8 +615,8 @@ void TestSelectedFiles(const std::filesystem::path &root, bool fail) {
     assert(cleanup.wait_for(std::chrono::seconds(5)) == std::future_status::ready);
     assert(lifetime.expired());
     assert(!std::filesystem::exists(input));
-    assert(session.Snapshot().error.empty() != fail);
-    assert(session.Snapshot().profiles.size() == (fail ? 0 : 1));
+    assert(session.profiles.Snapshot().error.empty() != fail);
+    assert(session.profiles.Snapshot().profiles.size() == (fail ? 0 : 1));
     observable.ClearError();
     const auto revision = observable.Snapshot().revision;
     observable.ImportFiles(nullptr);
@@ -575,7 +625,7 @@ void TestSelectedFiles(const std::filesystem::path &root, bool fail) {
     observable.ImportFailed();
     Wait(session);
     assert(!observable.Snapshot().error.empty());
-    assert(observable.Snapshot().error_context == Passepartout::AppErrorContext::import);
+    assert(observable.Snapshot().error_context == Passepartout::ProfileObservable::ErrorContext::import);
 }
 }
 
@@ -630,6 +680,8 @@ int main() {
         TestRemovalTargets(root);
         TestPendingActivation(root);
         TestShutdown(root);
+        TestObservableOrdering(root);
+        TestIndependentObservableState(root);
         TestPreferencesRetry(root);
         const auto selection_root = root / "selection";
         std::filesystem::create_directories(selection_root);
@@ -807,12 +859,12 @@ int main() {
         Rejects([&] { timeout.Connect(Example("timeout")); });
 
         // Polling does not show activity; foreground work and observed transitions do.
-        AppSnapshot activity;
-        activity.busy = true;
+        TunnelObservable::State activity;
+        activity.activity.busy = true;
         assert(!activity.HasActivity());
-        activity.foreground_busy = true;
+        activity.activity.foreground = true;
         assert(activity.HasActivity());
-        activity.foreground_busy = false;
+        activity.activity.foreground = false;
         activity.pending_profile = "next";
         assert(activity.HasActivity());
         activity.pending_profile.reset();
@@ -835,25 +887,25 @@ int main() {
             auto logging_backend = std::make_unique<ControlledTunnel>();
             auto *backend = logging_backend.get();
             backend->fail_fetch = true;
-            AppSession logged(std::make_unique<FileProfileRepository>(root / "logging"), importer,
+            Tests::ObservableFixture logged(std::make_unique<FileProfileRepository>(root / "logging"), importer,
                 std::make_unique<Partout::Tunnel>(std::move(logging_backend)), logger);
             Wait(logged);
             const auto count = messages.size();
-            logged.Refresh();
+            logged.tunnel.Refresh();
             Wait(logged);
             assert(messages.size() == count);
             backend->fail_fetch = false;
             backend->fake.Save(Example("orphan"));
             backend->fail_remove = true;
-            logged.Refresh();
+            logged.tunnel.Refresh();
             Wait(logged);
-            assert(logged.Snapshot().tunnel_available);
-            assert(logged.Snapshot().tunnel_error.empty());
-            assert(!logged.Snapshot().synchronization_error.empty());
+            assert(logged.tunnel.Snapshot().tunnel_available);
+            assert(logged.tunnel.Snapshot().tunnel_error.empty());
+            assert(!logged.tunnel.Snapshot().synchronization_error.empty());
             backend->fail_remove = false;
-            logged.Refresh();
+            logged.tunnel.Refresh();
             Wait(logged);
-            assert(logged.Snapshot().synchronization_error.empty());
+            assert(logged.tunnel.Snapshot().synchronization_error.empty());
         }
         const auto contains_log = [&](const std::string &part) {
             return std::any_of(messages.begin(), messages.end(), [&](const auto &message) { return message.find(part) != std::string::npos; });
@@ -863,21 +915,19 @@ int main() {
         assert(contains_log("Tunnel observation recovered"));
         assert(contains_log("Unable to remove VPN registration orphan"));
         assert(contains_log("Profile synchronization succeeded"));
-        assert(contains_log("Finished application session"));
 
         auto failed = std::make_unique<ControlledTunnel>();
         auto *session_strategy = failed.get();
         failed->fail_connect = true;
-        AppSession session(std::make_unique<FileProfileRepository>(root / "profiles"), importer, std::make_unique<Partout::Tunnel>(std::move(failed)));
+        Tests::ObservableFixture session(std::make_unique<FileProfileRepository>(root / "profiles"), importer, std::make_unique<Partout::Tunnel>(std::move(failed)));
         Wait(session);
-        assert(session.Snapshot().loaded);
-        assert(session.Snapshot().profiles.size() == 2);
-        assert(session.Snapshot().profiles.at(0).primaryModuleType->value == Partout::Models::ModuleType::Provider);
-        session.Connect(p.id);
+        assert(session.profiles.Snapshot().loaded);
+        assert(session.profiles.Snapshot().profiles.size() == 2);
+        assert(session.profiles.Snapshot().profiles.at(0).primaryModuleType->value == Partout::Models::ModuleType::Provider);
+        session.tunnel.ConnectProfile(p.id);
         Wait(session);
-        assert(!session.Snapshot().error.empty());
-        assert(session.Snapshot().error_context == Passepartout::AppErrorContext::tunnel);
-        assert(session.Snapshot().tunnels.at(0).status.value == Status::disconnected);
+        assert(!session.tunnel.Snapshot().error.empty());
+        assert(session.tunnel.Snapshot().tunnels.at(0).status.value == Status::disconnected);
         session.ClearError();
         // Failed files do not prevent the rest of a batch being processed.
         const auto another = root / "another.conf";
@@ -885,38 +935,38 @@ int main() {
         {
             auto backend = std::make_unique<ControlledTunnel>();
             auto *registration = backend.get();
-            AppSession imported(std::make_unique<FileProfileRepository>(root / "registration"), importer, std::make_unique<Partout::Tunnel>(std::move(backend)));
+            Tests::ObservableFixture imported(std::make_unique<FileProfileRepository>(root / "registration"), importer, std::make_unique<Partout::Tunnel>(std::move(backend)));
             Wait(imported);
             // Import persists independently of an active native registration.
             registration->fake.Save(Example("imported"));
             registration->fake.Connect("imported");
-            imported.Import({config});
+            imported.profiles.Import({config});
             Wait(imported);
-            assert(imported.Snapshot().error.empty());
-            assert(imported.Snapshot().profiles.size() == 1);
+            assert(imported.profiles.Snapshot().error.empty());
+            assert(imported.profiles.Snapshot().profiles.size() == 1);
             assert(registration->events.empty() && registration->removal_attempts == 0);
             assert(registration->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::active);
             registration->fake.Remove("imported");
-            imported.Refresh();
+            imported.tunnel.Refresh();
             Wait(imported);
-            assert(imported.Snapshot().error.empty());
+            assert(imported.profiles.Snapshot().error.empty());
             assert(registration->events == std::vector<std::string>{"save:imported"});
-            assert(imported.Snapshot().tunnels.at(0).status.value == Status::disconnected);
-            imported.Connect("imported");
+            assert(imported.tunnel.Snapshot().tunnels.at(0).status.value == Status::disconnected);
+            imported.tunnel.ConnectProfile("imported");
             Wait(imported);
             assert((registration->events == std::vector<std::string>{"save:imported", "connect:imported"}));
             registration->fail_save = true;
-            imported.Import({another});
+            imported.profiles.Import({another});
             Wait(imported);
-            assert(imported.Snapshot().error.empty());
-            assert(!imported.Snapshot().synchronization_error.empty());
+            assert(imported.profiles.Snapshot().error.empty());
+            assert(!imported.tunnel.Snapshot().synchronization_error.empty());
             assert(FileProfileRepository(root / "registration").Fetch().size() == 2);
-            assert(imported.Snapshot().profiles.size() == 2);
+            assert(imported.profiles.Snapshot().profiles.size() == 2);
             registration->fail_save = false;
-            imported.Refresh();
+            imported.tunnel.Refresh();
             Wait(imported);
-            assert(imported.Snapshot().error.empty());
-            assert(imported.Snapshot().tunnels.size() == 2);
+            assert(imported.profiles.Snapshot().error.empty());
+            assert(imported.tunnel.Snapshot().tunnels.size() == 2);
             assert(std::count(registration->events.begin(), registration->events.end(), "save:imported") == 1);
             assert(std::count(registration->events.begin(), registration->events.end(), "save:batch-id") == 2);
         }
@@ -924,76 +974,76 @@ int main() {
         auto unavailable = std::make_unique<ControlledTunnel>();
         auto *unavailable_strategy = unavailable.get();
         unavailable->fail_fetch = true;
-        AppSession offline(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::make_unique<Partout::Tunnel>(std::move(unavailable)));
+        Tests::ObservableFixture offline(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::make_unique<Partout::Tunnel>(std::move(unavailable)));
         Wait(offline);
         // A transient startup observation failure is not a failed user action.
-        assert(offline.Snapshot().loaded);
-        assert(offline.Snapshot().error.empty());
-        assert(!offline.Snapshot().tunnel_error.empty());
-        assert(!offline.Snapshot().tunnel_available);
+        assert(offline.profiles.Snapshot().loaded);
+        assert(offline.profiles.Snapshot().error.empty());
+        assert(!offline.tunnel.Snapshot().tunnel_error.empty());
+        assert(!offline.tunnel.Snapshot().tunnel_available);
         unavailable_strategy->fail_fetch = false;
-        offline.Refresh();
+        offline.tunnel.Refresh();
         Wait(offline);
-        assert(offline.Snapshot().error.empty());
-        assert(offline.Snapshot().tunnel_error.empty());
-        assert(offline.Snapshot().tunnel_available);
+        assert(offline.profiles.Snapshot().error.empty());
+        assert(offline.tunnel.Snapshot().tunnel_error.empty());
+        assert(offline.tunnel.Snapshot().tunnel_available);
         unavailable_strategy->fail_fetch = true;
-        offline.Import({another});
+        offline.profiles.Import({another});
         Wait(offline);
-        assert(offline.Snapshot().error.empty());
-        assert(!offline.Snapshot().tunnel_error.empty());
-        assert(!offline.Snapshot().tunnel_available);
-        assert(offline.Snapshot().profiles.size() == 1);
+        assert(offline.profiles.Snapshot().error.empty());
+        assert(!offline.tunnel.Snapshot().tunnel_error.empty());
+        assert(!offline.tunnel.Snapshot().tunnel_available);
+        assert(offline.profiles.Snapshot().profiles.size() == 1);
         assert(FileProfileRepository(root / "offline").Fetch().size() == 1);
         unavailable_strategy->fail_fetch = false;
-        offline.Refresh();
+        offline.tunnel.Refresh();
         Wait(offline);
-        assert(offline.Snapshot().error.empty());
-        assert(offline.Snapshot().profiles.size() == 1);
+        assert(offline.profiles.Snapshot().error.empty());
+        assert(offline.profiles.Snapshot().profiles.size() == 1);
         unavailable_strategy->fail_fetch = true;
-        offline.Import({root / "missing.conf"});
+        offline.profiles.Import({root / "missing.conf"});
         Wait(offline);
-        assert(!offline.Snapshot().error.empty());
-        assert(offline.Snapshot().error_context == Passepartout::AppErrorContext::import);
-        offline.Remove({"batch-id"});
+        assert(!offline.profiles.Snapshot().error.empty());
+        assert(offline.profiles.Snapshot().error_context == Passepartout::ProfileObservable::ErrorContext::import);
+        offline.profiles.Remove({"batch-id"});
         Wait(offline);
-        assert(offline.Snapshot().error.empty());
-        assert(offline.Snapshot().profiles.empty());
+        assert(offline.profiles.Snapshot().error.empty());
+        assert(offline.profiles.Snapshot().profiles.empty());
         assert(FileProfileRepository(root / "offline").Fetch().empty());
         // A registration left during an outage is reconciled on recovery.
         unavailable_strategy->fake.Save(Example("batch-id"));
         offline.ClearError();
         unavailable_strategy->fail_fetch = false;
-        offline.Refresh();
+        offline.tunnel.Refresh();
         Wait(offline);
-        assert(offline.Snapshot().tunnel_error.empty());
-        assert(offline.Snapshot().tunnel_available);
-        assert(offline.Snapshot().tunnels.empty());
+        assert(offline.tunnel.Snapshot().tunnel_error.empty());
+        assert(offline.tunnel.Snapshot().tunnel_available);
+        assert(offline.tunnel.Snapshot().tunnels.empty());
         // Startup also reconciles registrations left by a previous process.
         auto orphaned = std::make_unique<ControlledTunnel>();
         orphaned->fake.Save(Example("orphaned"));
-        AppSession restarted(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::make_unique<Partout::Tunnel>(std::move(orphaned)));
+        Tests::ObservableFixture restarted(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::make_unique<Partout::Tunnel>(std::move(orphaned)));
         Wait(restarted);
         // A successful local load is authoritative for app-owned native registrations.
-        assert(restarted.Snapshot().tunnels.empty());
+        assert(restarted.tunnel.Snapshot().tunnels.empty());
         // Failed local loading is not evidence that all profiles were deleted.
         auto corrupt_repository = std::make_unique<FileProfileRepository>(root / "corrupt");
         std::ofstream(root / "corrupt" / "objects" / "broken.json") << "invalid";
         auto retained = std::make_unique<ControlledTunnel>();
         retained->fake.Save(Example("retained"));
-        AppSession corrupt(std::move(corrupt_repository), importer, std::make_unique<Partout::Tunnel>(std::move(retained)));
+        Tests::ObservableFixture corrupt(std::move(corrupt_repository), importer, std::make_unique<Partout::Tunnel>(std::move(retained)));
         Wait(corrupt);
-        assert(!corrupt.Snapshot().loaded);
-        assert(!corrupt.Snapshot().error.empty());
-        assert(corrupt.Snapshot().tunnels.size() == 1);
-        session.Import({root / "missing.conf", another});
+        assert(!corrupt.profiles.Snapshot().loaded);
+        assert(!corrupt.profiles.Snapshot().error.empty());
+        assert(corrupt.tunnel.Snapshot().tunnels.size() == 1);
+        session.profiles.Import({root / "missing.conf", another});
         Wait(session);
-        assert(!session.Snapshot().error.empty());
-        assert(session.Snapshot().error_context == Passepartout::AppErrorContext::import);
-        assert(session.Snapshot().profiles.size() == 3);
-        session.Remove({"imported", "batch-id"});
+        assert(!session.profiles.Snapshot().error.empty());
+        assert(session.profiles.Snapshot().error_context == Passepartout::ProfileObservable::ErrorContext::import);
+        assert(session.profiles.Snapshot().profiles.size() == 3);
+        session.profiles.Remove({"imported", "batch-id"});
         Wait(session);
-        assert(session.Snapshot().profiles.size() == 1);
+        assert(session.profiles.Snapshot().profiles.size() == 1);
         FileProfileRepository reopened(root / "profiles");
         assert(reopened.Fetch().size() == 1);
         assert(reopened.Fetch().at(0).id == p.id);
@@ -1002,46 +1052,46 @@ int main() {
         session_strategy->fake.Save(Example("broken-orphan"));
         session_strategy->observation_errors.emplace("broken-orphan", "Invalid handle");
         session_strategy->observation_errors.emplace(p.id, "Invalid handle");
-        session.Refresh();
+        session.tunnel.Refresh();
         Wait(session);
-        assert(session.Snapshot().tunnel_available);
-        assert(session.Snapshot().tunnel_error.empty());
-        assert(session.Snapshot().synchronization_error.empty());
-        assert(session.Snapshot().tunnel_observation_errors.size() == 2);
-        assert(!TunnelObservable::StateForProfile(session.Snapshot(), p.id).can_interact);
+        assert(session.tunnel.Snapshot().tunnel_available);
+        assert(session.tunnel.Snapshot().tunnel_error.empty());
+        assert(session.tunnel.Snapshot().synchronization_error.empty());
+        assert(session.tunnel.Snapshot().tunnel_observation_errors.size() == 2);
+        assert(!TunnelObservable::StateForProfile(session.tunnel.Snapshot(), p.id).can_interact);
         session_strategy->observation_errors.erase(p.id);
-        session.Refresh();
+        session.tunnel.Refresh();
         Wait(session);
-        assert(TunnelObservable::StateForProfile(session.Snapshot(), p.id).can_interact);
-        assert(session.Snapshot().tunnel_observation_errors.size() == 1);
+        assert(TunnelObservable::StateForProfile(session.tunnel.Snapshot(), p.id).can_interact);
+        assert(session.tunnel.Snapshot().tunnel_observation_errors.size() == 1);
         const auto retained_registrations = session_strategy->fake.Fetch();
         assert(std::any_of(retained_registrations.begin(), retained_registrations.end(), [](const auto &info) {
             return info.id == "broken-orphan";
         }));
-        TunnelObservable toggle(session);
+        auto &toggle = session.tunnel;
         session_strategy->fail_connect = false;
         toggle.SetEnabled(p.id, true);
         Wait(session);
-        auto toggle_state = TunnelObservable::StateForProfile(session.Snapshot(), p.id);
+        auto toggle_state = TunnelObservable::StateForProfile(session.tunnel.Snapshot(), p.id);
         assert(toggle_state.is_on && toggle_state.can_interact);
         toggle.SetEnabled(p.id, false);
         Wait(session);
-        toggle_state = TunnelObservable::StateForProfile(session.Snapshot(), p.id);
+        toggle_state = TunnelObservable::StateForProfile(session.tunnel.Snapshot(), p.id);
         assert(!toggle_state.is_on && toggle_state.can_interact);
-        auto unavailable_state = session.Snapshot();
+        auto unavailable_state = session.tunnel.Snapshot();
         unavailable_state.tunnel_available = false;
         assert(!TunnelObservable::StateForProfile(unavailable_state, p.id).can_interact);
-        unavailable_state = session.Snapshot();
+        unavailable_state = session.tunnel.Snapshot();
         unavailable_state.tunnel_observation_errors.emplace(p.id, "Invalid handle");
         assert(!TunnelObservable::StateForProfile(unavailable_state, p.id).can_interact);
         unavailable_state.tunnel_observation_errors.clear();
         unavailable_state.tunnel_observation_errors.emplace("broken-orphan", "Invalid handle");
         assert(TunnelObservable::StateForProfile(unavailable_state, p.id).can_interact);
-        unavailable_state = session.Snapshot();
-        unavailable_state.foreground_busy = true;
+        unavailable_state = session.tunnel.Snapshot();
+        unavailable_state.activity.foreground = true;
         assert(!TunnelObservable::StateForProfile(unavailable_state, p.id).can_interact);
-        assert(!TunnelObservable::StateForProfile(session.Snapshot(), "missing").can_interact);
-        auto transitioning = session.Snapshot();
+        assert(!TunnelObservable::StateForProfile(session.tunnel.Snapshot(), "missing").can_interact);
+        auto transitioning = session.tunnel.Snapshot();
         transitioning.tunnels.at(0).status.value = Status::connecting;
         transitioning.tunnels.at(0).isEnabled = true;
         assert(TunnelObservable::StateForProfile(transitioning, p.id).can_interact);
@@ -1052,50 +1102,50 @@ int main() {
         session_strategy->fail_connect = true;
         toggle.SetEnabled(p.id, true);
         Wait(session);
-        assert(!session.Snapshot().error.empty());
-        assert(!TunnelObservable::StateForProfile(session.Snapshot(), p.id).is_on);
+        assert(!session.tunnel.Snapshot().error.empty());
+        assert(!TunnelObservable::StateForProfile(session.tunnel.Snapshot(), p.id).is_on);
         session.ClearError();
         session_strategy->fail_connect = false;
 
         auto gate = std::make_shared<Gate>();
         auto entered = gate->entered.get_future();
-        AppSession queued(std::make_unique<FileProfileRepository>(root / "profiles"),
+        Tests::ObservableFixture queued(std::make_unique<FileProfileRepository>(root / "profiles"),
                           importer, std::make_unique<Partout::Tunnel>(std::make_unique<BlockingTunnel>(gate)));
         Wait(queued);
-        queued.Connect(p.id);
+        queued.tunnel.ConnectProfile(p.id);
         assert(entered.wait_for(std::chrono::seconds(5)) == std::future_status::ready);
-        queued.Disconnect(p.id);
-        assert(queued.Snapshot().busy);
-        assert(!TunnelObservable::StateForProfile(queued.Snapshot(), p.id).can_interact);
+        queued.tunnel.Disconnect(p.id);
+        assert(queued.executor.Snapshot().busy);
+        assert(!TunnelObservable::StateForProfile(queued.tunnel.Snapshot(), p.id).can_interact);
         gate->release.set_value();
         Wait(queued);
-        assert(queued.Snapshot().error.empty());
-        assert(queued.Snapshot().tunnels.at(0).status.value == Status::disconnected);
+        assert(queued.profiles.Snapshot().error.empty());
+        assert(queued.tunnel.Snapshot().tunnels.at(0).status.value == Status::disconnected);
 
         auto delayed = std::make_unique<ControlledTunnel>();
         delayed->fake.Save(p);
         delayed->fake.Connect(p.id);
         delayed->delayed_disconnect = true;
         auto *delayed_strategy = delayed.get();
-        AppSession removal(std::make_unique<FileProfileRepository>(root / "profiles"),
+        Tests::ObservableFixture removal(std::make_unique<FileProfileRepository>(root / "profiles"),
             importer, std::make_unique<Partout::Tunnel>(std::move(delayed)));
         Wait(removal);
-        removal.Remove({p.id});
+        removal.profiles.Remove({p.id});
         Wait(removal);
-        assert(removal.Snapshot().error.empty());
-        assert(removal.Snapshot().tunnel_error.empty());
-        assert(removal.Snapshot().tunnel_available);
-        assert(!removal.Snapshot().synchronization_error.empty());
-        assert(removal.Snapshot().profiles.empty());
+        assert(removal.profiles.Snapshot().error.empty());
+        assert(removal.tunnel.Snapshot().tunnel_error.empty());
+        assert(removal.tunnel.Snapshot().tunnel_available);
+        assert(!removal.tunnel.Snapshot().synchronization_error.empty());
+        assert(removal.profiles.Snapshot().profiles.empty());
         assert(reopened.Fetch().empty());
         // Keep the Windows registration until disconnect actually finishes.
         assert(delayed_strategy->fake.Fetch().size() == 1);
         delayed_strategy->fake.SetStatus(p.id, Partout::Models::TunnelStatus::inactive);
-        removal.Refresh();
+        removal.tunnel.Refresh();
         Wait(removal);
-        assert(removal.Snapshot().tunnel_error.empty());
-        assert(removal.Snapshot().tunnels.empty());
-        assert(removal.Snapshot().synchronization_error.empty());
+        assert(removal.tunnel.Snapshot().tunnel_error.empty());
+        assert(removal.tunnel.Snapshot().tunnels.empty());
+        assert(removal.tunnel.Snapshot().synchronization_error.empty());
     } catch (...) {
         std::filesystem::remove_all(root);
         try {

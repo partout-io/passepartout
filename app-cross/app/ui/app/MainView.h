@@ -27,7 +27,9 @@ private:
     void Remove(std::vector<std::string> ids);
     void Tick(wxTimerEvent &);
     Passepartout::AppContext &context_;
-    Passepartout::AppSnapshot snapshot_;
+    Passepartout::ProfileObservable::State profiles_;
+    Passepartout::TunnelObservable::State tunnels_;
+    Passepartout::SerialExecutor::Activity activity_;
     Passepartout::ProfileListView *collection_;
     wxStaticText *message_;
     wxActivityIndicator *progress_;

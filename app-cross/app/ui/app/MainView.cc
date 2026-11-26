@@ -130,7 +130,9 @@ MainView::MainView(AppContext &context, bool demo,
     SetMinSize(FromDIP(wxSize(640, 360)));
     SetSize(FromDIP(wxSize(720, 480)));
     Centre();
-    snapshot_ = context_.profiles.Snapshot();
+    profiles_ = context_.profiles.Snapshot();
+    tunnels_ = context_.tunnel.Snapshot();
+    activity_ = context_.Activity();
     Render();
     timer_.Start(200);
 }
@@ -141,10 +143,10 @@ MainView::~MainView() {
 }
 
 void MainView::Render() {
-    const bool tunnel_unavailable = !snapshot_.tunnel_error.empty() || !snapshot_.synchronization_error.empty();
+    const bool tunnel_unavailable = !tunnels_.tunnel_error.empty() || !tunnels_.synchronization_error.empty();
     message_->SetLabel(Localized(tunnel_unavailable ? StringKey::ErrorsAppTunnel : StringKey::ViewsAppFoldersNoProfiles));
-    message_->Show(tunnel_unavailable || (snapshot_.loaded && snapshot_.profiles.empty()));
-    const bool activity = snapshot_.HasActivity();
+    message_->Show(tunnel_unavailable || (profiles_.loaded && profiles_.profiles.empty()));
+    const bool activity = activity_.foreground || tunnels_.HasActivity();
     if (activity) progress_->Start();
     else progress_->Stop();
     progress_->Show(activity);
@@ -153,12 +155,12 @@ void MainView::Render() {
 }
 
 void MainView::UpdateActions() {
-    collection_->Render(snapshot_, picking_);
-    const bool idle = !picking_ && !snapshot_.foreground_busy && !snapshot_.pending_profile && snapshot_.loaded;
+    collection_->Render(profiles_, tunnels_, activity_, picking_);
+    const bool idle = !picking_ && !activity_.foreground && !tunnels_.pending_profile && profiles_.loaded;
     const auto selected = collection_->SelectedIds();
     import_->Enable(idle);
     GetMenuBar()->Enable(wxID_ADD, idle);
-    remove_->Enable(!picking_ && ProfileObservable::CanRemove(snapshot_, selected));
+    remove_->Enable(!picking_ && ProfileObservable::CanRemove(profiles_, selected) && !tunnels_.pending_profile);
 }
 
 void MainView::Tick(wxTimerEvent &) {
@@ -171,28 +173,35 @@ void MainView::Tick(wxTimerEvent &) {
             UpdateActions();
         }
     }
-    const auto next = context_.profiles.Snapshot();
-    if (next.revision != snapshot_.revision) {
-        snapshot_ = next;
+    const auto next_profiles = context_.profiles.Snapshot();
+    const auto next_tunnels = context_.tunnel.Snapshot();
+    const auto next_activity = context_.Activity();
+    if (next_profiles.revision != profiles_.revision || next_tunnels.revision != tunnels_.revision ||
+        next_activity.revision != activity_.revision) {
+        profiles_ = next_profiles;
+        tunnels_ = next_tunnels;
+        activity_ = next_activity;
         Render();
         // Background observation can recover on the next poll. Keep its error
         // inline; reserve modal alerts for failed actions or local loading.
-        if (!snapshot_.error.empty() && !snapshot_.busy) {
+        if ((!profiles_.error.empty() || !tunnels_.error.empty()) && !activity_.busy) {
             // Pause polling while the alert runs its nested event loop.
             timer_.Stop();
-            const bool importing = !snapshot_.error.empty() && snapshot_.error_context == AppErrorContext::import;
+            const bool profile_error = !profiles_.error.empty();
+            const bool importing = profile_error && profiles_.error_context == ProfileObservable::ErrorContext::import;
             // FIXME: ### Map typed failure reasons to localized recovery guidance without exposing raw native errors or secrets.
             const auto message = Localized(importing ? StringKey::ErrorsAppImportGeneric :
-                snapshot_.error_context == AppErrorContext::tunnel ? StringKey::ErrorsAppTunnel : StringKey::ErrorsAppOther);
+                !profile_error ? StringKey::ErrorsAppTunnel : StringKey::ErrorsAppOther);
             wxMessageDialog dialog(this, message,
                 importing ? Localized(StringKey::ViewsAppToolbarImportFile) : wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
             dialog.SetOKLabel(Localized(StringKey::GlobalNounsOk));
             dialog.ShowModal();
-            context_.profiles.ClearError();
+            if (profile_error) context_.profiles.ClearError();
+            else context_.tunnel.ClearError();
             timer_.Start(200);
         }
     }
-    if (!picking_ && !snapshot_.busy && snapshot_.loaded && !activations_.empty()) {
+    if (!picking_ && !activity_.busy && profiles_.loaded && !activations_.empty()) {
         auto files = std::move(activations_.front());
         activations_.pop_front();
         context_.profiles.ImportFiles(std::move(files));
@@ -217,7 +226,7 @@ void MainView::PresentInteractiveLogin() {
 }
 
 void MainView::Import() {
-    if (picking_ || context_.profiles.Snapshot().busy) return;
+    if (picking_ || context_.Activity().busy) return;
     picking_ = true;
     UpdateActions();
     try {
@@ -231,7 +240,7 @@ void MainView::Import() {
 }
 
 void MainView::Remove(std::vector<std::string> ids) {
-    if (picking_ || !ProfileObservable::CanRemove(context_.profiles.Snapshot(), ids)) return;
+    if (picking_ || !ProfileObservable::CanRemove(context_.profiles.Snapshot(), ids) || context_.tunnel.Snapshot().pending_profile) return;
     wxMessageDialog dialog(this, Localized(StringKey::ThemeConfirmationMessage),
         Localized(StringKey::GlobalActionsRemove), wxOK | wxCANCEL | wxCANCEL_DEFAULT | wxICON_WARNING);
     dialog.SetOKCancelLabels(Localized(StringKey::ThemeConfirmationOk), Localized(StringKey::ThemeConfirmationCancel));
@@ -250,7 +259,7 @@ void MainView::Activate(std::shared_ptr<const ConfigurationFiles> files) {
 }
 
 void MainView::Edit(const std::string &id) {
-    if (picking_ || context_.profiles.Snapshot().foreground_busy) return;
+    if (picking_ || context_.Activity().foreground) return;
     const auto editor = context_.profiles.CreateEditor(id);
     if (!editor) return;
     ProfileCoordinator dialog(this, context_.profiles, editor, *context_.wire_guard_keys);

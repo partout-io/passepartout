@@ -8,7 +8,7 @@
 #include "business/models/InteractiveLogin.h"
 #include "observables/TunnelObservable.h"
 #include "observables/ProfileObservable.h"
-#include "business/managers/AppSession.h"
+#include "ObservableFixture.h"
 #include <cassert>
 #include <chrono>
 #include <fstream>
@@ -39,8 +39,8 @@ Passepartout::Profile Example() {
     return profile;
 }
 
-void Wait(Passepartout::AppSession &session) {
-    assert(session.WaitIdle(std::chrono::seconds(5)));
+void Wait(Passepartout::Tests::ObservableFixture &session) {
+    assert(session.executor.WaitIdle(std::chrono::seconds(5)));
 }
 class RejectingTunnel final : public Partout::TunnelStrategy {
 public:
@@ -135,11 +135,11 @@ int main() {
         auto strategy = std::make_unique<RejectingTunnel>();
         auto *backend = strategy.get();
         backend->fake.Save(draft); // Startup synchronizes the authoritative saved profile.
-        AppSession session(std::make_unique<FileProfileRepository>(store), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)));
+        Tests::ObservableFixture session(std::make_unique<FileProfileRepository>(store), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)));
         Wait(session);
         assert(repository.Fetch().front() == original && backend->saved == original);
-        ProfileObservable profiles(session);
-        TunnelObservable tunnel(session);
+        auto &profiles = session.profiles;
+        auto &tunnel = session.tunnel;
         tunnel.Connect(original.id);
         auto canceled_login = tunnel.TakeInteractiveLogin();
         assert(canceled_login && !tunnel.TakeInteractiveLogin());
@@ -159,26 +159,26 @@ int main() {
         auto pending = profiles.CreateEditor(original.id);
         assert(pending);
         assert(!profiles.CreateEditor("missing-profile"));
-        assert(!session.FindProfile("missing-profile"));
+        assert(!session.profiles.FindProfile("missing-profile"));
         pending->Rename("Retry name");
         backend->rejects = true;
         profiles.SaveEditor(pending);
         Wait(session);
         assert(pending->Snapshot().saved && !pending->Snapshot().failed);
         assert(repository.Fetch().front().name == "Retry name");
-        assert(!session.Snapshot().synchronization_error.empty());
-        assert(ProfileObservable::CanSave(session.Snapshot(), original.id));
+        assert(!session.tunnel.Snapshot().synchronization_error.empty());
+        assert(ProfileObservable::CanSave(session.profiles.Snapshot(), original.id));
         backend->connection_credentials.reset();
-        session.Connect(original.id);
+        session.tunnel.ConnectProfile(original.id);
         Wait(session);
-        assert(!session.Snapshot().error.empty());
+        assert(!session.tunnel.Snapshot().error.empty());
         assert(!backend->connection_credentials);
         assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
         session.ClearError();
         backend->rejects = false;
-        session.Refresh();
+        session.tunnel.Refresh();
         Wait(session);
-        assert(session.Snapshot().synchronization_error.empty());
+        assert(session.tunnel.Snapshot().synchronization_error.empty());
         assert(pending->Snapshot().saved);
         assert(repository.Fetch().front().name == "Retry name");
         assert(backend->saved.name == "Retry name");
@@ -190,9 +190,9 @@ int main() {
         Wait(session);
         assert(stale->Snapshot().failed && repository.Fetch().front().name == "Retry name");
         backend->fake.Connect(original.id);
-        session.Refresh();
+        session.tunnel.Refresh();
         Wait(session);
-        assert(ProfileObservable::CanSave(session.Snapshot(), original.id));
+        assert(ProfileObservable::CanSave(session.profiles.Snapshot(), original.id));
         auto active_editor = profiles.CreateEditor(original.id);
         active_editor->Rename("Saved while active");
         profiles.SaveEditor(active_editor);
@@ -201,7 +201,7 @@ int main() {
         assert(repository.Fetch().front().name == "Saved while active");
         assert(backend->saved.name == "Retry name");
         backend->fake.Disconnect(original.id);
-        session.Refresh();
+        session.tunnel.Refresh();
         Wait(session);
         assert(backend->saved.name == "Saved while active");
         // Reload synchronizes stored profiles and removes obsolete app-owned registrations.
@@ -211,11 +211,11 @@ int main() {
         auto untracked = original;
         untracked.id = "untracked";
         backend->fake.Save(untracked);
-        session.Load();
+        session.profiles.Load();
         Wait(session);
         assert(repository.Fetch().size() == 2);
         assert(backend->fake.Fetch().size() == 2);
-        session.Remove({original.id, imported.id});
+        session.profiles.Remove({original.id, imported.id});
         Wait(session);
         assert(repository.Fetch().empty());
         assert(backend->fake.Fetch().empty());

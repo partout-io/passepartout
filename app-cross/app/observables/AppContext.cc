@@ -7,7 +7,7 @@
 #include "../business/strategy/OfflineHttpClient.h"
 #include "../business/strategy/PartoutWireGuardKeyGenerator.h"
 #include "../context/ContextExtensions.h"
-#include "../business/managers/AppSession.h"
+#include "../business/managers/ProfileManager.h"
 #include "../business/strategy/FileProfileRepository.h"
 #include "../business/strategy/FakeTunnelStrategy.h"
 #include "../business/strategy/FilePreferencesRepository.h"
@@ -105,15 +105,13 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
       application_version(ApplicationVersion()),
       wire_guard_keys(std::make_unique<PartoutWireGuardKeyGenerator>()),
       logger_(std::make_shared<AppLogger>()),
-      session_(std::make_unique<AppSession>(std::make_unique<FileProfileRepository>(
-          Profiles::Directory(data_root, constants)),
-          ImportProfile, MakeTunnel(demo, cross_constants), logger_,
-          ApplyLoggingPreferences)),
-      profiles(*session_), tunnel(*session_),
+      profiles(executor_, std::make_unique<ProfileManager>(std::make_unique<FileProfileRepository>(
+          Profiles::Directory(data_root, constants)), ImportProfile), logger_),
+      tunnel(executor_, MakeTunnel(demo, cross_constants), logger_, ApplyLoggingPreferences),
       preferences(MakePreferencesRepository(
           Profiles::Directory(data_root, constants), cross_constants), [this] {
-              const auto state = session_->Snapshot();
-              return state.loaded && !state.busy && !state.pending_profile && state.tunnel_available &&
+              const auto state = tunnel.Snapshot();
+              return profiles.Snapshot().loaded && !state.activity.busy && !state.pending_profile && state.tunnel_available &&
                   state.tunnel_observation_errors.empty() && std::all_of(state.tunnels.begin(), state.tunnels.end(), [](const auto &info) {
                       return info.status.value == Status::disconnected;
                   });
@@ -130,11 +128,33 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
       credits(CreditsResource, MakeHttp(constants)),
       diagnostics(std::make_unique<IssueReporter>(constants.emails.recipients.beta + "@" + constants.emails.domain,
           application_version, ReviewIssue)) {
-    preferences.OnChange([this](const auto &value) {
-        session_->ApplyPreferences(value);
-    });
-    config.Refresh();
-    logger_->Write(LogLevel::info, LogCategory::core, demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
+    try {
+        profiles.OnChange([this](std::vector<Profile> values, bool loaded) {
+            tunnel.SetProfiles(std::move(values), loaded);
+        });
+        profiles.Load();
+        preferences.OnChange([this](const auto &value) {
+            tunnel.ApplyPreferences(value);
+        });
+        config.Refresh();
+        logger_->Write(LogLevel::info, LogCategory::core, demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
+    } catch (...) {
+        executor_.RequestStop();
+        profiles.Cancel();
+        tunnel.Cancel();
+        executor_.Join();
+        throw;
+    }
 }
 
-AppContext::~AppContext() = default;
+AppContext::~AppContext() {
+    executor_.RequestStop();
+    profiles.Cancel();
+    tunnel.Cancel();
+    executor_.Join();
+}
+
+Passepartout::SerialExecutor::Activity AppContext::Activity() const {
+    return executor_.Snapshot();
+}
+
