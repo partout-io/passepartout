@@ -5,7 +5,7 @@
 #pragma once
 #include "../business/extensions/ModelsExtensions.h"
 #include "../business/strategy/HttpClient.h"
-#include "../business/extensions/BackgroundWorker.h"
+#include "BackgroundWorker.h"
 #include <map>
 
 namespace Passepartout {

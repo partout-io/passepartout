@@ -2,17 +2,16 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "../app/business/extensions/ModelsExtensions.h"
 #include "business/strategy/FilePreferencesRepository.h"
 #include "business/managers/ConfigManager.h"
 #include "business/managers/VersionChecker.h"
 #include "business/managers/IssueReporter.h"
-#include "business/extensions/AppLogger.h"
+#include "context/AppLogger.h"
 #include "business/extensions/ModelsExtensions.h"
 #include "observables/UserPreferencesObservable.h"
 #include "observables/ConfigObservable.h"
 #include "observables/CreditsObservable.h"
-#include "context/LoadAppConstants.h"
+#include "context/ContextExtensions.h"
 #include "SettingsResources.h"
 #include <algorithm>
 #include <cassert>

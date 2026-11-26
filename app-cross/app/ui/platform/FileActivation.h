@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../../business/extensions/FileActivationInbox.h"
+#include "../../business/platform/FileActivationInbox.h"
 #include <string>
 
 namespace Passepartout {

@@ -4,16 +4,16 @@
 
 #include "business/managers/ProfileManager.h"
 #include "business/strategy/FileProfileRepository.h"
-#include "business/extensions/DecodeImportResult.h"
-#include "context/LoadAppConstants.h"
-#include "context/ProfileDirectory.h"
+#include "business/extensions/ModelsExtensions.h"
+#include "context/ContextExtensions.h"
+#include "context/ContextExtensions.h"
 #include <partout/tunnel/Tunnel.h>
 #include "business/strategy/FakeTunnelStrategy.h"
 #include "business/managers/AppSession.h"
 #include "observables/ProfileObservable.h"
 #include "observables/TunnelObservable.h"
-#include "ui/extensions/ModalConfigurationPicker.h"
-#include "ui/extensions/ConfigurationSelection.h"
+#include "ui/platform/ModalConfigurationPicker.h"
+#include "ui/extensions/ModelsExtensions.h"
 #include <algorithm>
 #include <cassert>
 #include <fstream>

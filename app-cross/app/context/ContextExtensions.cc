@@ -2,17 +2,21 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#pragma once
-#include "CrossConstants.h"
-#include "AppConstants.h"
-#include "../business/extensions/Paths.h"
+#include "ContextExtensions.h"
+#include "AppConstantsResource.h"
+#include "../business/extensions/ModelsExtensions.h"
 #include <algorithm>
 #include <cctype>
-#include <filesystem>
 #include <stdexcept>
 
+namespace Passepartout::Constants {
+Models::AppConstants Load() {
+    return Models::AppConstants::FromJson(Partout::Json::Parse(AppConstantsResource));
+}
+}
+
 namespace Passepartout::Profiles {
-inline std::filesystem::path Directory(const std::filesystem::path &root,
+std::filesystem::path Directory(const std::filesystem::path &root,
     const Models::AppConstants &constants, const CrossConstants &cross_constants, bool demo
 ) {
     auto name = constants.containers.local;

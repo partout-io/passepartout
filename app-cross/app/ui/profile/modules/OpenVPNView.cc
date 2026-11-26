@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "OpenVPNView.h"
-#include "../../strings/Unlocalized.h"
+#include "../../../strings/Unlocalized.h"
 #include <algorithm>
 #include <wx/base64.h>
 #include <wx/numformatter.h>

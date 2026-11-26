@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "PassepartoutApp.h"
-#include "business/extensions/AppLogger.h"
-#include "ui/app/MainView.h"
-#include "ui/extensions/FilePath.h"
-#include "ui/platform/Presentation.h"
-#include "strings/Strings.h"
+#include "../context/AppLogger.h"
+#include "app/MainView.h"
+#include "extensions/ModelsExtensions.h"
+#include "platform/Presentation.h"
+#include "../strings/Strings.h"
 #include "partout.h"
 #include <wx/stdpaths.h>
 #include <wx/weakref.h>

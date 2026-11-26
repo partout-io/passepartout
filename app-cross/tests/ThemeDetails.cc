@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "../app/ui/theme/ThemeDetailView.h"
-#include "../app/ui/profile/DNSView.h"
-#include "../app/ui/profile/OpenVPNView.h"
+#include "../app/ui/profile/modules/DNSView.h"
+#include "../app/ui/profile/modules/OpenVPNView.h"
 #include "../app/ui/theme/ThemeLongContent.h"
 #include "../app/strings/Strings.h"
 #include "../app/ui/settings/SettingsView.h"

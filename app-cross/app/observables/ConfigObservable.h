@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../business/managers/ConfigManager.h"
-#include "../business/extensions/BackgroundWorker.h"
+#include "BackgroundWorker.h"
 
 namespace Passepartout {
 class ConfigObservable {

@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../../context/AppContext.h"
-#include "../extensions/ConfigurationPickerFactory.h"
+#include "../../observables/AppContext.h"
+#include "../extensions/ModelsExtensions.h"
 #include "../theme/Theme.h"
 #include "../platform/MainFrame.h"
 #include "ProfileListView.h"

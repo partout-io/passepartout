@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "OnDemandView.h"
-#include "../../strings/Strings.h"
-#include "../../strings/Unlocalized.h"
+#include "../../../strings/Strings.h"
+#include "../../../strings/Unlocalized.h"
 #include <algorithm>
 
 namespace Passepartout {

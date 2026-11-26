@@ -4,7 +4,7 @@
 
 #include "ProfileListView.h"
 #include "../../strings/Strings.h"
-#include "../extensions/AppProfile.h"
+#include "../extensions/ModelsExtensions.h"
 #include <algorithm>
 #include <wx/numformatter.h>
 #include "../theme/Theme.h"

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../../context/AppContext.h"
+#include "../../observables/AppContext.h"
 #include "SettingsPresentation.h"
 #include "SettingsView.h"
 #include <wx/simplebook.h>

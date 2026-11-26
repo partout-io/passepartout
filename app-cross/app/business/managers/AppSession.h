@@ -4,10 +4,10 @@
 
 #pragma once
 #include "../models/AppSnapshot.h"
-#include "ProfileEditor.h"
+#include "../../observables/ProfileEditor.h"
 #include "ProfileManager.h"
 #include <partout/tunnel/Tunnel.h>
-#include "../extensions/AppLogger.h"
+#include "../../context/AppLogger.h"
 #include "AppPreferences.h"
 #include "../models/ConfigurationFiles.h"
 #include <condition_variable>

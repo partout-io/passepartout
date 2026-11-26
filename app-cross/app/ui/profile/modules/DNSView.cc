@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "DNSView.h"
-#include "../../strings/Unlocalized.h"
+#include "../../../strings/Unlocalized.h"
 
 namespace Passepartout {
 DNSView::DNSView(wxWindow *parent, const Partout::Models::DNSModule &module, OpenModuleContent open_content)

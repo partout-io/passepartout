@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "MainView.h"
-#include "InteractiveLoginView.h"
+#include "../alerts/InteractiveLoginView.h"
 #include "../../strings/Strings.h"
 #include "../profile/ProfileCoordinator.h"
 #include "../settings/SettingsCoordinator.h"

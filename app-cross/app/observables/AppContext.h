@@ -3,16 +3,16 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../observables/ProfileObservable.h"
-#include "../observables/TunnelObservable.h"
-#include "LoadAppConstants.h"
-#include "CrossConstants.h"
+#include "ProfileObservable.h"
+#include "TunnelObservable.h"
+#include "../context/ContextExtensions.h"
+#include "../context/CrossConstants.h"
 #include "../business/strategy/WireGuardKeyGenerator.h"
-#include "../observables/UserPreferencesObservable.h"
-#include "../observables/ConfigObservable.h"
-#include "../observables/VersionObservable.h"
-#include "../observables/CreditsObservable.h"
-#include "../observables/DiagnosticsObservable.h"
+#include "UserPreferencesObservable.h"
+#include "ConfigObservable.h"
+#include "VersionObservable.h"
+#include "CreditsObservable.h"
+#include "DiagnosticsObservable.h"
 
 namespace Passepartout {
 class AppLogger;

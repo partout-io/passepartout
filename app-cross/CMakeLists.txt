@@ -94,9 +94,9 @@ if(BUILD_APP)
     if(BUILD_UI_TESTS)
         add_executable(passepartout-ui-test
             tests/ThemeDetails.cc app/ui/settings/SettingsView.cc app/ui/settings/IssueReportView.cc
-            app/ui/profile/ModuleDetailView.cc app/ui/profile/DNSView.cc
-            app/ui/profile/IPView.cc app/ui/profile/HTTPProxyView.cc
-            app/ui/profile/OpenVPNView.cc app/ui/profile/WireGuardView.cc
+            app/ui/profile/ModuleDetailView.cc app/ui/profile/modules/DNSView.cc
+            app/ui/profile/modules/IPView.cc app/ui/profile/modules/HTTPProxyView.cc
+            app/ui/profile/modules/OpenVPNView.cc app/ui/profile/modules/WireGuardView.cc
             app/ui/theme/Theme.cc app/ui/theme/ThemeList.cc
             app/ui/theme/ThemeDetailView.cc app/ui/theme/ThemeLongContent.cc
             app/ui/theme/ThemeButtonRow.cc app/ui/theme/ThemeModal.cc

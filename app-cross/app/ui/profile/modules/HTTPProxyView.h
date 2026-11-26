@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "ModuleDetailView.h"
+#include "../ModuleDetailView.h"
 #include <partout/models/HTTPProxyModule.h>
 
 namespace Passepartout {

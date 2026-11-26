@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "WireGuardView.h"
-#include "../../strings/Unlocalized.h"
+#include "../../../strings/Unlocalized.h"
 #include <wx/numformatter.h>
 
 namespace Passepartout {

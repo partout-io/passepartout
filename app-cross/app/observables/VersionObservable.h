@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../business/managers/VersionChecker.h"
-#include "../business/extensions/BackgroundWorker.h"
+#include "BackgroundWorker.h"
 
 namespace Passepartout {
 class VersionObservable {

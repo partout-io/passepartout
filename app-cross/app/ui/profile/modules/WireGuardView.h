@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "ModuleDetailView.h"
+#include "../ModuleDetailView.h"
 #include <partout/models/WireGuardModule.h>
-#include "../../business/strategy/WireGuardKeyGenerator.h"
+#include "../../../business/strategy/WireGuardKeyGenerator.h"
 
 namespace Passepartout {
 class WireGuardView final : public ModuleDetailView {

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "IssueReporter.h"
-#include "../extensions/AtomicFile.h"
+#include "../extensions/ModelsExtensions.h"
 #include <random>
 #include <stdexcept>
 

@@ -34,6 +34,13 @@ unrelated refactoring; keep changes within the task's scope.
   renaming. In app-cross, application and test CMake configuration must check
   maintained C++ filenames.
 
+## C++ implementations
+
+- Keep non-template function and method implementations in `.cc` files, with
+  declarations in headers. Do not move implementations into headers or mark
+  them `inline` to accommodate tests; update test sources and linkage instead.
+  Keep template definitions in headers when required for instantiation.
+
 ## Strings
 
 - Reuse existing shared strings before introducing new labels. Keep wording and
@@ -103,13 +110,18 @@ unrelated refactoring; keep changes within the task's scope.
   never reference `nlohmann` types, operations, or exceptions from application code.
   Extend the shared wrapper or generated model API when an operation is missing,
   rather than exposing the serialization backend or adding application aliases.
-- In app-cross, consolidate business-level extensions of generated `::Models`
-  types in `app/business/extensions/ModelsExtensions.h` and `.cc`. Keep their
-  domain namespaces, such as `Passepartout::Profiles` and
-  `Passepartout::Preferences`, and omit redundant domain words from function
-  names. Keep these helpers out of repository interfaces and generated models.
-  Presentation helpers that depend on UI formatting or toolkit APIs remain in
-  the UI layer; do not introduce UI dependencies into business extensions.
+- Mirror app-android's source hierarchy in app-cross for corresponding entities:
+  application UI in `ui`, state and `AppContext` in `observables`, business
+  managers/models/strategies in their matching directories, module views in
+  `ui/profile/modules`, and prompts in `ui/alerts`. Keep platform adapters and
+  generated/build resources in their appropriate C++ integration locations.
+- Unlike Android's per-model extension files, collect extension helpers into one
+  file pair per domain area: `business/extensions/ModelsExtensions.h/.cc`,
+  `context/ContextExtensions.h/.cc`, and `ui/extensions/ModelsExtensions.h/.cc`.
+  Preserve namespaces such as `Profiles`
+  and `Preferences`; omit redundant domain words from function names. Keep
+  stateful services and platform adapters as separate entities. Never introduce
+  UI dependencies into business extensions or edit generated models to add helpers.
 - Keep responsibilities separated: domain models define contracts; managers own
   business rules; repositories and strategies provide replaceable mechanisms;
   observables expose UI state and actions; context assembles dependencies; Theme

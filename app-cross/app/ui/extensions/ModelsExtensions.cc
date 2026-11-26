@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "FormatDataUnit.h"
+#include "ModelsExtensions.h"
 #include <algorithm>
 #include <iomanip>
-#include <locale>
 #include <sstream>
 
 namespace Passepartout {
@@ -25,5 +24,12 @@ std::string DataUnits::Format(int64_t bytes, DataUnits::NumberFormatter formatte
     if (bytes < megabyte / 10) return formatter(static_cast<double>(bytes / kilobyte), 0) + "kB";
     const auto unit = bytes >= gigabyte / 10 ? gigabyte : megabyte;
     return formatter(static_cast<double>(bytes) / unit, 2) + (unit == gigabyte ? "GB" : "MB");
+}
+}
+
+namespace Passepartout {
+std::string Profiles::TransferText(const Models::ProfileTransfer &transfer, DataUnits::NumberFormatter formatter) {
+    return "\xe2\x86\x93" + DataUnits::Format(transfer.received, formatter) +
+           " \xe2\x86\x91" + DataUnits::Format(transfer.sent, formatter);
 }
 }

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Davide De Rosa
 // SPDX-License-Identifier: GPL-3.0
 
-#include "../extensions/ConfigurationPickerFactory.h"
+#include "../extensions/ModelsExtensions.h"
 #ifdef _WIN32
 #include "WindowsConfigurationPicker.h"
 #include <wx/window.h>
@@ -12,8 +12,7 @@ std::unique_ptr<ConfigurationPicker> Configuration::MakePicker(wxWindow &owner) 
 }
 }
 #else
-#include "../extensions/ModalConfigurationPicker.h"
-#include "../extensions/FilePath.h"
+#include "ModalConfigurationPicker.h"
 #include "../../strings/Strings.h"
 #include <wx/filedlg.h>
 

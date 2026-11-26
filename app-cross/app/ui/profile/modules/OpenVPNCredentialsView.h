@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../theme/ThemeDetailView.h"
+#include "../../theme/ThemeDetailView.h"
 #include <partout/models/OpenVpnCredentials.h>
 
 namespace Passepartout {

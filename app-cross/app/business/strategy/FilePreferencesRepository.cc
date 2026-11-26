@@ -4,8 +4,6 @@
 
 #include "../extensions/ModelsExtensions.h"
 #include "FilePreferencesRepository.h"
-#include "../extensions/AtomicFile.h"
-#include "../extensions/ModelsExtensions.h"
 
 namespace Passepartout {
 FilePreferencesRepository::FilePreferencesRepository(std::filesystem::path path) : path_(std::move(path)) {

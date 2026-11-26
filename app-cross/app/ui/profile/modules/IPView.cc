@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "IPView.h"
-#include "../../strings/Unlocalized.h"
+#include "../../../strings/Unlocalized.h"
 
 namespace Passepartout {
 IPView::IPView(wxWindow *parent, const Partout::Models::IPModule &module, OpenModuleContent open_content)

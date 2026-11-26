@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "OpenVPNCredentialsView.h"
-#include "../../strings/Strings.h"
+#include "../../../strings/Strings.h"
 
 namespace Passepartout {
 OpenVPNCredentialsView::OpenVPNCredentialsView(wxWindow *parent,

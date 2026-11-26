@@ -2,9 +2,17 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "Module.h"
+#include "../extensions/ModelsExtensions.h"
+#include "../../business/extensions/ModelsExtensions.h"
 #include "../../strings/Strings.h"
 #include "../../strings/Unlocalized.h"
+#include <wx/string.h>
+
+namespace Passepartout {
+std::filesystem::path Paths::FromString(const wxString &value) {
+    return FromUtf8(value.ToStdString(wxConvUTF8));
+}
+}
 
 namespace Passepartout {
 wxString Modules::Title(const Partout::Models::TaggedModule &module) {
