@@ -270,7 +270,7 @@ void TestObservableOrdering(const std::filesystem::path &root) {
         std::vector<Passepartout::ConfigurationSource>{{"queued", "configuration"}}
     ));
     context.tunnel.Connect(Example("queued-import"));
-    assert(context.executor.Snapshot().foreground);
+    assert(context.executor.CurrentActivity().foreground);
     gate->release.set_value();
     Wait(context);
     assert(context.profiles.Snapshot().operation_error.empty());
@@ -1101,7 +1101,7 @@ int main() {
         queued.tunnel.Connect(Example(p.id));
         assert(entered.wait_for(std::chrono::seconds(5)) == std::future_status::ready);
         queued.tunnel.Disconnect(p.id);
-        assert(queued.executor.Snapshot().busy);
+        assert(queued.executor.CurrentActivity().busy);
         gate->release.set_value();
         Wait(queued);
         assert(queued.profiles.Snapshot().operation_error.empty());

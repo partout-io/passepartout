@@ -110,7 +110,7 @@ void ProfileObservable::Load() {
 }
 
 std::optional<Profile> ProfileObservable::FindProfile(const std::string &id) const {
-    if (executor_.Snapshot().foreground) return {};
+    if (executor_.CurrentActivity().foreground) return {};
     std::lock_guard lock(mutex_);
     if (!snapshot_.loaded) return {};
     for (const auto &profile : published_profiles_) {
@@ -177,7 +177,7 @@ void ProfileObservable::Remove(std::vector<std::string> ids) {
 }
 
 ProfileObservable::State ProfileObservable::Snapshot() const {
-    const auto activity = executor_.Snapshot();
+    const auto activity = executor_.CurrentActivity();
     std::lock_guard lock(mutex_);
     auto result = snapshot_;
     result.activity = activity;

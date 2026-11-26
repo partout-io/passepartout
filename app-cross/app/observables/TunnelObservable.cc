@@ -91,7 +91,7 @@ void TunnelObservable::Remove(std::string id) {
 }
 
 void TunnelObservable::Refresh() {
-    if (!executor_.Snapshot().busy) Post([] {}, false);
+    if (!executor_.CurrentActivity().busy) Post([] {}, false);
 }
 
 void TunnelObservable::ClearOperationError() {
@@ -101,7 +101,7 @@ void TunnelObservable::ClearOperationError() {
 }
 
 TunnelObservable::State TunnelObservable::Snapshot() const {
-    const auto activity = executor_.Snapshot();
+    const auto activity = executor_.CurrentActivity();
     std::lock_guard lock(mutex_);
     auto result = snapshot_;
     result.activity = activity;

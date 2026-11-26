@@ -30,7 +30,7 @@ public:
                bool demo = false
     );
     ~AppContext();
-    Worker::Activity Activity() const;
+    Worker::Activity CurrentActivity() const;
     ProfileObservable profiles;
     TunnelObservable tunnel;
     UserPreferencesObservable preferences;

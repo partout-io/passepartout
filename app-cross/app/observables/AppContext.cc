@@ -178,6 +178,6 @@ AppContext::~AppContext() {
     executor_.Join();
 }
 
-Passepartout::Worker::Activity AppContext::Activity() const {
-    return executor_.Snapshot();
+Passepartout::Worker::Activity AppContext::CurrentActivity() const {
+    return executor_.CurrentActivity();
 }

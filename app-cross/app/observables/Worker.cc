@@ -39,7 +39,7 @@ bool Worker::Dispatch(std::function<void()> operation, bool foreground) {
     return true;
 }
 
-Worker::Activity Worker::Snapshot() const {
+Worker::Activity Worker::CurrentActivity() const {
     std::lock_guard lock(mutex_);
     return activity_;
 }

@@ -134,7 +134,7 @@ MainView::MainView(AppContext &context, bool demo,
     Centre();
     profiles_ = context_.profiles.Snapshot();
     tunnels_ = context_.tunnel.Snapshot();
-    activity_ = context_.Activity();
+    activity_ = context_.CurrentActivity();
     Render();
     timer_.Start(200);
 }
@@ -176,7 +176,7 @@ void MainView::Tick(wxTimerEvent &) {
     }
     const auto next_profiles = context_.profiles.Snapshot();
     const auto next_tunnels = context_.tunnel.Snapshot();
-    const auto next_activity = context_.Activity();
+    const auto next_activity = context_.CurrentActivity();
     if (next_profiles.revision != profiles_.revision || next_tunnels.revision != tunnels_.revision ||
         next_activity.revision != activity_.revision) {
         profiles_ = next_profiles;
@@ -226,7 +226,7 @@ void MainView::PresentInteractiveLogin(InteractiveLogin login) {
 }
 
 void MainView::Import() {
-    if (picking_ || context_.Activity().busy) return;
+    if (picking_ || context_.CurrentActivity().busy) return;
     picking_ = true;
     UpdateActions();
     try {
@@ -259,7 +259,7 @@ void MainView::Activate(std::shared_ptr<const ConfigurationFiles> files) {
 }
 
 void MainView::Edit(const std::string &id) {
-    if (picking_ || context_.Activity().foreground) return;
+    if (picking_ || context_.CurrentActivity().foreground) return;
     const auto editor = context_.profiles.CreateEditor(id);
     if (!editor) return;
     ProfileCoordinator dialog(this, context_.profiles, editor, *context_.wireguard_keygen);

@@ -25,7 +25,7 @@ public:
     bool Post(std::function<void()> operation, bool foreground = true);
     // Deliver dependent work inline on the worker, preserving publication order.
     bool Dispatch(std::function<void()> operation, bool foreground = true);
-    Activity Snapshot() const;
+    Activity CurrentActivity() const;
     bool IsStopping() const;
     void RequestStop();
     void Join();
