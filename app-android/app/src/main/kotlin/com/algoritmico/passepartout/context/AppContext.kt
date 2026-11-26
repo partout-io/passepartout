@@ -1,32 +1,31 @@
-package com.algoritmico.passepartout.observables
+package com.algoritmico.passepartout.context
 
-import com.algoritmico.passepartout.business.strategy.PartoutWireGuardKeyGenerator
-import com.algoritmico.passepartout.business.strategy.WireGuardKeyGenerator
 import android.content.Context
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
-import com.algoritmico.passepartout.context.AndroidConstants
 import com.algoritmico.passepartout.business.models.decodedPair
-import com.algoritmico.passepartout.context.AppLog
-import com.algoritmico.passepartout.context.appBundle
-import com.algoritmico.passepartout.context.appConstants
-import com.algoritmico.passepartout.context.defaultAndroidConstants
-import com.algoritmico.passepartout.context.newConfigManager
-import com.algoritmico.passepartout.context.newProfileManager
-import com.algoritmico.passepartout.context.newTunnel
-import com.algoritmico.passepartout.context.newVersionChecker
-import com.algoritmico.passepartout.context.userPreferencesStore
+import com.algoritmico.passepartout.business.strategy.PartoutWireGuardKeyGenerator
+import com.algoritmico.passepartout.business.strategy.WireGuardKeyGenerator
 import com.algoritmico.passepartout.models.AppConfiguration
 import com.algoritmico.passepartout.models.AppPreferenceKey
 import com.algoritmico.passepartout.models.ConfigFlag
+import com.algoritmico.passepartout.observables.ConfigObservable
+import com.algoritmico.passepartout.observables.DiagnosticsObservable
+import com.algoritmico.passepartout.observables.ErrorHandler
+import com.algoritmico.passepartout.observables.ProfileImporter
+import com.algoritmico.passepartout.observables.ProfileObservable
+import com.algoritmico.passepartout.observables.TunnelObservable
+import com.algoritmico.passepartout.observables.UserPreferencesObservable
+import com.algoritmico.passepartout.observables.VersionObservable
+import com.algoritmico.passepartout.observables.VpnPermissionObservable
+import java.io.Closeable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
-import java.io.Closeable
 
 class AppContext(
     private val logTag: String,
