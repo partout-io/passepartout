@@ -5,7 +5,7 @@
 package com.algoritmico.passepartout.business.models
 
 import io.partout.extensions.interactiveModule
-import io.partout.extensions.withInteractiveOpenVPNCredentials
+import io.partout.extensions.withInteractiveLogin
 import io.partout.models.OpenVPNCredentialsOTPMethod
 import io.partout.models.TaggedModuleOpenVPN
 import io.partout.models.TaggedProfile
@@ -18,7 +18,7 @@ class InteractiveLogin(val original: TaggedProfile) {
     // Carries the raw OTP when needsOTP is true.
     var password: String = if (needsOTP) "" else saved?.password.orEmpty()
 
-    fun connectionProfile(): TaggedProfile = original.withInteractiveOpenVPNCredentials(
+    fun connectionProfile(): TaggedProfile = original.withInteractiveLogin(
         username = username,
         password = password,
         otp = if (needsOTP) password else null

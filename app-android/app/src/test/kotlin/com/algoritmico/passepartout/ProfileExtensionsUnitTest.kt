@@ -8,7 +8,10 @@ import com.algoritmico.passepartout.business.models.InteractiveLogin
 import io.partout.extensions.encodedPassword
 import io.partout.extensions.interactiveModule
 import io.partout.extensions.isInteractive
-import io.partout.extensions.withInteractiveOpenVPNCredentials
+import io.partout.extensions.withInteractiveLogin
+import io.partout.models.IPModule
+import io.partout.models.TaggedModule
+import io.partout.models.TaggedModuleIP
 import io.partout.models.OpenVPNConfiguration
 import io.partout.models.OpenVPNCredentials
 import io.partout.models.OpenVPNCredentialsOTPMethod
@@ -43,7 +46,7 @@ class ProfileExtensionsUnitTest {
     }
 
     @Test
-    fun withInteractiveOpenVPNCredentials_preservesInteractiveModuleFlags() {
+    fun withInteractiveLogin_preservesInteractiveModuleFlags() {
         val profile = openVPNProfile(
             module = OpenVPNModule(
                 id = MODULE_ID,
@@ -55,7 +58,7 @@ class ProfileExtensionsUnitTest {
             )
         )
 
-        val updated = profile.withInteractiveOpenVPNCredentials(
+        val updated = profile.withInteractiveLogin(
             username = "username",
             password = ""
         )
@@ -71,7 +74,7 @@ class ProfileExtensionsUnitTest {
     }
 
     @Test
-    fun withInteractiveOpenVPNCredentials_encodesOTPForAuthentication() {
+    fun withInteractiveLogin_encodesOTPForAuthentication() {
         val profile = openVPNProfile(
             module = OpenVPNModule(
                 id = MODULE_ID,
@@ -88,7 +91,7 @@ class ProfileExtensionsUnitTest {
             )
         )
 
-        val updated = profile.withInteractiveOpenVPNCredentials(
+        val updated = profile.withInteractiveLogin(
             username = "ignored-username",
             password = "ignored-password",
             otp = "123456"
@@ -102,7 +105,7 @@ class ProfileExtensionsUnitTest {
     }
 
     @Test
-    fun withInteractiveOpenVPNCredentials_encodesSCRV1OTPForAuthentication() {
+    fun withInteractiveLogin_encodesSCRV1OTPForAuthentication() {
         val profile = openVPNProfile(
             module = OpenVPNModule(
                 id = MODULE_ID,
@@ -119,7 +122,7 @@ class ProfileExtensionsUnitTest {
             )
         )
 
-        val updated = profile.withInteractiveOpenVPNCredentials(
+        val updated = profile.withInteractiveLogin(
             username = "ignored-username",
             password = "ignored-password",
             otp = "123456"
@@ -155,7 +158,7 @@ class ProfileExtensionsUnitTest {
     }
 
     @Test
-    fun withInteractiveOpenVPNCredentials_serializesTaggedModuleValue() {
+    fun withInteractiveLogin_serializesTaggedModuleValue() {
         val profile = openVPNProfile(
             module = OpenVPNModule(
                 id = MODULE_ID,
@@ -167,7 +170,7 @@ class ProfileExtensionsUnitTest {
             )
         )
 
-        val updated = profile.withInteractiveOpenVPNCredentials(
+        val updated = profile.withInteractiveLogin(
             username = "username",
             password = ""
         )
@@ -176,6 +179,34 @@ class ProfileExtensionsUnitTest {
         assertTrue(json.contains("\"type\":\"OpenVPN\""))
         assertTrue(json.contains("\"value\":{\"id\":\"$MODULE_ID\""))
         assertFalse(json.contains("\"type\":\"OpenVPN\",\"id\":\"$MODULE_ID\""))
+    }
+
+    @Test
+    fun withInteractiveLogin_updatesOnlyFirstActiveInteractiveModule() {
+        val first = OpenVPNModule(id = MODULE_ID, requiresInteractiveCredentials = true)
+        val inactive = first.copy(id = "inactive")
+        val second = first.copy(id = "second")
+        val original = openVPNProfile(first).copy(
+            modules = listOf(TaggedModuleOpenVPN(inactive), TaggedModuleOpenVPN(first), TaggedModuleOpenVPN(second)),
+            activeModulesIds = setOf(first.id, second.id)
+        )
+        val updated = original.withInteractiveLogin("user", "secret")
+        assertEquals(original.modules[0], updated.modules[0])
+        assertEquals(original.modules[2], updated.modules[2])
+        assertEquals(original.modules[1].withInteractiveLogin("user", "secret"), updated.modules[1])
+        assertEquals("secret", (updated.modules[1] as TaggedModuleOpenVPN).value.credentials?.password)
+        assertEquals(null, (original.modules[1] as TaggedModuleOpenVPN).value.credentials)
+        assertEquals(original.activeModulesIds, updated.activeModulesIds)
+    }
+
+    @Test
+    fun withInteractiveLogin_leavesUnsupportedAndNoninteractiveModulesUnchanged() {
+        val unsupported: TaggedModule = TaggedModuleIP(IPModule(id = "ip"))
+        val noninteractive: TaggedModule = TaggedModuleOpenVPN(OpenVPNModule(id = MODULE_ID))
+        assertEquals(unsupported, unsupported.withInteractiveLogin("user", "secret"))
+        assertEquals(noninteractive, noninteractive.withInteractiveLogin("user", "secret"))
+        val profile = openVPNProfile(OpenVPNModule(id = MODULE_ID))
+        assertEquals(profile, profile.withInteractiveLogin("user", "secret"))
     }
 
     private fun openVPNProfile(module: OpenVPNModule) = TaggedProfile(
