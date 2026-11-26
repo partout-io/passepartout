@@ -29,7 +29,7 @@ private:
     Passepartout::AppContext &context_;
     Passepartout::ProfileObservable::State profiles_;
     Passepartout::TunnelObservable::State tunnels_;
-    Passepartout::SerialExecutor::Activity activity_;
+    Passepartout::Worker::Activity activity_;
     Passepartout::ProfileListView *collection_;
     wxStaticText *message_;
     wxActivityIndicator *progress_;

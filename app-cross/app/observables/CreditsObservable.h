@@ -5,7 +5,7 @@
 #pragma once
 #include "../business/extensions/Models+Business.h"
 #include "../business/strategy/HttpClient.h"
-#include "BackgroundWorker.h"
+#include "Worker.h"
 #include <map>
 
 namespace Passepartout {
@@ -29,6 +29,6 @@ private:
     std::unique_ptr<HttpClient> client_;
     mutable std::mutex mutex_;
     std::map<std::string, Content> content_;
-    BackgroundWorker worker_;
+    Worker worker_;
 };
 }

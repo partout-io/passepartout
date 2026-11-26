@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../business/managers/ConfigManager.h"
-#include "BackgroundWorker.h"
+#include "Worker.h"
 
 namespace Passepartout {
 class ConfigObservable final {
@@ -22,6 +22,6 @@ private:
     std::unique_ptr<ConfigManager> manager_;
     mutable std::mutex mutex_;
     State state_;
-    BackgroundWorker worker_;
+    Worker worker_;
 };
 }

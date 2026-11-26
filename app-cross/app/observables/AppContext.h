@@ -22,14 +22,14 @@ public:
     const std::string application_version;
     const std::unique_ptr<WireGuardKeyGenerator> wire_guard_keys;
 private:
-    SerialExecutor executor_;
+    Worker executor_;
 public:
     AppContext(const std::filesystem::path &data_root, bool demo,
                Models::AppConstants constants = Constants::Load(),
                CrossConstantsType cross_constants = CrossConstants
     );
     ~AppContext();
-    SerialExecutor::Activity Activity() const;
+    Worker::Activity Activity() const;
     ProfileObservable profiles;
     TunnelObservable tunnel;
     UserPreferencesObservable preferences;

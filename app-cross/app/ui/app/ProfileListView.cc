@@ -103,7 +103,7 @@ ProfileListView::ProfileListView(wxWindow *parent, TunnelObservable &tunnel,
 }
 
 void ProfileListView::Render(const ProfileObservable::State &profiles, const TunnelObservable::State &tunnel,
-                             const SerialExecutor::Activity &activity, bool picking
+                             const Worker::Activity &activity, bool picking
 ) {
     profiles_ = profiles;
     tunnels_ = tunnel;

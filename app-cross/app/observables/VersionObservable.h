@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../business/managers/VersionChecker.h"
-#include "BackgroundWorker.h"
+#include "Worker.h"
 #include "AppConstants_github.h"
 
 namespace Passepartout {
@@ -38,6 +38,6 @@ private:
     State state_;
     const std::string build_;
     const Models::AppConstants_github github_;
-    BackgroundWorker worker_;
+    Worker worker_;
 };
 }

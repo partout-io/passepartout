@@ -6,7 +6,7 @@
 #include "AppProfileHeader.h"
 #include "../business/managers/ProfileManager.h"
 #include "../business/strategy/ConfigurationFiles.h"
-#include "SerialExecutor.h"
+#include "Worker.h"
 #include "ProfileEditor.h"
 
 namespace Passepartout {
@@ -19,10 +19,10 @@ public:
         std::string operation_error;
         OperationErrorContext operation_error_context = OperationErrorContext::general;
         std::uint64_t revision = 0;
-        SerialExecutor::Activity activity;
+        Worker::Activity activity;
     };
     using ChangeHandler = std::function<void(std::vector<Profile>, bool)>;
-    ProfileObservable(SerialExecutor &executor, std::unique_ptr<ProfileManager> manager);
+    ProfileObservable(Worker &executor, std::unique_ptr<ProfileManager> manager);
     // Publishes initial state and subsequent results on the shared executor.
     void OnChange(ChangeHandler handler);
     void Cancel();
@@ -41,7 +41,7 @@ public:
 private:
     bool Post(std::function<void()> operation, OperationErrorContext context = OperationErrorContext::general);
     void Publish();
-    SerialExecutor &executor_;
+    Worker &executor_;
     std::unique_ptr<ProfileManager> manager_;
     mutable std::mutex mutex_;
     State snapshot_;

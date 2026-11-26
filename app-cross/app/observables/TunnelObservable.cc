@@ -15,7 +15,7 @@ bool TunnelObservable::State::HasActivity() const {
     });
 }
 
-TunnelObservable::TunnelObservable(SerialExecutor &executor, std::unique_ptr<Partout::Tunnel> tunnel,
+TunnelObservable::TunnelObservable(Worker &executor, std::unique_ptr<Partout::Tunnel> tunnel,
                                    std::function<void(const Models::AppPreferences &)> apply_preferences
 ) : executor_(executor), tunnel_(std::move(tunnel)),
     apply_preferences_(std::move(apply_preferences)) {

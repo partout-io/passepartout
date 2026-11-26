@@ -145,7 +145,7 @@ AppContext::~AppContext() {
     executor_.Join();
 }
 
-Passepartout::SerialExecutor::Activity AppContext::Activity() const {
+Passepartout::Worker::Activity AppContext::Activity() const {
     return executor_.Snapshot();
 }
 

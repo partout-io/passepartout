@@ -22,7 +22,7 @@ public:
     static constexpr unsigned TransferColumn = 2;
     static constexpr unsigned ToggleColumn = 3;
     void Render(const ProfileObservable::State &profiles, const TunnelObservable::State &tunnel,
-                const SerialExecutor::Activity &activity, bool picking
+                const Worker::Activity &activity, bool picking
     );
     std::vector<std::string> SelectedIds() const;
     bool HasCollectionFocus() const;
@@ -41,7 +41,7 @@ private:
     ThemeList *list_;
     ProfileObservable::State profiles_;
     TunnelObservable::State tunnels_;
-    SerialExecutor::Activity activity_;
+    Worker::Activity activity_;
     std::vector<std::string> visible_ids_;
     bool picking_ = false;
     bool rendering_ = false;

@@ -72,17 +72,16 @@ set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/PartoutWireGuardKeyGenerator.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/context/AppLog.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/context/ContextExtensions.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/observables/BackgroundWorker.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/ConfigObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/CreditsObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/DiagnosticsObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/IssueReporter.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/ProfileEditor.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/ProfileObservable.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/observables/SerialExecutor.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/TunnelObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/UserPreferencesObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/VersionObservable.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/observables/Worker.cc"
 )
 set(MODEL_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/models/AppBundle.cc"

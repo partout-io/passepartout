@@ -5,7 +5,7 @@
 #pragma once
 #include "../business/extensions/Models+Business.h"
 #include "../business/models/InteractiveLogin.h"
-#include "SerialExecutor.h"
+#include "Worker.h"
 #include "AppPreferences.h"
 #include <partout/tunnel/Tunnel.h>
 
@@ -23,7 +23,7 @@ public:
         std::string observation_error;
         std::string synchronization_error;
         std::uint64_t revision = 0;
-        SerialExecutor::Activity activity;
+        Worker::Activity activity;
         bool HasActivity() const;
     };
     struct ToggleState {
@@ -31,7 +31,7 @@ public:
         bool can_interact = false;
         Status status = Status::disconnected;
     };
-    TunnelObservable(SerialExecutor &executor, std::unique_ptr<Partout::Tunnel> tunnel,
+    TunnelObservable(Worker &executor, std::unique_ptr<Partout::Tunnel> tunnel,
                      std::function<void(const Models::AppPreferences &)> apply_preferences = {}
     );
     void SetProfiles(std::vector<Profile> profiles, bool loaded);
@@ -53,7 +53,7 @@ private:
     void Observe();
     void Publish();
     std::string SynchronizeProfiles(const std::vector<Models::AppTunnelInfo> &tunnels);
-    SerialExecutor &executor_;
+    Worker &executor_;
     std::unique_ptr<Partout::Tunnel> tunnel_;
     std::function<void(const Models::AppPreferences &)> apply_preferences_;
     std::optional<Models::AppPreferences> pending_preferences_;

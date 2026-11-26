@@ -11,7 +11,7 @@
 #include <type_traits>
 
 namespace Passepartout {
-ProfileObservable::ProfileObservable(SerialExecutor &executor, std::unique_ptr<ProfileManager> manager)
+ProfileObservable::ProfileObservable(Worker &executor, std::unique_ptr<ProfileManager> manager)
     : executor_(executor), manager_(std::move(manager)) {}
 
 void ProfileObservable::OnChange(ChangeHandler handler) {
