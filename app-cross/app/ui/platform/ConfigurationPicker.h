@@ -4,7 +4,6 @@
 #pragma once
 #include "../../business/strategy/ConfigurationFiles.h"
 #include <optional>
-#include <functional>
 #include <memory>
 
 class wxWindow;
@@ -24,8 +23,6 @@ public:
     virtual std::optional<ConfigurationPickerResult> Poll() = 0;
     virtual void Cancel() = 0;
 };
-
-using ConfigurationPickerFactory = std::function<std::unique_ptr<ConfigurationPicker>(wxWindow &)>;
 
 std::unique_ptr<ConfigurationPicker> MakeConfigurationPicker(wxWindow &owner);
 }

@@ -25,12 +25,10 @@ wxString QuitTitle() {
 
 using namespace Passepartout;
 
-MainView::MainView(AppContext &context, bool demo,
-                   ConfigurationPickerFactory picker_factory
-)
+MainView::MainView(AppContext &context, bool demo)
     : MainFrame(nullptr, wxID_ANY, Text(context.cross_constants.app.name) +
           (demo ? " (" + Text(context.cross_constants.command_line.demo_argument) + ")" : wxString())),
-      context_(context), tunnel_timer_(this), picker_timer_(this), picker_(picker_factory(*this)), observer_([this] { UpdateState(); }) {
+      context_(context), tunnel_timer_(this), picker_timer_(this), picker_(MakeConfigurationPicker(*this)), observer_([this] { UpdateState(); }) {
     Theme::Apply(this);
     auto *panel = new wxPanel(this);
     Theme::Apply(panel);

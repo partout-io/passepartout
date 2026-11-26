@@ -71,7 +71,7 @@ bool PassepartoutApp::OnInit() {
         );
         stage = "creating main window";
         AppLog::Write(AppLog::Level::debug, AppLog::Category::core, "Create main window");
-        auto *view = new MainView(*context_, demo, MakeConfigurationPicker);
+        auto *view = new MainView(*context_, demo);
         SetTopWindow(view);
 
         // Receive subsequent activations before processing the initial import.

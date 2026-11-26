@@ -13,9 +13,7 @@
 
 class MainView final : public Passepartout::MainFrame {
 public:
-    MainView(Passepartout::AppContext &context, bool demo,
-             Passepartout::ConfigurationPickerFactory picker_factory
-    );
+    MainView(Passepartout::AppContext &context, bool demo);
     ~MainView() override;
     void Quit();
     void Activate(std::shared_ptr<const Passepartout::ConfigurationFiles> files);
