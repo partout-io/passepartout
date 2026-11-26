@@ -28,7 +28,7 @@ using namespace Passepartout;
 MainView::MainView(AppContext &context, bool demo,
                    Configuration::PickerFactory picker_factory
 )
-    : MainFrame(nullptr, wxID_ANY, Text(context.cross_constants.tags.app) +
+    : MainFrame(nullptr, wxID_ANY, Text(context.cross_constants.app.name) +
           (demo ? " (" + Text(context.cross_constants.command_line.demo_argument) + ")" : wxString())),
       context_(context), timer_(this), picker_(picker_factory(*this)) {
     Theme::Apply(this);
@@ -81,7 +81,7 @@ MainView::MainView(AppContext &context, bool demo,
     }, changelog_id);
     SetMenuBar(menus);
     ConfigureSystemMenu(
-        Localized(StringKey::GlobalNounsAbout) + " " + Text(context.cross_constants.tags.app) + "..."
+        Localized(StringKey::GlobalNounsAbout) + " " + Text(context.cross_constants.app.name) + "..."
     );
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
         Import();
@@ -90,13 +90,13 @@ MainView::MainView(AppContext &context, bool demo,
         Quit();
     }, wxID_EXIT);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
-        ThemeModal dialog(this, Localized(StringKey::GlobalNounsAbout) + " " + Text(context_.cross_constants.tags.app),
+        ThemeModal dialog(this, Localized(StringKey::GlobalNounsAbout) + " " + Text(context_.cross_constants.app.name),
             [this](wxWindow *parent) {
                 const SettingsPresentation present = [parent](auto title, auto make_content) {
                     ThemeModal modal(parent, title, make_content);
                     modal.ShowModal();
                 };
-                return new VersionView(parent, context_.version, Text(context_.cross_constants.tags.app), present);
+                return new VersionView(parent, context_.version, Text(context_.cross_constants.app.name), present);
             }, ThemeModal::Mode::ReadOnly, ThemeModal::Sizing::FixedContent);
         dialog.ShowModal();
     }, wxID_ABOUT);

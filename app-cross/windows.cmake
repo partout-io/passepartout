@@ -53,8 +53,8 @@ function(configure_windows_targets)
 
     # The host loads the plugin dynamically; only the plugin links to Partout.
     add_library(passepartout-vpnplugin SHARED
-        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tunnel/windows/Plugin.cc"
-        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tunnel/windows/plugin.def"
+        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tunnel/windows/Plugin.cc"
+        "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tunnel/windows/plugin.def"
     )
     foreach(PLUGIN_TARGET IN ITEMS passepartout-vpnplugin passepartout-tunnel)
         set_target_properties(${PLUGIN_TARGET} PROPERTIES
@@ -72,7 +72,7 @@ function(configure_windows_targets)
         target_link_options(${PLUGIN_TARGET} PRIVATE /APPCONTAINER)
         target_link_libraries(${PLUGIN_TARGET} PRIVATE windowsapp runtimeobject)
     endforeach()
-    include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../models.cmake")
+    include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/models.cmake")
     target_link_libraries(passepartout-vpnplugin PRIVATE passepartout-models)
     target_link_partout_runtime(passepartout-vpnplugin)
     set_target_properties(passepartout-vpnplugin PROPERTIES
@@ -103,7 +103,7 @@ function(configure_windows_targets)
     set(PASSEPARTOUT_PUBLISHER_DISPLAY_NAME "${PASSEPARTOUT_NAME}" CACHE STRING "MSIX publisher display name")
     set(PASSEPARTOUT_BACKGROUND_TASK "${PASSEPARTOUT_TUNNEL_NAME}.BackgroundTask")
     get_filename_component(PASSEPARTOUT_PACKAGE_LOGO "${PASSEPARTOUT_APP_ICON}" NAME)
-    set(PASSEPARTOUT_PACKAGE_VERSION "0.1.0.0" CACHE STRING "Four-part MSIX version (0.x for development; 1.0.0.0 reserved for production)")
+    set(PASSEPARTOUT_PACKAGE_VERSION "0.1.0.0" CACHE STRING "Four-part MSIX identity, independent of the application build")
     set(PASSEPARTOUT_PACKAGE_PUBLISHER "CN=${PASSEPARTOUT_PUBLISHER_DISPLAY_NAME}" CACHE STRING "MSIX publisher matching the signing certificate")
 
     if(NOT PASSEPARTOUT_PACKAGE_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$")
@@ -124,18 +124,18 @@ function(configure_windows_targets)
     endforeach()
 
     # Generate identity headers for the host and plugin, including host-only builds.
-    set(TUNNEL_CONSTANTS_PATH "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../../resources/constants.json")
+    set(TUNNEL_CONSTANTS_PATH "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../resources/constants.json")
     if(NOT BUILD_APP)
         set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${TUNNEL_CONSTANTS_PATH}")
     endif()
     file(READ "${TUNNEL_CONSTANTS_PATH}" TUNNEL_CONSTANTS_JSON)
     string(JSON PASSEPARTOUT_DNS_FALLBACK_JSON GET "${TUNNEL_CONSTANTS_JSON}" tunnel dnsFallbackServers)
-    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tunnel/TunnelDefaults.h.in"
+    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/tunnel/TunnelDefaults.h.in"
         "${CMAKE_CURRENT_BINARY_DIR}/generated/TunnelDefaults.h" @ONLY)
     target_include_directories(passepartout-vpnplugin PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
     set(PASSEPARTOUT_PLUGIN_FILE "$<TARGET_FILE_NAME:passepartout-vpnplugin>")
     set(PASSEPARTOUT_TUNNEL_FILE "$<TARGET_FILE_NAME:passepartout-tunnel>")
-    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/PackageConstants.h.in"
+    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/windows/PackageConstants.h.in"
         "${CMAKE_CURRENT_BINARY_DIR}/PackageConstants.h.in" @ONLY)
     file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/generated/$<CONFIG>/PackageConstants.h"
         INPUT "${CMAKE_CURRENT_BINARY_DIR}/PackageConstants.h.in")
@@ -146,16 +146,13 @@ function(configure_windows_targets)
         return()
     endif()
 
-    target_compile_definitions(passepartout PRIVATE
-        PASSEPARTOUT_APP_VERSION="${PASSEPARTOUT_PACKAGE_VERSION}")
-
     # Full application package: desktop activation, MSIX manifest, and assets.
     set(PASSEPARTOUT_FRONTEND_FILE "$<TARGET_FILE_NAME:passepartout>")
-    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/frontend.manifest.in"
+    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/windows/frontend.manifest.in"
         "${CMAKE_CURRENT_BINARY_DIR}/frontend.manifest" @ONLY)
     target_sources(passepartout PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/frontend.manifest")
 
-    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/AppxManifest.xml.in"
+    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/windows/AppxManifest.xml.in"
         "${CMAKE_CURRENT_BINARY_DIR}/AppxManifest.xml.in" @ONLY)
     file(GENERATE OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/AppxManifest.xml"
         INPUT "${CMAKE_CURRENT_BINARY_DIR}/AppxManifest.xml.in")

@@ -12,6 +12,7 @@ if(POLICY CMP0177)
     set(CMAKE_POLICY_DEFAULT_CMP0177 NEW)
 endif()
 project(Passepartout LANGUAGES C CXX)
+include("core.cmake")
 
 # No target uses C++ modules, including the C++20 WinRT bridge. Avoid
 # unnecessary dyndep scanning, which can assert in Ninja on rebuilds.
@@ -53,7 +54,7 @@ set(PP_BUILD_USE_WIREGUARD ON)
 
 # Set the Windows toolchain defaults and register the stop-host install hook
 # before Partout registers installation of its shared libraries.
-include("windows/configure.cmake")
+include("windows.cmake")
 configure_windows_platform()
 
 add_subdirectory(../partout partout)
@@ -74,7 +75,7 @@ endfunction()
 
 # Desktop application (optional)
 if(BUILD_APP)
-    include("core.cmake")
+    configure_application_core()
     add_executable(passepartout ${APP_SOURCES})
     target_link_partout_runtime(passepartout)
     target_link_libraries(passepartout PRIVATE passepartout-core)

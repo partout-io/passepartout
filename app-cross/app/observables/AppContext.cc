@@ -24,23 +24,6 @@
 #include <stdexcept>
 
 namespace {
-std::string ApplicationVersion() {
-#ifdef PASSEPARTOUT_APP_VERSION
-    return PASSEPARTOUT_APP_VERSION;
-#else
-    return {};
-#endif
-}
-
-int BuildNumber(const std::string &version) {
-    const auto last = version.find_last_of('.');
-    try {
-        return std::stoi(version.substr(last == std::string::npos ? 0 : last + 1));
-    } catch (...) {
-        return 0;
-    }
-}
-
 std::unique_ptr<Passepartout::HttpClient> MakeHttp(const Passepartout::Models::AppConstants &constants) {
 #ifdef _WIN32
     return Passepartout::Windows::MakeHttpClient(std::chrono::milliseconds(
@@ -105,7 +88,7 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
                        Models::AppConstants app_constants, CrossConstantsType frontend_constants
 )
     : constants(std::move(app_constants)), cross_constants(std::move(frontend_constants)),
-      application_version(ApplicationVersion()),
+      application_version(cross_constants.app.version_number),
       wire_guard_keys(std::make_unique<PartoutWireGuardKeyGenerator>()),
       logger_(std::make_shared<AppLogger>()),
       profiles(executor_, std::make_unique<ProfileManager>(std::make_unique<FileProfileRepository>(
@@ -122,7 +105,7 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
       config(std::make_unique<ConfigManager>(std::make_unique<GitHubConfigStrategy>(MakeHttp(constants),
           constants.websites.partoutURL + "/passepartout-config/v1/bundle.json",
           std::chrono::seconds(static_cast<std::int64_t>(constants.websites.configTTL * constants.websites.betaTTLFactor))),
-          BuildNumber(application_version), ApplicationPlatform())),
+          cross_constants.app.build_number, ApplicationPlatform())),
       version(std::make_unique<VersionChecker>(application_version, nullptr, std::string(),
           static_cast<std::int64_t>(constants.url.versionRateLimit), preferences.Snapshot().lastCheckedVersionTimestamp,
           preferences.Snapshot().lastCheckedVersion, [this](auto timestamp, auto latest) {

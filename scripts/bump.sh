@@ -54,6 +54,9 @@ apple_xcconfig_path="app-apple/Passepartout/Config.xcconfig"
 android_gradle_path="app-android/app/build.gradle.kts"
 apple_changelog_path="app-apple/CHANGELOG.txt"
 android_changelog_path="app-android/CHANGELOG.txt"
+cross_changelog_path="app-cross/CHANGELOG.txt"
+cross_version_path="app-cross/version.txt"
+cross_build_path="app-cross/build.txt"
 metadata_root_apple="app-apple/fastlane/metadata"
 metadata_root_android="app-android/app/src/main/play"
 
@@ -79,6 +82,21 @@ edit_changelog() {
     mv "$log_path" "$changelog_path"
 }
 
+cross_version=$(cat "$cross_version_path")
+cross_build=$(cat "$cross_build_path")
+if [[ ! "$cross_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Invalid app-cross version in $cross_version_path"
+    exit 1
+fi
+if [[ ! "$cross_build" =~ ^[1-9][0-9]*$ ]]; then
+    echo "Invalid app-cross build in $cross_build_path"
+    exit 1
+fi
+if [[ -n "$opt_version" && ! "$opt_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+    echo "Version must contain three numeric components"
+    exit 1
+fi
+
 if [[ -z "$opt_build" ]]; then
     apple_build=`app-apple/ci/xcconfig-get.sh "$apple_xcconfig_path" CURRENT_PROJECT_VERSION`
     android_build=`sed -n -E "s/^[[:space:]]*versionCode = ([0-9]+)[[:space:]]*$/\1/p" "$android_gradle_path"`
@@ -90,7 +108,15 @@ if [[ -z "$opt_build" ]]; then
     if [[ "$android_build" -gt "$current_build" ]]; then
         current_build="$android_build"
     fi
+    if [[ "$cross_build" -gt "$current_build" ]]; then
+        current_build="$cross_build"
+    fi
     opt_build=$((current_build + 1))
+fi
+
+if [[ ! "$opt_build" =~ ^[1-9][0-9]*$ ]] || [[ ${#opt_build} -gt 10 ]] || [[ "$opt_build" -gt 2147483647 ]]; then
+    echo "Build must be a positive 32-bit integer"
+    exit 1
 fi
 
 if [[ -n $opt_dry_run ]]; then
@@ -118,6 +144,16 @@ if [[ $opt_no_log != "1" ]]; then
             ;;
         *)
             edit_changelog "$android_changelog_path"
+            ;;
+    esac
+
+    read -r -p "Reuse Apple CHANGELOG for app-cross? y/N " reuse_apple_cross_changelog
+    case "$reuse_apple_cross_changelog" in
+        y|Y)
+            cp "$apple_changelog_path" "$cross_changelog_path"
+            ;;
+        *)
+            edit_changelog "$cross_changelog_path"
             ;;
     esac
 fi
@@ -149,6 +185,12 @@ git add "$android_gradle_path"
 
 # Cross
 
+cross_version="${opt_version:-$cross_version}"
+echo "Set app-cross version to $cross_version ($opt_build)..."
+printf '%s\n' "$cross_version" > "$cross_version_path"
+printf '%s\n' "$opt_build" > "$cross_build_path"
+git add "$cross_version_path" "$cross_build_path"
+
 if [[ $opt_no_log != "1" ]]; then
     echo "Copy CHANGELOG to release notes..."
     scripts/copy-release-notes.sh
@@ -159,7 +201,8 @@ git add \
     "$metadata_root_apple" \
     "$metadata_root_android" \
     "$apple_changelog_path" \
-    "$android_changelog_path"
+    "$android_changelog_path" \
+    "$cross_changelog_path"
 
 git commit -m "Bump version"
 

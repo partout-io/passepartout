@@ -17,7 +17,7 @@
 namespace {
 std::string SingleInstanceKey() {
     // Scope both the instance lock and activation channel to the user.
-    auto key = Passepartout::CrossConstants.tags.app + "-" + wxGetUserId().ToStdString(wxConvUTF8);
+    auto key = Passepartout::CrossConstants.app.name + "-" + wxGetUserId().ToStdString(wxConvUTF8);
     return key;
 }
 }
@@ -30,7 +30,7 @@ bool PassepartoutApp::OnInit() {
     wxUILocale::UseDefault();
     AppLogger startup_logger;
     startup_logger.Write(LogLevel::info, LogCategory::core, "Start application");
-    SetAppName(wxString::FromUTF8(CrossConstants.tags.app));
+    SetAppName(wxString::FromUTF8(CrossConstants.app.name));
 
     // Parse the launch mode and configuration paths.
     bool demo = false;
