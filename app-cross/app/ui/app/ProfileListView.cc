@@ -4,39 +4,37 @@
 
 #include "ProfileListView.h"
 #include "../../strings/Strings.h"
-#include "../extensions/AppProfile.h"
+#include "../extensions/Models+UI.h"
 #include <algorithm>
 #include <wx/numformatter.h>
-#ifdef __WXMSW__
-#include "../theme/ThemeSwitchRenderer.h"
-#endif
+#include "../theme/Theme.h"
 
-namespace Passepartout {
 namespace {
 class ProfileListStore final : public wxDataViewListStore {
 public:
     bool IsEnabledByRow(unsigned row, unsigned column) const override {
-        return column != ProfileListView::ToggleColumn || GetItemData(GetItem(row)) != 0;
+        return column != Passepartout::ProfileListView::ToggleColumn || GetItemData(GetItem(row)) != 0;
     }
 };
+
 wxString Text(const std::string &value) {
     return wxString::FromUTF8(value);
 }
 
-wxString StatusText(Status status) {
+wxString StatusText(Passepartout::Status status) {
     switch (status) {
-        case Status::disconnected: return Localized(StringKey::EntitiesTunnelStatusInactive);
-        case Status::connecting: return Localized(StringKey::EntitiesTunnelStatusActivating);
-        case Status::connected: return Localized(StringKey::EntitiesTunnelStatusActive);
-        case Status::disconnecting: return Localized(StringKey::EntitiesTunnelStatusDeactivating);
-        default: return Localized(StringKey::GlobalNounsUnknown);
+        case Passepartout::Status::disconnected: return Passepartout::Localized(Passepartout::StringKey::EntitiesTunnelStatusInactive);
+        case Passepartout::Status::connecting: return Passepartout::Localized(Passepartout::StringKey::EntitiesTunnelStatusActivating);
+        case Passepartout::Status::connected: return Passepartout::Localized(Passepartout::StringKey::EntitiesTunnelStatusActive);
+        case Passepartout::Status::disconnecting: return Passepartout::Localized(Passepartout::StringKey::EntitiesTunnelStatusDeactivating);
+        default: return Passepartout::Localized(Passepartout::StringKey::GlobalNounsUnknown);
     }
 }
 
-wxString TransferText(const AppSnapshot &state, const std::string &id) {
-    if (!state.tunnel_available) return {};
+wxString TransferText(const Passepartout::TunnelObservable::State &state, const std::string &id) {
+    if (!state.available) return {};
     for (const auto &tunnel : state.tunnels) {
-        if (tunnel.id != id || tunnel.status.value != Status::connected || !tunnel.transfer) continue;
+        if (tunnel.id != id || tunnel.status.value != Passepartout::Status::connected || !tunnel.transfer) continue;
         const auto &transfer = *tunnel.transfer;
         if (transfer.received < 0 || transfer.sent < 0) return {};
         return Text(Passepartout::Profiles::TransferText(transfer, [](double value, int precision) {
@@ -46,12 +44,17 @@ wxString TransferText(const AppSnapshot &state, const std::string &id) {
     return {};
 }
 }
-ProfileListView::ProfileListView(wxWindow *parent, TunnelObservable &tunnel,
+
+using Passepartout::ProfileListView;
+
+ProfileListView::ProfileListView(wxWindow *parent, ProfileObservable &profiles, TunnelObservable &tunnel,
     std::function<void()> selection_changed,
     std::function<void(std::vector<std::string>)> remove,
-    std::function<void(std::string)> edit)
-    : wxPanel(parent), tunnel_(tunnel), selection_changed_(std::move(selection_changed)),
-      remove_(std::move(remove)), edit_(std::move(edit)) {
+    std::function<void(std::string)> edit,
+    std::function<void(InteractiveLogin)> login
+)
+    : wxPanel(parent), profiles_observable_(profiles), tunnel_(tunnel), selection_changed_(std::move(selection_changed)),
+      remove_(std::move(remove)), edit_(std::move(edit)), login_(std::move(login)) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
     search_ = new wxSearchCtrl(this, wxID_ANY);
     search_->ShowCancelButton(true);
@@ -64,15 +67,17 @@ ProfileListView::ProfileListView(wxWindow *parent, TunnelObservable &tunnel,
     list_->AppendTextColumn(Localized(StringKey::GlobalNounsName), wxDATAVIEW_CELL_INERT, parent->FromDIP(230));
     list_->AppendTextColumn(Localized(StringKey::GlobalNounsStatus), wxDATAVIEW_CELL_INERT, parent->FromDIP(140));
     list_->AppendTextColumn(wxString(), wxDATAVIEW_CELL_INERT, parent->FromDIP(190));
-#ifdef __WXMSW__
-    list_->AppendColumn(new wxDataViewColumn(wxString(),
-        new ThemeSwitchRenderer(Localized(StringKey::EntitiesTunnelStatusActive),
-                                Localized(StringKey::EntitiesTunnelStatusInactive)),
-        ToggleColumn, parent->FromDIP(90), wxALIGN_CENTER), "bool");
-#else
-    list_->AppendToggleColumn(wxString(), wxDATAVIEW_CELL_ACTIVATABLE,
-                       parent->FromDIP(90), wxALIGN_CENTER);
-#endif
+    list_->AppendColumn(
+        new wxDataViewColumn(
+            wxString(),
+            Theme::SwitchRenderer(
+                Localized(StringKey::EntitiesTunnelStatusActive),
+                Localized(StringKey::EntitiesTunnelStatusInactive)
+            ),
+            ToggleColumn, parent->FromDIP(90), wxALIGN_CENTER
+        ),
+        "bool"
+    );
     layout->Add(list_, 1, wxEXPAND);
     SetSizer(layout);
     search_->Bind(wxEVT_TEXT, [this](wxCommandEvent &) {
@@ -100,8 +105,11 @@ ProfileListView::ProfileListView(wxWindow *parent, TunnelObservable &tunnel,
     });
 }
 
-void ProfileListView::Render(const AppSnapshot &state, bool picking) {
-    snapshot_ = state;
+void ProfileListView::Render(const ProfileObservable::State &profiles, const TunnelObservable::State &tunnel,
+                             bool picking
+) {
+    profiles_ = profiles;
+    tunnels_ = tunnel;
     picking_ = picking;
     RenderRows();
 }
@@ -123,7 +131,7 @@ void ProfileListView::RenderRows() {
     list_->Freeze();
     const auto query = search_->GetValue().Lower();
     std::vector<std::string> ids;
-    for (const auto &profile : snapshot_.profiles) {
+    for (const auto &profile : profiles_.profiles) {
         if (query.empty() || Text(profile.name).Lower().Contains(query)) ids.push_back(profile.id);
     }
     const bool rebuild = ids != visible_ids_;
@@ -132,15 +140,17 @@ void ProfileListView::RenderRows() {
     }
     visible_ids_ = std::move(ids);
     unsigned row = 0;
-    for (const auto &profile : snapshot_.profiles) {
-        if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
-        const auto toggle = TunnelObservable::StateForProfile(snapshot_, profile.id);
-        const auto status = snapshot_.tunnel_available &&
-            snapshot_.tunnel_observation_errors.find(profile.id) == snapshot_.tunnel_observation_errors.end()
+    for (const auto &profile : profiles_.profiles) {
+        if (row == visible_ids_.size()) break;
+        if (profile.id != visible_ids_[row]) continue;
+        const auto toggle = Tunnels::StateForProfile(tunnels_, profile.id);
+        const auto status = tunnels_.available &&
+            tunnels_.errors.unobservable_profiles.find(profile.id) == tunnels_.errors.unobservable_profiles.end()
             ? StatusText(toggle.status) : wxString();
-        const auto transfer = TransferText(snapshot_, profile.id);
-        if (rebuild) AppendProfile(Text(profile.name), status, toggle.is_on, toggle.can_interact && !picking_, transfer);
-        else UpdateProfile(row, Text(profile.name), status, toggle.is_on, toggle.can_interact && !picking_, transfer);
+        const auto transfer = TransferText(tunnels_, profile.id);
+        const bool enabled = toggle.can_interact && !profiles_.busy && !picking_;
+        if (rebuild) AppendProfile(Text(profile.name), status, toggle.is_on, enabled, transfer);
+        else UpdateProfile(row, Text(profile.name), status, toggle.is_on, enabled, transfer);
         ++row;
     }
     if (rebuild) RestoreSelection(selected);
@@ -149,24 +159,26 @@ void ProfileListView::RenderRows() {
 }
 
 void ProfileListView::RestoreSelection(const std::vector<std::string> &ids) {
-    const bool was_rendering = rendering_;
-    rendering_ = true;
     list_->UnselectAll();
     for (std::size_t row = 0; row < visible_ids_.size(); ++row) {
         if (std::find(ids.begin(), ids.end(), visible_ids_[row]) == ids.end()) continue;
         list_->SelectRow(static_cast<unsigned>(row));
     }
-    rendering_ = was_rendering;
 }
 
 void ProfileListView::ToggleProfile(wxDataViewEvent &event) {
-    if (picking_ || rendering_ || event.GetColumn() != ProfileListView::ToggleColumn) return;
+    if (rendering_ || event.GetColumn() != ToggleColumn || picking_) return;
+    if (profiles_observable_.Snapshot().busy) return;
     const auto row = list_->ItemToRow(event.GetItem());
     if (row < 0 || static_cast<std::size_t>(row) >= visible_ids_.size()) return;
-    tunnel_.SetEnabled(visible_ids_[row], list_->GetToggleValue(row, ProfileListView::ToggleColumn));
+    const auto profile = profiles_observable_.FindProfile(visible_ids_[row]);
+    if (profile) {
+        auto login = Tunnels::SetEnabled(tunnel_, *profile, list_->GetToggleValue(row, ProfileListView::ToggleColumn));
+        if (login) login_(std::move(*login));
+    }
     // Restore observed state immediately; the next snapshot supplies completion
     // or failure instead of displaying an optimistic connection as successful.
-    snapshot_ = tunnel_.Snapshot();
+    tunnels_ = tunnel_.Snapshot();
     RenderRows();
 }
 
@@ -178,20 +190,19 @@ bool ProfileListView::HasCollectionFocus() const {
 void ProfileListView::ShowContextMenu(const wxPoint &screen_position) {
     const auto ids = SelectedIds();
     if (ids.empty()) return;
-    wxWindow *collection = list_;
     wxPoint position;
-    if (screen_position != wxDefaultPosition) position = collection->ScreenToClient(screen_position);
+    if (screen_position != wxDefaultPosition) position = list_->ScreenToClient(screen_position);
     else position = list_->GetItemRect(list_->GetCurrentItem()).GetBottomLeft();
     wxMenu menu;
     if (ids.size() == 1) {
         menu.Append(wxID_EDIT, Localized(StringKey::GlobalActionsEdit));
-        menu.Enable(wxID_EDIT, !picking_ && !snapshot_.foreground_busy);
+        menu.Enable(wxID_EDIT, !picking_ && !profiles_.busy);
     }
     menu.Append(wxID_DELETE, Localized(StringKey::GlobalActionsRemove));
-    menu.Enable(wxID_DELETE, !picking_ && ProfileObservable::CanRemove(tunnel_.Snapshot(), ids));
+    menu.Enable(wxID_DELETE, !picking_ && ProfileObservable::CanRemove(profiles_, ids) && !tunnels_.pending_profile);
     // Popup menus run a nested event loop: retain the captured IDs even when
     // background snapshots change the visible rows or selection.
-    const auto action = collection->GetPopupMenuSelectionFromUser(menu, position);
+    const auto action = list_->GetPopupMenuSelectionFromUser(menu, position);
     if (action == wxID_DELETE) remove_(ids);
     else if (action == wxID_EDIT && ids.size() == 1) edit_(ids.front());
 }
@@ -211,5 +222,4 @@ void ProfileListView::UpdateProfile(unsigned row, const wxString &name, const wx
     list_->SetTextValue(status, row, 1);
     list_->SetToggleValue(is_on, row, ToggleColumn);
     list_->SetTextValue(transfer, row, TransferColumn);
-}
 }

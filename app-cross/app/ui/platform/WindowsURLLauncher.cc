@@ -2,14 +2,16 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "WindowsURLLauncher.h"
+#include <wx/weakref.h>
 #include <chrono>
+#include <utility>
 #include <roapi.h>
 #include <winrt/Windows.Foundation.h>
 #include <winrt/Windows.System.h>
 
-namespace Passepartout {
+namespace Passepartout::Windows {
 using namespace winrt::Windows::Foundation;
-struct WindowsURLLauncher::Impl {
+struct URLLauncher::Impl {
     struct Apartment {
         Apartment() {
             winrt::check_hresult(RoInitialize(RO_INIT_SINGLETHREADED));
@@ -36,11 +38,35 @@ struct WindowsURLLauncher::Impl {
         } catch (...) {}
     }
 };
-WindowsURLLauncher::WindowsURLLauncher(const std::string &url) : impl_(std::make_unique<Impl>(url)) {}
 
-WindowsURLLauncher::~WindowsURLLauncher() = default;
+URLLauncher::URLLauncher(
+    wxWindow *parent, const std::string &url, std::function<void(wxWindow *)> on_error
+) : wxWindow(parent, wxID_ANY), impl_(std::make_unique<Impl>(url)), timer_(this),
+    on_error_(std::move(on_error)) {
+    Hide();
+    Bind(wxEVT_TIMER, &URLLauncher::OnTimer, this);
+    timer_.Start(50);
+}
 
-std::optional<bool> WindowsURLLauncher::Poll() {
+URLLauncher::~URLLauncher() = default;
+
+void URLLauncher::OnTimer(wxTimerEvent &) {
+    std::optional<bool> result;
+    try {
+        result = Poll();
+    } catch (...) {
+        result = false;
+    }
+    if (!result) return;
+    timer_.Stop();
+    // The callback may run a nested event loop and destroy this window.
+    const wxWeakRef<wxWindow> target(this);
+    auto on_error = std::move(on_error_);
+    if (!*result && on_error) on_error(GetParent());
+    if (target) target->Destroy();
+}
+
+std::optional<bool> URLLauncher::Poll() {
     if (impl_->operation.Status() != AsyncStatus::Started) return impl_->operation.GetResults();
     if (std::chrono::steady_clock::now() < impl_->deadline) return {};
     impl_->operation.Cancel();

@@ -6,7 +6,7 @@ package com.algoritmico.passepartout
 
 import android.app.Application
 import com.algoritmico.passepartout.context.defaultAndroidConstants
-import com.algoritmico.passepartout.observables.AppContext
+import com.algoritmico.passepartout.context.AppContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob

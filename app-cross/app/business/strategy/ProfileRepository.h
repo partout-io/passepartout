@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../models/Profile.h"
+#include "../extensions/Models+Business.h"
 
 namespace Passepartout {
 class ProfileRepository {

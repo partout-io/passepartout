@@ -15,13 +15,17 @@ namespace Passepartout {
 // identities, never row numbers or references into a rendered snapshot.
 class ProfileListView final : public wxPanel {
 public:
-    ProfileListView(wxWindow *parent, TunnelObservable &tunnel,
+    ProfileListView(wxWindow *parent, ProfileObservable &profiles, TunnelObservable &tunnel,
         std::function<void()> selection_changed,
         std::function<void(std::vector<std::string>)> remove,
-        std::function<void(std::string)> edit);
+        std::function<void(std::string)> edit,
+        std::function<void(InteractiveLogin)> login
+    );
     static constexpr unsigned TransferColumn = 2;
     static constexpr unsigned ToggleColumn = 3;
-    void Render(const AppSnapshot &state, bool picking);
+    void Render(const ProfileObservable::State &profiles, const TunnelObservable::State &tunnel,
+                bool picking
+    );
     std::vector<std::string> SelectedIds() const;
     bool HasCollectionFocus() const;
     void ShowContextMenu(const wxPoint &screen_position);
@@ -31,13 +35,16 @@ private:
     void RenderRows();
     void ToggleProfile(wxDataViewEvent &event);
     void RestoreSelection(const std::vector<std::string> &ids);
+    ProfileObservable &profiles_observable_;
     TunnelObservable &tunnel_;
     std::function<void()> selection_changed_;
     std::function<void(std::vector<std::string>)> remove_;
     std::function<void(std::string)> edit_;
+    std::function<void(InteractiveLogin)> login_;
     wxSearchCtrl *search_;
     ThemeList *list_;
-    AppSnapshot snapshot_;
+    ProfileObservable::State profiles_;
+    TunnelObservable::State tunnels_;
     std::vector<std::string> visible_ids_;
     bool picking_ = false;
     bool rendering_ = false;

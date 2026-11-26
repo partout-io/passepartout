@@ -5,17 +5,17 @@
 #include "ProfileCoordinator.h"
 #include "ProfileView.h"
 #include "ProfileModuleList.h"
-#include "OpenVPNView.h"
-#include "OpenVPNCredentialsView.h"
+#include "modules/OpenVPNView.h"
+#include "modules/OpenVPNCredentialsView.h"
 #include "../theme/ThemeTextList.h"
-#include "DNSView.h"
-#include "OnDemandView.h"
-#include "HTTPProxyView.h"
-#include "IPView.h"
-#include "WireGuardView.h"
+#include "modules/DNSView.h"
+#include "modules/OnDemandView.h"
+#include "modules/HTTPProxyView.h"
+#include "modules/IPView.h"
+#include "modules/WireGuardView.h"
 #include "../theme/ThemeLongContent.h"
 #include "../platform/Presentation.h"
-#include "../extensions/Module.h"
+#include "../extensions/Models+UI.h"
 #include <algorithm>
 #include <type_traits>
 #include <wx/display.h>
@@ -25,10 +25,11 @@
 
 namespace Passepartout {
 ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &profiles,
-    std::shared_ptr<ProfileEditor> editor, const WireGuardKeyGenerator &keys)
+    std::shared_ptr<ProfileEditor> editor, const WireGuardKeyGenerator &wireguard_keygen
+)
     : wxDialog(parent, wxID_ANY, Localized(StringKey::GlobalNounsProfile), wxDefaultPosition,
         wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
-      profiles_(profiles), editor_(std::move(editor)), keys_(keys), timer_(this) {
+      profiles_(profiles), editor_(std::move(editor)), wireguard_keygen_(wireguard_keygen), observer_([this] { RefreshState(); }) {
     Theme::Apply(this);
     SetIcon(Theme::ProfileIcon(this));
     Bind(wxEVT_SYS_COLOUR_CHANGED, [this](wxSysColourChangedEvent &event) {
@@ -69,32 +70,21 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     actions->Realize();
     buttons->Add(actions);
     SetAffirmativeId(wxID_SAVE);
+    SetEscapeId(wxID_CANCEL);
     layout->Add(buttons, 0, wxEXPAND | wxALL, Theme::Spacing(this));
     SetSizer(layout);
-    cancel_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
+    Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
         Dismiss();
-    });
-    save_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
+    }, wxID_CANCEL);
+    Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
         profiles_.SaveEditor(editor_);
-        RefreshState();
-    });
+    }, wxID_SAVE);
     Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent &event) {
-        if (editor_->Snapshot().saving) {
-            if (event.CanVeto()) event.Veto();
-            return;
-        }
-        EndModal(wxID_CANCEL);
+        if (!Dismiss() && event.CanVeto()) event.Veto();
     });
-    Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
-        if (event.GetKeyCode() == WXK_ESCAPE) Dismiss();
-        else event.Skip();
-    });
-    Bind(wxEVT_TIMER, [this](wxTimerEvent &) {
-        RefreshState();
-    });
-    ShowSection(new ProfileView(pages_, editor_, [this] {
-        RefreshState();
-    }), Localized(StringKey::GlobalNounsGeneral));
+    observer_.Observe(editor_->changes);
+    observer_.Observe(profiles_.changes);
+    ShowSection(new ProfileView(pages_, editor_), Localized(StringKey::GlobalNounsGeneral));
     RefreshState();
     GetSizer()->SetSizeHints(this);
     // Choose one reading area at creation; navigation preserves manual resizing.
@@ -105,7 +95,6 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     size.DecTo(work_area.GetSize());
     SetSize(size);
     splitter->SetSashPosition(sidebar_width);
-    timer_.Start(100);
     CentreOnParent();
     auto position = GetPosition();
     position.x = std::max(work_area.x, std::min(position.x, work_area.GetRight() - GetSize().x + 1));
@@ -121,8 +110,11 @@ void ProfileCoordinator::ShowSection(wxWindow *page, const wxString &title) {
     Layout();
 }
 
-void ProfileCoordinator::Dismiss() {
-    if (!editor_->Snapshot().saving) EndModal(wxID_CANCEL);
+bool ProfileCoordinator::Dismiss() {
+    if (editor_->Snapshot().saving) return false;
+    observer_.Stop();
+    EndModal(wxID_CANCEL);
+    return true;
 }
 
 void ProfileCoordinator::SelectSection(std::size_t selection) {
@@ -131,9 +123,7 @@ void ProfileCoordinator::SelectSection(std::size_t selection) {
     selection_ = selection;
     pages_->DeleteAllPages();
     if (selection == 0) {
-        ShowSection(new ProfileView(pages_, editor_, [this] {
-            RefreshState();
-        }), Localized(StringKey::GlobalNounsGeneral));
+        ShowSection(new ProfileView(pages_, editor_), Localized(StringKey::GlobalNounsGeneral));
     } else {
         OpenModule(selection - 1);
     }
@@ -160,30 +150,10 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
         else if constexpr (std::is_same_v<Tag, TaggedModuleOnDemand>) return new OnDemandView(pages_, tagged.value);
         else if constexpr (std::is_same_v<Tag, TaggedModuleHTTPProxy>) return new HTTPProxyView(pages_, tagged.value, open_content);
         else if constexpr (std::is_same_v<Tag, TaggedModuleIp>) return new IPView(pages_, tagged.value, open_content);
-        else if constexpr (std::is_same_v<Tag, TaggedModuleWireGuard>) return new WireGuardView(pages_, tagged.value, open_content, keys_, open_list);
+        else if constexpr (std::is_same_v<Tag, TaggedModuleWireGuard>) return new WireGuardView(pages_, tagged.value, open_content, wireguard_keygen_, open_list);
         else if constexpr (std::is_same_v<Tag, TaggedModuleOpenVpn>) {
             return new OpenVPNView(pages_, tagged.value, open_content, [this, index] {
-                const auto module = std::get<TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
-                OpenVpnCredentials credentials{};
-                credentials.otpMethod.value = OpenVpnCredentialsOTPMethod::none;
-                if (module.value.credentials) credentials = *module.value.credentials;
-                const auto update = [&credentials](std::string username, std::string password) {
-                    credentials.username = std::move(username);
-                    credentials.password = std::move(password);
-                };
-                ThemeModal modal(this, Localized(StringKey::ModulesOpenvpnCredentials),
-                    [&credentials, update](wxWindow *parent) {
-                        return new OpenVPNCredentialsView(parent, credentials, update);
-                    }, ThemeModal::Mode::Editable, ThemeModal::Sizing::Content);
-                if (modal.ShowModal() != wxID_OK) return;
-                auto updated = std::get<TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
-                // Preserve properties outside this editor from the latest profile draft.
-                auto accepted = updated.value.credentials.value_or(credentials);
-                accepted.username = std::move(credentials.username);
-                accepted.password = std::move(credentials.password);
-                updated.value.credentials = std::move(accepted);
-                editor_->UpdateModule(updated);
-                RefreshState();
+                EditCredentials(index);
             }, [this, index, open_list] {
                 const auto draft = editor_->Snapshot().draft;
                 const auto &module = std::get<TaggedModuleOpenVpn>(draft.modules.at(index)).value;
@@ -197,10 +167,34 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
     ShowSection(page, Modules::Title(module));
 }
 
+void ProfileCoordinator::EditCredentials(std::size_t index) {
+    const auto module = std::get<Partout::Models::TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
+    Partout::Models::OpenVpnCredentials credentials{};
+    credentials.otpMethod.value = Partout::Models::OpenVpnCredentialsOTPMethod::none;
+    if (module.value.credentials) credentials = *module.value.credentials;
+    const auto update = [&credentials](std::string username, std::string password) {
+        credentials.username = std::move(username);
+        credentials.password = std::move(password);
+    };
+    ThemeModal modal(this, Localized(StringKey::ModulesOpenvpnCredentials),
+        [&credentials, update](wxWindow *parent) {
+            return new OpenVPNCredentialsView(parent, credentials, update);
+        }, ThemeModal::Mode::Editable, ThemeModal::Sizing::Content
+    );
+    if (modal.ShowModal() != wxID_OK) return;
+    auto updated = std::get<Partout::Models::TaggedModuleOpenVpn>(editor_->Snapshot().draft.modules.at(index));
+    // Preserve properties outside this editor from the latest profile draft.
+    auto accepted = updated.value.credentials.value_or(credentials);
+    accepted.username = std::move(credentials.username);
+    accepted.password = std::move(credentials.password);
+    updated.value.credentials = std::move(accepted);
+    editor_->UpdateModule(updated);
+}
+
 void ProfileCoordinator::RefreshState() {
     const auto state = editor_->Snapshot();
     if (state.saved) {
-        timer_.Stop();
+        observer_.Stop();
         EndModal(wxID_SAVE);
         return;
     }
@@ -211,8 +205,9 @@ void ProfileCoordinator::RefreshState() {
     if (progress_->Show(state.saving)) Layout();
     cancel_->Enable(!state.saving);
     save_->Enable(editor_->CanSave() && ProfileObservable::CanSave(profiles_.Snapshot(), state.draft.id));
-    if (state.failed) {
-        editor_->ClearError();
+    if (state.operation_failed) {
+        // Acknowledge before the alert starts its nested event loop.
+        editor_->ClearOperationError();
         PresentError(this);
     }
 }

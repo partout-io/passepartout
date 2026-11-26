@@ -3,64 +3,123 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "TunnelObservable.h"
-#include "../business/managers/AppSession.h"
+#include "../context/AppLog.h"
 #include <algorithm>
 
 namespace Passepartout {
-void TunnelObservable::Connect(std::string id) {
-    if (interactive_login_) return;
-    const auto editor = session_.CreateEditor(id);
-    if (!editor) return;
-    interactive_login_ = InteractiveLogin::FromProfile(editor->Original());
-    if (!interactive_login_) session_.Connect(std::move(id));
-}
-
-TunnelObservable::ToggleState TunnelObservable::StateForProfile(const AppSnapshot &state, const std::string &id) {
-    ToggleState result;
-    for (const auto &tunnel : state.tunnels) {
-        if (tunnel.id == id) {
-            result.is_on = tunnel.isEnabled;
-            result.status = tunnel.status.value;
-        }
-    }
-    const bool exists = std::any_of(state.profiles.begin(), state.profiles.end(), [&](const auto &profile) {
-        return profile.id == id;
+bool TunnelObservable::State::HasActivity() const {
+    if (busy || pending_profile) return true;
+    return available && std::any_of(tunnels.begin(), tunnels.end(), [](const auto &tunnel) {
+        return tunnel.status.value == Status::connecting || tunnel.status.value == Status::disconnecting;
     });
-    result.can_interact = exists && state.loaded && !state.foreground_busy && !state.pending_profile && state.tunnel_available &&
-        std::find(state.recovering_profiles.begin(), state.recovering_profiles.end(), id) == state.recovering_profiles.end() &&
-        state.tunnel_observation_errors.find(id) == state.tunnel_observation_errors.end() &&
-        result.status != Status::disconnecting;
-    return result;
 }
 
-void TunnelObservable::SetEnabled(const std::string &id, bool enabled) {
-    const auto state = StateForProfile(Snapshot(), id);
-    if (!state.can_interact || state.is_on == enabled) return;
-    if (enabled) Connect(id);
-    else Disconnect(id);
+TunnelObservable::TunnelObservable(
+    Worker &executor, std::unique_ptr<Partout::Tunnel> tunnel, ProfileManager &profiles
+) : profiles_(profiles),
+    profile_subscription_(profiles.events.Subscribe([this](const Models::Event &event) { OnUpdate(event); })),
+    executor_(executor), tunnel_(std::move(tunnel)) {}
+
+TunnelObservable::~TunnelObservable() {
+    profiles_.events.Unsubscribe(profile_subscription_);
 }
 
-std::optional<InteractiveLogin> TunnelObservable::TakeInteractiveLogin() {
-    auto login = std::move(interactive_login_);
-    interactive_login_.reset();
-    return login;
+void TunnelObservable::OnUpdate(const Models::Event &event) {
+    const auto *deleted = std::get_if<Models::ProfileEventDelete>(&event);
+    if (!deleted) return;
+    for (const auto &id : deleted->ids) Remove(id);
 }
 
-void TunnelObservable::CompleteInteractiveLogin(InteractiveLogin login) {
-    if (!login.CanSubmit() || !StateForProfile(Snapshot(), login.original.id).can_interact) return;
-    const auto id = login.original.id;
-    session_.Connect(id, std::move(login.credentials), std::move(login.original));
+void TunnelObservable::Cancel() {
+    tunnel_->Cancel();
+}
+
+void TunnelObservable::Post(std::function<void()> operation, bool foreground) {
+    if (foreground) {
+        std::lock_guard lock(mutex_);
+        snapshot_.errors.operation = false;
+        snapshot_.busy = true;
+        ++pending_operations_;
+        changes.Emit();
+    }
+    const auto accepted = executor_.Post([this, operation = std::move(operation), foreground] {
+        try {
+            operation();
+            tunnel_->Advance();
+        } catch (...) {
+            AppLog::Write(AppLog::Level::error, AppLog::Category::tunnel, "Unable to execute VPN operation");
+            std::lock_guard lock(mutex_);
+            snapshot_.errors.operation = true;
+        }
+        Publish();
+        if (foreground) FinishOperation();
+    }, foreground);
+    if (!accepted && foreground) FinishOperation();
+}
+
+void TunnelObservable::FinishOperation() {
+    std::lock_guard lock(mutex_);
+    snapshot_.busy = --pending_operations_ != 0;
+    changes.Emit();
+}
+
+void TunnelObservable::Publish() {
+    State state;
+    try {
+        state.tunnels = Tunnels::Info(tunnel_->Fetch());
+        for (const auto &[id, error] : tunnel_->ObservationErrors()) state.errors.unobservable_profiles.insert(id);
+        state.available = true;
+    } catch (...) {
+        state.available = false;
+    }
+    state.pending_profile = tunnel_->PendingProfile();
+    std::lock_guard lock(mutex_);
+    state.errors.operation = snapshot_.errors.operation;
+    state.busy = snapshot_.busy;
+    snapshot_ = std::move(state);
+    changes.Emit();
+}
+
+std::optional<InteractiveLogin> TunnelObservable::Connect(
+    Profile profile, std::optional<Partout::TunnelCredentials> credentials
+) {
+    if (!credentials) {
+        auto login = Profiles::InteractiveLoginFor(profile);
+        if (login) return login;
+    }
+    Post([this, profile = std::move(profile), credentials = std::move(credentials)] {
+        tunnel_->Connect(profile, credentials);
+    });
+    return {};
 }
 
 void TunnelObservable::Disconnect(std::string id) {
-    session_.Disconnect(std::move(id));
+    Post([this, id = std::move(id)] {
+        tunnel_->Disconnect(id);
+    });
+}
+
+void TunnelObservable::Remove(std::string id) {
+    Post([this, id = std::move(id)] {
+        tunnel_->Remove(id);
+    });
 }
 
 void TunnelObservable::Refresh() {
-    session_.Refresh();
+    if (!executor_.CurrentActivity().busy) Post([] {}, false);
 }
 
-AppSnapshot TunnelObservable::Snapshot() const {
-    return session_.Snapshot();
+void TunnelObservable::ClearOperationError() {
+    std::lock_guard lock(mutex_);
+    snapshot_.errors.operation = false;
+    changes.Emit();
 }
+
+TunnelObservable::State TunnelObservable::Snapshot() const {
+    std::lock_guard lock(mutex_);
+    auto result = snapshot_;
+    if (executor_.IsStopping()) result.busy = false;
+    return result;
+}
+
 }

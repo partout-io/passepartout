@@ -7,20 +7,16 @@
 
 namespace Passepartout {
 LicenseView::LicenseView(wxWindow *parent, CreditsObservable &credits, std::string url, const wxString &title)
-    : ThemeLongContent(parent, title, {}), credits_(credits), url_(std::move(url)), timer_(this) {
+    : ThemeLongContent(parent, title, {}), credits_(credits), url_(std::move(url)), observer_([this] { UpdateContent(); }) {
     credits_.LoadLicense(url_);
-    Bind(wxEVT_TIMER, [this](wxTimerEvent &) {
-        UpdateContent();
-    });
-    timer_.Start(100);
+    observer_.Observe(credits_.changes);
     UpdateContent();
 }
 
 void LicenseView::UpdateContent() {
     const auto state = credits_.License(url_);
-    const auto text = state.loading ? Localized(StringKey::GlobalNounsLoading) : state.failed
+    const auto text = state.loading ? Localized(StringKey::GlobalNounsLoading) : state.operation_failed
         ? Localized(StringKey::ErrorsAppOther) : wxString::FromUTF8(state.text);
     SetContent(text);
-    if (!state.loading) timer_.Stop();
 }
 }

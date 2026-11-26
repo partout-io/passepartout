@@ -3,8 +3,8 @@
 
 #pragma once
 #include "../../context/AppContext.h"
-#include "SettingsPresentation.h"
 #include "SettingsView.h"
+#include "../extensions/StateObserver.h"
 #include <wx/simplebook.h>
 
 namespace Passepartout {
@@ -12,11 +12,14 @@ class SettingsCoordinator final : public wxDialog {
 public:
     SettingsCoordinator(wxWindow *parent, AppContext &context);
 private:
+    void UpdateVersion();
     void ReportIssue();
     void SelectSection(SettingsSection section);
-    void ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> make_page);
+    void ShowSection(wxWindow *page, const wxString &title);
     AppContext &context_;
     SettingsSection section_ = SettingsSection::Preferences;
     wxSimplebook *pages_;
+    SettingsView *sidebar_;
+    StateObserver observer_;
 };
 }

@@ -3,13 +3,31 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "Theme.h"
+#ifdef __WXMSW__
+#include "ThemeSwitchRenderer.h"
+#endif
 #include "AppIconResource.h"
 #include <wx/imagpng.h>
 #include <wx/mstream.h>
 #include <wx/settings.h>
 #include <wx/artprov.h>
 #include <wx/bmpbndl.h>
-namespace Passepartout {
+namespace {
+wxIcon WindowIcon(wxWindow *window, const wxArtID &art, const wxString &fallback_svg) {
+    const int metric = wxSystemSettings::GetMetric(wxSYS_SMALLICON_X, window);
+    const int size = metric > 0 ? metric : window->FromDIP(16);
+    auto icon = wxArtProvider::GetIcon(art, wxART_FRAME_ICON, wxSize(size, size));
+    if (icon.IsOk()) return icon;
+    const auto colour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT).GetAsString(wxC2S_HTML_SYNTAX);
+    const auto svg = wxString::Format(fallback_svg, colour);
+    const auto bundle = wxBitmapBundle::FromSVG(svg.utf8_str(), wxSize(size, size));
+    if (bundle.IsOk()) icon.CopyFromBitmap(bundle.GetBitmap(wxSize(size, size)));
+    return icon;
+}
+}
+
+using Passepartout::Theme;
+
 wxIcon Theme::AppIcon(wxWindow *window, int size_dip) {
     wxMemoryInputStream stream(AppIconData, sizeof(AppIconData));
     wxPNGHandler decoder;
@@ -25,19 +43,7 @@ wxIcon Theme::AppIcon(wxWindow *window, int size_dip) {
     return icon;
 }
 
-namespace {
-wxIcon WindowIcon(wxWindow *window, const wxArtID &art, const wxString &fallback_svg) {
-    const int metric = wxSystemSettings::GetMetric(wxSYS_SMALLICON_X, window);
-    const int size = metric > 0 ? metric : window->FromDIP(16);
-    auto icon = wxArtProvider::GetIcon(art, wxART_FRAME_ICON, wxSize(size, size));
-    if (icon.IsOk()) return icon;
-    const auto colour = wxSystemSettings::GetColour(wxSYS_COLOUR_WINDOWTEXT).GetAsString(wxC2S_HTML_SYNTAX);
-    const auto svg = wxString::Format(fallback_svg, colour);
-    const auto bundle = wxBitmapBundle::FromSVG(svg.utf8_str(), wxSize(size, size));
-    if (bundle.IsOk()) icon.CopyFromBitmap(bundle.GetBitmap(wxSize(size, size)));
-    return icon;
-}
-}
+
 
 wxIcon Theme::SettingsIcon(wxWindow *window) {
     return WindowIcon(window, "preferences-system",
@@ -94,16 +100,23 @@ void Theme::Monospace(wxWindow *window) {
     window->SetFont(font);
 }
 
+wxDataViewRenderer *Theme::SwitchRenderer(const wxString &on_label, const wxString &off_label) {
+#ifdef __WXMSW__
+    return new ThemeSwitchRenderer(on_label, off_label);
+#else
+    wxUnusedVar(on_label);
+    wxUnusedVar(off_label);
+    return new wxDataViewToggleRenderer("bool", wxDATAVIEW_CELL_ACTIVATABLE, wxALIGN_CENTER);
+#endif
+}
+
 wxActivityIndicator *Theme::ProgressView(wxWindow *parent) {
     auto *indicator = new wxActivityIndicator(parent, wxID_ANY);
-#ifdef __WXMSW__
-    // Buffer background erasure and dot painting together on Windows.
+    // Buffer background erasure and dot painting together where supported.
     indicator->SetDoubleBuffered(true);
-#endif
     return indicator;
 }
 
 wxStaticText *Theme::EmptyMessage(wxWindow *parent, const wxString &message) {
     return new wxStaticText(parent, wxID_ANY, message, wxDefaultPosition, wxDefaultSize, wxALIGN_CENTER);
-}
 }

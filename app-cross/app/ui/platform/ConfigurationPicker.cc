@@ -1,24 +1,25 @@
 // SPDX-FileCopyrightText: 2026 Davide De Rosa
 // SPDX-License-Identifier: GPL-3.0
 
-#include "../extensions/ConfigurationPickerFactory.h"
+#include "ConfigurationPicker.h"
+#include "../extensions/Models+UI.h"
 #ifdef _WIN32
 #include "WindowsConfigurationPicker.h"
 #include <wx/window.h>
 
+
 namespace Passepartout {
-std::unique_ptr<ConfigurationPicker> Configuration::MakePicker(wxWindow &owner) {
-    return Windows::Configuration::MakePicker(owner.GetHandle());
+std::unique_ptr<ConfigurationPicker> MakeConfigurationPicker(wxWindow &owner) {
+    return std::make_unique<Windows::ConfigurationPicker>(owner.GetHandle());
 }
 }
 #else
-#include "../extensions/ModalConfigurationPicker.h"
-#include "../extensions/FilePath.h"
+#include "ModalConfigurationPicker.h"
 #include "../../strings/Strings.h"
 #include <wx/filedlg.h>
 
 namespace Passepartout {
-std::unique_ptr<ConfigurationPicker> Configuration::MakePicker(wxWindow &owner) {
+std::unique_ptr<ConfigurationPicker> MakeConfigurationPicker(wxWindow &owner) {
     return std::make_unique<ModalConfigurationPicker>([&owner]() -> ConfigurationPickerResult {
         wxFileDialog dialog(&owner, Localized(StringKey::ViewsAppToolbarImportFile), "", "",
             wxFileSelectorDefaultWildcardStr, wxFD_OPEN | wxFD_FILE_MUST_EXIST | wxFD_MULTIPLE);
@@ -27,7 +28,7 @@ std::unique_ptr<ConfigurationPicker> Configuration::MakePicker(wxWindow &owner) 
         dialog.GetPaths(selected);
         std::vector<std::filesystem::path> paths;
         for (const auto &path : selected) paths.push_back(Paths::FromString(path));
-        return {std::make_shared<ConfigurationFiles>(std::move(paths)), false};
+        return {std::make_shared<FileConfigurationFiles>(std::move(paths)), false};
     });
 }
 }

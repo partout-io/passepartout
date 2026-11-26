@@ -5,7 +5,7 @@
 #pragma once
 #include "../observables/ProfileObservable.h"
 #include "../observables/TunnelObservable.h"
-#include "LoadAppConstants.h"
+#include "ContextExtensions.h"
 #include "CrossConstants.h"
 #include "../business/strategy/WireGuardKeyGenerator.h"
 #include "../observables/UserPreferencesObservable.h"
@@ -15,21 +15,20 @@
 #include "../observables/DiagnosticsObservable.h"
 
 namespace Passepartout {
-class AppLogger;
-class AppSession;
-class AppContext {
+class AppContext final {
 public:
     const Models::AppConstants constants;
-    const CrossConstants cross_constants;
-    const std::string application_version;
-    const std::unique_ptr<WireGuardKeyGenerator> wire_guard_keys;
+    const CrossConstantsType cross_constants;
+    const std::unique_ptr<WireGuardKeyGenerator> wireguard_keygen;
 private:
-    std::shared_ptr<AppLogger> logger_;
-    std::unique_ptr<AppSession> session_;
+    Worker executor_;
+    ProfileManager profile_manager_;
 public:
-    AppContext(const std::filesystem::path &data_root, bool demo,
+    AppContext(const std::filesystem::path &data_root,
                Models::AppConstants constants = Constants::Load(),
-               CrossConstants cross_constants = DefaultCrossConstants);
+               CrossConstantsType cross_constants = CrossConstants,
+               bool demo = false
+    );
     ~AppContext();
     ProfileObservable profiles;
     TunnelObservable tunnel;

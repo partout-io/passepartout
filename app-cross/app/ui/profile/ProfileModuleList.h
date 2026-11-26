@@ -3,7 +3,7 @@
 
 #pragma once
 #include "../theme/ThemeList.h"
-#include "../../business/models/ProfileEditor.h"
+#include "../../observables/ProfileEditor.h"
 #include <functional>
 
 namespace Passepartout {

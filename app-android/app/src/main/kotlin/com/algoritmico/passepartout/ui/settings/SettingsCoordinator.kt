@@ -25,6 +25,8 @@ import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.versionString
 import com.algoritmico.passepartout.ui.LocalAndroidConstants
 import com.algoritmico.passepartout.ui.LocalAppConfiguration
+import com.algoritmico.passepartout.ui.diagnostics.DiagnosticsView
+import com.algoritmico.passepartout.ui.diagnostics.LogcatView
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeNavigatingButton
 

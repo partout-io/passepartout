@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "WindowsConfigurationPicker.h"
-#include "../extensions/ConfigurationSelection.h"
+#include "../../business/strategy/ConfigurationFiles.h"
+#include "../extensions/Models+UI.h"
 #include <shobjidl.h>
 #include <roapi.h>
 #include <winrt/Windows.Foundation.Collections.h>
@@ -12,7 +13,6 @@
 #include <winrt/Windows.System.Threading.h>
 #include <mutex>
 
-namespace Passepartout {
 namespace {
 constexpr wchar_t ImportFolder[] = L"configuration-imports";
 constexpr std::uint32_t MaxBytes = 1024 * 1024;
@@ -27,20 +27,27 @@ struct RequestDirectory {
     }
     const std::filesystem::path path;
 };
-struct StagedFiles final : ConfigurationFiles {
-    StagedFiles(ConfigurationFiles files, std::shared_ptr<RequestDirectory> owner)
-        : ConfigurationFiles(std::move(files.paths), files.selection_failures), directory(std::move(owner)) {}
-    const std::shared_ptr<RequestDirectory> directory;
-};
-struct SelectionState {
-    std::mutex mutex;
-    bool cancelled = false;
-    std::optional<ConfigurationPickerResult> result;
+struct StagedFiles final : Passepartout::ConfigurationFiles {
+    StagedFiles(Passepartout::FileConfigurationFiles files, std::shared_ptr<RequestDirectory> owner)
+        : files_(std::move(files)), directory(std::move(owner)) {}
 
-    void Finish(ConfigurationPickerResult value) {
-        std::lock_guard lock(mutex);
-        if (!cancelled) result = std::move(value);
+    std::size_t Count() const override {
+        return files_.Count();
     }
+
+    std::size_t SelectionFailures() const override {
+        return files_.SelectionFailures();
+    }
+
+    Passepartout::ConfigurationSource Read(std::size_t index) const override {
+        return files_.Read(index);
+    }
+
+    void Cancel() const noexcept override {
+        files_.Cancel();
+    }
+    const Passepartout::FileConfigurationFiles files_;
+    const std::shared_ptr<RequestDirectory> directory;
 };
 
 std::wstring NewRequestId() {
@@ -51,14 +58,14 @@ std::wstring NewRequestId() {
     return text;
 }
 
-ConfigurationPickerResult Collect(const winrt::Windows::Foundation::Collections::IVectorView<winrt::Windows::Storage::StorageFile> &files, const std::wstring &request,
+Passepartout::ConfigurationPickerResult Collect(const winrt::Windows::Foundation::Collections::IVectorView<winrt::Windows::Storage::StorageFile> &files, const std::wstring &request,
                                   const std::shared_ptr<RequestDirectory> &directory) {
     if (!files || !files.Size()) return {};
     const auto count = files.Size();
     const auto root = winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().CreateFolderAsync(
         ImportFolder, winrt::Windows::Storage::CreationCollisionOption::OpenIfExists).get();
     const auto destination = root.CreateFolderAsync(request, winrt::Windows::Storage::CreationCollisionOption::FailIfExists).get();
-    auto selected = Configuration::CollectFiles(count, [&](std::size_t index) {
+    auto selected = Passepartout::CollectConfigurationFiles(count, [&](std::size_t index) {
         const auto file = files.GetAt(static_cast<std::uint32_t>(index));
         const auto stream = file.OpenReadAsync().get();
         if (!stream.Size() || stream.Size() > MaxBytes) throw std::runtime_error("Invalid import file size.");
@@ -73,89 +80,85 @@ ConfigurationPickerResult Collect(const winrt::Windows::Foundation::Collections:
     return {std::make_shared<StagedFiles>(std::move(selected), directory), false};
 }
 
-class WindowsConfigurationPicker final : public ConfigurationPicker {
-public:
-    explicit WindowsConfigurationPicker(HWND owner) : owner_(owner) {}
-
-    ~WindowsConfigurationPicker() override {
-        Cancel();
-    }
-
-    void Start() override {
-        Cancel();
-        state_ = std::make_shared<SelectionState>();
-        const auto state = state_;
-        try {
-            // Balance WinRT initialization on the owner's STA thread.
-            winrt::check_hresult(RoInitialize(RO_INIT_SINGLETHREADED));
-            struct Apartment {
-                ~Apartment() {
-                    RoUninitialize();
-                }
-            } apartment;
-            const auto request = NewRequestId();
-            const auto temporary = winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().Path();
-            auto directory = std::make_shared<RequestDirectory>(
-                std::filesystem::path(temporary.c_str()) / ImportFolder / request);
-            // Use the owner's native window without depending on its UI toolkit.
-            winrt::Windows::Storage::Pickers::FileOpenPicker picker;
-            winrt::check_hresult(picker.as<IInitializeWithWindow>()->Initialize(owner_));
-            picker.FileTypeFilter().Append(L"*");
-            operation_ = picker.PickMultipleFilesAsync();
-            operation_.Completed([state, directory, request](const auto &completed, auto) {
-                // Completion may run on the STA. Keep filesystem I/O off the UI
-                // thread and never capture the picker or its owner in callbacks.
-                try {
-                    winrt::Windows::System::Threading::ThreadPool::RunAsync([state, directory, request, completed](auto) {
-                        try {
-                            state->Finish(Collect(completed.GetResults(), request, directory));
-                        } catch (...) {
-                            state->Finish({nullptr, true});
-                        }
-                    });
-                } catch (...) {
-                    state->Finish({nullptr, true});
-                }
-            });
-        } catch (...) {
-            state->Finish({nullptr, true});
-        }
-    }
-
-    std::optional<ConfigurationPickerResult> Poll() override {
-        if (!state_) return std::nullopt;
-        std::optional<ConfigurationPickerResult> result;
-        {
-            std::lock_guard lock(state_->mutex);
-            result = std::move(state_->result);
-            state_->result.reset();
-        }
-        if (result) operation_ = nullptr;
-        return result;
-    }
-
-    void Cancel() override {
-        if (state_) {
-            std::lock_guard lock(state_->mutex);
-            state_->cancelled = true;
-            state_->result.reset();
-        }
-        if (operation_) {
-            try {
-                operation_.Cancel();
-            } catch (...) {}
-            operation_ = nullptr;
-        }
-        state_.reset();
-    }
-private:
-    const HWND owner_;
-    std::shared_ptr<SelectionState> state_;
-    winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Foundation::Collections::IVectorView<winrt::Windows::Storage::StorageFile>> operation_{nullptr};
-};
 }
 
-std::unique_ptr<ConfigurationPicker> Windows::Configuration::MakePicker(HWND owner) {
-    return std::make_unique<WindowsConfigurationPicker>(owner);
+namespace Passepartout::Windows {
+void ConfigurationPicker::SelectionState::Finish(ConfigurationPickerResult value) {
+    std::lock_guard lock(mutex);
+    if (!cancelled) result = std::move(value);
+}
+
+ConfigurationPicker::ConfigurationPicker(HWND owner) : owner_(owner) {}
+
+ConfigurationPicker::~ConfigurationPicker() {
+    Cancel();
+}
+
+void ConfigurationPicker::Start() {
+    Cancel();
+    state_ = std::make_shared<SelectionState>();
+    const auto state = state_;
+    try {
+        // Balance WinRT initialization on the owner's STA thread.
+        winrt::check_hresult(RoInitialize(RO_INIT_SINGLETHREADED));
+        struct Apartment {
+            ~Apartment() {
+                RoUninitialize();
+            }
+        } apartment;
+        const auto request = NewRequestId();
+        const auto temporary = winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().Path();
+        auto directory = std::make_shared<RequestDirectory>(
+            std::filesystem::path(temporary.c_str()) / ImportFolder / request);
+        // Use the owner's native window without depending on its UI toolkit.
+        winrt::Windows::Storage::Pickers::FileOpenPicker picker;
+        winrt::check_hresult(picker.as<IInitializeWithWindow>()->Initialize(owner_));
+        picker.FileTypeFilter().Append(L"*");
+        operation_ = picker.PickMultipleFilesAsync();
+        operation_.Completed([state, directory, request](const auto &completed, auto) {
+            // Completion may run on the STA. Keep filesystem I/O off the UI
+            // thread and never capture the picker or its owner in callbacks.
+            try {
+                winrt::Windows::System::Threading::ThreadPool::RunAsync([state, directory, request, completed](auto) {
+                    try {
+                        state->Finish(Collect(completed.GetResults(), request, directory));
+                    } catch (...) {
+                        state->Finish({nullptr, true});
+                    }
+                });
+            } catch (...) {
+                state->Finish({nullptr, true});
+            }
+        });
+    } catch (...) {
+        state->Finish({nullptr, true});
+    }
+}
+
+std::optional<ConfigurationPickerResult> ConfigurationPicker::Poll() {
+    if (!state_) return std::nullopt;
+    std::optional<Passepartout::ConfigurationPickerResult> result;
+    {
+        std::lock_guard lock(state_->mutex);
+        result = std::move(state_->result);
+        state_->result.reset();
+    }
+    if (result) operation_ = nullptr;
+    return result;
+}
+
+void ConfigurationPicker::Cancel() {
+    if (state_) {
+        std::lock_guard lock(state_->mutex);
+        state_->cancelled = true;
+        state_->result.reset();
+    }
+    if (operation_) {
+        try {
+            operation_.Cancel();
+        } catch (...) {}
+        operation_ = nullptr;
+    }
+    state_.reset();
 }
 }

@@ -3,13 +3,12 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "business/strategy/FileProfileRepository.h"
-#include "business/strategy/FileProfileJournal.h"
 #include "business/strategy/FakeTunnelStrategy.h"
-#include "business/models/ProfileEditor.h"
+#include "observables/ProfileEditor.h"
 #include "business/models/InteractiveLogin.h"
 #include "observables/TunnelObservable.h"
 #include "observables/ProfileObservable.h"
-#include "business/managers/AppSession.h"
+#include "ObservableFixture.h"
 #include <cassert>
 #include <chrono>
 #include <fstream>
@@ -40,8 +39,8 @@ Passepartout::Profile Example() {
     return profile;
 }
 
-void Wait(Passepartout::AppSession &session) {
-    assert(session.WaitIdle(std::chrono::seconds(5)));
+void Wait(Passepartout::Tests::ObservableFixture &session) {
+    assert(session.executor.WaitIdle(std::chrono::seconds(5)));
 }
 class RejectingTunnel final : public Partout::TunnelStrategy {
 public:
@@ -84,18 +83,18 @@ using namespace Passepartout;
 int main() {
     InitializeTests();
     const auto original = Example();
-    auto login = InteractiveLogin::FromProfile(original);
+    auto login = Profiles::InteractiveLoginFor(original);
     assert(login && !login->needs_otp && login->CanSubmit());
     assert(login->credentials.username == "before");
     login->credentials.username = "  ";
     assert(!login->CanSubmit());
     auto inactive = original;
     inactive.activeModulesIds.clear();
-    assert(!InteractiveLogin::FromProfile(inactive));
+    assert(!Profiles::InteractiveLoginFor(inactive));
     auto otp_profile = original;
     auto &otp_module = std::get<Partout::Models::TaggedModuleOpenVpn>(otp_profile.modules.front()).value;
     otp_module.credentials->otpMethod.value = Partout::Models::OpenVpnCredentialsOTPMethod::append;
-    auto otp_login = InteractiveLogin::FromProfile(otp_profile);
+    auto otp_login = Profiles::InteractiveLoginFor(otp_profile);
     assert(otp_login && otp_login->needs_otp && !otp_login->CanSubmit());
     assert(otp_login->credentials.password.empty());
     assert(otp_login->credentials.username == "before");
@@ -103,7 +102,7 @@ int main() {
     assert(otp_login->CanSubmit());
     assert(otp_module.credentials->password == "old-secret");
     otp_module.requiresInteractiveCredentials = false;
-    assert(!InteractiveLogin::FromProfile(otp_profile));
+    assert(!Profiles::InteractiveLoginFor(otp_profile));
     ProfileEditor editor(original);
     assert(!editor.CanSave());
     editor.Rename(" \t\n");
@@ -119,7 +118,7 @@ int main() {
     editor.Rename("Ignored while saving");
     assert(editor.Snapshot().draft.name == "Renamed");
     editor.FinishSave(false);
-    assert(editor.CanSave() && editor.Snapshot().failed);
+    assert(editor.CanSave() && editor.Snapshot().operation_failed);
     const auto draft = editor.Snapshot().draft;
     assert(draft.id == original.id && draft.userInfo == original.userInfo);
     assert(draft.modules.back() == original.modules.back());
@@ -131,36 +130,25 @@ int main() {
     std::filesystem::create_directories(root);
     try {
         const auto store = root / "profiles";
-        const auto journal_path = store / "transactions";
         FileProfileRepository repository(store);
         repository.Save(original);
-        FileProfileJournal journal(journal_path);
-        // Interrupted replacement: the authoritative local object may already
-        // contain the draft. Startup rolls both stores back before allowing edits.
-        journal.Save({original.id, original, false});
-        repository.Save(draft);
         auto strategy = std::make_unique<RejectingTunnel>();
         auto *backend = strategy.get();
-        backend->fake.Save(draft);
-        AppSession session(std::make_unique<FileProfileRepository>(store), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)),
-            std::make_shared<AppLogger>(), std::make_unique<FileProfileJournal>(journal_path),
-            std::chrono::milliseconds(0));
+        backend->fake.Save(draft); // Existing registration is refreshed only on connection.
+        Tests::ObservableFixture session(std::make_unique<FileProfileRepository>(store), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)));
         Wait(session);
-        assert(repository.Fetch().front() == original && backend->saved == original);
-        assert(journal.Fetch().empty());
-        ProfileObservable profiles(session);
-        TunnelObservable tunnel(session);
-        tunnel.Connect(original.id);
-        auto canceled_login = tunnel.TakeInteractiveLogin();
-        assert(canceled_login && !tunnel.TakeInteractiveLogin());
+        assert(repository.Fetch().front() == original && backend->saves == 0);
+        auto &profiles = session.profiles;
+        auto &tunnel = session.tunnel;
+        auto canceled_login = tunnel.Connect(original);
+        assert(canceled_login);
         assert(!backend->connection_credentials);
         assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
         canceled_login.reset();
-        tunnel.Connect(original.id);
-        auto submitted_login = tunnel.TakeInteractiveLogin();
+        auto submitted_login = tunnel.Connect(original);
         assert(submitted_login);
         submitted_login->credentials.password = "connection-only-secret";
-        tunnel.CompleteInteractiveLogin(std::move(*submitted_login));
+        assert(!tunnel.Connect(submitted_login->original, submitted_login->credentials));
         Wait(session);
         assert(backend->connection_credentials->password == "connection-only-secret");
         assert(repository.Fetch().front() == original && backend->saved == original);
@@ -168,60 +156,81 @@ int main() {
         Wait(session);
         auto pending = profiles.CreateEditor(original.id);
         assert(pending);
+        assert(!profiles.CreateEditor("missing-profile"));
         pending->Rename("Retry name");
         backend->rejects = true;
         profiles.SaveEditor(pending);
         Wait(session);
-        assert(pending->Snapshot().failed && pending->Snapshot().draft.name == "Retry name");
-        assert(repository.Fetch().front() == original);
-        assert(!session.Snapshot().recovering_profiles.empty());
-        assert(!ProfileObservable::CanSave(session.Snapshot(), original.id));
-        backend->rejects = false;
-        session.Refresh();
+        assert(pending->Snapshot().saved && !pending->Snapshot().operation_failed);
+        assert(repository.Fetch().front().name == "Retry name");
+        assert(ProfileObservable::CanSave(session.profiles.Snapshot(), original.id));
+        backend->connection_credentials.reset();
+        session.tunnel.Connect(*profiles.FindProfile(original.id), submitted_login->credentials);
         Wait(session);
-        assert(journal.Fetch().empty());
-        profiles.SaveEditor(pending);
+        assert(session.tunnel.Snapshot().errors.operation);
+        assert(!backend->connection_credentials);
+        assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
+        session.ClearOperationErrors();
+        backend->rejects = false;
+        session.tunnel.Connect(*profiles.FindProfile(original.id), submitted_login->credentials);
         Wait(session);
         assert(pending->Snapshot().saved);
         assert(repository.Fetch().front().name == "Retry name");
         assert(backend->saved.name == "Retry name");
-        assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
+        assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::active);
         // An old editor cannot silently overwrite a more recent save.
         auto stale = std::make_shared<ProfileEditor>(original);
         stale->Rename("Stale");
-        session.SaveEditor(stale);
+        profiles.SaveEditor(stale);
         Wait(session);
-        assert(stale->Snapshot().failed && repository.Fetch().front().name == "Retry name");
+        assert(stale->Snapshot().operation_failed && repository.Fetch().front().name == "Retry name");
+        // The editor owns save failures; MainView must not receive a second alert.
+        assert(!profiles.Snapshot().operation_error);
+        assert(!profiles.Snapshot().busy);
+        assert(!stale->Snapshot().saving && !stale->Snapshot().saved);
+        assert(stale->CanSave());
+        stale->ClearOperationError();
+        assert(!stale->Snapshot().operation_failed);
+        assert(!profiles.Snapshot().operation_error);
         backend->fake.Connect(original.id);
-        session.Refresh();
+        session.tunnel.Refresh();
         Wait(session);
-        assert(!ProfileObservable::CanSave(session.Snapshot(), original.id));
+        assert(ProfileObservable::CanSave(session.profiles.Snapshot(), original.id));
+        auto active_editor = profiles.CreateEditor(original.id);
+        active_editor->Rename("Saved while active");
+        profiles.SaveEditor(active_editor);
+        Wait(session);
+        assert(active_editor->Snapshot().saved);
+        assert(repository.Fetch().front().name == "Saved while active");
+        assert(backend->saved.name == "Retry name");
         backend->fake.Disconnect(original.id);
-        // Interrupted import rolls back; an untracked native entry is retained.
+        session.tunnel.Refresh();
+        Wait(session);
+        assert(backend->saved.name == "Retry name");
+        session.tunnel.Connect(*profiles.FindProfile(original.id), submitted_login->credentials);
+        Wait(session);
+        assert(backend->saved.name == "Saved while active");
+        // Reload changes stored profiles only; deletion explicitly removes native registrations.
         auto imported = original;
-        imported.id = "interrupted-import";
+        imported.id = "saved-import";
         repository.Save(imported);
-        backend->fake.Save(imported);
-        journal.Save({imported.id, std::nullopt, false});
         auto untracked = original;
         untracked.id = "untracked";
         backend->fake.Save(untracked);
-        session.Load();
+        session.profiles.Load();
         Wait(session);
-        assert(repository.Fetch().size() == 1);
-        assert(journal.Fetch().empty());
+        assert(repository.Fetch().size() == 2);
         assert(backend->fake.Fetch().size() == 2);
-        // Deletion intent survives a new manager and completes without a local object.
-        journal.Save({original.id, std::nullopt, true});
-        session.Load();
+        session.profiles.Remove({original.id, imported.id});
         Wait(session);
-        assert(repository.Fetch().empty() && journal.Fetch().empty());
+        assert(repository.Fetch().empty());
         assert(backend->fake.Fetch().size() == 1);
+        assert(backend->fake.Fetch().front().id == "untracked");
     } catch (const std::exception &error) {
         std::cerr << error.what() << std::endl;
         std::filesystem::remove_all(root);
         return 1;
     }
     std::filesystem::remove_all(root);
-    std::cout << "Editor drafts, native save failure/retry, conflicts and transaction recovery passed.\n";
+    std::cout << "Editor drafts, authoritative saves, tunnel synchronization and conflicts passed.\n";
 }

@@ -5,5 +5,6 @@
 #pragma once
 namespace Passepartout {
 inline constexpr const char CreditsResource[] = R"Credits(@APP_CREDITS_JSON@)Credits";
-inline constexpr const char ChangelogResource[] = R"Changelog(@APP_CHANGELOG@)Changelog";
+inline constexpr const char IssueTemplateResource[] = R"Issue(@APP_ISSUE_TEMPLATE@)Issue";
+inline constexpr const char IssuePlatform[] = "@CMAKE_SYSTEM_NAME@";
 }

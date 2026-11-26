@@ -176,11 +176,12 @@ private fun Context.openIssueEmail(
     attachments: List<Uri>,
     diagnosticsConstants: AndroidConstants.Diagnostics
 ) {
+    val template = assets.open(diagnosticsConstants.issueTemplateFilename).bufferedReader(Charsets.UTF_8).use { it.readText() }
     val intent = Intent(Intent.ACTION_SEND_MULTIPLE).apply {
         type = diagnosticsConstants.issueEmailMimeType
         putExtra(Intent.EXTRA_EMAIL, arrayOf(appConfiguration.constants.emails.issues))
         putExtra(Intent.EXTRA_SUBJECT, issue.subject)
-        putExtra(Intent.EXTRA_TEXT, issue.body)
+        putExtra(Intent.EXTRA_TEXT, issue.body(template))
         if (attachments.isNotEmpty()) {
             putParcelableArrayListExtra(Intent.EXTRA_STREAM, ArrayList(attachments))
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

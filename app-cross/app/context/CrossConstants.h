@@ -6,14 +6,17 @@
 #include <string>
 
 namespace Passepartout {
-// Frontend-specific defaults, matching AndroidConstants' responsibility.
-// Shared product values belong to the generated AppConstants model instead.
-struct CrossConstants {
-    struct Tags {
-        std::string app = "Passepartout";
-    } tags;
+// Frontend-specific defaults. Shared product values belong to
+// the generated AppConstants model instead.
+struct CrossConstantsType {
+    struct App final {
+        std::string name = "Passepartout";
+        std::string version_number = PASSEPARTOUT_APP_VERSION;
+        int build_number = PASSEPARTOUT_APP_BUILD;
+    } app;
     struct Storage {
-        std::string demo_prefix = "demo-";
+        std::string preferences_file = "preferences.json";
+        std::wstring preferences_key = L"AppPreferences";
     } storage;
     struct Tunnel {
         std::string server_uri = "https://passepartout.profile";
@@ -22,5 +25,5 @@ struct CrossConstants {
         std::string demo_argument = "--demo";
     } command_line;
 };
-inline const CrossConstants DefaultCrossConstants{};
+inline const CrossConstantsType CrossConstants{};
 }

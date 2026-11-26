@@ -7,7 +7,8 @@
 
 namespace Passepartout {
 ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
-    const std::function<wxWindow *(wxWindow *)> &make_content, Mode mode, Sizing sizing, std::function<bool()> can_accept)
+    const std::function<wxWindow *(wxWindow *)> &make_content, Mode mode, Sizing sizing, std::function<bool()> can_accept
+)
     : wxDialog(parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
         wxDEFAULT_DIALOG_STYLE | (sizing == Sizing::FixedContent ? 0 : wxRESIZE_BORDER)) {
     Theme::Apply(this);
@@ -22,22 +23,21 @@ ThemeModal::ThemeModal(wxWindow *parent, const wxString &title,
         buttons->SetAffirmativeButton(ok);
         SetAffirmativeId(wxID_OK);
         ok->SetDefault();
-        ok->Enable(!can_accept || can_accept());
-        ok->Bind(wxEVT_UPDATE_UI, [can_accept](wxUpdateUIEvent &event) {
-            event.Enable(!can_accept || can_accept());
-        });
-        ok->Bind(wxEVT_BUTTON, [this, can_accept](wxCommandEvent &) {
-            if (can_accept && !can_accept()) return;
-            EndModal(wxID_OK);
-        });
+        if (can_accept) {
+            ok->Enable(can_accept());
+            Bind(wxEVT_UPDATE_UI, [can_accept](wxUpdateUIEvent &event) {
+                event.Enable(can_accept());
+            }, wxID_OK);
+            Bind(wxEVT_BUTTON, [this, can_accept](wxCommandEvent &) {
+                // Recheck at submission: button state may lag behind input.
+                if (can_accept()) EndModal(wxID_OK);
+            }, wxID_OK);
+        }
     }
     buttons->Realize();
     layout->Add(buttons, 0, (sizing == Sizing::FixedContent ? wxALIGN_CENTER_HORIZONTAL : wxALIGN_RIGHT) | wxALL, Theme::Spacing(this));
     SetSizer(layout);
     SetEscapeId(wxID_CANCEL);
-    close->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-        EndModal(wxID_CANCEL);
-    });
     auto size = GetBestSize();
     const auto available = wxDisplay(this).GetClientArea().GetSize();
     if (sizing == Sizing::TextInput) {

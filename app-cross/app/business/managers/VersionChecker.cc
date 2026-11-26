@@ -7,7 +7,6 @@
 #include <charconv>
 #include <stdexcept>
 
-namespace Passepartout {
 namespace {
 std::optional<std::array<unsigned, 4>> Parse(const std::string &text) {
     std::array<unsigned, 4> parts{};
@@ -25,7 +24,9 @@ std::optional<std::array<unsigned, 4>> Parse(const std::string &text) {
 }
 }
 
-VersionChecker::VersionChecker(std::string current, std::unique_ptr<VersionStrategy> strategy,
+using Passepartout::VersionChecker;
+
+VersionChecker::VersionChecker(std::string current, std::unique_ptr<VersionCheckerStrategy> strategy,
     std::string destination, std::int64_t rate_limit_seconds, std::optional<std::int64_t> last_checked,
     std::optional<std::string> cached, SaveVersion save)
     : current_(std::move(current)), strategy_(std::move(strategy)), destination_(std::move(destination)),
@@ -49,7 +50,10 @@ VersionChecker::State VersionChecker::Snapshot() const {
 
 void VersionChecker::Check(std::int64_t now) {
     if (!Available()) return;
-    if (last_checked_ && now >= *last_checked_ && (now - *last_checked_) / 1000 < rate_limit_seconds_) return;
+    if (last_checked_ && now >= *last_checked_ && (now - *last_checked_) / 1000 < rate_limit_seconds_) {
+        PublishRelease();
+        return;
+    }
     // Network failures leave the last successful result intact. Malformed
     // releases clear it, so a stale release is never offered as a fresh result.
     const auto latest = strategy_->LatestVersion();
@@ -59,9 +63,26 @@ void VersionChecker::Check(std::int64_t now) {
     last_checked_ = now;
     cached_ = value;
     if (!parsed) throw std::runtime_error("Invalid release version.");
+    PublishRelease();
+}
+
+void VersionChecker::PublishRelease() {
+    const auto state = Snapshot();
+    if (!state.latest) return;
+    const auto version = Parse(*state.latest);
+    Models::VersionEventNew event;
+    event.release.version.major = static_cast<std::int32_t>((*version)[0]);
+    event.release.version.minor = static_cast<std::int32_t>((*version)[1]);
+    event.release.version.patch = static_cast<std::int32_t>((*version)[2]);
+    event.release.url = state.download_url;
+    events.Emit(event);
+}
+
+std::vector<Passepartout::Models::ChangelogEntry> VersionChecker::FetchChangelog(const std::string &build) {
+    if (!strategy_) throw std::runtime_error("Changelog service is unavailable.");
+    return strategy_->FetchChangelog(build);
 }
 
 void VersionChecker::Cancel() noexcept {
     if (strategy_) strategy_->Cancel();
-}
 }

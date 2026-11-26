@@ -12,6 +12,7 @@ public:
     enum class Sizing { Reading, Content, FixedContent, TextInput };
     ThemeModal(wxWindow *parent, const wxString &title,
         const std::function<wxWindow *(wxWindow *)> &make_content, Mode mode = Mode::ReadOnly, Sizing sizing = Sizing::Reading,
-        std::function<bool()> can_accept = {});
+        std::function<bool()> can_accept = {}
+    );
 };
 }

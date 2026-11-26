@@ -6,19 +6,26 @@
 #include "../platform/Presentation.h"
 
 namespace Passepartout {
-PreferencesView::PreferencesView(wxWindow *parent, UserPreferencesObservable &preferences) : ThemeDetailView(parent, Presentation::Plain) {
+PreferencesView::PreferencesView(wxWindow *parent, UserPreferencesObservable &preferences) : ThemeDetailView(parent, Presentation::Plain), preferences_(preferences), observer_([this] { UpdateContent(); }) {
     Section(Localized(StringKey::GlobalNounsGeneral));
     if (preferences.HasLoadError()) Message(Localized(StringKey::ErrorsAppOther));
-    auto *dns = Toggle(Localized(StringKey::ViewsPreferencesDnsFallsBack),
-        Localized(StringKey::ViewsPreferencesDnsFallsBackFooter), preferences.Snapshot().dnsFallsBack);
-    dns->Bind(wxEVT_CHECKBOX, [this, dns, &preferences](wxCommandEvent &) {
+    dns_ = Toggle(Localized(StringKey::ViewsPreferencesDnsFallsBack),
+        Localized(StringKey::ViewsPreferencesDnsFallsBackFooter), false
+    );
+    dns_->Bind(wxEVT_CHECKBOX, [this](wxCommandEvent &) {
         try {
-            preferences.SetDNSFallback(dns->GetValue());
+            preferences_.SetDNSFallback(dns_->GetValue());
         } catch (...) {
-            dns->SetValue(preferences.Snapshot().dnsFallsBack);
+            UpdateContent();
             PresentError(this);
         }
     });
+    observer_.Observe(preferences_.changes);
+    UpdateContent();
     Finish();
+}
+
+void PreferencesView::UpdateContent() {
+    dns_->SetValue(preferences_.Snapshot().dnsFallsBack);
 }
 }

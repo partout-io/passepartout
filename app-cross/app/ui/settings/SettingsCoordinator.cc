@@ -3,10 +3,11 @@
 
 #include "SettingsCoordinator.h"
 #include "PreferencesView.h"
+#include "SettingsPresentation.h"
 #include "CreditsView.h"
 #include "LinksView.h"
-#include "DiagnosticsView.h"
-#include "IssueReportView.h"
+#include "../diagnostics/DiagnosticsView.h"
+#include "../diagnostics/IssueReportView.h"
 #include "../platform/Presentation.h"
 #include "../theme/ThemeSplitView.h"
 #include "../theme/ThemeModal.h"
@@ -17,7 +18,7 @@
 namespace Passepartout {
 SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     : wxDialog(parent, wxID_ANY, Localized(StringKey::ViewsSettingsTitle), wxDefaultPosition,
-        wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER), context_(context) {
+        wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER), context_(context), observer_([this] { UpdateVersion(); }) {
     Theme::Apply(this);
     SetIcon(Theme::SettingsIcon(this));
     Bind(wxEVT_SYS_COLOUR_CHANGED, [this](wxSysColourChangedEvent &event) {
@@ -36,18 +37,14 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     auto *detail = new wxBoxSizer(wxVERTICAL);
     detail->Add(pages_, 1, wxEXPAND);
     detail_panel->SetSizer(detail);
-    const auto version = context.version.Snapshot();
-    wxString update_title;
-    if (version.release.latest) {
-        update_title = Localized(StringKey::ViewsSettingsLinksUpdate);
-        update_title.Replace("%@", wxString::FromUTF8(*version.release.latest));
-    }
     const auto initial = SettingsSection::Preferences;
     auto *sidebar = new wxBoxSizer(wxVERTICAL);
-    sidebar->Add(new SettingsView(splitter->Sidebar(),
-        update_title, initial, [this](SettingsSection section) {
+    sidebar_ = new SettingsView(splitter->Sidebar(),
+        {}, initial, [this](SettingsSection section) {
             SelectSection(section);
-        }), 1, wxEXPAND | wxALL, Theme::Spacing(this));
+        }
+    );
+    sidebar->Add(sidebar_, 1, wxEXPAND | wxALL, Theme::Spacing(this));
     splitter->Sidebar()->SetSizer(sidebar);
     const int sidebar_width = splitter->InitializePanes();
     layout->Add(splitter, 1, wxEXPAND);
@@ -57,13 +54,9 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     buttons->Realize();
     layout->Add(buttons, 0, wxALIGN_RIGHT | wxALL, Theme::Spacing(this));
     SetSizer(layout);
-    close->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-        EndModal(wxID_CANCEL);
-    });
-    Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
-        if (event.GetKeyCode() == WXK_ESCAPE) EndModal(wxID_CANCEL);
-        else event.Skip();
-    });
+    SetEscapeId(wxID_CANCEL);
+    observer_.Observe(context_.version.changes);
+    UpdateVersion();
     SelectSection(initial);
     GetSizer()->SetSizeHints(this);
     const wxSize viewport(GetCharWidth() * 90, GetCharHeight() * 28);
@@ -78,6 +71,16 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     position.x = std::max(work_area.x, std::min(position.x, work_area.GetRight() - GetSize().x + 1));
     position.y = std::max(work_area.y, std::min(position.y, work_area.GetBottom() - GetSize().y + 1));
     Move(position);
+}
+
+void SettingsCoordinator::UpdateVersion() {
+    const auto version = context_.version.Snapshot();
+    wxString title;
+    if (version.release.latest) {
+        title = Localized(StringKey::ViewsSettingsLinksUpdate);
+        title.Replace("%@", wxString::FromUTF8(*version.release.latest));
+    }
+    sidebar_->SetUpdateTitle(title);
 }
 
 void SettingsCoordinator::SelectSection(SettingsSection section) {
@@ -95,24 +98,24 @@ void SettingsCoordinator::SelectSection(SettingsSection section) {
     };
     switch (section) {
         case SettingsSection::Preferences:
-            ShowSection(Localized(StringKey::GlobalNounsPreferences), [this](wxWindow *parent) {
-                return new PreferencesView(parent, context_.preferences);
-            });
+            ShowSection(new PreferencesView(pages_, context_.preferences),
+                Localized(StringKey::GlobalNounsPreferences)
+            );
             break;
         case SettingsSection::Links:
-            ShowSection(Localized(StringKey::ViewsSettingsLinksTitle), [this](wxWindow *parent) {
-                return new LinksView(parent, context_.constants);
-            });
+            ShowSection(new LinksView(pages_, context_.constants),
+                Localized(StringKey::ViewsSettingsLinksTitle)
+            );
             break;
         case SettingsSection::Credits:
-            ShowSection(Localized(StringKey::ViewsSettingsCreditsTitle), [this, present](wxWindow *parent) {
-                return new CreditsView(parent, context_.credits, present);
-            });
+            ShowSection(new CreditsView(pages_, context_.credits, present),
+                Localized(StringKey::ViewsSettingsCreditsTitle)
+            );
             break;
         case SettingsSection::Diagnostics:
-            ShowSection(Localized(StringKey::ViewsDiagnosticsTitle), [this, present](wxWindow *parent) {
-                return new DiagnosticsView(parent, context_.diagnostics, context_.preferences, present, [this] { ReportIssue(); });
-            });
+            ShowSection(new DiagnosticsView(pages_, context_.diagnostics, context_.preferences, context_.profiles, context_.tunnel, present, [this] { ReportIssue(); }),
+                Localized(StringKey::ViewsDiagnosticsTitle)
+            );
             break;
         default:
             break;
@@ -126,10 +129,13 @@ void SettingsCoordinator::ReportIssue() {
             view = new IssueReportView(parent);
             return view;
         }, ThemeModal::Mode::Editable, ThemeModal::Sizing::TextInput,
-        [&view] { return view && view->CanSubmit(); });
+        [&view] { return view && view->CanSubmit(); }
+    );
     if (modal.ShowModal() != wxID_OK) return;
     try {
-        if (!context_.diagnostics.Report(view->Comment())) {
+        if (!context_.diagnostics.Report(
+            view->Comment(), context_.cross_constants.app, context_.constants.log.filenames.app
+        )) {
             PresentError(this, StringKey::ViewsDiagnosticsAlertsReportIssueEmail);
         }
     } catch (...) {
@@ -137,9 +143,7 @@ void SettingsCoordinator::ReportIssue() {
     }
 }
 
-void SettingsCoordinator::ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> make_page) {
-    wxWindowUpdateLocker update(this);
-    auto *page = make_page(pages_);
+void SettingsCoordinator::ShowSection(wxWindow *page, const wxString &title) {
     pages_->AddPage(page, title, true);
     pages_->InvalidateBestSize();
     pages_->GetParent()->Layout();

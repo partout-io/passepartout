@@ -12,6 +12,7 @@ if(POLICY CMP0177)
     set(CMAKE_POLICY_DEFAULT_CMP0177 NEW)
 endif()
 project(Passepartout LANGUAGES C CXX)
+include("core.cmake")
 
 # No target uses C++ modules, including the C++20 WinRT bridge. Avoid
 # unnecessary dyndep scanning, which can assert in Ninja on rebuilds.
@@ -53,7 +54,7 @@ set(PP_BUILD_USE_WIREGUARD ON)
 
 # Set the Windows toolchain defaults and register the stop-host install hook
 # before Partout registers installation of its shared libraries.
-include("windows/configure.cmake")
+include("windows.cmake")
 configure_windows_platform()
 
 add_subdirectory(../partout partout)
@@ -74,7 +75,7 @@ endfunction()
 
 # Desktop application (optional)
 if(BUILD_APP)
-    include("core.cmake")
+    configure_application_core()
     add_executable(passepartout ${APP_SOURCES})
     target_link_partout_runtime(passepartout)
     target_link_libraries(passepartout PRIVATE passepartout-core)
@@ -93,10 +94,10 @@ if(BUILD_APP)
     option(BUILD_UI_TESTS "Build native wxWidgets presentation regression tests" OFF)
     if(BUILD_UI_TESTS)
         add_executable(passepartout-ui-test
-            tests/ThemeDetails.cc app/ui/settings/SettingsView.cc app/ui/settings/IssueReportView.cc
-            app/ui/profile/ModuleDetailView.cc app/ui/profile/DNSView.cc
-            app/ui/profile/IPView.cc app/ui/profile/HTTPProxyView.cc
-            app/ui/profile/OpenVPNView.cc app/ui/profile/WireGuardView.cc
+            tests/ThemeDetails.cc app/ui/settings/SettingsView.cc app/ui/diagnostics/IssueReportView.cc
+            app/ui/profile/ModuleDetailView.cc app/ui/profile/modules/DNSView.cc
+            app/ui/profile/modules/IPView.cc app/ui/profile/modules/HTTPProxyView.cc
+            app/ui/profile/modules/OpenVPNView.cc app/ui/profile/modules/WireGuardView.cc
             app/ui/theme/Theme.cc app/ui/theme/ThemeList.cc
             app/ui/theme/ThemeDetailView.cc app/ui/theme/ThemeLongContent.cc
             app/ui/theme/ThemeButtonRow.cc app/ui/theme/ThemeModal.cc

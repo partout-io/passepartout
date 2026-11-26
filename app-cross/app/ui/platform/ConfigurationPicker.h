@@ -2,8 +2,11 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../../business/models/ConfigurationFiles.h"
+#include "../../business/strategy/ConfigurationFiles.h"
 #include <optional>
+#include <memory>
+
+class wxWindow;
 
 namespace Passepartout {
 struct ConfigurationPickerResult {
@@ -20,4 +23,6 @@ public:
     virtual std::optional<ConfigurationPickerResult> Poll() = 0;
     virtual void Cancel() = 0;
 };
+
+std::unique_ptr<ConfigurationPicker> MakeConfigurationPicker(wxWindow &owner);
 }

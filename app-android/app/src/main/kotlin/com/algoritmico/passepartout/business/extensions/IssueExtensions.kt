@@ -7,26 +7,18 @@ package com.algoritmico.passepartout.business.extensions
 import com.algoritmico.passepartout.models.Issue
 import com.algoritmico.passepartout.ui.Strings
 
-val Issue.body: String
-    get() {
-        return buildString {
-            appendLine("Hi,")
-            appendLine()
-            appendLine(comment)
-            appendLine()
-            appendLine("--")
-            appendLine()
-            appendLine("App: ${appLine ?: "unknown"}")
-            appendLine("OS: $osLine")
-            appendLine("Device: ${deviceLine ?: "unknown"}")
-            appendLine("Purchased: ${purchasedProducts.issueDescription()}")
-            appendLine()
-            appendLine("--")
-            appendLine()
-            appendLine("Regards")
-            appendLine()
-        }
+fun Issue.body(template: String): String {
+    val fields = mapOf(
+        "comment" to comment,
+        "appLine" to (appLine ?: "unknown"),
+        "osLine" to osLine,
+        "deviceLine" to (deviceLine ?: "unknown"),
+        "purchasedProducts" to purchasedProducts.issueDescription()
+    )
+    return Regex("""\$([A-Za-z]+)""").replace(template) { match ->
+        fields[match.groupValues[1]] ?: match.value
     }
+}
 
 val Issue.subject: String
     get() = Strings.Unlocalized.Issues.subject

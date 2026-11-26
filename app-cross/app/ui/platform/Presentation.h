@@ -7,6 +7,7 @@
 #include <wx/wx.h>
 
 namespace Passepartout {
+void UseSystemAppearance(wxApp &app);
 void PresentError(wxWindow *parent, StringKey message = StringKey::ErrorsAppOther);
 void OpenURL(wxWindow *parent, const std::string &url);
 }

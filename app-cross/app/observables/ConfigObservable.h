@@ -4,24 +4,27 @@
 
 #pragma once
 #include "../business/managers/ConfigManager.h"
-#include "../business/extensions/BackgroundWorker.h"
+#include "Worker.h"
 
 namespace Passepartout {
-class ConfigObservable {
+class ConfigObservable final {
 public:
-    struct State {
-        ConfigManager::Flags flags;
+    struct State final {
+        ConfigFlags flags;
         bool refreshing = false;
-        bool failed = false;
+        bool operation_failed = false;
     };
-    explicit ConfigObservable(std::unique_ptr<ConfigManager> manager);
     ~ConfigObservable();
+    explicit ConfigObservable(std::unique_ptr<ConfigManager> manager);
     State Snapshot() const;
     void Refresh();
 private:
+    void OnUpdate(const Models::Event &event);
+    std::size_t subscription_;
     std::unique_ptr<ConfigManager> manager_;
     mutable std::mutex mutex_;
     State state_;
-    BackgroundWorker worker_;
+    // Destroy first: cancels and joins before captured state and dependencies.
+    Worker worker_;
 };
 }

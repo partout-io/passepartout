@@ -17,30 +17,31 @@ set(PP_TEST_WINRT_RUNTIME OFF)
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/../../partout" partout)
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/../core.cmake")
+configure_application_core()
 
 # Keep generated C++ warning-clean in the standalone regression build.
 if(MSVC)
     target_compile_options(passepartout-models PRIVATE /WX)
 endif()
 
-# Portable test executables
+# Test executables
 add_executable(passepartout-models-test Models.cc)
 target_link_libraries(passepartout-models-test PRIVATE passepartout-models)
-add_executable(passepartout-application-test Application.cc)
+add_executable(passepartout-application-test Application.cc ObservableFixture.cc ScopedLogSink.cc)
 target_link_libraries(passepartout-application-test PRIVATE passepartout-core)
-add_executable(passepartout-editor-test Editor.cc)
+add_executable(passepartout-editor-test Editor.cc ObservableFixture.cc)
 target_link_libraries(passepartout-editor-test PRIVATE passepartout-core)
-add_executable(passepartout-settings-test Settings.cc)
+add_executable(passepartout-settings-test Settings.cc ScopedLogSink.cc)
 target_link_libraries(passepartout-settings-test PRIVATE passepartout-core)
-add_executable(passepartout-activation-test Activation.cc)
+add_executable(passepartout-activation-test Activation.cc
+    ../app/ui/platform/FileActivationInbox.cc)
 target_link_libraries(passepartout-activation-test PRIVATE passepartout-core)
-add_executable(passepartout-presentation-test Presentation.cc
-    ../app/ui/extensions/AppProfile.cc ../app/ui/extensions/FormatDataUnit.cc)
-target_link_libraries(passepartout-presentation-test PRIVATE passepartout-core)
+
+# UI implementation tests require the frontend toolkit and are excluded here.
 
 # Keep assertions enabled in every build configuration.
 enable_testing()
-foreach(TEST_NAME IN ITEMS models application presentation editor settings activation)
+foreach(TEST_NAME IN ITEMS models application editor settings activation)
     set(TEST_TARGET passepartout-${TEST_NAME}-test)
     if(MSVC)
         target_compile_options(${TEST_TARGET} PRIVATE /utf-8
@@ -68,14 +69,14 @@ if(WIN32)
     set_tests_properties(passepartout-development-registration PROPERTIES
         ENVIRONMENT_MODIFICATION "PSModulePath=unset:")
 
-    # Compile the adapter independently of the desktop application.
+    # Compile adapters without wxWidgets independently of the desktop application.
+    # WindowsURLLauncher owns a wxWindow and is compiled with the application.
     add_library(passepartout-windows-integration-check OBJECT
-        ../app/business/platform/WindowsTunnelPreferences.cc
+        ../app/business/platform/WindowsPreferencesRepository.cc
         ../app/ui/platform/WindowsConfigurationPicker.cc
         ../app/ui/platform/FileActivation.cc
         ../app/business/platform/WindowsHttpClient.cc
-        ../app/ui/platform/WindowsURLLauncher.cc
-        ../app/ui/platform/WindowsIssueHandoff.cc)
+        ../app/context/platform/WindowsIssueHandoff.cc)
     target_link_libraries(passepartout-windows-integration-check PRIVATE
         passepartout-core Partout::Headers)
     target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)

@@ -16,7 +16,7 @@ private:
     std::filesystem::path ObjectPath(const std::string &id) const;
     std::vector<Profile> ReadObjects();
     void PersistIndex(const std::vector<Profile> &profiles);
-    std::filesystem::path root_;
-    std::filesystem::path directory_;
+    const std::filesystem::path objects_directory_;
+    const std::filesystem::path index_file_;
 };
 }

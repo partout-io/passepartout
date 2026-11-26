@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../../business/extensions/FileActivationInbox.h"
+#include "FileActivationInbox.h"
 #include <string>
 
 namespace Passepartout {
-class FileActivation {
+class FileActivation final {
 public:
     FileActivation(const std::string &service, FileActivationInbox::Handler handler);
     ~FileActivation();

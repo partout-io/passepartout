@@ -1,0 +1,8 @@
+// SPDX-FileCopyrightText: 2026 Davide De Rosa
+//
+// SPDX-License-Identifier: GPL-3.0
+
+#pragma once
+namespace Passepartout {
+inline constexpr const char DNSFallbackServers[] = R"Servers(@PASSEPARTOUT_DNS_FALLBACK_JSON@)Servers";
+}

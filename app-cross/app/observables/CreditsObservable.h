@@ -3,22 +3,24 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../business/extensions/Credits.h"
+#include "../business/extensions/EventEmitter.h"
+#include "../business/extensions/Models+Business.h"
 #include "../business/strategy/HttpClient.h"
-#include "../business/extensions/BackgroundWorker.h"
+#include "Worker.h"
 #include <map>
 
 namespace Passepartout {
-class CreditsObservable {
+class CreditsObservable final {
 public:
-    struct Content {
+    EventEmitter<> changes;
+    struct Content final {
         std::string text;
+        bool loaded = false;
         bool loading = false;
-        bool failed = false;
+        bool operation_failed = false;
     };
     CreditsObservable(std::string resource, std::unique_ptr<HttpClient> client,
-                      Models::Platform::ePlatform platform = Credits::CurrentPlatform());
-    ~CreditsObservable();
+                      Models::Platform::ePlatform platform);
     const Models::Credits &Snapshot() const;
     bool HasLoadError() const;
     Content License(const std::string &url) const;
@@ -29,6 +31,7 @@ private:
     std::unique_ptr<HttpClient> client_;
     mutable std::mutex mutex_;
     std::map<std::string, Content> content_;
-    BackgroundWorker worker_;
+    // Destroy first: cancels and joins before captured state and dependencies.
+    Worker worker_;
 };
 }
