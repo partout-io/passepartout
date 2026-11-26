@@ -184,6 +184,14 @@ int main() {
         profiles.SaveEditor(stale);
         Wait(session);
         assert(stale->Snapshot().operation_failed && repository.Fetch().front().name == "Retry name");
+        // The editor owns save failures; MainView must not receive a second alert.
+        assert(!profiles.Snapshot().operation_error);
+        assert(!profiles.Snapshot().busy);
+        assert(!stale->Snapshot().saving && !stale->Snapshot().saved);
+        assert(stale->CanSave());
+        stale->ClearOperationError();
+        assert(!stale->Snapshot().operation_failed);
+        assert(!profiles.Snapshot().operation_error);
         backend->fake.Connect(original.id);
         session.tunnel.Refresh();
         Wait(session);

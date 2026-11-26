@@ -71,8 +71,9 @@ void ProfileObservable::SaveEditor(std::shared_ptr<ProfileEditor> editor) {
             manager_.Update(editor->Original(), editor->Snapshot().draft);
             editor->FinishSave(true);
         } catch (...) {
+            AppLog::Write(AppLog::Level::error, AppLog::Category::profiles, "Unable to save profile");
+            // ProfileCoordinator presents this failure through the editor state.
             editor->FinishSave(false);
-            throw;
         }
     })) editor->FinishSave(false);
 }
