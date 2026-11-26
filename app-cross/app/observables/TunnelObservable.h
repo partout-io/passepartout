@@ -8,20 +8,30 @@
 #include "Worker.h"
 #include "../business/managers/ProfileManager.h"
 #include <partout/tunnel/Tunnel.h>
+#include <set>
 
 namespace Passepartout {
 class TunnelObservable final {
 public:
+    struct Errors final {
+        bool operation = false;
+        std::set<std::string> unobservable_profiles;
+    };
+
     struct State final {
         std::vector<Models::AppTunnelInfo> tunnels;
-        std::map<std::string, std::string> observation_errors;
-        bool available = false;
         std::optional<std::string> pending_profile;
-        std::string operation_error;
-        std::string observation_error;
-        std::uint64_t revision = 0;
-        Worker::Activity activity;
+        bool available = false;
+        // Queued/running actions only; observation polling is not activity.
+        bool busy = false;
+        Errors errors;
         bool HasActivity() const;
+    };
+
+    // Keep one cursor per consumer and observable instance.
+    class Cursor final {
+        friend class TunnelObservable;
+        std::optional<std::uint64_t> revision_;
     };
 
     TunnelObservable(Worker &executor, std::unique_ptr<Partout::Tunnel> tunnel, ProfileManager &profiles);
@@ -33,6 +43,7 @@ public:
     void Refresh();
     void ClearOperationError();
     State Snapshot() const;
+    std::optional<State> SnapshotIfChanged(Cursor &cursor) const;
 private:
     void OnUpdate(const Models::Event &event);
     void Remove(std::string id);
@@ -40,9 +51,12 @@ private:
     std::size_t profile_subscription_;
     void Post(std::function<void()> operation, bool foreground = true);
     void Publish();
+    void FinishOperation();
     Worker &executor_;
     std::unique_ptr<Partout::Tunnel> tunnel_;
     mutable std::mutex mutex_;
     State snapshot_;
+    std::uint64_t revision_ = 0;
+    std::size_t pending_operations_ = 0;
 };
 }

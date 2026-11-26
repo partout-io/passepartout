@@ -8,7 +8,7 @@
 
 namespace Passepartout {
 bool TunnelObservable::State::HasActivity() const {
-    if (activity.foreground || pending_profile) return true;
+    if (busy || pending_profile) return true;
     return available && std::any_of(tunnels.begin(), tunnels.end(), [](const auto &tunnel) {
         return tunnel.status.value == Status::connecting || tunnel.status.value == Status::disconnecting;
     });
@@ -35,33 +35,48 @@ void TunnelObservable::Cancel() {
 }
 
 void TunnelObservable::Post(std::function<void()> operation, bool foreground) {
-    if (foreground) ClearOperationError();
-    executor_.Post([this, operation = std::move(operation)] {
+    if (foreground) {
+        std::lock_guard lock(mutex_);
+        snapshot_.errors.operation = false;
+        snapshot_.busy = true;
+        ++pending_operations_;
+        ++revision_;
+    }
+    const auto accepted = executor_.Post([this, operation = std::move(operation), foreground] {
         try {
             operation();
             tunnel_->Advance();
         } catch (...) {
             AppLog::Write(AppLog::Level::error, AppLog::Category::tunnel, "Unable to execute VPN operation");
             std::lock_guard lock(mutex_);
-            snapshot_.operation_error = "The VPN operation failed.";
+            snapshot_.errors.operation = true;
         }
         Publish();
+        if (foreground) FinishOperation();
     }, foreground);
+    if (!accepted && foreground) FinishOperation();
+}
+
+void TunnelObservable::FinishOperation() {
+    std::lock_guard lock(mutex_);
+    snapshot_.busy = --pending_operations_ != 0;
+    ++revision_;
 }
 
 void TunnelObservable::Publish() {
     State state;
     try {
         state.tunnels = Tunnels::Info(tunnel_->Fetch());
-        state.observation_errors = tunnel_->ObservationErrors();
+        for (const auto &[id, error] : tunnel_->ObservationErrors()) state.errors.unobservable_profiles.insert(id);
         state.available = true;
     } catch (...) {
-        state.observation_error = "Unable to read VPN state.";
+        state.available = false;
     }
     state.pending_profile = tunnel_->PendingProfile();
     std::lock_guard lock(mutex_);
-    state.operation_error = snapshot_.operation_error;
-    state.revision = snapshot_.revision + 1;
+    state.errors.operation = snapshot_.errors.operation;
+    state.busy = snapshot_.busy;
+    ++revision_;
     snapshot_ = std::move(state);
 }
 
@@ -96,15 +111,23 @@ void TunnelObservable::Refresh() {
 
 void TunnelObservable::ClearOperationError() {
     std::lock_guard lock(mutex_);
-    snapshot_.operation_error.clear();
-    ++snapshot_.revision;
+    snapshot_.errors.operation = false;
+    ++revision_;
 }
 
 TunnelObservable::State TunnelObservable::Snapshot() const {
-    const auto activity = executor_.CurrentActivity();
     std::lock_guard lock(mutex_);
     auto result = snapshot_;
-    result.activity = activity;
+    if (executor_.IsStopping()) result.busy = false;
+    return result;
+}
+
+std::optional<TunnelObservable::State> TunnelObservable::SnapshotIfChanged(Cursor &cursor) const {
+    std::lock_guard lock(mutex_);
+    if (cursor.revision_ == revision_) return {};
+    auto result = snapshot_;
+    if (executor_.IsStopping()) result.busy = false;
+    cursor.revision_ = revision_;
     return result;
 }
 }

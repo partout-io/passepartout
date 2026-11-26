@@ -107,8 +107,8 @@ AppContext::AppContext(
         MakePreferencesRepository(Profiles::Directory(data_root, constants), cross_constants),
         [this] {
             const auto state = tunnel.Snapshot();
-            return profiles.Snapshot().loaded && !state.activity.busy && !state.pending_profile && state.available &&
-                state.observation_errors.empty() && std::all_of(
+            return profiles.Snapshot().loaded && !state.busy && !profiles.Snapshot().busy && !state.pending_profile && state.available &&
+                state.errors.unobservable_profiles.empty() && std::all_of(
                     state.tunnels.begin(), state.tunnels.end(),
                     [](const auto &info) {
                         return info.status.value == Status::disconnected;
@@ -176,8 +176,4 @@ AppContext::~AppContext() {
     profiles.Cancel();
     tunnel.Cancel();
     executor_.Join();
-}
-
-Passepartout::Worker::Activity AppContext::CurrentActivity() const {
-    return executor_.CurrentActivity();
 }

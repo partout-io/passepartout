@@ -17,8 +17,8 @@ public:
     };
 
     struct State final {
-        ChangelogState changelog;
         VersionChecker::State release;
+        ChangelogState changelog;
         bool available = false;
         bool checking = false;
         bool operation_failed = false;

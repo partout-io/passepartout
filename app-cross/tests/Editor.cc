@@ -167,7 +167,7 @@ int main() {
         backend->connection_credentials.reset();
         session.tunnel.Connect(*profiles.FindProfile(original.id), submitted_login->credentials);
         Wait(session);
-        assert(!session.tunnel.Snapshot().operation_error.empty());
+        assert(session.tunnel.Snapshot().errors.operation);
         assert(!backend->connection_credentials);
         assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
         session.ClearOperationErrors();

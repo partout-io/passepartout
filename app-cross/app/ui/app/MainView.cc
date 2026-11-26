@@ -132,9 +132,8 @@ MainView::MainView(AppContext &context, bool demo,
     SetMinSize(FromDIP(wxSize(640, 360)));
     SetSize(FromDIP(wxSize(720, 480)));
     Centre();
-    profiles_ = context_.profiles.Snapshot();
-    tunnels_ = context_.tunnel.Snapshot();
-    activity_ = context_.CurrentActivity();
+    profiles_ = *context_.profiles.SnapshotIfChanged(profiles_cursor_);
+    tunnels_ = *context_.tunnel.SnapshotIfChanged(tunnels_cursor_);
     Render();
     timer_.Start(200);
 }
@@ -145,10 +144,10 @@ MainView::~MainView() {
 }
 
 void MainView::Render() {
-    const bool tunnel_unavailable = !tunnels_.observation_error.empty();
+    const bool tunnel_unavailable = profiles_.loaded && !tunnels_.available;
     message_->SetLabel(Localized(tunnel_unavailable ? StringKey::ErrorsAppTunnel : StringKey::ViewsAppFoldersNoProfiles));
     message_->Show(tunnel_unavailable || (profiles_.loaded && profiles_.profiles.empty()));
-    const bool activity = activity_.foreground || tunnels_.HasActivity();
+    const bool activity = profiles_.busy || tunnels_.HasActivity();
     if (activity) progress_->Start();
     else progress_->Stop();
     progress_->Show(activity);
@@ -157,8 +156,8 @@ void MainView::Render() {
 }
 
 void MainView::UpdateActions() {
-    collection_->Render(profiles_, tunnels_, activity_, picking_);
-    const bool idle = !picking_ && !activity_.foreground && !tunnels_.pending_profile && profiles_.loaded;
+    collection_->Render(profiles_, tunnels_, picking_);
+    const bool idle = !picking_ && !profiles_.busy && !tunnels_.busy && !tunnels_.pending_profile && profiles_.loaded;
     const auto selected = collection_->SelectedIds();
     import_->Enable(idle);
     GetMenuBar()->Enable(wxID_ADD, idle);
@@ -174,22 +173,19 @@ void MainView::Tick(wxTimerEvent &) {
             UpdateActions();
         }
     }
-    const auto next_profiles = context_.profiles.Snapshot();
-    const auto next_tunnels = context_.tunnel.Snapshot();
-    const auto next_activity = context_.CurrentActivity();
-    if (next_profiles.revision != profiles_.revision || next_tunnels.revision != tunnels_.revision ||
-        next_activity.revision != activity_.revision) {
-        profiles_ = next_profiles;
-        tunnels_ = next_tunnels;
-        activity_ = next_activity;
+    auto next_profiles = context_.profiles.SnapshotIfChanged(profiles_cursor_);
+    auto next_tunnels = context_.tunnel.SnapshotIfChanged(tunnels_cursor_);
+    if (next_profiles || next_tunnels) {
+        if (next_profiles) profiles_ = std::move(*next_profiles);
+        if (next_tunnels) tunnels_ = std::move(*next_tunnels);
         Render();
         // Background observation can recover on the next poll. Keep its error
         // inline; reserve modal alerts for failed actions or local loading.
-        if ((!profiles_.operation_error.empty() || !tunnels_.operation_error.empty()) && !activity_.busy) {
+        if ((profiles_.operation_error.has_value() || tunnels_.errors.operation) && !profiles_.busy && !tunnels_.busy) {
             // Pause polling while the alert runs its nested event loop.
             timer_.Stop();
-            const bool profile_error = !profiles_.operation_error.empty();
-            const bool importing = profile_error && profiles_.operation_error_context == ProfileObservable::OperationErrorContext::import;
+            const bool profile_error = profiles_.operation_error.has_value();
+            const bool importing = profile_error && profiles_.operation_error == ProfileObservable::OperationErrorContext::import;
             // FIXME: ### Map typed failure reasons to localized recovery guidance without exposing raw native errors or secrets.
             const auto message = Localized(importing ? StringKey::ErrorsAppImportGeneric :
                 !profile_error ? StringKey::ErrorsAppTunnel : StringKey::ErrorsAppOther);
@@ -202,7 +198,7 @@ void MainView::Tick(wxTimerEvent &) {
             timer_.Start(200);
         }
     }
-    if (!picking_ && !activity_.busy && profiles_.loaded && !activations_.empty()) {
+    if (!picking_ && !profiles_.busy && !tunnels_.busy && profiles_.loaded && !activations_.empty()) {
         auto files = std::move(activations_.front());
         activations_.pop_front();
         context_.profiles.ImportFiles(std::move(files));
@@ -226,7 +222,7 @@ void MainView::PresentInteractiveLogin(InteractiveLogin login) {
 }
 
 void MainView::Import() {
-    if (picking_ || context_.CurrentActivity().busy) return;
+    if (picking_ || context_.profiles.Snapshot().busy) return;
     picking_ = true;
     UpdateActions();
     try {
@@ -259,7 +255,7 @@ void MainView::Activate(std::shared_ptr<const ConfigurationFiles> files) {
 }
 
 void MainView::Edit(const std::string &id) {
-    if (picking_ || context_.CurrentActivity().foreground) return;
+    if (picking_ || context_.profiles.Snapshot().busy) return;
     const auto editor = context_.profiles.CreateEditor(id);
     if (!editor) return;
     ProfileCoordinator dialog(this, context_.profiles, editor, *context_.wireguard_keygen);

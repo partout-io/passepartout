@@ -16,11 +16,16 @@ public:
     struct State final {
         std::vector<Models::AppProfileHeader> profiles;
         bool loaded = false;
-        std::string operation_error;
-        OperationErrorContext operation_error_context = OperationErrorContext::general;
-        std::uint64_t revision = 0;
-        Worker::Activity activity;
+        // Queued/running profile operations, independent of tunnel work.
+        bool busy = false;
+        std::optional<OperationErrorContext> operation_error;
     };
+    // Keep one cursor per consumer and observable instance.
+    class Cursor final {
+        friend class ProfileObservable;
+        std::optional<std::uint64_t> revision_;
+    };
+
     ProfileObservable(Worker &executor, ProfileManager &manager);
     ~ProfileObservable();
     void Cancel();
@@ -34,16 +39,20 @@ public:
     void ImportFailed();
     void Remove(std::vector<std::string> ids);
     State Snapshot() const;
+    std::optional<State> SnapshotIfChanged(Cursor &cursor) const;
     void ClearOperationError();
     std::optional<Profile> FindProfile(const std::string &id) const;
 private:
     bool Post(std::function<void()> operation, OperationErrorContext context = OperationErrorContext::general);
+    void FinishOperation();
     void OnUpdate(const Models::Event &event);
     Worker &executor_;
     ProfileManager &manager_;
     std::size_t profile_subscription_;
     mutable std::mutex mutex_;
     State snapshot_;
+    std::uint64_t revision_ = 0;
+    std::size_t pending_operations_ = 0;
     std::vector<Profile> published_profiles_;
     std::shared_ptr<const ConfigurationFiles> importing_files_;
 };

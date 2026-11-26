@@ -28,24 +28,31 @@ void ProfileObservable::Cancel() {
 }
 
 bool ProfileObservable::Post(std::function<void()> operation, OperationErrorContext context) {
-    ClearOperationError();
-    return executor_.Post([this, operation = std::move(operation), context] {
-        std::string error;
+    {
+        std::lock_guard lock(mutex_);
+        snapshot_.operation_error.reset();
+        snapshot_.busy = true;
+        ++pending_operations_;
+        ++revision_;
+    }
+    const auto accepted = executor_.Post([this, operation = std::move(operation), context] {
         try {
             operation();
-        } catch (const std::exception &failure) {
-            error = failure.what();
         } catch (...) {
-            error = "The operation failed.";
-        }
-        if (!error.empty()) AppLog::Write(AppLog::Level::error, AppLog::Category::profiles, "Unable to execute profile operation");
-        {
+            AppLog::Write(AppLog::Level::error, AppLog::Category::profiles, "Unable to execute profile operation");
             std::lock_guard lock(mutex_);
-            snapshot_.operation_error = std::move(error);
-            snapshot_.operation_error_context = context;
-            ++snapshot_.revision;
+            snapshot_.operation_error = context;
         }
+        FinishOperation();
     });
+    if (!accepted) FinishOperation();
+    return accepted;
+}
+
+void ProfileObservable::FinishOperation() {
+    std::lock_guard lock(mutex_);
+    snapshot_.busy = --pending_operations_ != 0;
+    ++revision_;
 }
 
 bool ProfileObservable::CanSave(const State &state, const std::string &id) {
@@ -71,7 +78,7 @@ void ProfileObservable::SaveEditor(std::shared_ptr<ProfileEditor> editor) {
 }
 
 bool ProfileObservable::CanRemove(const State &state, const std::vector<std::string> &ids) {
-    if (!state.loaded || state.activity.foreground || ids.empty()) return false;
+    if (!state.loaded || state.busy || ids.empty()) return false;
     return std::all_of(ids.begin(), ids.end(), [&](const auto &id) {
         return std::any_of(state.profiles.begin(), state.profiles.end(), [&](const auto &profile) {
             return profile.id == id;
@@ -93,7 +100,7 @@ void ProfileObservable::OnUpdate(const Models::Event &event) {
     snapshot_.profiles = std::move(headers);
     published_profiles_ = profiles;
     snapshot_.loaded = true;
-    ++snapshot_.revision;
+    ++revision_;
 }
 
 void ProfileObservable::Load() {
@@ -101,7 +108,7 @@ void ProfileObservable::Load() {
         {
             std::lock_guard lock(mutex_);
             snapshot_.loaded = false;
-            ++snapshot_.revision;
+            ++revision_;
         }
         AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Reload local profiles...");
         manager_.Load();
@@ -110,9 +117,8 @@ void ProfileObservable::Load() {
 }
 
 std::optional<Profile> ProfileObservable::FindProfile(const std::string &id) const {
-    if (executor_.CurrentActivity().foreground) return {};
     std::lock_guard lock(mutex_);
-    if (!snapshot_.loaded) return {};
+    if (!snapshot_.loaded || snapshot_.busy) return {};
     for (const auto &profile : published_profiles_) {
         if (profile.id == id) return profile;
     }
@@ -177,16 +183,24 @@ void ProfileObservable::Remove(std::vector<std::string> ids) {
 }
 
 ProfileObservable::State ProfileObservable::Snapshot() const {
-    const auto activity = executor_.CurrentActivity();
     std::lock_guard lock(mutex_);
     auto result = snapshot_;
-    result.activity = activity;
+    if (executor_.IsStopping()) result.busy = false;
     return result;
 }
 
 void ProfileObservable::ClearOperationError() {
     std::lock_guard lock(mutex_);
-    snapshot_.operation_error.clear();
-    ++snapshot_.revision;
+    snapshot_.operation_error.reset();
+    ++revision_;
+}
+
+std::optional<ProfileObservable::State> ProfileObservable::SnapshotIfChanged(Cursor &cursor) const {
+    std::lock_guard lock(mutex_);
+    if (cursor.revision_ == revision_) return {};
+    auto result = snapshot_;
+    if (executor_.IsStopping()) result.busy = false;
+    cursor.revision_ = revision_;
+    return result;
 }
 }

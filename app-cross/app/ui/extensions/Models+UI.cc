@@ -66,8 +66,8 @@ ToggleState StateForProfile(const TunnelObservable::State &state, const std::str
             result.status = tunnel.status.value;
         }
     }
-    result.can_interact = !state.activity.foreground && !state.pending_profile && state.available &&
-        state.observation_errors.find(id) == state.observation_errors.end() &&
+    result.can_interact = !state.busy && !state.pending_profile && state.available &&
+        state.errors.unobservable_profiles.find(id) == state.errors.unobservable_profiles.end() &&
         result.status != Status::disconnecting;
     return result;
 }

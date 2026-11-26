@@ -105,11 +105,10 @@ ProfileListView::ProfileListView(wxWindow *parent, ProfileObservable &profiles, 
 }
 
 void ProfileListView::Render(const ProfileObservable::State &profiles, const TunnelObservable::State &tunnel,
-                             const Worker::Activity &activity, bool picking
+                             bool picking
 ) {
     profiles_ = profiles;
     tunnels_ = tunnel;
-    activity_ = activity;
     picking_ = picking;
     RenderRows();
 }
@@ -144,11 +143,11 @@ void ProfileListView::RenderRows() {
         if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
         const auto toggle = Tunnels::StateForProfile(tunnels_, profile.id);
         const auto status = tunnels_.available &&
-            tunnels_.observation_errors.find(profile.id) == tunnels_.observation_errors.end()
+            tunnels_.errors.unobservable_profiles.find(profile.id) == tunnels_.errors.unobservable_profiles.end()
             ? StatusText(toggle.status) : wxString();
         const auto transfer = TransferText(tunnels_, profile.id);
-        if (rebuild) AppendProfile(Text(profile.name), status, toggle.is_on, toggle.can_interact && !picking_, transfer);
-        else UpdateProfile(row, Text(profile.name), status, toggle.is_on, toggle.can_interact && !picking_, transfer);
+        if (rebuild) AppendProfile(Text(profile.name), status, toggle.is_on, toggle.can_interact && !profiles_.busy && !picking_, transfer);
+        else UpdateProfile(row, Text(profile.name), status, toggle.is_on, toggle.can_interact && !profiles_.busy && !picking_, transfer);
         ++row;
     }
     if (rebuild) RestoreSelection(selected);
@@ -168,7 +167,7 @@ void ProfileListView::RestoreSelection(const std::vector<std::string> &ids) {
 }
 
 void ProfileListView::ToggleProfile(wxDataViewEvent &event) {
-    if (picking_ || rendering_ || event.GetColumn() != ProfileListView::ToggleColumn) return;
+    if (picking_ || profiles_observable_.Snapshot().busy || rendering_ || event.GetColumn() != ProfileListView::ToggleColumn) return;
     const auto row = list_->ItemToRow(event.GetItem());
     if (row < 0 || static_cast<std::size_t>(row) >= visible_ids_.size()) return;
     const auto profile = profiles_observable_.FindProfile(visible_ids_[row]);
@@ -179,7 +178,6 @@ void ProfileListView::ToggleProfile(wxDataViewEvent &event) {
     // Restore observed state immediately; the next snapshot supplies completion
     // or failure instead of displaying an optimistic connection as successful.
     tunnels_ = tunnel_.Snapshot();
-    activity_ = tunnels_.activity;
     RenderRows();
 }
 
@@ -198,10 +196,10 @@ void ProfileListView::ShowContextMenu(const wxPoint &screen_position) {
     wxMenu menu;
     if (ids.size() == 1) {
         menu.Append(wxID_EDIT, Localized(StringKey::GlobalActionsEdit));
-        menu.Enable(wxID_EDIT, !picking_ && !activity_.foreground);
+        menu.Enable(wxID_EDIT, !picking_ && !profiles_.busy);
     }
     menu.Append(wxID_DELETE, Localized(StringKey::GlobalActionsRemove));
-    menu.Enable(wxID_DELETE, !picking_ && ProfileObservable::CanRemove(profiles_, ids) && !tunnels_.pending_profile && !activity_.foreground);
+    menu.Enable(wxID_DELETE, !picking_ && ProfileObservable::CanRemove(profiles_, ids) && !tunnels_.pending_profile && !profiles_.busy);
     // Popup menus run a nested event loop: retain the captured IDs even when
     // background snapshots change the visible rows or selection.
     const auto action = collection->GetPopupMenuSelectionFromUser(menu, position);
