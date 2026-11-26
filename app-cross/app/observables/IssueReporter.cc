@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "IssueReporter.h"
-#include "../extensions/ModelsExtensions.h"
+#include "../business/extensions/ModelsExtensions.h"
+#include "SettingsResources.h"
 #include <random>
 #include <stdexcept>
 
@@ -32,9 +33,13 @@ bool IssueReporter::Report(const std::string &comment, const std::string &runtim
         }
     } cleanup{directory};
     const auto metadata = directory / "application.txt";
-    AtomicFile::Write(metadata, "Passepartout " + version_ + "\nPlatform: Windows\nCrypto: mbedTLS\n"
+    AtomicFile::Write(metadata, "Passepartout " + version_ + "\nPlatform: " + IssuePlatform + "\nCrypto: mbedTLS\n"
         "Tunnel runtime log: unavailable in frontend process\n");
-    IssueReport report{recipient_, "Passepartout " + version_, comment, {metadata}};
+    Models::Issue issue;
+    issue.comment = comment;
+    issue.appLine = "Passepartout " + version_;
+    issue.osLine = IssuePlatform;
+    IssueReport report{recipient_, *issue.appLine, Issues::Body(issue, IssueTemplateResource), {metadata}};
     if (!runtime_log.empty()) {
         const auto log = directory / "runtime.txt";
         AtomicFile::Write(log, runtime_log);

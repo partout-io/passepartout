@@ -12,9 +12,10 @@ namespace Passepartout {
 struct IssueReport {
     std::string recipient;
     std::string subject;
-    std::string comment;
+    std::string body;
     std::vector<std::filesystem::path> attachments;
 };
+
 class IssueReporter {
 public:
     using Handoff = std::function<bool(const IssueReport &)>;

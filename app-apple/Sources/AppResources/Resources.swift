@@ -35,7 +35,7 @@ public enum Resources {
 
     public static let issueTemplate: String = {
         do {
-            guard let templateURL = Bundle.module.url(forResource: "issue", withExtension: "txt") else {
+            guard let templateURL = SharedResources.bundle.url(forResource: "issue", withExtension: "txt") else {
                 fatalError("Unable to find issue.txt in Resources")
             }
             return try String(contentsOf: templateURL)

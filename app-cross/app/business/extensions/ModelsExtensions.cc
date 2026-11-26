@@ -14,19 +14,17 @@
 #include <cmath>
 #ifdef _WIN32
 #include <windows.h>
-#endif
-#ifdef _WIN32
 #include <system_error>
+#else
+#include <fcntl.h>
+#include <unistd.h>
 #endif
 #include <cerrno>
 #include <cstdio>
 #include <random>
+#include <regex>
 #include <sstream>
 #include <iomanip>
-#ifndef _WIN32
-#include <fcntl.h>
-#include <unistd.h>
-#endif
 
 namespace {
 std::wstring LowerName(const std::string &name) {
@@ -263,4 +261,34 @@ void AtomicFile::Write(const std::filesystem::path &path, const std::string &con
 #endif
 }
 
+}
+
+namespace Passepartout {
+std::string Issues::Body(const Models::Issue &issue, const std::string &text) {
+    std::ostringstream products;
+    products << '[';
+    for (size_t index = 0; index < issue.purchasedProducts.size(); ++index) {
+        if (index) products << ", ";
+        products << std::quoted(issue.purchasedProducts[index]);
+    }
+    products << ']';
+    const std::regex placeholder(R"(\$([A-Za-z]+))");
+    std::string body;
+    size_t offset = 0;
+    for (auto it = std::sregex_iterator(text.begin(), text.end(), placeholder);
+         it != std::sregex_iterator(); ++it) {
+        const auto &match = *it;
+        body.append(text, offset, match.position() - offset);
+        const auto field = match[1].str();
+        if (field == "comment") body += issue.comment;
+        else if (field == "appLine") body += issue.appLine.value_or("unknown");
+        else if (field == "osLine") body += issue.osLine;
+        else if (field == "deviceLine") body += issue.deviceLine.value_or("unknown");
+        else if (field == "purchasedProducts") body += products.str();
+        else body += match.str();
+        offset = match.position() + match.length();
+    }
+    body.append(text, offset, std::string::npos);
+    return body;
+}
 }

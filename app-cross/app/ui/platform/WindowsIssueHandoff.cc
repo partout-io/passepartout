@@ -21,7 +21,7 @@ bool Windows::Issue::Review(const IssueReport &report) {
     if (!send) return false;
     auto recipient = std::wstring(winrt::to_hstring("SMTP:" + report.recipient));
     auto subject = std::wstring(winrt::to_hstring(report.subject));
-    auto comment = std::wstring(winrt::to_hstring(report.comment));
+    auto body = std::wstring(winrt::to_hstring(report.body));
     MapiRecipDescW address{};
     address.ulRecipClass = MAPI_TO;
     address.lpszAddress = recipient.data();
@@ -36,7 +36,7 @@ bool Windows::Issue::Review(const IssueReport &report) {
     }
     MapiMessageW message{};
     message.lpszSubject = subject.data();
-    message.lpszNoteText = comment.data();
+    message.lpszNoteText = body.data();
     message.nRecipCount = 1;
     message.lpRecips = &address;
     message.nFileCount = static_cast<ULONG>(files.size());

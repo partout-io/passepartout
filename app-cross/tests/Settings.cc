@@ -5,7 +5,7 @@
 #include "business/strategy/FilePreferencesRepository.h"
 #include "business/managers/ConfigManager.h"
 #include "business/managers/VersionChecker.h"
-#include "business/managers/IssueReporter.h"
+#include "observables/IssueReporter.h"
 #include "context/AppLogger.h"
 #include "business/extensions/ModelsExtensions.h"
 #include "observables/UserPreferencesObservable.h"
@@ -209,15 +209,25 @@ int main() {
         AppLogger::SetPrivateData(false);
         assert(AppLogger::RuntimeLog().find("private marker") != std::string::npos);
         assert(AppLogger::RuntimeLog(false).find("private marker") == std::string::npos);
+        Models::Issue issue;
+        issue.comment = "café 日本語 $osLine";
+        issue.osLine = "Test OS";
+        issue.purchasedProducts = {"premium"};
+        assert(Issues::Body(issue, "$comment|$appLine|$osLine|$deviceLine|$purchasedProducts|$unknown")
+            == "café 日本語 $osLine|unknown|Test OS|unknown|[\"premium\"]|$unknown");
         std::filesystem::path attachment;
         IssueReporter reporter("test@example.invalid", "0.1.0.7", [&](const IssueReport &report) {
-            assert(report.comment == "Unicode: café 日本語" && report.attachments.size() == 2);
+            assert(report.body.find("Hi,\n\nUnicode: café 日本語 $osLine") == 0);
+            assert(report.body.find("App: Passepartout 0.1.0.7\nOS: ") != std::string::npos);
+            assert(report.body.find("Device: unknown\nPurchased: []") != std::string::npos);
+            assert(report.body.find("$appLine") == std::string::npos);
+            assert(report.attachments.size() == 2);
             attachment = report.attachments.back();
             assert(Profiles::ReadConfiguration(attachment).find("public marker") != std::string::npos);
             assert(Profiles::ReadConfiguration(attachment).find("private marker") == std::string::npos);
             return false; // No mail provider; preparation still cleans up.
         });
-        assert(!reporter.Report("Unicode: café 日本語", AppLogger::RuntimeLog(false)));
+        assert(!reporter.Report("Unicode: café 日本語 $osLine", AppLogger::RuntimeLog(false)));
         assert(!std::filesystem::exists(attachment.parent_path()));
     } catch (const std::exception &error) {
         std::cerr << error.what() << std::endl;

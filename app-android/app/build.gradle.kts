@@ -29,11 +29,10 @@ fun releaseSigningValue(name: String): String =
     releaseSigning.getProperty(name)?.takeIf { it.isNotBlank() }
         ?: error("Missing Android release signing property: $name")
 
-// Apple, Android, and app-cross share these JSON resources.
 val sharedAssets = layout.buildDirectory.dir("generated/assets/shared")
 val syncSharedAssets = tasks.register<Sync>("syncSharedAssets") {
     from(rootProject.file("../resources")) {
-        include("constants.json", "credits.json")
+        include("constants.json", "credits.json", "issue.txt")
     }
     into(sharedAssets)
 }

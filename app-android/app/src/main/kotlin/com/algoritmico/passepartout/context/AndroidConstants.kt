@@ -31,6 +31,7 @@ data class AndroidConstants(
         val logcatDestroyTimeoutMillis: Long = 500L,
         val exitReasonsFilename: String = "exit-reasons.txt",
         val exitReasonsLimit: Int = 8,
+        val issueTemplateFilename: String = "issue.txt",
         val issueCacheDirectory: String = "issue",
         val issueEmailMimeType: String = "message/rfc822"
     ) {

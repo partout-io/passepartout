@@ -6,6 +6,7 @@
 #include <partout/models/TaggedProfile.h>
 #include <filesystem>
 #include "AppPreferences.h"
+#include "Issue.h"
 #include "AppTunnelInfo.h"
 #include "../../../models/Credits.h"
 #include <partout/models/TunnelSnapshot.h>
@@ -23,6 +24,10 @@ void ValidateIdentity(const Profile &profile);
 std::string ConfigurationName(const std::filesystem::path &path);
 std::string ReadConfiguration(const std::filesystem::path &path);
 void Sort(std::vector<Profile> &profiles);
+}
+
+namespace Issues {
+std::string Body(const Models::Issue &issue, const std::string &text);
 }
 
 namespace Preferences {

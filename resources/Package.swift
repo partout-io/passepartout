@@ -14,7 +14,8 @@ let package = Package(
             sources: ["SharedResources.swift"],
             resources: [
                 .copy("constants.json"),
-                .copy("credits.json")
+                .copy("credits.json"),
+                .copy("issue.txt")
             ]
         )
     ]
