@@ -11,7 +11,12 @@
 
 namespace Passepartout {
 ProfileObservable::ProfileObservable(Worker &executor, ProfileManager &manager)
-    : executor_(executor), manager_(manager) {}
+    : executor_(executor), manager_(manager),
+      profile_subscription_(manager.Subscribe([this](const Models::Event &event) { OnUpdate(event); })) {}
+
+ProfileObservable::~ProfileObservable() {
+    manager_.Unsubscribe(profile_subscription_);
+}
 
 void ProfileObservable::Cancel() {
     std::shared_ptr<const ConfigurationFiles> importing;
@@ -40,7 +45,6 @@ bool ProfileObservable::Post(std::function<void()> operation, OperationErrorCont
             snapshot_.operation_error_context = context;
             ++snapshot_.revision;
         }
-        Publish();
     });
 }
 
@@ -75,25 +79,21 @@ bool ProfileObservable::CanRemove(const State &state, const std::vector<std::str
     });
 }
 
-void ProfileObservable::Publish() {
-    try {
-        const auto &profiles = manager_.Profiles();
-        std::vector<Models::AppProfileHeader> headers;
-        headers.reserve(profiles.size());
-        for (const auto &profile : profiles) {
-            headers.push_back(Profiles::Header(profile));
-        }
-        {
-            std::lock_guard lock(mutex_);
-            snapshot_.profiles = std::move(headers);
-            published_profiles_ = profiles;
-        }
-    } catch (...) {
-        std::lock_guard lock(mutex_);
-        snapshot_.operation_error = "Unable to publish saved profiles.";
-        snapshot_.operation_error_context = OperationErrorContext::general;
-        ++snapshot_.revision;
+void ProfileObservable::OnUpdate(const Models::Event &event) {
+    if (!std::holds_alternative<Models::ProfileEventReady>(event) &&
+        !std::holds_alternative<Models::ProfileEventSave>(event) &&
+        !std::holds_alternative<Models::ProfileEventDelete>(event)) return;
+    const auto &profiles = manager_.Profiles();
+    std::vector<Models::AppProfileHeader> headers;
+    headers.reserve(profiles.size());
+    for (const auto &profile : profiles) {
+        headers.push_back(Profiles::Header(profile));
     }
+    std::lock_guard lock(mutex_);
+    snapshot_.profiles = std::move(headers);
+    published_profiles_ = profiles;
+    snapshot_.loaded = true;
+    ++snapshot_.revision;
 }
 
 void ProfileObservable::Load() {
@@ -101,14 +101,11 @@ void ProfileObservable::Load() {
         {
             std::lock_guard lock(mutex_);
             snapshot_.loaded = false;
+            ++snapshot_.revision;
         }
         AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Reload local profiles...");
         manager_.Load();
         AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Reloaded local profiles: " + std::to_string(manager_.Profiles().size()));
-        {
-            std::lock_guard lock(mutex_);
-            snapshot_.loaded = true;
-        }
     });
 }
 

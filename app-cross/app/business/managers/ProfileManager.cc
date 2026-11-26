@@ -28,6 +28,7 @@ void ProfileManager::Load() {
     auto profiles = repository_->Fetch();
     profiles_ = std::move(profiles);
     loaded_ = true;
+    Emit(Models::ProfileEventReady{});
 }
 
 Profile ProfileManager::Import(const std::filesystem::path &path) {

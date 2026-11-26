@@ -22,6 +22,7 @@ public:
         Worker::Activity activity;
     };
     ProfileObservable(Worker &executor, ProfileManager &manager);
+    ~ProfileObservable();
     void Cancel();
     static bool CanRemove(const State &state, const std::vector<std::string> &ids);
     static bool CanSave(const State &state, const std::string &id);
@@ -37,9 +38,10 @@ public:
     std::optional<Profile> FindProfile(const std::string &id) const;
 private:
     bool Post(std::function<void()> operation, OperationErrorContext context = OperationErrorContext::general);
-    void Publish();
+    void OnUpdate(const Models::Event &event);
     Worker &executor_;
     ProfileManager &manager_;
+    std::size_t profile_subscription_;
     mutable std::mutex mutex_;
     State snapshot_;
     std::vector<Profile> published_profiles_;

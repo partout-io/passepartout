@@ -428,6 +428,7 @@ void TestProfileEvents(const std::filesystem::path &root) {
     edited.name = "Edited";
     session.executor.Post([&] { session.profile_manager.Update(original, edited); });
     Wait(session);
+    assert(session.profiles.FindProfile(original.id)->name == edited.name);
     assert(native->events == operations);
     assert(session.tunnel.Snapshot().tunnels.front().isEnabled);
     // Delete through the manager, bypassing ProfileObservable entirely.
@@ -435,6 +436,14 @@ void TestProfileEvents(const std::filesystem::path &root) {
     Wait(session);
     assert(session.tunnel.Snapshot().tunnels.empty());
     assert(session.profile_manager.Profiles().empty());
+    assert(session.profiles.Snapshot().profiles.empty());
+    assert(!session.profiles.FindProfile(original.id));
+    // A manager reload also refreshes the observable without its Load action.
+    Passepartout::FileProfileRepository(root / "profile-events").Save(original);
+    session.executor.Post([&] { session.profile_manager.Load(); });
+    Wait(session);
+    assert(session.profiles.Snapshot().loaded);
+    assert(session.profiles.FindProfile(original.id) == original);
 
     auto failing = std::make_unique<FailingImportRepository>();
     failing->stored = {original};
