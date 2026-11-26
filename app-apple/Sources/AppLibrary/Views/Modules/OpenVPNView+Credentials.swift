@@ -47,7 +47,9 @@ public struct OpenVPNCredentialsGroup: View {
         debugChanges()
         return Group {
 #if !os(tvOS)
-            interactiveSection
+            if !isAuthenticating {
+                interactiveSection
+            }
 #endif
             inputSection
         }
