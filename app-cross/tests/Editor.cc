@@ -168,6 +168,8 @@ int main() {
         Wait(session);
         auto pending = profiles.CreateEditor(original.id);
         assert(pending);
+        assert(!profiles.CreateEditor("missing-profile"));
+        assert(!session.FindProfile("missing-profile"));
         pending->Rename("Retry name");
         backend->rejects = true;
         profiles.SaveEditor(pending);
@@ -189,7 +191,7 @@ int main() {
         // An old editor cannot silently overwrite a more recent save.
         auto stale = std::make_shared<ProfileEditor>(original);
         stale->Rename("Stale");
-        session.SaveEditor(stale);
+        profiles.SaveEditor(stale);
         Wait(session);
         assert(stale->Snapshot().failed && repository.Fetch().front().name == "Retry name");
         backend->fake.Connect(original.id);

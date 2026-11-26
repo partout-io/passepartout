@@ -4,7 +4,6 @@
 
 #pragma once
 #include "../models/AppSnapshot.h"
-#include "../../observables/ProfileEditor.h"
 #include "ProfileManager.h"
 #include <partout/tunnel/Tunnel.h>
 #include "../../context/AppLogger.h"
@@ -31,8 +30,9 @@ public:
     AppSession(const AppSession &) = delete;
     AppSession &operator=(const AppSession &) = delete;
     AppSnapshot Snapshot() const;
-    std::shared_ptr<ProfileEditor> CreateEditor(const std::string &id) const;
-    void SaveEditor(std::shared_ptr<ProfileEditor> editor);
+    std::optional<Profile> FindProfile(const std::string &id) const;
+    // Returns whether the operation was queued; completion runs on the worker.
+    bool SaveProfile(Profile original, Profile draft, std::function<void(bool)> completion);
     void Load();
     void Import(std::vector<std::filesystem::path> paths);
     void ImportFiles(std::shared_ptr<const ConfigurationFiles> files);
@@ -79,7 +79,7 @@ private:
     };
     std::deque<Operation> operations_;
     AppSnapshot snapshot_;
-    std::vector<Profile> editable_profiles_;
+    std::vector<Profile> published_profiles_;
     std::shared_ptr<const ConfigurationFiles> importing_files_;
     bool stopping_ = false;
     std::thread worker_;

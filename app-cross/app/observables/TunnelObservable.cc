@@ -9,9 +9,9 @@
 namespace Passepartout {
 void TunnelObservable::Connect(std::string id) {
     if (interactive_login_) return;
-    const auto editor = session_.CreateEditor(id);
-    if (!editor) return;
-    interactive_login_ = InteractiveLogin::FromProfile(editor->Original());
+    const auto profile = session_.FindProfile(id);
+    if (!profile) return;
+    interactive_login_ = InteractiveLogin::FromProfile(*profile);
     if (!interactive_login_) session_.Connect(std::move(id));
 }
 

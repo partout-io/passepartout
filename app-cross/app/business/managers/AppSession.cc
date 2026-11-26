@@ -226,7 +226,7 @@ void AppSession::Publish() {
     {
         std::lock_guard lock(mutex_);
         snapshot_.profiles = std::move(headers);
-        editable_profiles_ = profiles_.Profiles();
+        published_profiles_ = profiles_.Profiles();
     }
     auto tunnels = Tunnels::Info(tunnel_->Fetch());
     if (register_missing_profiles_) {
@@ -301,30 +301,31 @@ void AppSession::Load() {
     });
 }
 
-std::shared_ptr<ProfileEditor> AppSession::CreateEditor(const std::string &id) const {
+std::optional<Profile> AppSession::FindProfile(const std::string &id) const {
     std::lock_guard lock(mutex_);
     if (!snapshot_.loaded || snapshot_.foreground_busy) return {};
-    for (const auto &profile : editable_profiles_) {
-        if (profile.id == id) return std::make_shared<ProfileEditor>(profile);
+    for (const auto &profile : published_profiles_) {
+        if (profile.id == id) return profile;
     }
     return {};
 }
 
-void AppSession::SaveEditor(std::shared_ptr<ProfileEditor> editor) {
-    if (!editor || !editor->BeginSave()) return;
-    if (!Post([this, editor] {
+bool AppSession::SaveProfile(Profile original, Profile draft, std::function<void(bool)> completion) {
+    return Post([this, original = std::move(original), draft = std::move(draft), completion = std::move(completion)] {
+        bool succeeded = false;
         try {
-            profiles_.Update(editor->Original(), editor->Snapshot().draft,
+            profiles_.Update(original, draft,
                 [this](const Profile &profile) {
                     tunnel_->Save(profile);
                 }, [this](const Profile &profile) {
                     ValidateProfileUpdate(profile.id);
                 });
-            editor->FinishSave(true);
+            succeeded = true;
         } catch (...) {
-            editor->FinishSave(false);
+            // ProfileManager preserves recovery information for failed transactions.
         }
-    })) editor->FinishSave(false);
+        completion(succeeded);
+    });
 }
 
 void AppSession::Import(std::vector<std::filesystem::path> paths) {

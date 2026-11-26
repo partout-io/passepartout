@@ -15,11 +15,21 @@ bool ProfileObservable::CanSave(const AppSnapshot &state, const std::string &id)
 }
 
 std::shared_ptr<ProfileEditor> ProfileObservable::CreateEditor(const std::string &id) const {
-    return session_.CreateEditor(id);
+    const auto profile = session_.FindProfile(id);
+    return profile ? std::make_shared<ProfileEditor>(*profile) : nullptr;
 }
 
 void ProfileObservable::SaveEditor(std::shared_ptr<ProfileEditor> editor) {
-    if (editor && CanSave(Snapshot(), editor->Original().id)) session_.SaveEditor(std::move(editor));
+    if (!editor || !CanSave(Snapshot(), editor->Original().id) || !editor->BeginSave()) return;
+    try {
+        if (session_.SaveProfile(editor->Original(), editor->Snapshot().draft, [editor](bool succeeded) {
+            editor->FinishSave(succeeded);
+        })) return;
+    } catch (...) {
+        editor->FinishSave(false);
+        throw;
+    }
+    editor->FinishSave(false);
 }
 
 bool ProfileObservable::CanRemove(const AppSnapshot &state, const std::vector<std::string> &ids) {
