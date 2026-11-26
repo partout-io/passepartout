@@ -41,6 +41,7 @@ void UserPreferencesObservable::Update(std::function<void(Models::AppPreferences
     }
     // Preserve write order while allowing observers to read the published state.
     if (apply_) apply_(updated);
+    changes.Emit();
 }
 
 void UserPreferencesObservable::SetDNSFallback(bool enabled) {

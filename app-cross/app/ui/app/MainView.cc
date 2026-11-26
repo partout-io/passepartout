@@ -13,8 +13,6 @@
 #include "../theme/ThemeModal.h"
 #include "../settings/ChangelogView.h"
 
-wxDEFINE_EVENT(wxEVT_PASSEPARTOUT_STATE_CHANGED, wxThreadEvent);
-
 namespace {
 wxString Text(const std::string &value) {
     return wxString::FromUTF8(value);
@@ -32,7 +30,7 @@ MainView::MainView(AppContext &context, bool demo,
 )
     : MainFrame(nullptr, wxID_ANY, Text(context.cross_constants.app.name) +
           (demo ? " (" + Text(context.cross_constants.command_line.demo_argument) + ")" : wxString())),
-      context_(context), tunnel_timer_(this), picker_timer_(this), picker_(picker_factory(*this)) {
+      context_(context), tunnel_timer_(this), picker_timer_(this), picker_(picker_factory(*this)), observer_([this] { UpdateState(); }) {
     Theme::Apply(this);
     auto *panel = new wxPanel(this);
     Theme::Apply(panel);
@@ -130,26 +128,21 @@ MainView::MainView(AppContext &context, bool demo,
     });
     Bind(wxEVT_TIMER, &MainView::RefreshTunnel, this, tunnel_timer_.GetId());
     Bind(wxEVT_TIMER, &MainView::PollPicker, this, picker_timer_.GetId());
-    Bind(wxEVT_PASSEPARTOUT_STATE_CHANGED, [this](wxThreadEvent &) { UpdateState(); });
     const auto icon = Theme::AppIcon(this);
     if (icon.IsOk()) SetIcon(icon);
     SetMinSize(FromDIP(wxSize(640, 360)));
     SetSize(FromDIP(wxSize(720, 480)));
     Centre();
-    const auto notify = [this] {
-        wxQueueEvent(this, new wxThreadEvent(wxEVT_PASSEPARTOUT_STATE_CHANGED));
-    };
-    context_.profiles.SetChangeHandler(notify);
-    context_.tunnel.SetChangeHandler(notify);
-    profiles_ = *context_.profiles.SnapshotIfChanged(profiles_cursor_);
-    tunnels_ = *context_.tunnel.SnapshotIfChanged(tunnels_cursor_);
+    observer_.Observe(context_.profiles.changes);
+    observer_.Observe(context_.tunnel.changes);
+    profiles_ = context_.profiles.Snapshot();
+    tunnels_ = context_.tunnel.Snapshot();
     Render();
     tunnel_timer_.Start(2000);
 }
 
 MainView::~MainView() {
-    context_.profiles.SetChangeHandler({});
-    context_.tunnel.SetChangeHandler({});
+    observer_.Stop();
     picker_->Cancel();
     picker_timer_.Stop();
     tunnel_timer_.Stop();
@@ -193,32 +186,28 @@ void MainView::PollPicker(wxTimerEvent &) {
 
 void MainView::UpdateState() {
     if (presenting_) return;
-    auto next_profiles = context_.profiles.SnapshotIfChanged(profiles_cursor_);
-    auto next_tunnels = context_.tunnel.SnapshotIfChanged(tunnels_cursor_);
-    if (next_profiles || next_tunnels) {
-        if (next_profiles) profiles_ = std::move(*next_profiles);
-        if (next_tunnels) tunnels_ = std::move(*next_tunnels);
-        Render();
-        // Background observation can recover on the next poll. Keep its error
-        // inline; reserve modal alerts for failed actions or local loading.
-        if ((profiles_.operation_error.has_value() || tunnels_.errors.operation) && !profiles_.busy && !tunnels_.busy) {
-            // Defer state handling while the alert runs its nested event loop.
-            presenting_ = true;
-            tunnel_timer_.Stop();
-            const bool profile_error = profiles_.operation_error.has_value();
-            const bool importing = profile_error && profiles_.operation_error == ProfileObservable::OperationErrorContext::import;
-            // FIXME: ### Map typed failure reasons to localized recovery guidance without exposing raw native errors or secrets.
-            const auto message = Localized(importing ? StringKey::ErrorsAppImportGeneric :
-                !profile_error ? StringKey::ErrorsAppTunnel : StringKey::ErrorsAppOther);
-            wxMessageDialog dialog(this, message,
-                importing ? Localized(StringKey::ViewsAppToolbarImportFile) : wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
-            dialog.SetOKLabel(Localized(StringKey::GlobalNounsOk));
-            dialog.ShowModal();
-            if (profile_error) context_.profiles.ClearOperationError();
-            else context_.tunnel.ClearOperationError();
-            presenting_ = false;
-            tunnel_timer_.Start(2000);
-        }
+    profiles_ = context_.profiles.Snapshot();
+    tunnels_ = context_.tunnel.Snapshot();
+    Render();
+    // Background observation can recover on the next poll. Keep its error
+    // inline; reserve modal alerts for failed actions or local loading.
+    if ((profiles_.operation_error.has_value() || tunnels_.errors.operation) && !profiles_.busy && !tunnels_.busy) {
+        // Defer state handling while the alert runs its nested event loop.
+        presenting_ = true;
+        tunnel_timer_.Stop();
+        const bool profile_error = profiles_.operation_error.has_value();
+        const bool importing = profile_error && profiles_.operation_error == ProfileObservable::OperationErrorContext::import;
+        // FIXME: ### Map typed failure reasons to localized recovery guidance without exposing raw native errors or secrets.
+        const auto message = Localized(importing ? StringKey::ErrorsAppImportGeneric :
+            !profile_error ? StringKey::ErrorsAppTunnel : StringKey::ErrorsAppOther);
+        wxMessageDialog dialog(this, message,
+            importing ? Localized(StringKey::ViewsAppToolbarImportFile) : wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
+        dialog.SetOKLabel(Localized(StringKey::GlobalNounsOk));
+        dialog.ShowModal();
+        if (profile_error) context_.profiles.ClearOperationError();
+        else context_.tunnel.ClearOperationError();
+        presenting_ = false;
+        tunnel_timer_.Start(2000);
     }
     ProcessActivations();
 }

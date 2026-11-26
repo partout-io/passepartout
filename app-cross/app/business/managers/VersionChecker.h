@@ -5,6 +5,7 @@
 #pragma once
 #include "../strategy/VersionCheckerStrategy.h"
 #include "../extensions/EventEmitter.h"
+#include "Event.h"
 #include <functional>
 #include <memory>
 #include <optional>
@@ -14,7 +15,7 @@
 namespace Passepartout {
 class VersionChecker final {
 public:
-    EventEmitter events;
+    EventEmitter<const Models::Event &> events;
     struct State final {
         std::optional<std::string> latest;
         std::string download_url;

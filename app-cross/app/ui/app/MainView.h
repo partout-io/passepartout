@@ -8,6 +8,7 @@
 #include "../theme/Theme.h"
 #include "../platform/MainFrame.h"
 #include "ProfileListView.h"
+#include "../extensions/StateObserver.h"
 #include <deque>
 
 class MainView final : public Passepartout::MainFrame {
@@ -30,8 +31,6 @@ private:
     void PollPicker(wxTimerEvent &);
     void RefreshTunnel(wxTimerEvent &);
     Passepartout::AppContext &context_;
-    Passepartout::ProfileObservable::Cursor profiles_cursor_;
-    Passepartout::TunnelObservable::Cursor tunnels_cursor_;
     Passepartout::ProfileObservable::State profiles_;
     Passepartout::TunnelObservable::State tunnels_;
     Passepartout::ProfileListView *collection_;
@@ -45,4 +44,5 @@ private:
     std::unique_ptr<Passepartout::ConfigurationPicker> picker_;
     bool picking_ = false;
     bool presenting_ = false;
+    Passepartout::StateObserver observer_;
 };

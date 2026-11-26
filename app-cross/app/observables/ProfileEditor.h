@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "../business/extensions/EventEmitter.h"
 #include "../business/extensions/Models+Business.h"
 #include <mutex>
 
 namespace Passepartout {
 class ProfileEditor final {
 public:
+    EventEmitter<> changes;
     struct State final {
         Profile draft;
         bool saving = false;

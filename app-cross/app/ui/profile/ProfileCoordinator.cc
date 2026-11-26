@@ -29,7 +29,7 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
 )
     : wxDialog(parent, wxID_ANY, Localized(StringKey::GlobalNounsProfile), wxDefaultPosition,
         wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
-      profiles_(profiles), editor_(std::move(editor)), wireguard_keygen_(wireguard_keygen), timer_(this) {
+      profiles_(profiles), editor_(std::move(editor)), wireguard_keygen_(wireguard_keygen), observer_([this] { RefreshState(); }) {
     Theme::Apply(this);
     SetIcon(Theme::ProfileIcon(this));
     Bind(wxEVT_SYS_COLOUR_CHANGED, [this](wxSysColourChangedEvent &event) {
@@ -90,9 +90,8 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
         if (event.GetKeyCode() == WXK_ESCAPE) Dismiss();
         else event.Skip();
     });
-    Bind(wxEVT_TIMER, [this](wxTimerEvent &) {
-        RefreshState();
-    });
+    observer_.Observe(editor_->changes);
+    observer_.Observe(profiles_.changes);
     ShowSection(new ProfileView(pages_, editor_, [this] {
         RefreshState();
     }), Localized(StringKey::GlobalNounsGeneral));
@@ -106,7 +105,6 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     size.DecTo(work_area.GetSize());
     SetSize(size);
     splitter->SetSashPosition(sidebar_width);
-    timer_.Start(100);
     CentreOnParent();
     auto position = GetPosition();
     position.x = std::max(work_area.x, std::min(position.x, work_area.GetRight() - GetSize().x + 1));
@@ -201,7 +199,7 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
 void ProfileCoordinator::RefreshState() {
     const auto state = editor_->Snapshot();
     if (state.saved) {
-        timer_.Stop();
+        observer_.Stop();
         EndModal(wxID_SAVE);
         return;
     }

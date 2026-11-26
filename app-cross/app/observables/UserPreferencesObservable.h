@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "../business/extensions/EventEmitter.h"
 #include "../business/strategy/PreferencesRepository.h"
 #include <functional>
 #include <memory>
@@ -11,6 +12,7 @@
 namespace Passepartout {
 class UserPreferencesObservable final {
 public:
+    EventEmitter<> changes;
     using ChangeHandler = std::function<void(const Models::AppPreferences &)>;
     explicit UserPreferencesObservable(std::unique_ptr<PreferencesRepository> repository,
                                        std::function<bool()> can_change_private_data = {}

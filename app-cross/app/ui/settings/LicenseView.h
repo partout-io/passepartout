@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "../extensions/StateObserver.h"
 #include "../../observables/CreditsObservable.h"
 #include "../theme/ThemeLongContent.h"
 
@@ -14,6 +15,6 @@ private:
     void UpdateContent();
     CreditsObservable &credits_;
     std::string url_;
-    wxTimer timer_;
+    StateObserver observer_;
 };
 }

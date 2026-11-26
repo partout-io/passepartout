@@ -25,6 +25,7 @@ void VersionObservable::OnUpdate(const Models::Event &event) {
     if (!std::holds_alternative<Models::VersionEventNew>(event)) return;
     std::lock_guard lock(mutex_);
     state_.release = checker_->Snapshot();
+    changes.Emit();
 }
 
 VersionObservable::State VersionObservable::Snapshot() const {
@@ -37,6 +38,7 @@ void VersionObservable::Check() {
     if (!state_.available || state_.checking) return;
     state_.checking = true;
     state_.release = {};
+    changes.Emit();
     worker_.Post([this] {
         bool operation_failed = false;
         try {
@@ -49,6 +51,7 @@ void VersionObservable::Check() {
         std::lock_guard lock(mutex_);
         state_.operation_failed = operation_failed;
         state_.checking = false;
+        changes.Emit();
     });
 }
 
@@ -59,6 +62,7 @@ void VersionObservable::LoadChangelog(std::string build) {
     state_.changelog = {};
     state_.changelog.build = build;
     state_.changelog.loading = true;
+    changes.Emit();
     worker_.Post([this, build = std::move(build), request] {
         ChangelogState result;
         result.build = build;
@@ -69,7 +73,9 @@ void VersionObservable::LoadChangelog(std::string build) {
             result.operation_failed = true;
         }
         std::lock_guard lock(mutex_);
-        if (request == changelog_request_) state_.changelog = std::move(result);
+        if (request != changelog_request_) return;
+        state_.changelog = std::move(result);
+        changes.Emit();
     });
 }
 }

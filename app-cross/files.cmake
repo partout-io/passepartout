@@ -11,6 +11,7 @@ set(APP_SOURCES
     app/ui/diagnostics/IssueReportView.cc
     app/ui/diagnostics/RuntimeLogView.cc
     app/ui/extensions/Models+UI.cc
+    app/ui/extensions/StateObserver.cc
     app/ui/platform/ConfigurationPicker.cc
     app/ui/platform/FileActivation.cc
     app/ui/platform/FileActivationInbox.cc
@@ -58,7 +59,6 @@ else()
 endif()
 set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/AppConstantsExtensions.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/EventEmitter.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/Models+Business.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ConfigManager.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ProfileManager.cc"

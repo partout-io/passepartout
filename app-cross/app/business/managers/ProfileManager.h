@@ -5,6 +5,7 @@
 #pragma once
 #include "../strategy/ProfileRepository.h"
 #include "../extensions/EventEmitter.h"
+#include "Event.h"
 #include <functional>
 #include <memory>
 
@@ -13,7 +14,7 @@ namespace Passepartout {
 using ProfileImporter = std::function<Profile(const std::string &, const std::string &)>;
 class ProfileManager final {
 public:
-    EventEmitter events;
+    EventEmitter<const Models::Event &> events;
     ProfileManager(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer);
     void Load();
     Profile Import(const std::filesystem::path &path);

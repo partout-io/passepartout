@@ -3,12 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "../business/extensions/EventEmitter.h"
 #include "../business/managers/VersionChecker.h"
 #include "Worker.h"
 
 namespace Passepartout {
 class VersionObservable final {
 public:
+    EventEmitter<> changes;
     struct ChangelogState final {
         std::string build;
         std::vector<Models::ChangelogEntry> entries;

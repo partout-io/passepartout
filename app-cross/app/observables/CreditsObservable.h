@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "../business/extensions/EventEmitter.h"
 #include "../business/extensions/Models+Business.h"
 #include "../business/strategy/HttpClient.h"
 #include "Worker.h"
@@ -11,6 +12,7 @@
 namespace Passepartout {
 class CreditsObservable final {
 public:
+    EventEmitter<> changes;
     struct Content final {
         std::string text;
         bool loaded = false;

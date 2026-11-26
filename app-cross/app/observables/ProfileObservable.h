@@ -3,16 +3,17 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "../business/extensions/EventEmitter.h"
 #include "AppProfileHeader.h"
 #include "../business/managers/ProfileManager.h"
 #include "../business/strategy/ConfigurationFiles.h"
 #include "Worker.h"
-#include "SnapshotTracker.h"
 #include "ProfileEditor.h"
 
 namespace Passepartout {
 class ProfileObservable final {
 public:
+    EventEmitter<> changes;
     enum class OperationErrorContext { general, import };
     struct State final {
         std::vector<Models::AppProfileHeader> profiles;
@@ -21,7 +22,6 @@ public:
         bool busy = false;
         std::optional<OperationErrorContext> operation_error;
     };
-    using Cursor = SnapshotTracker<State>::Cursor;
 
     ProfileObservable(Worker &executor, ProfileManager &manager);
     ~ProfileObservable();
@@ -35,10 +35,7 @@ public:
     void ImportFiles(std::shared_ptr<const ConfigurationFiles> files);
     void ImportFailed();
     void Remove(std::vector<std::string> ids);
-    // Handler must enqueue UI delivery, without reading state synchronously.
-    void SetChangeHandler(std::function<void()> handler);
     State Snapshot() const;
-    std::optional<State> SnapshotIfChanged(Cursor &cursor) const;
     void ClearOperationError();
     std::optional<Profile> FindProfile(const std::string &id) const;
 private:
@@ -50,7 +47,6 @@ private:
     std::size_t profile_subscription_;
     mutable std::mutex mutex_;
     State snapshot_;
-    SnapshotTracker<State> changes_;
     std::size_t pending_operations_ = 0;
     std::vector<Profile> published_profiles_;
     std::shared_ptr<const ConfigurationFiles> importing_files_;

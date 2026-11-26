@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "../extensions/StateObserver.h"
 #include "../../observables/VersionObservable.h"
 #include "../theme/ThemeDetailView.h"
 #include "../../context/CrossConstants.h"
@@ -19,7 +20,7 @@ private:
     VersionObservable &version_;
     const std::string current_version_;
     const Models::AppConstants_github github_;
-    wxTimer timer_;
     ThemeDetailView *content_ = nullptr;
+    StateObserver observer_;
 };
 }

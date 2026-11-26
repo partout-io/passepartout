@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "../extensions/StateObserver.h"
 #include "../../observables/ProfileObservable.h"
 #include "../../business/strategy/WireGuardKeyGenerator.h"
 #include <wx/wx.h>
@@ -31,6 +32,6 @@ private:
     wxButton *save_;
     wxButton *cancel_;
     wxActivityIndicator *progress_;
-    wxTimer timer_;
+    StateObserver observer_;
 };
 }

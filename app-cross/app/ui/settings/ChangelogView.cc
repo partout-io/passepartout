@@ -12,13 +12,10 @@ ChangelogView::ChangelogView(wxWindow *parent, VersionObservable &version, const
                              Models::AppConstants_github github
 )
     : wxPanel(parent), version_(version), current_version_(app.version_number),
-      github_(std::move(github)), timer_(this) {
+      github_(std::move(github)), observer_([this] { UpdateContent(); }) {
     SetSizer(new wxBoxSizer(wxVERTICAL));
+    observer_.Observe(version_.changes);
     version_.LoadChangelog(std::to_string(app.build_number));
-    Bind(wxEVT_TIMER, [this](wxTimerEvent &) {
-        if (!version_.Snapshot().changelog.loading) UpdateContent();
-    });
-    timer_.Start(100);
     UpdateContent();
 }
 
@@ -52,6 +49,5 @@ void ChangelogView::UpdateContent() {
     content_->Finish();
     Layout();
     Thaw();
-    if (!state.changelog.loading) timer_.Stop();
 }
 }

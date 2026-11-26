@@ -3,10 +3,10 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "../business/extensions/EventEmitter.h"
 #include "../business/extensions/Models+Business.h"
 #include "../business/models/InteractiveLogin.h"
 #include "Worker.h"
-#include "SnapshotTracker.h"
 #include "../business/managers/ProfileManager.h"
 #include <partout/tunnel/Tunnel.h>
 #include <set>
@@ -14,6 +14,7 @@
 namespace Passepartout {
 class TunnelObservable final {
 public:
+    EventEmitter<> changes;
     struct Errors final {
         bool operation = false;
         std::set<std::string> unobservable_profiles;
@@ -29,7 +30,6 @@ public:
         bool HasActivity() const;
     };
 
-    using Cursor = SnapshotTracker<State>::Cursor;
 
     TunnelObservable(Worker &executor, std::unique_ptr<Partout::Tunnel> tunnel, ProfileManager &profiles);
     ~TunnelObservable();
@@ -39,10 +39,7 @@ public:
     void Disconnect(std::string id);
     void Refresh();
     void ClearOperationError();
-    // Handler must enqueue UI delivery, without reading state synchronously.
-    void SetChangeHandler(std::function<void()> handler);
     State Snapshot() const;
-    std::optional<State> SnapshotIfChanged(Cursor &cursor) const;
 private:
     void OnUpdate(const Models::Event &event);
     void Remove(std::string id);
@@ -55,7 +52,6 @@ private:
     std::unique_ptr<Partout::Tunnel> tunnel_;
     mutable std::mutex mutex_;
     State snapshot_;
-    SnapshotTracker<State> changes_;
     std::size_t pending_operations_ = 0;
 };
 }

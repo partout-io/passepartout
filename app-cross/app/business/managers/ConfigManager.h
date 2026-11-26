@@ -5,13 +5,14 @@
 #pragma once
 #include "../strategy/ConfigManagerStrategy.h"
 #include "../extensions/EventEmitter.h"
+#include "Event.h"
 #include <functional>
 #include <memory>
 
 namespace Passepartout {
 class ConfigManager final {
 public:
-    EventEmitter events;
+    EventEmitter<const Models::Event &> events;
     ConfigManager(std::unique_ptr<ConfigManagerStrategy> strategy, int build, Models::Platform::ePlatform platform);
     bool Refresh();
     const ConfigFlags &ActiveFlags() const;

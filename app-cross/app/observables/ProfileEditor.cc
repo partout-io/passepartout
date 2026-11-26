@@ -21,6 +21,7 @@ void ProfileEditor::Rename(std::string name) {
     std::lock_guard lock(mutex_);
     if (state_.saving || state_.saved) return;
     state_.draft.name = std::move(name);
+    changes.Emit();
 }
 
 void ProfileEditor::UpdateModule(const Partout::Models::TaggedModule &module) {
@@ -39,6 +40,7 @@ void ProfileEditor::UpdateModule(const Partout::Models::TaggedModule &module) {
             }
         }
     }, module);
+    changes.Emit();
 }
 
 bool ProfileEditor::IsValidChange() const {
@@ -56,6 +58,7 @@ bool ProfileEditor::BeginSave() {
     if (!IsValidChange()) return false;
     state_.saving = true;
     state_.operation_failed = false;
+    changes.Emit();
     return true;
 }
 
@@ -64,10 +67,12 @@ void ProfileEditor::FinishSave(bool succeeded) {
     state_.saving = false;
     state_.saved = succeeded;
     state_.operation_failed = !succeeded;
+    changes.Emit();
 }
 
 void ProfileEditor::ClearOperationError() {
     std::lock_guard lock(mutex_);
     state_.operation_failed = false;
+    changes.Emit();
 }
 }

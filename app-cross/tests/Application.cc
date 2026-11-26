@@ -8,6 +8,7 @@
 #include "business/strategy/FileProfileRepository.h"
 #include "business/extensions/Models+Business.h"
 #include "context/ContextExtensions.h"
+#include <atomic>
 #include <partout/tunnel/Tunnel.h>
 #include "business/strategy/FakeTunnelStrategy.h"
 #include "ObservableFixture.h"
@@ -295,24 +296,11 @@ void TestIndependentObservableState(const std::filesystem::path &root) {
     Wait(context);
     assert(context.profiles.Snapshot().operation_error.has_value());
     assert(context.tunnel.Snapshot().errors.operation);
-    Passepartout::TunnelObservable::Cursor tunnel_cursor;
-    assert(context.tunnel.SnapshotIfChanged(tunnel_cursor));
-    Passepartout::TunnelObservable::Cursor other_cursor;
-    assert(context.tunnel.SnapshotIfChanged(other_cursor));
-    assert(!context.tunnel.SnapshotIfChanged(other_cursor));
     context.profiles.ClearOperationError();
     assert(!context.profiles.Snapshot().operation_error.has_value());
     assert(context.tunnel.Snapshot().errors.operation);
-    assert(!context.tunnel.SnapshotIfChanged(tunnel_cursor));
-    Passepartout::ProfileObservable::Cursor profile_cursor;
-    assert(context.profiles.SnapshotIfChanged(profile_cursor));
     context.tunnel.ClearOperationError();
     assert(!context.tunnel.Snapshot().errors.operation);
-    assert(!context.profiles.SnapshotIfChanged(profile_cursor));
-    assert(context.tunnel.SnapshotIfChanged(tunnel_cursor));
-    assert(!context.tunnel.SnapshotIfChanged(tunnel_cursor));
-    assert(context.tunnel.SnapshotIfChanged(other_cursor));
-    assert(!context.tunnel.SnapshotIfChanged(other_cursor));
 }
 
 void TestStateNotifications(const std::filesystem::path &root) {
@@ -327,9 +315,12 @@ void TestStateNotifications(const std::filesystem::path &root) {
         std::lock_guard lock(delivery_mutex);
         deliveries.push_back(std::this_thread::get_id());
     };
-    context.profiles.SetChangeHandler(enqueue);
-    context.tunnel.SetChangeHandler(enqueue);
+    const auto profile_subscription = context.profiles.changes.Subscribe(enqueue);
+    const auto tunnel_subscription = context.tunnel.changes.Subscribe(enqueue);
+    std::atomic<std::size_t> other_deliveries{0};
+    const auto other_subscription = context.profiles.changes.Subscribe([&] { ++other_deliveries; });
     context.profiles.ImportFailed();
+    assert(other_deliveries > 0);
     context.tunnel.Connect(Example("notification"));
     Wait(context);
     // Worker publications enqueue delivery without reading locked state.
@@ -340,19 +331,20 @@ void TestStateNotifications(const std::filesystem::path &root) {
         }));
     }
     // The consumer reads the latest state on its own thread, without a timer.
-    Passepartout::ProfileObservable::Cursor profiles;
-    Passepartout::TunnelObservable::Cursor tunnels;
-    assert(context.profiles.SnapshotIfChanged(profiles)->operation_error);
-    assert(!context.tunnel.SnapshotIfChanged(tunnels)->tunnels.empty());
-    assert(!context.profiles.SnapshotIfChanged(profiles));
-    assert(!context.tunnel.SnapshotIfChanged(tunnels));
-    context.profiles.SetChangeHandler({});
-    context.tunnel.SetChangeHandler({});
+    assert(context.profiles.Snapshot().operation_error);
+    assert(!context.tunnel.Snapshot().tunnels.empty());
+    context.profiles.changes.Unsubscribe(profile_subscription);
+    context.tunnel.changes.Unsubscribe(tunnel_subscription);
     const auto count = deliveries.size();
     context.profiles.ClearOperationError();
     context.tunnel.Disconnect("notification");
     Wait(context);
     assert(deliveries.size() == count);
+    const auto other_count = other_deliveries.load();
+    assert(other_count > 1); // Unsubscribing one view leaves the other subscribed.
+    context.profiles.changes.Unsubscribe(other_subscription);
+    context.profiles.ImportFailed();
+    assert(other_deliveries == other_count);
 }
 
 void TestObservationAfterOperationFailure(const std::filesystem::path &root) {
@@ -626,10 +618,11 @@ void TestSelectionFailures(const std::filesystem::path &root) {
         assert(false);
         return {};
     });
-    Passepartout::ProfileObservable::Cursor cursor;
-    assert(session.profiles.SnapshotIfChanged(cursor));
+    std::atomic<int> notifications{0};
+    const auto subscription = session.profiles.changes.Subscribe([&] { ++notifications; });
     session.profiles.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(empty)));
-    assert(!session.profiles.SnapshotIfChanged(cursor));
+    session.profiles.changes.Unsubscribe(subscription);
+    assert(notifications == 0);
 }
 
 void TestLargeSelection(const std::filesystem::path &root) {
@@ -722,11 +715,12 @@ void TestSelectedFiles(const std::filesystem::path &root, bool fail) {
     assert(session.profiles.Snapshot().operation_error.has_value() == fail);
     assert(session.profiles.Snapshot().profiles.size() == (fail ? 0 : 1));
     observable.ClearOperationError();
-    Passepartout::ProfileObservable::Cursor cursor;
-    assert(observable.SnapshotIfChanged(cursor));
+    std::atomic<int> notifications{0};
+    const auto subscription = observable.changes.Subscribe([&] { ++notifications; });
     observable.ImportFiles(nullptr);
     observable.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::vector<std::filesystem::path>{}));
-    assert(!observable.SnapshotIfChanged(cursor));
+    observable.changes.Unsubscribe(subscription);
+    assert(notifications == 0);
     observable.ImportFailed();
     Wait(session);
     assert(observable.Snapshot().operation_error.has_value());

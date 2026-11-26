@@ -111,7 +111,7 @@ void SettingsCoordinator::SelectSection(SettingsSection section) {
             break;
         case SettingsSection::Diagnostics:
             ShowSection(Localized(StringKey::ViewsDiagnosticsTitle), [this, present](wxWindow *parent) {
-                return new DiagnosticsView(parent, context_.diagnostics, context_.preferences, present, [this] { ReportIssue(); });
+                return new DiagnosticsView(parent, context_.diagnostics, context_.preferences, context_.profiles, context_.tunnel, present, [this] { ReportIssue(); });
             });
             break;
         default:

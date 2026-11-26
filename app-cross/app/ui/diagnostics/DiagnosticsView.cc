@@ -8,49 +8,56 @@
 
 namespace Passepartout {
 DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagnostics,
-    UserPreferencesObservable &preferences, SettingsPresentation present, std::function<void()> report_issue) : ThemeDetailView(parent, Presentation::Plain), timer_(this) {
+    UserPreferencesObservable &preferences, ProfileObservable &profiles, TunnelObservable &tunnel,
+    SettingsPresentation present, std::function<void()> report_issue
+) : ThemeDetailView(parent, Presentation::Plain), preferences_(preferences), observer_([this] { RefreshLogging(); }) {
     Section(Localized(StringKey::ViewsDiagnosticsSectionsLive));
-    for (const bool tunnel : {false, true}) {
-        const auto title = Localized(tunnel ? StringKey::ViewsDiagnosticsRowsTunnel : StringKey::ViewsDiagnosticsRowsApp);
-        const bool available = !tunnel || diagnostics.TunnelLog().has_value();
-        auto *button = ButtonRow(title, [title, tunnel, &diagnostics, present] {
-            present(title, [&diagnostics, tunnel](wxWindow *parent) {
-                return new RuntimeLogView(parent, diagnostics, tunnel);
+    for (const bool tunnel_log : {false, true}) {
+        const auto title = Localized(tunnel_log ? StringKey::ViewsDiagnosticsRowsTunnel : StringKey::ViewsDiagnosticsRowsApp);
+        const bool available = !tunnel_log || diagnostics.TunnelLog().has_value();
+        auto *button = ButtonRow(title, [title, tunnel_log, &diagnostics, present] {
+            present(title, [&diagnostics, tunnel_log](wxWindow *parent) {
+                return new RuntimeLogView(parent, diagnostics, tunnel_log);
             });
         }, available ? wxString() : Localized(StringKey::ViewsDiagnosticsRuntimeUnavailable));
         button->Enable(available);
     }
     Section({});
-    auto *extensive = Toggle(Localized(StringKey::ViewsDiagnosticsRowsExtensiveLogging),
-        Localized(StringKey::ViewsDiagnosticsRowsExtensiveLoggingSubtitle), false);
-    extensive->Enable(false);
-    auto *privacy = Toggle(Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateData),
-        Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle), preferences.Snapshot().logsPrivateData);
-    const auto refresh_logging = [this, privacy, extensive, &preferences] {
-        const bool can_change = preferences.CanChangePrivateData();
-        privacy->Enable(can_change);
-        SetToggleSupport(privacy, Localized(can_change
-            ? StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle
-            : StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles));
-        SetToggleSupport(extensive, Localized(can_change
-            ? StringKey::ViewsDiagnosticsRowsExtensiveLoggingSubtitle
-            : StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles));
-    };
-    refresh_logging();
-    privacy->Bind(wxEVT_CHECKBOX, [this, privacy, &preferences](wxCommandEvent &) {
+    extensive_ = Toggle(Localized(StringKey::ViewsDiagnosticsRowsExtensiveLogging),
+        Localized(StringKey::ViewsDiagnosticsRowsExtensiveLoggingSubtitle), false
+    );
+    extensive_->Enable(false);
+    privacy_ = Toggle(Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateData),
+        Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle), preferences.Snapshot().logsPrivateData
+    );
+    RefreshLogging();
+    privacy_->Bind(wxEVT_CHECKBOX, [this](wxCommandEvent &) {
         try {
-            preferences.SetLogsPrivateData(privacy->GetValue());
+            preferences_.SetLogsPrivateData(privacy_->GetValue());
         } catch (...) {
-            privacy->SetValue(preferences.Snapshot().logsPrivateData);
+            privacy_->SetValue(preferences_.Snapshot().logsPrivateData);
             PresentError(this);
         }
     });
-    Bind(wxEVT_TIMER, [refresh_logging](wxTimerEvent &) {
-        refresh_logging();
-    });
-    timer_.Start(200);
+    observer_.Observe(preferences.changes);
+    observer_.Observe(profiles.changes);
+    observer_.Observe(tunnel.changes);
     EndSection();
     ButtonRow(Localized(StringKey::ViewsDiagnosticsReportIssueTitle), std::move(report_issue));
     Finish();
+}
+
+void DiagnosticsView::RefreshLogging() {
+    privacy_->SetValue(preferences_.Snapshot().logsPrivateData);
+    const bool can_change = preferences_.CanChangePrivateData();
+    privacy_->Enable(can_change);
+    SetToggleSupport(privacy_, Localized(can_change
+        ? StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle
+        : StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles)
+    );
+    SetToggleSupport(extensive_, Localized(can_change
+        ? StringKey::ViewsDiagnosticsRowsExtensiveLoggingSubtitle
+        : StringKey::ViewsDiagnosticsRowsIncludePrivateDataDisableProfiles)
+    );
 }
 }

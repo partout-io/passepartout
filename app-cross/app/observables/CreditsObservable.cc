@@ -43,6 +43,7 @@ void CreditsObservable::LoadLicense(const std::string &url) {
     auto &content = content_[url];
     if (content.loading || content.loaded) return;
     content.loading = true;
+    changes.Emit();
     worker_.Post([this, url] {
         Content result;
         try {
@@ -53,6 +54,7 @@ void CreditsObservable::LoadLicense(const std::string &url) {
         }
         std::lock_guard lock(mutex_);
         content_[url] = std::move(result);
+        changes.Emit();
     });
 }
 }
