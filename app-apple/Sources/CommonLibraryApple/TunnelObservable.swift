@@ -78,9 +78,8 @@ extension TunnelObservable {
     }
 
     public func connect(with login: InteractiveLogin) async throws {
-        // Run installation checks and persistence with the original profile only.
-        _ = try await willInstall?(login.original, true, true)
-        try await installPreparedProfile(login.connectionProfile(), connect: true)
+        // The extension reads the updated profile from persistence when connecting.
+        try await installAndConnect(true, with: login.connectionProfile(), force: true)
     }
 
     private func installAndConnect(_ connect: Bool, with preProfile: Profile, force: Bool) async throws {
