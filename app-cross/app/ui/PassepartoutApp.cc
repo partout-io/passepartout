@@ -57,9 +57,7 @@ bool PassepartoutApp::OnInit() {
         if (FileActivation::Forward(instance_key, activation_files)) return false;
         AppLog::Write(AppLog::Level::error, AppLog::Category::core, "Unable to forward activation to the running instance");
         if (activation_files->Count() || activation_files->SelectionFailures()) {
-            wxMessageBox(Localized(StringKey::ErrorsAppImportGeneric),
-                wxTheApp->GetAppName(), wxOK | wxICON_ERROR
-            );
+            PresentError(nullptr, StringKey::ErrorsAppImportGeneric);
         }
         return false;
     }
@@ -106,8 +104,7 @@ bool PassepartoutApp::OnInit() {
         AppLog::Write(AppLog::Level::error, AppLog::Category::core,
             std::string("Application startup failed while ") + stage);
     }
-
-    wxMessageBox(Localized(StringKey::ErrorsAppOther), wxTheApp->GetAppName(), wxOK | wxICON_ERROR);
+    PresentError(nullptr, StringKey::ErrorsAppOther);
     return false;
 }
 
