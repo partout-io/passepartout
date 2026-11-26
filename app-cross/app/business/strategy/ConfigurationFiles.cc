@@ -17,6 +17,7 @@ std::size_t MemoryConfigurationFiles::Count() const {
 ConfigurationSource MemoryConfigurationFiles::Read(std::size_t index) const {
     return sources_.at(index);
 }
+
 std::size_t MemoryConfigurationFiles::SelectionFailures() const {
     return failures_;
 }

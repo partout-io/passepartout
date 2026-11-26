@@ -4,6 +4,7 @@
 
 #include "Models+Business.h"
 #include "partout.h"
+#include <partout/models/ABIEnvelope.h>
 #include <algorithm>
 #include <cctype>
 #include <fstream>
@@ -74,6 +75,19 @@ double LastUpdate(const Passepartout::Profile &profile) {
 using Passepartout::Models::AppTunnelInfo;
 using Passepartout::Models::ProfileTransfer;
 
+Passepartout::Profile Passepartout::Imports::DecodeResult(const char *json) {
+    if (!json) throw std::runtime_error("Partout could not import this configuration.");
+    try {
+        const auto envelope = Partout::Models::ABIEnvelope::FromJson(Partout::Json::Parse(json));
+        if (envelope.code || !envelope.payload)
+            throw std::runtime_error("Import failed");
+        return Profile::FromJson(*envelope.payload);
+    } catch (...) {
+        // ABI errors and parser details may contain configuration secrets.
+        throw std::runtime_error("Partout could not import this configuration.");
+    }
+}
+
 std::string Passepartout::Profiles::ConfigurationName(const std::filesystem::path &path) {
     const auto name = path.stem().u8string();
     return std::string(reinterpret_cast<const char *>(name.data()), name.size());
@@ -94,7 +108,7 @@ bool Passepartout::Profiles::IsSafeId(const std::string &id) {
         });
 }
 
-std::optional<Passepartout::InteractiveLogin> Passepartout::Profiles::PrepareInteractiveLogin(const Profile &profile) {
+std::optional<Passepartout::InteractiveLogin> Passepartout::Profiles::InteractiveLoginFor(const Profile &profile) {
     for (const auto &tagged : profile.modules) {
         const auto *openvpn = std::get_if<Partout::Models::TaggedModuleOpenVpn>(&tagged);
         if (!openvpn) continue;
@@ -105,7 +119,7 @@ std::optional<Passepartout::InteractiveLogin> Passepartout::Profiles::PrepareInt
         if (!module.requiresInteractiveCredentials.value_or(false) &&
             !(module.configuration && (module.configuration->staticChallenge.value_or(false) ||
                 (module.configuration->authUserPass.value_or(false) && missing)))) continue;
-        InteractiveLogin login{};
+        Passepartout::InteractiveLogin login{};
         login.original = profile;
         if (saved) {
             login.credentials = {saved->username, saved->password};
@@ -159,9 +173,17 @@ Models::AppPreferences Preferences::Defaults() {
     preferences.cryptoBackend = PartoutCryptoMbedTLS;
     return preferences;
 }
+
+Models::AppPreferences Preferences::FromJson(const Partout::Json &data) {
+    if (!data.IsObject()) throw std::runtime_error("Invalid preferences.");
+    const auto defaults = Defaults();
+    auto merged = defaults.ToJson();
+    merged.Merge(data);
+    auto preferences = Models::AppPreferences::FromJson(merged);
+    preferences.cryptoBackend = defaults.cryptoBackend;
+    return preferences;
 }
 
-namespace Passepartout {
 Models::Platform::ePlatform Credits::CurrentPlatform() {
 #ifdef _WIN32
     return Models::Platform::windows;

@@ -22,7 +22,7 @@ Profile ProfileManager::Import(const std::filesystem::path &path) {
 
 Profile ProfileManager::ImportText(const std::string &text, const std::string &name) {
     if (!loaded_) throw std::runtime_error("Load the saved profiles before importing.");
-    if (text.empty() || text.size() > 1024 * 1024 || text.find('\0') != std::string::npos)
+    if (text.empty() || text.size() > Profiles::MaxConfigurationBytes || text.find('\0') != std::string::npos)
         throw std::runtime_error("Invalid configuration content.");
     auto profile = importer_(text, name);
     if (profile.name.empty()) profile.name = name;

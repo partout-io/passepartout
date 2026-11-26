@@ -7,7 +7,7 @@
 #include <partout/tunnel/TunnelCredentials.h>
 
 namespace Passepartout {
-struct InteractiveLogin {
+struct InteractiveLogin final {
     Partout::Models::TaggedProfile original;
     Partout::TunnelCredentials credentials;
     bool needs_otp = false;

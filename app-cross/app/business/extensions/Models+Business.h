@@ -16,8 +16,6 @@
 #include "../../../models/Credits.h"
 #include <partout/models/TunnelSnapshot.h>
 #include <string>
-#include <partout/models/ABIEnvelope.h>
-#include <stdexcept>
 
 namespace Passepartout {
 using ConfigBundle = std::map<Models::ConfigFlag::eConfigFlag, Models::ConfigBundleConfig>;
@@ -34,11 +32,12 @@ void ValidateIdentity(const Profile &profile);
 std::string ConfigurationName(const std::filesystem::path &path);
 std::string ReadConfiguration(const std::filesystem::path &path);
 void Sort(std::vector<Profile> &profiles);
-std::optional<InteractiveLogin> PrepareInteractiveLogin(const Profile &profile);
+std::optional<Passepartout::InteractiveLogin> InteractiveLoginFor(const Profile &profile);
 }
 
 namespace Preferences {
 Models::AppPreferences Defaults();
+Models::AppPreferences FromJson(const Partout::Json &data);
 }
 
 namespace Credits {
@@ -60,18 +59,7 @@ void Write(const std::filesystem::path &path, const std::string &content);
 }
 
 namespace Passepartout::Imports {
-inline Profile DecodeResult(const char *json) {
-    if (!json) throw std::runtime_error("Partout could not import this configuration.");
-    try {
-        const auto envelope = Partout::Models::ABIEnvelope::FromJson(Partout::Json::Parse(json));
-        if (envelope.code || !envelope.payload)
-            throw std::runtime_error("Import failed");
-        return Profile::FromJson(*envelope.payload);
-    } catch (...) {
-        // ABI errors and parser details may contain configuration secrets.
-        throw std::runtime_error("Partout could not import this configuration.");
-    }
-}
+Profile DecodeResult(const char *json);
 }
 
 namespace Passepartout::Issues {

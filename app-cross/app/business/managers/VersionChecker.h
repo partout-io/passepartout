@@ -13,7 +13,7 @@
 namespace Passepartout {
 class VersionChecker final {
 public:
-    struct State {
+    struct State final {
         std::optional<std::string> latest;
         std::string download_url;
     };

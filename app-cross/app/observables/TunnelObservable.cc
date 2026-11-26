@@ -181,7 +181,7 @@ void TunnelObservable::Connect(std::string id) {
             return profile.id == id;
         });
         if (found == profiles_.end()) return;
-        interactive_login_ = Profiles::PrepareInteractiveLogin(*found);
+        interactive_login_ = Profiles::InteractiveLoginFor(*found);
     }
     if (!interactive_login_) ConnectProfile(std::move(id));
 }

@@ -11,15 +11,8 @@ FilePreferencesRepository::FilePreferencesRepository(std::filesystem::path path)
 }
 
 Models::AppPreferences FilePreferencesRepository::Fetch() {
-    auto defaults = Preferences::Defaults();
-    if (!std::filesystem::exists(path_)) return defaults;
-    const auto data = Partout::Json::Parse(Profiles::ReadConfiguration(path_));
-    if (!data.IsObject()) throw std::runtime_error("Invalid preferences.");
-    auto merged = defaults.ToJson();
-    merged.Merge(data);
-    auto preferences = Models::AppPreferences::FromJson(merged);
-    preferences.cryptoBackend = defaults.cryptoBackend;
-    return preferences;
+    if (!std::filesystem::exists(path_)) return Preferences::Defaults();
+    return Preferences::FromJson(Partout::Json::Parse(Profiles::ReadConfiguration(path_)));
 }
 
 void FilePreferencesRepository::Save(const Models::AppPreferences &preferences) {
