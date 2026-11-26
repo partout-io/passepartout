@@ -7,6 +7,9 @@ set(APP_SOURCES
     app/ui/alerts/InteractiveLoginView.cc
     app/ui/app/MainView.cc
     app/ui/app/ProfileListView.cc
+    app/ui/diagnostics/DiagnosticsView.cc
+    app/ui/diagnostics/IssueReportView.cc
+    app/ui/diagnostics/RuntimeLogView.cc
     app/ui/extensions/ModelsExtensions.cc
     app/ui/platform/ConfigurationPicker.cc
     app/ui/platform/FileActivation.cc
@@ -24,12 +27,9 @@ set(APP_SOURCES
     app/ui/profile/modules/OpenVPNView.cc
     app/ui/profile/modules/WireGuardView.cc
     app/ui/settings/CreditsView.cc
-    app/ui/settings/DiagnosticsView.cc
-    app/ui/settings/IssueReportView.cc
     app/ui/settings/LicenseView.cc
     app/ui/settings/LinksView.cc
     app/ui/settings/PreferencesView.cc
-    app/ui/settings/RuntimeLogView.cc
     app/ui/settings/SettingsCoordinator.cc
     app/ui/settings/SettingsView.cc
     app/ui/settings/VersionView.cc

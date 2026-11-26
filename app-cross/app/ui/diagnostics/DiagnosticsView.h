@@ -6,7 +6,7 @@
 #include "../theme/ThemeDetailView.h"
 #include "../../observables/DiagnosticsObservable.h"
 #include "../../observables/UserPreferencesObservable.h"
-#include "SettingsPresentation.h"
+#include "../settings/SettingsPresentation.h"
 
 namespace Passepartout {
 class DiagnosticsView final : public ThemeDetailView {

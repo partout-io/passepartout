@@ -7,7 +7,7 @@
 #include "../app/ui/theme/ThemeLongContent.h"
 #include "../app/strings/Strings.h"
 #include "../app/ui/settings/SettingsView.h"
-#include "../app/ui/settings/IssueReportView.h"
+#include "../app/ui/diagnostics/IssueReportView.h"
 #include "../app/ui/theme/ThemeModal.h"
 #include <cstdio>
 #include <cstdlib>

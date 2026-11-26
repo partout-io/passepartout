@@ -93,7 +93,7 @@ if(BUILD_APP)
     option(BUILD_UI_TESTS "Build native wxWidgets presentation regression tests" OFF)
     if(BUILD_UI_TESTS)
         add_executable(passepartout-ui-test
-            tests/ThemeDetails.cc app/ui/settings/SettingsView.cc app/ui/settings/IssueReportView.cc
+            tests/ThemeDetails.cc app/ui/settings/SettingsView.cc app/ui/diagnostics/IssueReportView.cc
             app/ui/profile/ModuleDetailView.cc app/ui/profile/modules/DNSView.cc
             app/ui/profile/modules/IPView.cc app/ui/profile/modules/HTTPProxyView.cc
             app/ui/profile/modules/OpenVPNView.cc app/ui/profile/modules/WireGuardView.cc
