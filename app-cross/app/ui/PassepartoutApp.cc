@@ -55,9 +55,12 @@ bool PassepartoutApp::OnInit() {
     instance_ = std::make_unique<wxSingleInstanceChecker>(wxString::FromUTF8(instance_key));
     if (instance_->IsAnotherRunning()) {
         if (FileActivation::Forward(instance_key, activation_files)) return false;
-        AppLog::Write(AppLog::Level::error, AppLog::Category::core, "Application startup rejected: another instance is running");
-        wxMessageBox(Localized(StringKey::ErrorsAppOther),
-                     wxTheApp->GetAppName(), wxOK | wxICON_INFORMATION);
+        AppLog::Write(AppLog::Level::error, AppLog::Category::core, "Unable to forward activation to the running instance");
+        if (activation_files->Count() || activation_files->SelectionFailures()) {
+            wxMessageBox(Localized(StringKey::ErrorsAppImportGeneric),
+                wxTheApp->GetAppName(), wxOK | wxICON_ERROR
+            );
+        }
         return false;
     }
 
