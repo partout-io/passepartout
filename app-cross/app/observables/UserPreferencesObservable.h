@@ -11,15 +11,17 @@
 namespace Passepartout {
 class UserPreferencesObservable final {
 public:
+    using ChangeHandler = std::function<void(const Models::AppPreferences &)>;
     explicit UserPreferencesObservable(std::unique_ptr<PreferencesRepository> repository,
-        std::function<bool()> can_change_private_data = [] { return true; });
+                                       std::function<bool()> can_change_private_data = {}
+    );
     Models::AppPreferences Snapshot() const;
     bool HasLoadError() const;
     void SetDNSFallback(bool enabled);
     void SetLogsPrivateData(bool enabled);
     bool CanChangePrivateData() const;
     void SetLastCheckedVersion(std::int64_t timestamp, std::optional<std::string> version);
-    void OnChange(std::function<void(const Models::AppPreferences &)> apply);
+    void OnChange(ChangeHandler apply);
 private:
     void Update(std::function<void(Models::AppPreferences &)> edit);
     std::unique_ptr<PreferencesRepository> repository_;
@@ -27,7 +29,8 @@ private:
     mutable std::mutex mutex_;
     Models::AppPreferences preferences_;
     bool load_error_ = false;
-    std::function<void(const Models::AppPreferences &)> apply_;
+    // Protected by write_mutex_, including callback delivery.
+    ChangeHandler apply_;
     std::function<bool()> can_change_private_data_;
 };
 }

@@ -7,8 +7,10 @@
 #include <stdexcept>
 
 namespace Passepartout {
-UserPreferencesObservable::UserPreferencesObservable(std::unique_ptr<PreferencesRepository> repository,
-    std::function<bool()> can_change_private_data)
+UserPreferencesObservable::UserPreferencesObservable(
+    std::unique_ptr<PreferencesRepository> repository,
+    std::function<bool()> can_change_private_data
+)
     : repository_(std::move(repository)), preferences_(Preferences::Defaults()), can_change_private_data_(std::move(can_change_private_data)) {
     try {
         preferences_ = repository_->Fetch();
@@ -32,15 +34,13 @@ void UserPreferencesObservable::Update(std::function<void(Models::AppPreferences
     auto updated = Snapshot();
     edit(updated);
     repository_->Save(updated);
-    std::function<void(const Models::AppPreferences &)> apply;
     {
         std::lock_guard lock(mutex_);
         preferences_ = updated;
         load_error_ = false;
-        apply = apply_;
     }
     // Preserve write order while allowing observers to read the published state.
-    if (apply) apply(updated);
+    if (apply_) apply_(updated);
 }
 
 void UserPreferencesObservable::SetDNSFallback(bool enabled) {
@@ -57,7 +57,7 @@ void UserPreferencesObservable::SetLogsPrivateData(bool enabled) {
 }
 
 bool UserPreferencesObservable::CanChangePrivateData() const {
-    return can_change_private_data_();
+    return !can_change_private_data_ || can_change_private_data_();
 }
 
 void UserPreferencesObservable::SetLastCheckedVersion(std::int64_t timestamp, std::optional<std::string> version) {
@@ -67,12 +67,9 @@ void UserPreferencesObservable::SetLastCheckedVersion(std::int64_t timestamp, st
     });
 }
 
-void UserPreferencesObservable::OnChange(std::function<void(const Models::AppPreferences &)> apply) {
+void UserPreferencesObservable::OnChange(ChangeHandler apply) {
     std::lock_guard write_lock(write_mutex_);
-    {
-        std::lock_guard lock(mutex_);
-        apply_ = apply;
-    }
-    if (apply) apply(Snapshot());
+    apply_ = std::move(apply);
+    if (apply_) apply_(Snapshot());
 }
 }
