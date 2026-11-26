@@ -9,9 +9,9 @@ import Testing
 
 @MainActor
 struct DefaultAppTunnelProcessorTests {
-    @Test
-    func givenInteractiveLogin_whenConnecting_thenPersistsOnlyOriginal() async throws {
-        let original = try makeOpenVPNProfile(otp: nil)
+    @Test(arguments: [OpenVPN.Credentials.OTPMethod.none, .append, .encode])
+    func givenInteractiveLogin_whenConnecting_thenPersistsUpdatedProfile(method: OpenVPN.Credentials.OTPMethod) async throws {
+        let original = try makeOpenVPNProfile(otp: nil, method: method)
         let repository = RecordingProfileRepository()
         let processor = makeProcessor(repository: repository)
         let tunnel = TunnelObservable(
@@ -23,15 +23,18 @@ struct DefaultAppTunnelProcessorTests {
             willInstall: processor.willInstall
         )
         var login = InteractiveLogin(original: original)
-        #expect(login.needsOTP)
+        #expect(login.needsOTP == (method != .none))
         #expect(login.password.isEmpty)
         login.password = "123456"
         let prepared = try login.connectionProfile()
         let credentials = try #require((prepared.activeModules.first as? OpenVPNModule)?.credentials)
-        #expect(credentials.password == "password")
-        #expect(credentials.otp == "123456")
+        #expect(credentials.password == (method == .none ? "123456" : "password"))
+        #expect(credentials.otp == (method == .none ? nil : "123456"))
+        #expect(credentials.otpMethod == method)
+        #expect(InteractiveLogin(original: prepared).password.isEmpty)
+        #expect(InteractiveLogin(original: prepared).username == "user")
         try await tunnel.connect(with: login)
-        #expect(await repository.persistedProfiles == [original])
+        #expect(await repository.persistedProfiles == [prepared])
         #expect(await repository.savedProfiles.isEmpty)
     }
 
@@ -95,7 +98,7 @@ private extension DefaultAppTunnelProcessorTests {
         )
     }
 
-    func makeOpenVPNProfile(otp: String?) throws -> Profile {
+    func makeOpenVPNProfile(otp: String?, method: OpenVPN.Credentials.OTPMethod = .append) throws -> Profile {
         var configuration = OpenVPN.Configuration.Builder()
         configuration.ca = OpenVPN.CryptoContainer(pem: "ca")
         configuration.remotes = [
@@ -104,7 +107,7 @@ private extension DefaultAppTunnelProcessorTests {
         let credentials = OpenVPN.Credentials.Builder(
             username: "user",
             password: "password",
-            otpMethod: .append,
+            otpMethod: method,
             otp: otp
         ).build()
         let module = try OpenVPNModule.Builder(

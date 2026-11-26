@@ -27,6 +27,30 @@ import org.junit.Test
 
 class ProfileExtensionsUnitTest {
     @Test
+    fun interactiveLogin_clearsEachPromptAndPreservesSavedOTPPassword() {
+        for (method in OpenVPNCredentialsOTPMethod.entries) {
+            val original = openVPNProfile(OpenVPNModule(
+                id = MODULE_ID,
+                requiresInteractiveCredentials = true,
+                credentials = OpenVPNCredentials(username = "user", password = "saved-secret", otpMethod = method)
+            ))
+            val login = InteractiveLogin(original)
+            assertEquals("", login.password)
+            assertEquals("user", login.username)
+            login.password = "123456"
+            val prepared = login.connectionProfile().interactiveOpenVPNModule()
+            val expected = if (method == OpenVPNCredentialsOTPMethod.none) {
+                "123456"
+            } else {
+                method.encodedPassword("saved-secret", "123456")
+            }
+            assertEquals(expected, prepared?.credentials?.password)
+            assertEquals("saved-secret", original.interactiveOpenVPNModule()?.credentials?.password)
+            assertEquals("", InteractiveLogin(original).password)
+        }
+    }
+
+    @Test
     fun interactiveLogin_keepsEnteredOTPSeparateFromOriginal() {
         val original = openVPNProfile(OpenVPNModule(
             id = MODULE_ID,
