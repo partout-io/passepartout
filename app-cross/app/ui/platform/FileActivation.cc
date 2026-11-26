@@ -7,6 +7,7 @@
 #include <windows.h>
 #include <appmodel.h>
 #include <future>
+#include <chrono>
 #include <atomic>
 #include <thread>
 #include <winrt/Windows.ApplicationModel.h>
@@ -20,6 +21,17 @@
 namespace {
 constexpr wchar_t WindowClass[] = L"Passepartout.FileActivation.1";
 constexpr ULONG_PTR MessageType = 0x50504143;
+constexpr std::size_t MaximumFiles = 64;
+constexpr uint32_t MaximumContentBytes = 1024 * 1024;
+// Read one extra byte to detect files that grow beyond the limit after opening.
+constexpr uint32_t ReadBufferBytes = MaximumContentBytes + 1;
+constexpr std::size_t ExecutablePathCharacters = 32768;
+constexpr std::chrono::seconds ReadTimeout{5};
+constexpr std::chrono::milliseconds ReadPollInterval{20};
+constexpr std::chrono::seconds ForwardTimeout{5};
+constexpr std::chrono::milliseconds ForwardRetryInterval{50};
+constexpr std::chrono::milliseconds MessageTimeout{1000};
+
 struct Apartment {
     explicit Apartment(winrt::apartment_type type) {
         winrt::init_apartment(type);
@@ -31,13 +43,13 @@ struct Apartment {
 };
 template<typename Operation>
 auto Await(const Operation &operation, const std::atomic_bool &canceled) {
-    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+    const auto deadline = std::chrono::steady_clock::now() + ReadTimeout;
     while (operation.Status() == winrt::Windows::Foundation::AsyncStatus::Started) {
         if (canceled.load() || std::chrono::steady_clock::now() >= deadline) {
             operation.Cancel();
             throw std::runtime_error("File activation timed out.");
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(ReadPollInterval);
     }
     return operation.GetResults();
 }
@@ -60,10 +72,9 @@ public:
         using namespace winrt::Windows::Storage::Streams;
         const auto &file = files_.at(index);
         const auto stream = Await(file.OpenReadAsync(), canceled_);
-        constexpr uint32_t maximum = 1024 * 1024;
-        if (!stream.Size() || stream.Size() > maximum) throw std::runtime_error("Invalid activation file size.");
-        const auto buffer = Await(stream.ReadAsync(Buffer(maximum + 1), maximum + 1, InputStreamOptions::None), canceled_);
-        if (!buffer.Length() || buffer.Length() > maximum) throw std::runtime_error("Invalid activation file size.");
+        if (!stream.Size() || stream.Size() > MaximumContentBytes) throw std::runtime_error("Invalid activation file size.");
+        const auto buffer = Await(stream.ReadAsync(Buffer(ReadBufferBytes), ReadBufferBytes, InputStreamOptions::None), canceled_);
+        if (!buffer.Length() || buffer.Length() > MaximumContentBytes) throw std::runtime_error("Invalid activation file size.");
         const auto name = std::filesystem::path(file.Name().c_str()).stem().wstring();
         return {winrt::to_string(name), std::string(reinterpret_cast<const char *>(buffer.data()), buffer.Length())};
     }
@@ -80,7 +91,7 @@ bool IsSameExecutable(HWND window, DWORD &pid) {
     GetWindowThreadProcessId(window, &pid);
     const winrt::handle process(OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, pid));
     if (!process) return false;
-    std::wstring current(32768, L'\0'), target(32768, L'\0');
+    std::wstring current(ExecutablePathCharacters, L'\0'), target(ExecutablePathCharacters, L'\0');
     const auto count = GetModuleFileNameW(nullptr, current.data(), static_cast<DWORD>(current.size()));
     DWORD length = static_cast<DWORD>(target.size());
     if (!count || count == current.size() || !QueryFullProcessImageNameW(process.get(), 0, target.data(), &length)) return false;
@@ -142,7 +153,7 @@ bool FileActivation::Forward(const std::string &service, std::shared_ptr<const C
         const auto message = std::async(std::launch::async, [id, files] {
             return FileActivationInbox::Encode(id, *files);
         }).get();
-        const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+        const auto deadline = std::chrono::steady_clock::now() + ForwardTimeout;
         do {
             const auto window = FindWindowExW(HWND_MESSAGE, nullptr, WindowClass, winrt::to_hstring(service).c_str());
             DWORD pid = 0;
@@ -154,9 +165,9 @@ bool FileActivation::Forward(const std::string &service, std::shared_ptr<const C
                 copy.lpData = const_cast<char *>(message.data());
                 DWORD_PTR accepted = 0;
                 if (SendMessageTimeoutW(window, WM_COPYDATA, 0, reinterpret_cast<LPARAM>(&copy),
-                    SMTO_ABORTIFHUNG | SMTO_BLOCK, 1000, &accepted) && accepted) return true;
+                    SMTO_ABORTIFHUNG | SMTO_BLOCK, static_cast<UINT>(MessageTimeout.count()), &accepted) && accepted) return true;
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            std::this_thread::sleep_for(ForwardRetryInterval);
         } while (std::chrono::steady_clock::now() < deadline);
     } catch (...) {}
     return false;
@@ -170,7 +181,7 @@ std::shared_ptr<const Passepartout::ConfigurationFiles> FileActivation::ReadFile
     const auto args = AppInstance::GetActivatedEventArgs();
     if (!args || args.Kind() != Activation::ActivationKind::File) return {};
     const auto items = args.as<Activation::IFileActivatedEventArgs>().Files();
-    if (items.Size() > 64) throw std::runtime_error("Too many activation files.");
+    if (items.Size() > MaximumFiles) throw std::runtime_error("Too many activation files.");
     std::vector<winrt::Windows::Storage::StorageFile> files;
     std::size_t failures = 0;
     for (const auto &item : items) {
