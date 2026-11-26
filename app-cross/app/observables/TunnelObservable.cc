@@ -62,7 +62,7 @@ bool TunnelObservable::Post(std::function<void()> operation, bool foreground, bo
             error = "The VPN operation failed.";
             pending_profile_.reset();
         }
-        if (!error.empty()) AppLog::Write(LogLevel::error, LogCategory::tunnel, "Unable to execute VPN operation");
+        if (!error.empty()) AppLog::Write(AppLog::Level::error, AppLog::Category::tunnel, "Unable to execute VPN operation");
         {
             std::lock_guard lock(mutex_);
             if (!error.empty()) {
@@ -85,7 +85,7 @@ void TunnelObservable::Observe() {
         error = "Unable to read VPN state.";
     }
     if (error != last_observation_error_) {
-        AppLog::Write(error.empty() ? LogLevel::info : LogLevel::error, LogCategory::tunnel,
+        AppLog::Write(error.empty() ? AppLog::Level::info : AppLog::Level::error, AppLog::Category::tunnel,
             error.empty() ? "Tunnel observation recovered" : "Unable to fetch tunnel state");
         last_observation_error_ = error;
     }
@@ -138,7 +138,7 @@ void TunnelObservable::Publish() {
     auto synchronization_error = SynchronizeProfiles(tunnels);
     tunnels = Tunnels::Info(tunnel_->Fetch());
     if (synchronization_error != last_synchronization_error_) {
-        AppLog::Write(synchronization_error.empty() ? LogLevel::info : LogLevel::error, LogCategory::profiles,
+        AppLog::Write(synchronization_error.empty() ? AppLog::Level::info : AppLog::Level::error, AppLog::Category::profiles,
             synchronization_error.empty() ? "Profile synchronization succeeded" : synchronization_error);
         last_synchronization_error_ = synchronization_error;
     }
@@ -147,18 +147,18 @@ void TunnelObservable::Publish() {
     for (const auto &[id, error] : observation_errors) {
         const auto old = previous.observation_errors.find(id);
         if (old == previous.observation_errors.end() || old->second != error)
-            AppLog::Write(LogLevel::error, LogCategory::tunnel, "Unable to observe profile " + id + ": " + error);
+            AppLog::Write(AppLog::Level::error, AppLog::Category::tunnel, "Unable to observe profile " + id + ": " + error);
     }
     for (const auto &[id, error] : previous.observation_errors) {
         if (observation_errors.find(id) == observation_errors.end())
-            AppLog::Write(LogLevel::info, LogCategory::tunnel, "Profile observation error cleared: " + id);
+            AppLog::Write(AppLog::Level::info, AppLog::Category::tunnel, "Profile observation error cleared: " + id);
     }
     for (const auto &tunnel : tunnels) {
         const auto old = std::find_if(previous.tunnels.begin(), previous.tunnels.end(), [&](const auto &value) {
             return value.id == tunnel.id;
         });
         if (old == previous.tunnels.end() || old->status != tunnel.status)
-            AppLog::Write(LogLevel::info, LogCategory::tunnel, "Profile " + tunnel.id + " status: " + tunnel.status.ToJson().Encode());
+            AppLog::Write(AppLog::Level::info, AppLog::Category::tunnel, "Profile " + tunnel.id + " status: " + tunnel.status.ToJson().Encode());
     }
     // The requested target is presentation state; Partout owns the handover.
     if (pending_profile_ && std::any_of(tunnels.begin(), tunnels.end(), [&](const auto &tunnel) {

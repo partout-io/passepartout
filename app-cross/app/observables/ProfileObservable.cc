@@ -44,7 +44,7 @@ bool ProfileObservable::Post(std::function<void()> operation, OperationErrorCont
         } catch (...) {
             error = "The operation failed.";
         }
-        if (!error.empty()) AppLog::Write(LogLevel::error, LogCategory::profiles, "Unable to execute profile operation");
+        if (!error.empty()) AppLog::Write(AppLog::Level::error, AppLog::Category::profiles, "Unable to execute profile operation");
         {
             std::lock_guard lock(mutex_);
             snapshot_.operation_error = std::move(error);
@@ -154,9 +154,9 @@ void ProfileObservable::Load() {
             std::lock_guard lock(mutex_);
             snapshot_.loaded = false;
         }
-        AppLog::Write(LogLevel::info, LogCategory::profiles, "Reload local profiles...");
+        AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Reload local profiles...");
         manager_->Load();
-        AppLog::Write(LogLevel::info, LogCategory::profiles, "Reloaded local profiles: " + std::to_string(manager_->Profiles().size()));
+        AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Reloaded local profiles: " + std::to_string(manager_->Profiles().size()));
         {
             std::lock_guard lock(mutex_);
             snapshot_.loaded = true;
@@ -201,12 +201,12 @@ void ProfileObservable::ImportFiles(std::shared_ptr<const ConfigurationFiles> fi
                 if (executor_.IsStopping()) return;
             }
             try {
-                AppLog::Write(LogLevel::info, LogCategory::profiles, "Import profile...");
+                AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Import profile...");
                 const auto source = files->Read(index);
                 manager_->ImportText(source.text, source.name);
-                AppLog::Write(LogLevel::info, LogCategory::profiles, "Finished saving profile");
+                AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Finished saving profile");
             } catch (const std::exception &) {
-                AppLog::Write(LogLevel::error, LogCategory::profiles, "Unable to import profile");
+                AppLog::Write(AppLog::Level::error, AppLog::Category::profiles, "Unable to import profile");
                 ++failures;
             } catch (...) {
                 ++failures;
@@ -230,7 +230,7 @@ void ProfileObservable::Remove(std::vector<std::string> ids) {
         // request before deleting anything, on the same worker as mutations.
         for (const auto &id : unique_ids) manager_->Find(id);
         for (const auto &id : unique_ids) {
-            AppLog::Write(LogLevel::info, LogCategory::profiles, "Remove profile");
+            AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Remove profile");
             manager_->Remove(id);
         }
     });

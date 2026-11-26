@@ -9,11 +9,11 @@ namespace Passepartout::Tests {
 // Process-wide override: stop logging workers before this scope ends.
 class ScopedLogSink final {
 public:
-    explicit ScopedLogSink(LogSink sink);
+    explicit ScopedLogSink(AppLog::Sink sink);
     ~ScopedLogSink();
     ScopedLogSink(const ScopedLogSink &) = delete;
     ScopedLogSink &operator=(const ScopedLogSink &) = delete;
 private:
-    LogSink previous_;
+    AppLog::Sink previous_;
 };
 }

@@ -33,22 +33,22 @@ struct RuntimeLogState final {
 
 RuntimeLogState runtime;
 std::mutex sink_mutex;
-Passepartout::LogSink sink;
+Passepartout::AppLog::Sink sink;
 
-const char *CategoryName(Passepartout::LogCategory category) {
+const char *CategoryName(Passepartout::AppLog::Category category) {
     switch (category) {
-    case Passepartout::LogCategory::core: return "core";
-    case Passepartout::LogCategory::tunnel: return "tunnel";
-    case Passepartout::LogCategory::profiles: return "profiles";
-    case Passepartout::LogCategory::partout: return "partout";
+    case Passepartout::AppLog::Category::core: return "core";
+    case Passepartout::AppLog::Category::tunnel: return "tunnel";
+    case Passepartout::AppLog::Category::profiles: return "profiles";
+    case Passepartout::AppLog::Category::partout: return "partout";
     }
     return "unknown";
 }
 
-void WriteRuntime(Passepartout::LogLevel level, Passepartout::LogCategory category, const std::string &message) {
+void WriteRuntime(Passepartout::AppLog::Level level, Passepartout::AppLog::Category category, const std::string &message) {
     const auto timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(
         std::chrono::system_clock::now().time_since_epoch()).count();
-    const char *name = level == Passepartout::LogLevel::error ? "error" : level == Passepartout::LogLevel::info ? "info" : "debug";
+    const char *name = level == Passepartout::AppLog::Level::error ? "error" : level == Passepartout::AppLog::Level::info ? "info" : "debug";
     std::ostringstream line;
     line << timestamp << " [" << CategoryName(category) << "] [" << name << "] " << message << '\n';
     auto text = line.str();
@@ -86,7 +86,7 @@ std::string RuntimeLog(bool include_private_data) {
     return result;
 }
 
-LogSink SetSink(LogSink replacement) {
+Sink SetSink(Sink replacement) {
     std::lock_guard lock(sink_mutex);
     return std::exchange(sink, std::move(replacement));
 }
@@ -96,16 +96,16 @@ void PartoutMessage(void *, const char *profile_id, int level, const char *messa
     try {
         const auto text = profile_id && runtime.includes_private_data.load()
             ? "[" + std::string(profile_id) + "] " + message : std::string(message);
-        const auto log_level = level <= PartoutLogLevelError ? LogLevel::error
-            : level <= PartoutLogLevelInfo ? LogLevel::info
-            : LogLevel::debug;
-        Write(log_level, LogCategory::partout, text);
+        const auto log_level = level <= PartoutLogLevelError ? Level::error
+            : level <= PartoutLogLevelInfo ? Level::info
+            : Level::debug;
+        Write(log_level, Category::partout, text);
     } catch (...) {
         // Never throw through the native logging callback.
     }
 }
 
-void Write(LogLevel level, LogCategory category, const std::string &message) noexcept {
+void Write(Level level, Category category, const std::string &message) noexcept {
     try {
         std::lock_guard lock(sink_mutex);
         if (sink) sink(level, category, message);

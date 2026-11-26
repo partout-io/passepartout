@@ -58,7 +58,7 @@ void VersionObservable::LoadChangelog() {
         try {
             result.entries = checker_->FetchChangelog(build_);
         } catch (...) {
-            AppLog::Write(LogLevel::error, LogCategory::core, "Unable to load changelog for build " + build_);
+            AppLog::Write(AppLog::Level::error, AppLog::Category::core, "Unable to load changelog for build " + build_);
             result.operation_failed = true;
         }
         std::lock_guard lock(mutex_);

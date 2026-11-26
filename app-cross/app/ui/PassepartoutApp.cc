@@ -28,7 +28,7 @@ bool PassepartoutApp::OnInit() {
     // Configure native appearance, localization, and application identity.
     UseSystemAppearance(*this);
     wxUILocale::UseDefault();
-    AppLog::Write(LogLevel::info, LogCategory::core, "Start application");
+    AppLog::Write(AppLog::Level::info, AppLog::Category::core, "Start application");
     SetAppName(wxString::FromUTF8(CrossConstants.app.name));
 
     // Parse the launch mode and configuration paths.
@@ -45,7 +45,7 @@ bool PassepartoutApp::OnInit() {
     try {
         activation_files = FileActivation::ReadFiles();
     } catch (...) {
-        AppLog::Write(LogLevel::error, LogCategory::core, "Unable to read activation files");
+        AppLog::Write(AppLog::Level::error, AppLog::Category::core, "Unable to read activation files");
         activation_files = std::make_shared<FileConfigurationFiles>(std::vector<std::filesystem::path>{}, 1);
     }
     if (!activation_files) activation_files = std::make_shared<FileConfigurationFiles>(files);
@@ -56,7 +56,7 @@ bool PassepartoutApp::OnInit() {
     instance_ = std::make_unique<wxSingleInstanceChecker>(wxString::FromUTF8(instance_key));
     if (instance_->IsAnotherRunning()) {
         if (FileActivation::Forward(instance_key, activation_files)) return false;
-        AppLog::Write(LogLevel::error, LogCategory::core, "Application startup rejected: another instance is running");
+        AppLog::Write(AppLog::Level::error, AppLog::Category::core, "Application startup rejected: another instance is running");
         wxMessageBox(Localized(StringKey::ErrorsAppOther),
                      wxTheApp->GetAppName(), wxOK | wxICON_INFORMATION);
         return false;
@@ -75,7 +75,7 @@ bool PassepartoutApp::OnInit() {
             data_root, demo, Constants::Load(), CrossConstants
         );
         stage = "creating main window";
-        AppLog::Write(LogLevel::debug, LogCategory::core, "Create main window");
+        AppLog::Write(AppLog::Level::debug, AppLog::Category::core, "Create main window");
         auto *view = new MainView(*context_, demo, Configuration::MakePicker);
         SetTopWindow(view);
 
@@ -104,10 +104,10 @@ bool PassepartoutApp::OnInit() {
         // Show the fully connected main window.
         stage = "showing main window";
         view->Show();
-        AppLog::Write(LogLevel::info, LogCategory::core, "Main window shown");
+        AppLog::Write(AppLog::Level::info, AppLog::Category::core, "Main window shown");
         return true;
     } catch (...) {
-        AppLog::Write(LogLevel::error, LogCategory::core,
+        AppLog::Write(AppLog::Level::error, AppLog::Category::core,
             std::string("Application startup failed while ") + stage);
     }
 

@@ -6,7 +6,7 @@
 #include <utility>
 
 namespace Passepartout::Tests {
-ScopedLogSink::ScopedLogSink(LogSink sink) : previous_(AppLog::SetSink(std::move(sink))) {}
+ScopedLogSink::ScopedLogSink(AppLog::Sink sink) : previous_(AppLog::SetSink(std::move(sink))) {}
 
 ScopedLogSink::~ScopedLogSink() {
     AppLog::SetSink(std::move(previous_));

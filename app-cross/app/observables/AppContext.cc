@@ -128,7 +128,7 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
             tunnel.ApplyPreferences(value);
         });
         config.Refresh();
-        AppLog::Write(LogLevel::info, LogCategory::core, demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
+        AppLog::Write(AppLog::Level::info, AppLog::Category::core, demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
     } catch (...) {
         executor_.RequestStop();
         profiles.Cancel();

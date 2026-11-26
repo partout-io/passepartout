@@ -880,7 +880,7 @@ int main() {
         {
             // Record background errors once, preserve actual availability on cleanup failure, and log recovery/shutdown.
             std::vector<std::string> messages;
-            Tests::ScopedLogSink log_sink([&](LogLevel, LogCategory, const std::string &message) {
+            Tests::ScopedLogSink log_sink([&](AppLog::Level, AppLog::Category, const std::string &message) {
                 messages.push_back(message);
             });
             {

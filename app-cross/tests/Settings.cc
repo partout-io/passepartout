@@ -356,24 +356,24 @@ int main() {
         assert(unix_credits.Snapshot().licenses[1].name == "Unix");
         {
             unsigned calls = 0;
-            Tests::ScopedLogSink outer([&](LogLevel, LogCategory, const std::string &) {
+            Tests::ScopedLogSink outer([&](AppLog::Level, AppLog::Category, const std::string &) {
                 ++calls;
             });
-            AppLog::Write(LogLevel::info, LogCategory::core, "outer");
+            AppLog::Write(AppLog::Level::info, AppLog::Category::core, "outer");
             try {
-                Tests::ScopedLogSink inner([](LogLevel, LogCategory, const std::string &) {
+                Tests::ScopedLogSink inner([](AppLog::Level, AppLog::Category, const std::string &) {
                     throw std::runtime_error("Sink failure");
                 });
-                AppLog::Write(LogLevel::info, LogCategory::core, "must not throw");
+                AppLog::Write(AppLog::Level::info, AppLog::Category::core, "must not throw");
                 throw std::runtime_error("Unwind sink scope");
             } catch (const std::runtime_error &) {}
-            AppLog::Write(LogLevel::info, LogCategory::core, "restored");
+            AppLog::Write(AppLog::Level::info, AppLog::Category::core, "restored");
             assert(calls == 2);
             std::vector<std::thread> writers;
             for (int i = 0; i < 4; ++i) {
                 writers.emplace_back([] {
                     for (int j = 0; j < 100; ++j) {
-                        AppLog::Write(LogLevel::debug, LogCategory::core, "concurrent");
+                        AppLog::Write(AppLog::Level::debug, AppLog::Category::core, "concurrent");
                     }
                 });
             }
@@ -382,9 +382,9 @@ int main() {
         }
         // Leaving the override restores the default runtime buffer sink.
         AppLog::SetPrivateData(false);
-        AppLog::Write(LogLevel::info, LogCategory::core, "public marker");
+        AppLog::Write(AppLog::Level::info, AppLog::Category::core, "public marker");
         AppLog::SetPrivateData(true);
-        AppLog::Write(LogLevel::info, LogCategory::core, "private marker");
+        AppLog::Write(AppLog::Level::info, AppLog::Category::core, "private marker");
         AppLog::SetPrivateData(false);
         assert(AppLog::RuntimeLog().find("private marker") != std::string::npos);
         assert(AppLog::RuntimeLog(false).find("private marker") == std::string::npos);
