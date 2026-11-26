@@ -23,9 +23,10 @@ public:
 private:
     Worker executor_;
 public:
-    AppContext(const std::filesystem::path &data_root, bool demo,
+    AppContext(const std::filesystem::path &data_root,
                Models::AppConstants constants = Constants::Load(),
-               CrossConstantsType cross_constants = CrossConstants
+               CrossConstantsType cross_constants = CrossConstants,
+               bool demo = false
     );
     ~AppContext();
     Worker::Activity Activity() const;

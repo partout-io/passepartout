@@ -72,7 +72,7 @@ bool PassepartoutApp::OnInit() {
     try {
         // Assemble shared state and create the main presentation surface.
         context_ = std::make_unique<AppContext>(
-            data_root, demo, Constants::Load(), CrossConstants
+            data_root, Constants::Load(), CrossConstants, demo
         );
         stage = "creating main window";
         AppLog::Write(AppLog::Level::debug, AppLog::Category::core, "Create main window");

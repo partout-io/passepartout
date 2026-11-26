@@ -64,7 +64,8 @@ std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const Passepartout::Cross
 }
 
 std::unique_ptr<Passepartout::PreferencesRepository> MakePreferencesRepository(
-    const std::filesystem::path &directory, const Passepartout::CrossConstantsType &constants
+    const std::filesystem::path &directory,
+    const Passepartout::CrossConstantsType &constants
 ) {
 #ifdef _WIN32
     return std::make_unique<Passepartout::Windows::PreferencesRepository>(constants.storage.preferences_key);
@@ -86,10 +87,14 @@ void ApplyLoggingPreferences(const Passepartout::Models::AppPreferences &prefere
 
 using Passepartout::AppContext;
 
-AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
-                       Models::AppConstants app_constants, CrossConstantsType frontend_constants
-)
-    : constants(std::move(app_constants)), cross_constants(std::move(frontend_constants)),
+AppContext::AppContext(
+    const std::filesystem::path &data_root,
+    Models::AppConstants app_constants,
+    CrossConstantsType frontend_constants,
+    bool demo
+) :
+      constants(std::move(app_constants)),
+      cross_constants(std::move(frontend_constants)),
       wireguard_keygen(std::make_unique<PartoutWireGuardKeyGenerator>()),
       profiles(executor_, std::make_unique<ProfileManager>(std::make_unique<FileProfileRepository>(
           Profiles::Directory(data_root, constants)), ImportProfile)),
