@@ -71,6 +71,8 @@ set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/FileProfileRepository.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/GitHubConfigStrategy.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/GitHubReleaseStrategy.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/OfflineHttpClient.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/PartoutWireGuardKeyGenerator.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/ProfileJournal.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/context/AppLogger.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/context/ContextExtensions.cc"

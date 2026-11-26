@@ -4,6 +4,8 @@
 
 #include "AppContext.h"
 #include "../business/strategy/GitHubConfigStrategy.h"
+#include "../business/strategy/OfflineHttpClient.h"
+#include "../business/strategy/PartoutWireGuardKeyGenerator.h"
 #include "../context/ContextExtensions.h"
 #include "../business/managers/AppSession.h"
 #include "../business/strategy/FileProfileRepository.h"
@@ -23,13 +25,6 @@
 #include <stdexcept>
 
 namespace {
-class PartoutWireGuardKeyGenerator final : public Passepartout::WireGuardKeyGenerator {
-public:
-    std::string PublicKey(const std::string &private_key) const override {
-        std::unique_ptr<char, decltype(&std::free)> key(partout_wireguard_pubkey(private_key.c_str()), &std::free);
-        return key ? std::string(key.get()) : std::string();
-    }
-};
 std::string ApplicationVersion() {
 #ifdef PASSEPARTOUT_APP_VERSION
     return PASSEPARTOUT_APP_VERSION;
@@ -52,15 +47,7 @@ std::unique_ptr<Passepartout::HttpClient> MakeHttp(const Passepartout::Models::A
     return Passepartout::Windows::MakeHttpClient(std::chrono::milliseconds(
         static_cast<std::int64_t>(constants.url.timeoutInterval * 1000)));
 #else
-    class OfflineHttpClient final : public Passepartout::HttpClient {
-    public:
-        std::string Get(const std::string &) override {
-            throw std::runtime_error("Remote services are unavailable in this mode.");
-        }
-
-        void Cancel() noexcept override {}
-    };
-    return std::make_unique<OfflineHttpClient>();
+    return std::make_unique<Passepartout::OfflineHttpClient>();
 #endif
 }
 
