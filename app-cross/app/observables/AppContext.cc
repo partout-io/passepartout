@@ -88,10 +88,10 @@ std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const Passepartout::Cross
 #endif
 }
 
-std::function<void(const Passepartout::Models::AppPreferences &)> TunnelPreferences(bool demo, const Passepartout::Models::AppConstants &constants) {
+std::function<void(const Passepartout::Models::AppPreferences &)> TunnelPreferences(bool demo) {
 #ifdef _WIN32
-    if (!demo) return [servers = constants.tunnel.dnsFallbackServers](const auto &preferences) {
-        Passepartout::Windows::Tunnel::ApplyPreferences(preferences, servers);
+    if (!demo) return [](const auto &preferences) {
+        Passepartout::Windows::Tunnel::ApplyPreferences(preferences);
     };
 #endif
     return {};
@@ -110,7 +110,7 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
           Profiles::Directory(data_root, constants, cross_constants, demo)),
           ImportProfile, MakeTunnel(demo, cross_constants), logger_,
           std::make_unique<FileProfileJournal>(Profiles::Directory(data_root, constants, cross_constants, demo) / "transactions"),
-          std::chrono::seconds(1), TunnelPreferences(demo, constants))),
+          std::chrono::seconds(1), TunnelPreferences(demo))),
       profiles(*session_), tunnel(*session_),
       preferences(std::make_unique<FilePreferencesRepository>(
           Profiles::Directory(data_root, constants, cross_constants, demo) / "preferences.json"), [this] {

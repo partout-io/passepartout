@@ -11,7 +11,7 @@
 #include <winrt/Windows.Storage.h>
 
 void Passepartout::Windows::Tunnel::ApplyPreferences(
-    const Models::AppPreferences &preferences, const std::vector<std::string> &dns_fallback_servers
+    const Models::AppPreferences &preferences
 ) {
     winrt::init_apartment(winrt::apartment_type::multi_threaded);
     struct Apartment {
@@ -19,13 +19,9 @@ void Passepartout::Windows::Tunnel::ApplyPreferences(
             winrt::uninit_apartment();
         }
     } apartment;
-    const Partout::Json value = {
-        {"dnsFallbackServers", preferences.dnsFallsBack ? dns_fallback_servers : std::vector<std::string>{}},
-        {"logsPrivateData", preferences.logsPrivateData}
-    };
     // One atomic package setting is read by the host at the next activation.
     winrt::Windows::Storage::ApplicationData::Current().LocalSettings().Values().Insert(
-        TunnelPreferencesKey, winrt::box_value(winrt::to_hstring(value.Encode())));
+        TunnelPreferencesKey, winrt::box_value(winrt::to_hstring(preferences.ToJson().Encode())));
     partout_init_args init{};
     init.log_level = PartoutLogLevelDebug;
     init.logs_private_data = preferences.logsPrivateData;

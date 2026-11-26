@@ -127,6 +127,16 @@ int main() {
         FilePreferencesRepository repository(directory / "preferences.json");
         auto persisted = repository.Fetch();
         assert(persisted.dnsFallsBack && !persisted.logsPrivateData);
+        // The app and tunnel exchange the complete generated preferences model.
+        auto shared_preferences = persisted;
+        shared_preferences.dnsFallsBack = false;
+        shared_preferences.logsPrivateData = true;
+        shared_preferences.lastCheckedVersion = "1.2.3";
+        const auto decoded_preferences = Models::AppPreferences::FromJson(
+            Partout::Json::Parse(shared_preferences.ToJson().Encode())
+        );
+        assert(decoded_preferences == shared_preferences);
+        assert(!decoded_preferences.dnsFallsBack && decoded_preferences.logsPrivateData);
         persisted.dnsFallsBack = false;
         repository.Save(persisted);
         assert(!FilePreferencesRepository(directory / "preferences.json").Fetch().dnsFallsBack);

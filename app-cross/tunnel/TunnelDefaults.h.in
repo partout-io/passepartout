@@ -4,8 +4,5 @@
 
 #pragma once
 namespace Passepartout {
-inline constexpr const wchar_t DefaultTunnelPreferences[] = LR"Preferences({
-    "dnsFallbackServers": @PASSEPARTOUT_DNS_FALLBACK_JSON@,
-    "logsPrivateData": false
-})Preferences";
+inline constexpr const char DNSFallbackServers[] = R"Servers(@PASSEPARTOUT_DNS_FALLBACK_JSON@)Servers";
 }

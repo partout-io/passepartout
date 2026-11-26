@@ -4,6 +4,8 @@
 
 #include "PackageConstants.h"
 #include "TunnelDefaults.h"
+#include "AppPreferences.h"
+#include <partout/Json.h>
 #include "../Preferences.h"
 
 #include <atomic>
@@ -175,16 +177,17 @@ struct ChannelSession {
 
     explicit ChannelSession(winrt::Windows::Networking::Vpn::VpnChannel const &value) : channel(value) {
         const auto profile = ReadProfile(channel);
-        using namespace winrt::Windows::Data::Json;
-        auto preferences = JsonObject::Parse(Passepartout::DefaultTunnelPreferences);
         const auto values = winrt::Windows::Storage::ApplicationData::Current().LocalSettings().Values();
-        if (values.HasKey(Passepartout::TunnelPreferencesKey)) {
-            preferences = JsonObject::Parse(winrt::unbox_value<winrt::hstring>(values.Lookup(Passepartout::TunnelPreferencesKey)));
-        }
+        const auto encoded_preferences = winrt::unbox_value<winrt::hstring>(
+            values.Lookup(Passepartout::TunnelPreferencesKey)
+        );
+        const auto preferences = Passepartout::Models::AppPreferences::FromJson(
+            Partout::Json::Parse(winrt::to_string(encoded_preferences))
+        );
         partout_init_args init{};
         init.logger_fn = LogNative;
         init.log_level = PartoutLogLevelDebug;
-        init.logs_private_data = preferences.GetNamedBoolean(L"logsPrivateData", false);
+        init.logs_private_data = preferences.logsPrivateData;
         logs_private_data.store(init.logs_private_data);
         const auto temporary = winrt::to_string(winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().Path());
         partout_daemon_options options{};
@@ -192,9 +195,11 @@ struct ChannelSession {
         options.starts_immediately = true;
         options.crypto = PartoutCryptoMbedTLS;
         Partout::Models::TunnelControllerOptions controller_options{};
-        const auto fallback = preferences.GetNamedArray(L"dnsFallbackServers", JsonArray{});
-        for (const auto &server : fallback)
-            controller_options.dnsFallbackServers.push_back(winrt::to_string(server.GetString()));
+        if (preferences.dnsFallsBack) {
+            for (const auto &server : Partout::Json::Parse(Passepartout::DNSFallbackServers).Elements()) {
+                controller_options.dnsFallbackServers.push_back(server.Get<std::string>());
+            }
+        }
         runtime = std::make_unique<Partout::VpnChannelRuntime>(
             channel, profile.c_str(), init, options, std::move(controller_options));
     }
