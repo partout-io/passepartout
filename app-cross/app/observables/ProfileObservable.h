@@ -7,6 +7,7 @@
 #include "../business/managers/ProfileManager.h"
 #include "../business/strategy/ConfigurationFiles.h"
 #include "Worker.h"
+#include "SnapshotTracker.h"
 #include "ProfileEditor.h"
 
 namespace Passepartout {
@@ -20,11 +21,7 @@ public:
         bool busy = false;
         std::optional<OperationErrorContext> operation_error;
     };
-    // Keep one cursor per consumer and observable instance.
-    class Cursor final {
-        friend class ProfileObservable;
-        std::optional<std::uint64_t> revision_;
-    };
+    using Cursor = SnapshotTracker<State>::Cursor;
 
     ProfileObservable(Worker &executor, ProfileManager &manager);
     ~ProfileObservable();
@@ -51,7 +48,7 @@ private:
     std::size_t profile_subscription_;
     mutable std::mutex mutex_;
     State snapshot_;
-    std::uint64_t revision_ = 0;
+    SnapshotTracker<State> changes_;
     std::size_t pending_operations_ = 0;
     std::vector<Profile> published_profiles_;
     std::shared_ptr<const ConfigurationFiles> importing_files_;

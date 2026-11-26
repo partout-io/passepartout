@@ -297,6 +297,9 @@ void TestIndependentObservableState(const std::filesystem::path &root) {
     assert(context.tunnel.Snapshot().errors.operation);
     Passepartout::TunnelObservable::Cursor tunnel_cursor;
     assert(context.tunnel.SnapshotIfChanged(tunnel_cursor));
+    Passepartout::TunnelObservable::Cursor other_cursor;
+    assert(context.tunnel.SnapshotIfChanged(other_cursor));
+    assert(!context.tunnel.SnapshotIfChanged(other_cursor));
     context.profiles.ClearOperationError();
     assert(!context.profiles.Snapshot().operation_error.has_value());
     assert(context.tunnel.Snapshot().errors.operation);
@@ -308,6 +311,8 @@ void TestIndependentObservableState(const std::filesystem::path &root) {
     assert(!context.profiles.SnapshotIfChanged(profile_cursor));
     assert(context.tunnel.SnapshotIfChanged(tunnel_cursor));
     assert(!context.tunnel.SnapshotIfChanged(tunnel_cursor));
+    assert(context.tunnel.SnapshotIfChanged(other_cursor));
+    assert(!context.tunnel.SnapshotIfChanged(other_cursor));
 }
 
 void TestObservationAfterOperationFailure(const std::filesystem::path &root) {

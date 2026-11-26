@@ -6,6 +6,7 @@
 #include "../business/extensions/Models+Business.h"
 #include "../business/models/InteractiveLogin.h"
 #include "Worker.h"
+#include "SnapshotTracker.h"
 #include "../business/managers/ProfileManager.h"
 #include <partout/tunnel/Tunnel.h>
 #include <set>
@@ -28,11 +29,7 @@ public:
         bool HasActivity() const;
     };
 
-    // Keep one cursor per consumer and observable instance.
-    class Cursor final {
-        friend class TunnelObservable;
-        std::optional<std::uint64_t> revision_;
-    };
+    using Cursor = SnapshotTracker<State>::Cursor;
 
     TunnelObservable(Worker &executor, std::unique_ptr<Partout::Tunnel> tunnel, ProfileManager &profiles);
     ~TunnelObservable();
@@ -56,7 +53,7 @@ private:
     std::unique_ptr<Partout::Tunnel> tunnel_;
     mutable std::mutex mutex_;
     State snapshot_;
-    std::uint64_t revision_ = 0;
+    SnapshotTracker<State> changes_;
     std::size_t pending_operations_ = 0;
 };
 }

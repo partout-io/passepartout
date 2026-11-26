@@ -33,7 +33,7 @@ bool ProfileObservable::Post(std::function<void()> operation, OperationErrorCont
         snapshot_.operation_error.reset();
         snapshot_.busy = true;
         ++pending_operations_;
-        ++revision_;
+        changes_.Advance();
     }
     const auto accepted = executor_.Post([this, operation = std::move(operation), context] {
         try {
@@ -52,7 +52,7 @@ bool ProfileObservable::Post(std::function<void()> operation, OperationErrorCont
 void ProfileObservable::FinishOperation() {
     std::lock_guard lock(mutex_);
     snapshot_.busy = --pending_operations_ != 0;
-    ++revision_;
+    changes_.Advance();
 }
 
 bool ProfileObservable::CanSave(const State &state, const std::string &id) {
@@ -100,7 +100,7 @@ void ProfileObservable::OnUpdate(const Models::Event &event) {
     snapshot_.profiles = std::move(headers);
     published_profiles_ = profiles;
     snapshot_.loaded = true;
-    ++revision_;
+    changes_.Advance();
 }
 
 void ProfileObservable::Load() {
@@ -108,7 +108,7 @@ void ProfileObservable::Load() {
         {
             std::lock_guard lock(mutex_);
             snapshot_.loaded = false;
-            ++revision_;
+            changes_.Advance();
         }
         AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Reload local profiles...");
         manager_.Load();
@@ -192,15 +192,13 @@ ProfileObservable::State ProfileObservable::Snapshot() const {
 void ProfileObservable::ClearOperationError() {
     std::lock_guard lock(mutex_);
     snapshot_.operation_error.reset();
-    ++revision_;
+    changes_.Advance();
 }
 
 std::optional<ProfileObservable::State> ProfileObservable::SnapshotIfChanged(Cursor &cursor) const {
     std::lock_guard lock(mutex_);
-    if (cursor.revision_ == revision_) return {};
-    auto result = snapshot_;
-    if (executor_.IsStopping()) result.busy = false;
-    cursor.revision_ = revision_;
+    auto result = changes_.SnapshotIfChanged(cursor, snapshot_);
+    if (result && executor_.IsStopping()) result->busy = false;
     return result;
 }
 }

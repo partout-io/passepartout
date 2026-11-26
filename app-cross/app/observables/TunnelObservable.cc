@@ -40,7 +40,7 @@ void TunnelObservable::Post(std::function<void()> operation, bool foreground) {
         snapshot_.errors.operation = false;
         snapshot_.busy = true;
         ++pending_operations_;
-        ++revision_;
+        changes_.Advance();
     }
     const auto accepted = executor_.Post([this, operation = std::move(operation), foreground] {
         try {
@@ -60,7 +60,7 @@ void TunnelObservable::Post(std::function<void()> operation, bool foreground) {
 void TunnelObservable::FinishOperation() {
     std::lock_guard lock(mutex_);
     snapshot_.busy = --pending_operations_ != 0;
-    ++revision_;
+    changes_.Advance();
 }
 
 void TunnelObservable::Publish() {
@@ -76,7 +76,7 @@ void TunnelObservable::Publish() {
     std::lock_guard lock(mutex_);
     state.errors.operation = snapshot_.errors.operation;
     state.busy = snapshot_.busy;
-    ++revision_;
+    changes_.Advance();
     snapshot_ = std::move(state);
 }
 
@@ -112,7 +112,7 @@ void TunnelObservable::Refresh() {
 void TunnelObservable::ClearOperationError() {
     std::lock_guard lock(mutex_);
     snapshot_.errors.operation = false;
-    ++revision_;
+    changes_.Advance();
 }
 
 TunnelObservable::State TunnelObservable::Snapshot() const {
@@ -124,10 +124,8 @@ TunnelObservable::State TunnelObservable::Snapshot() const {
 
 std::optional<TunnelObservable::State> TunnelObservable::SnapshotIfChanged(Cursor &cursor) const {
     std::lock_guard lock(mutex_);
-    if (cursor.revision_ == revision_) return {};
-    auto result = snapshot_;
-    if (executor_.IsStopping()) result.busy = false;
-    cursor.revision_ = revision_;
+    auto result = changes_.SnapshotIfChanged(cursor, snapshot_);
+    if (result && executor_.IsStopping()) result->busy = false;
     return result;
 }
 }
