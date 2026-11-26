@@ -8,8 +8,8 @@
 namespace Passepartout {
 LicenseView::LicenseView(wxWindow *parent, CreditsObservable &credits, std::string url, const wxString &title)
     : ThemeLongContent(parent, title, {}), credits_(credits), url_(std::move(url)), observer_([this] { UpdateContent(); }) {
-    observer_.Observe(credits_.changes);
     credits_.LoadLicense(url_);
+    observer_.Observe(credits_.changes);
     UpdateContent();
 }
 

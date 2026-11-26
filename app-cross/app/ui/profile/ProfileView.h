@@ -4,13 +4,11 @@
 #pragma once
 #include "../../observables/ProfileEditor.h"
 #include "../theme/ThemeDetailView.h"
-#include <functional>
 #include <memory>
 
 namespace Passepartout {
 class ProfileView final : public ThemeDetailView {
 public:
-    ProfileView(wxWindow *parent, std::shared_ptr<ProfileEditor> editor,
-                std::function<void()> changed);
+    ProfileView(wxWindow *parent, std::shared_ptr<ProfileEditor> editor);
 };
 }

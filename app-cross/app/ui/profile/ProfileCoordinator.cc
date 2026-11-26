@@ -77,7 +77,6 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     });
     save_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
         profiles_.SaveEditor(editor_);
-        RefreshState();
     });
     Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent &event) {
         if (editor_->Snapshot().saving) {
@@ -92,9 +91,7 @@ ProfileCoordinator::ProfileCoordinator(wxWindow *parent, ProfileObservable &prof
     });
     observer_.Observe(editor_->changes);
     observer_.Observe(profiles_.changes);
-    ShowSection(new ProfileView(pages_, editor_, [this] {
-        RefreshState();
-    }), Localized(StringKey::GlobalNounsGeneral));
+    ShowSection(new ProfileView(pages_, editor_), Localized(StringKey::GlobalNounsGeneral));
     RefreshState();
     GetSizer()->SetSizeHints(this);
     // Choose one reading area at creation; navigation preserves manual resizing.
@@ -130,9 +127,7 @@ void ProfileCoordinator::SelectSection(std::size_t selection) {
     selection_ = selection;
     pages_->DeleteAllPages();
     if (selection == 0) {
-        ShowSection(new ProfileView(pages_, editor_, [this] {
-            RefreshState();
-        }), Localized(StringKey::GlobalNounsGeneral));
+        ShowSection(new ProfileView(pages_, editor_), Localized(StringKey::GlobalNounsGeneral));
     } else {
         OpenModule(selection - 1);
     }
@@ -182,7 +177,6 @@ void ProfileCoordinator::OpenModule(std::size_t index) {
                 accepted.password = std::move(credentials.password);
                 updated.value.credentials = std::move(accepted);
                 editor_->UpdateModule(updated);
-                RefreshState();
             }, [this, index, open_list] {
                 const auto draft = editor_->Snapshot().draft;
                 const auto &module = std::get<TaggedModuleOpenVpn>(draft.modules.at(index)).value;

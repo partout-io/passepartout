@@ -28,20 +28,20 @@ DiagnosticsView::DiagnosticsView(wxWindow *parent, DiagnosticsObservable &diagno
     );
     extensive_->Enable(false);
     privacy_ = Toggle(Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateData),
-        Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle), preferences.Snapshot().logsPrivateData
+        Localized(StringKey::ViewsDiagnosticsRowsIncludePrivateDataSubtitle), false
     );
-    RefreshLogging();
     privacy_->Bind(wxEVT_CHECKBOX, [this](wxCommandEvent &) {
         try {
             preferences_.SetLogsPrivateData(privacy_->GetValue());
         } catch (...) {
-            privacy_->SetValue(preferences_.Snapshot().logsPrivateData);
+            RefreshLogging();
             PresentError(this);
         }
     });
     observer_.Observe(preferences.changes);
     observer_.Observe(profiles.changes);
     observer_.Observe(tunnel.changes);
+    RefreshLogging();
     EndSection();
     ButtonRow(Localized(StringKey::ViewsDiagnosticsReportIssueTitle), std::move(report_issue));
     Finish();

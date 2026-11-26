@@ -14,8 +14,8 @@ ChangelogView::ChangelogView(wxWindow *parent, VersionObservable &version, const
     : wxPanel(parent), version_(version), current_version_(app.version_number),
       github_(std::move(github)), observer_([this] { UpdateContent(); }) {
     SetSizer(new wxBoxSizer(wxVERTICAL));
-    observer_.Observe(version_.changes);
     version_.LoadChangelog(std::to_string(app.build_number));
+    observer_.Observe(version_.changes);
     UpdateContent();
 }
 
