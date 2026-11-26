@@ -6,14 +6,13 @@
 #include <string>
 
 namespace Passepartout {
-// Frontend-specific defaults, matching AndroidConstants' responsibility.
-// Shared product values belong to the generated AppConstants model instead.
+// Frontend-specific defaults. Shared product values belong to
+// the generated AppConstants model instead.
 struct CrossConstantsType {
     struct Tags {
         std::string app = "Passepartout";
     } tags;
     struct Storage {
-        std::string demo_prefix = "demo-";
         std::string preferences_file = "preferences.json";
         std::wstring preferences_key = L"AppPreferences";
     } storage;

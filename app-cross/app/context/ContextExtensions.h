@@ -4,7 +4,6 @@
 
 #pragma once
 #include "AppConstants.h"
-#include "CrossConstants.h"
 #include <filesystem>
 
 namespace Passepartout::Constants {
@@ -12,7 +11,8 @@ Models::AppConstants Load();
 }
 
 namespace Passepartout::Profiles {
-std::filesystem::path Directory(const std::filesystem::path &root,
-    const Models::AppConstants &constants, const CrossConstantsType &cross_constants, bool demo
+std::filesystem::path Directory(
+    const std::filesystem::path &root,
+    const Models::AppConstants &constants
 );
 }

@@ -15,10 +15,9 @@
 #include <wx/uilocale.h>
 
 namespace {
-std::string SingleInstanceKey(bool demo) {
-    // Scope both the instance lock and activation channel to the user and mode.
+std::string SingleInstanceKey() {
+    // Scope both the instance lock and activation channel to the user.
     auto key = Passepartout::CrossConstants.tags.app + "-" + wxGetUserId().ToStdString(wxConvUTF8);
-    if (demo) key += Passepartout::CrossConstants.command_line.demo_argument;
     return key;
 }
 }
@@ -54,7 +53,7 @@ bool PassepartoutApp::OnInit() {
 
     // Forward to the existing instance, or claim this launch as the primary instance.
     const auto data_root = Paths::FromString(wxStandardPaths::Get().GetUserLocalDataDir());
-    const auto instance_key = SingleInstanceKey(demo);
+    const auto instance_key = SingleInstanceKey();
     instance_ = std::make_unique<wxSingleInstanceChecker>(wxString::FromUTF8(instance_key));
     if (instance_->IsAnotherRunning()) {
         if (FileActivation::Forward(instance_key, activation_files)) return false;

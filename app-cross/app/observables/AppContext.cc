@@ -47,11 +47,11 @@ int BuildNumber(const std::string &version) {
     }
 }
 
-std::unique_ptr<Passepartout::HttpClient> MakeHttp(const Passepartout::Models::AppConstants &constants, bool demo) {
+std::unique_ptr<Passepartout::HttpClient> MakeHttp(const Passepartout::Models::AppConstants &constants) {
 #ifdef _WIN32
-    if (!demo) return Passepartout::Windows::MakeHttpClient(std::chrono::milliseconds(
+    return Passepartout::Windows::MakeHttpClient(std::chrono::milliseconds(
         static_cast<std::int64_t>(constants.url.timeoutInterval * 1000)));
-#endif
+#else
     class OfflineHttpClient final : public Passepartout::HttpClient {
     public:
         std::string Get(const std::string &) override {
@@ -61,6 +61,7 @@ std::unique_ptr<Passepartout::HttpClient> MakeHttp(const Passepartout::Models::A
         void Cancel() noexcept override {}
     };
     return std::make_unique<OfflineHttpClient>();
+#endif
 }
 
 bool ReviewIssue(const std::string &recipient, const Passepartout::Models::Issue &issue) {
@@ -89,12 +90,13 @@ std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const Passepartout::Cross
 }
 
 std::unique_ptr<Passepartout::PreferencesRepository> MakePreferencesRepository(
-    const std::filesystem::path &directory, bool demo, const Passepartout::CrossConstantsType &constants
+    const std::filesystem::path &directory, const Passepartout::CrossConstantsType &constants
 ) {
 #ifdef _WIN32
-    if (!demo) return std::make_unique<Passepartout::Windows::PreferencesRepository>(constants.storage.preferences_key);
-#endif
+    return std::make_unique<Passepartout::Windows::PreferencesRepository>(constants.storage.preferences_key);
+#else
     return std::make_unique<Passepartout::FilePreferencesRepository>(directory / constants.storage.preferences_file);
+#endif
 }
 
 void ApplyLoggingPreferences(const Passepartout::Models::AppPreferences &preferences) {
@@ -118,21 +120,21 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
       wire_guard_keys(std::make_unique<PartoutWireGuardKeyGenerator>()),
       logger_(std::make_shared<AppLogger>()),
       session_(std::make_unique<AppSession>(std::make_unique<FileProfileRepository>(
-          Profiles::Directory(data_root, constants, cross_constants, demo)),
+          Profiles::Directory(data_root, constants)),
           ImportProfile, MakeTunnel(demo, cross_constants), logger_,
-          std::make_unique<FileProfileJournal>(Profiles::Directory(data_root, constants, cross_constants, demo) / "transactions"),
+          std::make_unique<FileProfileJournal>(Profiles::Directory(data_root, constants) / "transactions"),
           std::chrono::seconds(1),
           ApplyLoggingPreferences)),
       profiles(*session_), tunnel(*session_),
       preferences(MakePreferencesRepository(
-          Profiles::Directory(data_root, constants, cross_constants, demo), demo, cross_constants), [this] {
+          Profiles::Directory(data_root, constants), cross_constants), [this] {
               const auto state = session_->Snapshot();
               return state.loaded && !state.busy && !state.pending_profile && state.tunnel_available &&
                   state.tunnel_observation_errors.empty() && std::all_of(state.tunnels.begin(), state.tunnels.end(), [](const auto &info) {
                       return info.status.value == Status::disconnected;
                   });
           }),
-      config(std::make_unique<ConfigManager>(std::make_unique<GitHubConfigStrategy>(MakeHttp(constants, demo),
+      config(std::make_unique<ConfigManager>(std::make_unique<GitHubConfigStrategy>(MakeHttp(constants),
           constants.websites.partoutURL + "/passepartout-config/v1/bundle.json",
           std::chrono::seconds(static_cast<std::int64_t>(constants.websites.configTTL * constants.websites.betaTTLFactor))),
           BuildNumber(application_version))),
@@ -141,7 +143,7 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
           preferences.Snapshot().lastCheckedVersion, [this](auto timestamp, auto latest) {
               preferences.SetLastCheckedVersion(timestamp, std::move(latest));
           }), application_version, ChangelogResource),
-      credits(CreditsResource, MakeHttp(constants, demo)),
+      credits(CreditsResource, MakeHttp(constants)),
       diagnostics(std::make_unique<IssueReporter>(constants.emails.recipients.beta + "@" + constants.emails.domain,
           application_version, ReviewIssue)) {
     preferences.OnChange([this](const auto &value) {

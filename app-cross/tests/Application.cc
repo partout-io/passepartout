@@ -606,14 +606,11 @@ int main() {
     }
     auto constants = Constants::Load();
     assert(constants.containers.local == "Local");
-    assert(Profiles::Directory("root", constants, CrossConstants, false) == std::filesystem::path("root/local"));
-    assert(Profiles::Directory("root", constants, CrossConstants, true) == std::filesystem::path("root/demo-local"));
+    assert(Profiles::Directory("root", constants) == std::filesystem::path("root/local"));
     constants.containers.local = "Testing";
-    auto frontend_constants = CrossConstants;
-    frontend_constants.storage.demo_prefix = "preview-";
-    assert(Profiles::Directory("root", constants, frontend_constants, true) == std::filesystem::path("root/preview-testing"));
+    assert(Profiles::Directory("root", constants) == std::filesystem::path("root/testing"));
     constants.containers.local = "../outside";
-    Rejects([&] { Profiles::Directory("root", constants, frontend_constants, false); });
+    Rejects([&] { Profiles::Directory("root", constants); });
     const auto imported = Example();
     const auto success = Partout::Json{{"payload", imported.ToJson()}};
     assert(Imports::DecodeResult(success.Encode().c_str()) == imported);
