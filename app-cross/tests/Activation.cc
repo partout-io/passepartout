@@ -2,9 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "business/models/MemoryConfigurationFiles.h"
+#include "business/models/ConfigurationFiles.h"
 #include "ui/platform/FileActivationInbox.h"
-#include "business/extensions/Models+Business.h"
 #include "business/extensions/Models+Business.h"
 #include <cassert>
 #include <iostream>

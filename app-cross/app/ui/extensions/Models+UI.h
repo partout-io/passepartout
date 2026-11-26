@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../../business/models/FileConfigurationFiles.h"
+#include "../../business/models/ConfigurationFiles.h"
 #include <cstdint>
 #include <string>
 #include <functional>
@@ -11,7 +11,6 @@
 #include <filesystem>
 #include <partout/models/TaggedModule.h>
 #include "../platform/ConfigurationPicker.h"
-#include "../../business/models/ConfigurationFiles.h"
 
 class wxString;
 class wxWindow;

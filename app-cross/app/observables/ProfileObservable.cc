@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ProfileObservable.h"
-#include "../business/models/FileConfigurationFiles.h"
+#include "../business/models/ConfigurationFiles.h"
 #include <algorithm>
 #include <set>
 #include <stdexcept>

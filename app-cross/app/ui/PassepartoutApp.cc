@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "../business/models/FileConfigurationFiles.h"
+#include "../business/models/ConfigurationFiles.h"
 #include "PassepartoutApp.h"
 #include "../context/AppLogger.h"
 #include "app/MainView.h"
