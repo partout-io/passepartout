@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "../business/extensions/ModelsExtensions.h"
 #include "UserPreferencesObservable.h"
 #include <stdexcept>
 

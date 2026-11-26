@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../business/extensions/Credits.h"
+#include "../business/extensions/ModelsExtensions.h"
 #include "../business/strategy/HttpClient.h"
 #include "../business/extensions/BackgroundWorker.h"
 #include <map>

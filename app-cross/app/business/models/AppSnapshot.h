@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../extensions/TunnelInfo.h"
+#include "../extensions/ModelsExtensions.h"
 #include "AppProfileHeader.h"
 
 namespace Passepartout {

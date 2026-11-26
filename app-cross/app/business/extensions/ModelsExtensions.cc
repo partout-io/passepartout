@@ -2,7 +2,8 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "Profile.h"
+#include "ModelsExtensions.h"
+#include "partout.h"
 #include <algorithm>
 #include <cctype>
 #include <fstream>
@@ -63,12 +64,15 @@ double LastUpdate(const Passepartout::Profile &profile) {
 }
 }
 
-std::string Passepartout::ConfigurationName(const std::filesystem::path &path) {
+using Passepartout::Models::AppTunnelInfo;
+using Passepartout::Models::ProfileTransfer;
+
+std::string Passepartout::Profiles::ConfigurationName(const std::filesystem::path &path) {
     const auto name = path.stem().u8string();
     return std::string(reinterpret_cast<const char *>(name.data()), name.size());
 }
 
-bool Passepartout::IsSafeProfileId(const std::string &id) {
+bool Passepartout::Profiles::IsSafeId(const std::string &id) {
     auto upper = id;
     std::transform(upper.begin(), upper.end(), upper.begin(), [](unsigned char c) {
         return static_cast<char>(std::toupper(c));
@@ -83,7 +87,7 @@ bool Passepartout::IsSafeProfileId(const std::string &id) {
         });
 }
 
-void Passepartout::SortProfiles(std::vector<Profile> &profiles) {
+void Passepartout::Profiles::Sort(std::vector<Profile> &profiles) {
     std::sort(profiles.begin(), profiles.end(), [](const auto &a, const auto &b) {
         const auto left = LowerName(a.name);
         const auto right = LowerName(b.name);
@@ -95,12 +99,12 @@ void Passepartout::SortProfiles(std::vector<Profile> &profiles) {
     });
 }
 
-void Passepartout::ValidateProfileIdentity(const Profile &profile) {
-    if (!IsSafeProfileId(profile.id) || profile.name.empty())
+void Passepartout::Profiles::ValidateIdentity(const Profile &profile) {
+    if (!IsSafeId(profile.id) || profile.name.empty())
         throw std::runtime_error("The profile has an invalid identity or an empty name.");
 }
 
-std::string Passepartout::ReadConfiguration(const std::filesystem::path &path) {
+std::string Passepartout::Profiles::ReadConfiguration(const std::filesystem::path &path) {
     if (!std::filesystem::is_regular_file(path))
         throw std::runtime_error("The configuration is not a regular file.");
     std::ifstream input(path, std::ios::binary);
@@ -115,4 +119,67 @@ std::string Passepartout::ReadConfiguration(const std::filesystem::path &path) {
     if (content.find('\0') != std::string::npos)
         throw std::runtime_error("The configuration contains invalid text.");
     return content;
+}
+
+namespace Passepartout {
+Models::AppPreferences Preferences::Defaults() {
+    Models::AppPreferences preferences{};
+    preferences.dnsFallsBack = true;
+    preferences.cryptoBackend = PartoutCryptoMbedTLS;
+    return preferences;
+}
+}
+
+namespace Passepartout {
+Models::Platform::ePlatform Credits::CurrentPlatform() {
+#ifdef _WIN32
+    return Models::Platform::windows;
+#else
+    return Models::Platform::unixLike;
+#endif
+}
+
+void Credits::Filter(Models::Credits &credits, Models::Platform::ePlatform platform) {
+    auto &licenses = credits.licenses;
+    licenses.erase(std::remove_if(licenses.begin(), licenses.end(), [platform](const auto &license) {
+        return license.platforms && std::none_of(license.platforms->begin(), license.platforms->end(), [platform](const auto &value) {
+            return value.value == platform;
+        });
+    }), licenses.end());
+}
+}
+
+std::vector<AppTunnelInfo> Passepartout::Tunnels::Info(const std::vector<Partout::Models::TunnelSnapshot> &snapshots) {
+    std::vector<AppTunnelInfo> result;
+    for (const auto &snapshot : snapshots) {
+        AppTunnelInfo info{};
+        info.id = snapshot.id;
+        info.isEnabled = snapshot.isEnabled;
+        info.onDemand = snapshot.onDemand;
+        if (snapshot.environment) {
+            ProfileTransfer transfer{};
+            transfer.received = snapshot.environment->dataCount.received;
+            transfer.sent = snapshot.environment->dataCount.sent;
+            info.transfer = transfer;
+            info.lastErrorCode = snapshot.environment->lastErrorCode;
+        }
+        switch (snapshot.status.value) {
+            case Partout::Models::TunnelStatus::inactive:
+                info.status.value = Status::disconnected;
+                break;
+            case Partout::Models::TunnelStatus::activating:
+                info.status.value = Status::connecting;
+                break;
+            case Partout::Models::TunnelStatus::active:
+                info.status.value = Status::connected;
+                break;
+            case Partout::Models::TunnelStatus::deactivating:
+                info.status.value = Status::disconnecting;
+                break;
+            default:
+                throw std::runtime_error("Unknown tunnel status.");
+        }
+        result.push_back(std::move(info));
+    }
+    return result;
 }

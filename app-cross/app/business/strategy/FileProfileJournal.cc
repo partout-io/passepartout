@@ -16,7 +16,7 @@ FileProfileJournal::FileProfileJournal(std::filesystem::path directory)
 }
 
 std::filesystem::path FileProfileJournal::Path(const std::string &id) const {
-    if (!IsSafeProfileId(id)) throw std::runtime_error("Invalid transaction identity.");
+    if (!Profiles::IsSafeId(id)) throw std::runtime_error("Invalid transaction identity.");
     return directory_ / (id + ".json");
 }
 
@@ -27,7 +27,7 @@ std::vector<ProfileTransaction> FileProfileJournal::Fetch() {
         if (!entry.is_regular_file() || entry.is_symlink())
             throw std::runtime_error("Invalid transaction file.");
         try {
-            const auto json = Partout::Json::Parse(ReadConfiguration(entry.path()));
+            const auto json = Partout::Json::Parse(Profiles::ReadConfiguration(entry.path()));
             if (json.At("version") != 1) throw std::runtime_error("Invalid transaction version.");
             if (json.Value("committed", false)) continue;
             ProfileTransaction transaction;
@@ -35,7 +35,7 @@ std::vector<ProfileTransaction> FileProfileJournal::Fetch() {
             transaction.removal = json.At("removal").Get<bool>();
             if (!json.At("previous").IsNull()) {
                 transaction.previous = Profile::FromJson(json.At("previous"));
-                ValidateProfileIdentity(*transaction.previous);
+                Profiles::ValidateIdentity(*transaction.previous);
                 if (transaction.previous->id != transaction.id)
                     throw std::runtime_error("Conflicting transaction identity.");
             }
@@ -54,7 +54,7 @@ void FileProfileJournal::Save(const ProfileTransaction &transaction) {
         {"removal", transaction.removal}, {"previous", nullptr}};
     if (transaction.previous) json.Set("previous", transaction.previous->ToJson());
     const auto text = json.Encode();
-    if (text.size() > MaxConfigurationBytes) throw std::runtime_error("Profile recovery data exceeds 1 MiB.");
+    if (text.size() > Profiles::MaxConfigurationBytes) throw std::runtime_error("Profile recovery data exceeds 1 MiB.");
     AtomicFile::Write(Path(transaction.id), text);
 }
 

@@ -4,7 +4,7 @@
 
 #include "business/extensions/FileActivationInbox.h"
 #include "business/extensions/Paths.h"
-#include "business/models/Profile.h"
+#include "business/extensions/ModelsExtensions.h"
 #include <cassert>
 #include <iostream>
 #include "Support.h"
@@ -14,7 +14,7 @@ int main() {
     InitializeTests();
     const auto unicode_path = Paths::FromUtf8("folder/Café 日本語.ovpn");
     assert(Paths::FromUtf8("").empty());
-    assert(ConfigurationName(unicode_path) == "Café 日本語");
+    assert(Profiles::ConfigurationName(unicode_path) == "Café 日本語");
     const MemoryConfigurationFiles files({{"Café 日本語", "line 1\nline 2"}, {"Broken", std::string(1, '\xff')}});
     const auto message = FileActivationInbox::Encode("request-1", files);
     FileActivationInbox inbox;

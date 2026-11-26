@@ -621,7 +621,7 @@ int main() {
         const auto storage_root = root / "layout";
         FileProfileRepository storage(storage_root);
         assert(storage.Fetch().empty());
-        assert(Partout::Json::Parse(ReadConfiguration(storage_root / "index.json")).At("version") == 1);
+        assert(Partout::Json::Parse(Profiles::ReadConfiguration(storage_root / "index.json")).At("version") == 1);
         auto earlier = Example("earlier", "ALPHA");
         earlier.userInfo = {{"lastUpdate", 1}, {"fingerprint", "first"}};
         auto later = Example("later", "alpha");
@@ -631,7 +631,7 @@ int main() {
         storage.Save(later);
         assert(std::filesystem::exists(storage_root / "objects" / "later.json"));
         assert(storage.Fetch().at(0).id == "later");
-        auto index = Partout::Json::Parse(ReadConfiguration(storage_root / "index.json"));
+        auto index = Partout::Json::Parse(Profiles::ReadConfiguration(storage_root / "index.json"));
         assert(index.At("profiles").Elements().at(0).At("fingerprint") == "second");
         assert(index.At("profiles").Elements().at(0).At("lastUpdate") == "2");
         // A valid index defines fetch order, as on Android.

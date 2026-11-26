@@ -19,7 +19,7 @@ FileProfileRepository::FileProfileRepository(std::filesystem::path directory)
 }
 
 std::filesystem::path FileProfileRepository::ObjectPath(const std::string &id) const {
-    if (!IsSafeProfileId(id)) throw std::runtime_error("Invalid profile identifier.");
+    if (!Profiles::IsSafeId(id)) throw std::runtime_error("Invalid profile identifier.");
     return directory_ / (id + ".json");
 }
 
@@ -31,8 +31,8 @@ std::vector<Profile> FileProfileRepository::ReadObjects() {
         if (!entry.is_regular_file() || entry.is_symlink())
             throw std::runtime_error("Invalid entry in the profile store.");
         try {
-            auto profile = Profile::FromJson(Partout::Json::Parse(ReadConfiguration(entry.path())));
-            ValidateProfileIdentity(profile);
+            auto profile = Profile::FromJson(Partout::Json::Parse(Profiles::ReadConfiguration(entry.path())));
+            Profiles::ValidateIdentity(profile);
             const auto destination = ObjectPath(profile.id);
             if (destination.filename() != entry.path().filename())
                 throw std::runtime_error("Profile identity does not match its filename.");
@@ -44,7 +44,7 @@ std::vector<Profile> FileProfileRepository::ReadObjects() {
             throw std::runtime_error("Unable to read a saved profile. The original file was preserved.");
         }
     }
-    SortProfiles(profiles);
+    Profiles::Sort(profiles);
     return profiles;
 }
 
@@ -73,13 +73,13 @@ std::vector<Profile> FileProfileRepository::Fetch() {
     std::vector<std::string> ordered_ids;
     bool rebuild = false;
     try {
-        const auto index = Partout::Json::Parse(ReadConfiguration(root_ / "index.json"));
+        const auto index = Partout::Json::Parse(Profiles::ReadConfiguration(root_ / "index.json"));
         if (index.At("version") != 1 || !index.At("profiles").IsArray()) throw std::runtime_error("Invalid index");
         std::set<std::string> seen;
         for (const auto &entry : index.At("profiles").Elements()) {
             auto id = entry.At("id").Get<std::string>();
             entry.At("name").Get<std::string>();
-            if (!IsSafeProfileId(id) || !seen.insert(id).second) throw std::runtime_error("Invalid index identity");
+            if (!Profiles::IsSafeId(id) || !seen.insert(id).second) throw std::runtime_error("Invalid index identity");
             ordered_ids.push_back(std::move(id));
         }
     } catch (...) {
@@ -102,24 +102,24 @@ std::vector<Profile> FileProfileRepository::Fetch() {
 }
 
 void FileProfileRepository::Save(const Profile &profile) {
-    ValidateProfileIdentity(profile);
+    Profiles::ValidateIdentity(profile);
     auto profiles = ReadObjects();
     const auto path = ObjectPath(profile.id);
     if (std::filesystem::exists(path)) {
         try {
-            const auto previous = Profile::FromJson(Partout::Json::Parse(ReadConfiguration(path)));
+            const auto previous = Profile::FromJson(Partout::Json::Parse(Profiles::ReadConfiguration(path)));
             if (previous.id != profile.id) throw std::runtime_error("Conflicting profile identity");
         } catch (...) {
             throw std::runtime_error("The existing profile cannot be safely replaced.");
         }
     }
     const auto content = profile.ToJson().Encode();
-    if (content.size() > MaxConfigurationBytes)
+    if (content.size() > Profiles::MaxConfigurationBytes)
         throw std::runtime_error("The saved profile exceeds 1 MiB.");
     AtomicFile::Write(path, content);
     profiles.erase(std::remove_if(profiles.begin(), profiles.end(), [&](const auto &p) { return p.id == profile.id; }), profiles.end());
     profiles.push_back(profile);
-    SortProfiles(profiles);
+    Profiles::Sort(profiles);
     PersistIndex(profiles);
 }
 

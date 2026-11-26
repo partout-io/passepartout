@@ -5,7 +5,7 @@
 #include "business/strategy/FileProfileRepository.h"
 #include "business/strategy/FileProfileJournal.h"
 #include "business/strategy/FakeTunnelStrategy.h"
-#include "business/models/ProfileEditor.h"
+#include "business/managers/ProfileEditor.h"
 #include "business/models/InteractiveLogin.h"
 #include "observables/TunnelObservable.h"
 #include "observables/ProfileObservable.h"

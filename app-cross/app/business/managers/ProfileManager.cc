@@ -25,7 +25,7 @@ Profile ProfileManager::Import(const std::filesystem::path &path,
     std::function<void(const Profile &)> register_profile,
     std::function<void(const std::string &)> rollback_registration,
     std::function<void(const Profile &)> validate_registration) {
-    return ImportText(ReadConfiguration(path), ConfigurationName(path), std::move(register_profile),
+    return ImportText(Profiles::ReadConfiguration(path), Profiles::ConfigurationName(path), std::move(register_profile),
         std::move(rollback_registration), std::move(validate_registration));
 }
 
@@ -38,7 +38,7 @@ Profile ProfileManager::ImportText(const std::string &text, const std::string &n
         throw std::runtime_error("Invalid configuration content.");
     auto profile = importer_(text, name);
     if (profile.name.empty()) profile.name = name;
-    ValidateProfileIdentity(profile);
+    Profiles::ValidateIdentity(profile);
     RequireReady(profile.id);
     // An import must not silently replace an existing profile, especially one
     // currently in use. Explicit replacement can be added as a separate action.
@@ -48,7 +48,7 @@ Profile ProfileManager::ImportText(const std::string &text, const std::string &n
     // Prepare the published collection before any external side effects.
     auto committed = profiles_;
     committed.push_back(profile);
-    SortProfiles(committed);
+    Profiles::Sort(committed);
     if (validate_registration) validate_registration(profile);
     journal_->Save({profile.id, std::nullopt, false});
     try {
@@ -106,14 +106,14 @@ void ProfileManager::Update(const Profile &original, const Profile &replacement,
     RequireReady(original.id);
     if (original.id != replacement.id || Find(original.id) != original)
         throw std::runtime_error("The profile changed while it was being edited.");
-    ValidateProfileIdentity(replacement);
+    Profiles::ValidateIdentity(replacement);
     if (original == replacement) throw std::runtime_error("The profile has no changes.");
     validate_registration(original);
     auto committed = profiles_;
     for (auto &profile : committed) {
         if (profile.id == replacement.id) profile = replacement;
     }
-    SortProfiles(committed);
+    Profiles::Sort(committed);
     const ProfileTransaction transaction{original.id, original, false};
     journal_->Save(transaction);
     try {

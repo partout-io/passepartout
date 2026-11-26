@@ -2,12 +2,13 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "../app/business/extensions/ModelsExtensions.h"
 #include "business/strategy/FilePreferencesRepository.h"
 #include "business/managers/ConfigManager.h"
 #include "business/managers/VersionChecker.h"
 #include "business/managers/IssueReporter.h"
 #include "business/extensions/AppLogger.h"
-#include "business/models/Profile.h"
+#include "business/extensions/ModelsExtensions.h"
 #include "observables/UserPreferencesObservable.h"
 #include "observables/ConfigObservable.h"
 #include "observables/CreditsObservable.h"
@@ -213,8 +214,8 @@ int main() {
         IssueReporter reporter("test@example.invalid", "0.1.0.7", [&](const IssueReport &report) {
             assert(report.comment == "Unicode: café 日本語" && report.attachments.size() == 2);
             attachment = report.attachments.back();
-            assert(ReadConfiguration(attachment).find("public marker") != std::string::npos);
-            assert(ReadConfiguration(attachment).find("private marker") == std::string::npos);
+            assert(Profiles::ReadConfiguration(attachment).find("public marker") != std::string::npos);
+            assert(Profiles::ReadConfiguration(attachment).find("private marker") == std::string::npos);
             return false; // No mail provider; preparation still cleans up.
         });
         assert(!reporter.Report("Unicode: café 日本語", AppLogger::RuntimeLog(false)));

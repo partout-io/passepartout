@@ -2,9 +2,10 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "../extensions/ModelsExtensions.h"
 #include "FilePreferencesRepository.h"
 #include "../extensions/AtomicFile.h"
-#include "../models/Profile.h"
+#include "../extensions/ModelsExtensions.h"
 
 namespace Passepartout {
 FilePreferencesRepository::FilePreferencesRepository(std::filesystem::path path) : path_(std::move(path)) {
@@ -14,7 +15,7 @@ FilePreferencesRepository::FilePreferencesRepository(std::filesystem::path path)
 Models::AppPreferences FilePreferencesRepository::Fetch() {
     auto defaults = Preferences::Defaults();
     if (!std::filesystem::exists(path_)) return defaults;
-    const auto data = Partout::Json::Parse(ReadConfiguration(path_));
+    const auto data = Partout::Json::Parse(Profiles::ReadConfiguration(path_));
     if (!data.IsObject()) throw std::runtime_error("Invalid preferences.");
     auto merged = defaults.ToJson();
     merged.Merge(data);

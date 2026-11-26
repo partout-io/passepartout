@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../models/Profile.h"
+#include "ModelsExtensions.h"
 #include <partout/models/ABIEnvelope.h>
 #include <stdexcept>
 

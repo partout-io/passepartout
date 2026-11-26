@@ -103,6 +103,13 @@ unrelated refactoring; keep changes within the task's scope.
   never reference `nlohmann` types, operations, or exceptions from application code.
   Extend the shared wrapper or generated model API when an operation is missing,
   rather than exposing the serialization backend or adding application aliases.
+- In app-cross, consolidate business-level extensions of generated `::Models`
+  types in `app/business/extensions/ModelsExtensions.h` and `.cc`. Keep their
+  domain namespaces, such as `Passepartout::Profiles` and
+  `Passepartout::Preferences`, and omit redundant domain words from function
+  names. Keep these helpers out of repository interfaces and generated models.
+  Presentation helpers that depend on UI formatting or toolkit APIs remain in
+  the UI layer; do not introduce UI dependencies into business extensions.
 - Keep responsibilities separated: domain models define contracts; managers own
   business rules; repositories and strategies provide replaceable mechanisms;
   observables expose UI state and actions; context assembles dependencies; Theme

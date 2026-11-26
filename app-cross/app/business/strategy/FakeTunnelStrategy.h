@@ -4,7 +4,7 @@
 
 #pragma once
 #include <partout/tunnel/TunnelStrategy.h>
-#include "../models/Profile.h"
+#include "../extensions/ModelsExtensions.h"
 
 namespace Passepartout {
 // A deterministic development dependency; never selected silently in production.

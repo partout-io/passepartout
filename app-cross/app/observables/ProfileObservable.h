@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../business/models/AppSnapshot.h"
-#include "../business/models/ProfileEditor.h"
+#include "../business/managers/ProfileEditor.h"
 #include "../business/models/ConfigurationFiles.h"
 
 namespace Passepartout {

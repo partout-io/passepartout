@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ConfigurationFiles.h"
-#include "Profile.h"
+#include "../extensions/ModelsExtensions.h"
 
 namespace Passepartout {
 std::size_t ConfigurationFiles::Count() const {
@@ -12,7 +12,7 @@ std::size_t ConfigurationFiles::Count() const {
 
 ConfigurationSource ConfigurationFiles::Read(std::size_t index) const {
     const auto &path = paths.at(index);
-    return {ConfigurationName(path), ReadConfiguration(path)};
+    return {Profiles::ConfigurationName(path), Profiles::ReadConfiguration(path)};
 }
 
 MemoryConfigurationFiles::MemoryConfigurationFiles(std::vector<ConfigurationSource> values, std::size_t failures)

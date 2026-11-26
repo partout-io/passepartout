@@ -4,7 +4,7 @@
 
 #pragma once
 #include "../models/AppSnapshot.h"
-#include "../models/ProfileEditor.h"
+#include "ProfileEditor.h"
 #include "ProfileManager.h"
 #include <partout/tunnel/Tunnel.h>
 #include "../extensions/AppLogger.h"
