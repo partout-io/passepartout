@@ -28,10 +28,13 @@ extension AppCoordinatorConforming {
                     }
                 }
             case .interactiveLogin:
-                onInteractiveLogin(profile) { newProfile in
+                onInteractiveLogin(profile) { login in
                     Task {
-                        // Force to not re-present the interactive login
-                        await onConnect(newProfile, force: true, verify: verify)
+                        do {
+                            try await tunnel.connect(with: login)
+                        } catch {
+                            onError(error, profile: login.original)
+                        }
                     }
                 }
             default:

@@ -5,6 +5,7 @@
 package com.algoritmico.passepartout.observables
 
 import android.content.Intent
+import com.algoritmico.passepartout.business.models.InteractiveLogin
 import com.algoritmico.passepartout.context.AppLog
 import androidx.datastore.preferences.core.Preferences
 import com.algoritmico.passepartout.PassepartoutVpnService
@@ -77,6 +78,10 @@ class TunnelObservable(
         profileManager.events
             .onEach(::onUpdate)
             .launchIn(scope)
+    }
+
+    suspend fun connect(login: InteractiveLogin) {
+        connect(login.connectionProfile(), force = true)
     }
 
     suspend fun connect(profile: TaggedProfile, force: Boolean = false) {
