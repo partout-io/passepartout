@@ -15,7 +15,7 @@
 #include "DiagnosticsObservable.h"
 
 namespace Passepartout {
-class AppLogger;
+class AppLog;
 class AppContext final {
 public:
     const Models::AppConstants constants;
@@ -23,7 +23,7 @@ public:
     const std::string application_version;
     const std::unique_ptr<WireGuardKeyGenerator> wire_guard_keys;
 private:
-    std::shared_ptr<AppLogger> logger_;
+    std::shared_ptr<AppLog> logger_;
     SerialExecutor executor_;
 public:
     AppContext(const std::filesystem::path &data_root, bool demo,

@@ -70,7 +70,7 @@ set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/GitHubReleaseStrategy.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/OfflineHttpClient.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/PartoutWireGuardKeyGenerator.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/app/context/AppLogger.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/context/AppLog.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/context/ContextExtensions.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/BackgroundWorker.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/ConfigObservable.cc"

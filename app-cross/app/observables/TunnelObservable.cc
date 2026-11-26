@@ -15,7 +15,7 @@ bool TunnelObservable::State::HasActivity() const {
 }
 
 TunnelObservable::TunnelObservable(SerialExecutor &executor, std::unique_ptr<Partout::Tunnel> tunnel,
-                                   std::shared_ptr<AppLogger> logger,
+                                   std::shared_ptr<AppLog> logger,
                                    std::function<void(const Models::AppPreferences &)> apply_preferences
 ) : executor_(executor), tunnel_(std::move(tunnel)), logger_(std::move(logger)),
     apply_preferences_(std::move(apply_preferences)) {

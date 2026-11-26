@@ -6,7 +6,7 @@
 #include "AppProfileHeader.h"
 #include "../business/managers/ProfileManager.h"
 #include "../business/strategy/ConfigurationFiles.h"
-#include "../context/AppLogger.h"
+#include "../context/AppLog.h"
 #include "SerialExecutor.h"
 #include "ProfileEditor.h"
 
@@ -24,7 +24,7 @@ public:
     };
     using ChangeHandler = std::function<void(std::vector<Profile>, bool)>;
     ProfileObservable(SerialExecutor &executor, std::unique_ptr<ProfileManager> manager,
-                      std::shared_ptr<AppLogger> logger
+                      std::shared_ptr<AppLog> logger
     );
     // Publishes initial state and subsequent results on the shared executor.
     void OnChange(ChangeHandler handler);
@@ -46,7 +46,7 @@ private:
     void Publish();
     SerialExecutor &executor_;
     std::unique_ptr<ProfileManager> manager_;
-    std::shared_ptr<AppLogger> logger_;
+    std::shared_ptr<AppLog> logger_;
     mutable std::mutex mutex_;
     State snapshot_;
     std::vector<Profile> published_profiles_;

@@ -6,7 +6,7 @@
 
 namespace Passepartout::Tests {
 ObservableFixture::ObservableFixture(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
-                                     std::unique_ptr<Partout::Tunnel> backend, std::shared_ptr<AppLogger> logger,
+                                     std::unique_ptr<Partout::Tunnel> backend, std::shared_ptr<AppLog> logger,
                                      std::function<void(const Models::AppPreferences &)> apply_preferences
 ) : profiles(executor, std::make_unique<ProfileManager>(std::move(repository), std::move(importer)), logger),
     tunnel(executor, std::move(backend), std::move(logger), std::move(apply_preferences)) {

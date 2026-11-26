@@ -10,7 +10,7 @@
 #include "business/managers/VersionChecker.h"
 #include "observables/IssueReporter.h"
 #include "SettingsResources.h"
-#include "context/AppLogger.h"
+#include "context/AppLog.h"
 #include "business/extensions/Models+Business.h"
 #include "observables/UserPreferencesObservable.h"
 #include "observables/ConfigObservable.h"
@@ -283,7 +283,7 @@ int main() {
         Models::AppConstants_github github_constants;
         github_constants.issuesURL = "https://example.invalid/issues";
         std::string changelog_log;
-        auto changelog_logger = std::make_shared<AppLogger>([&](auto, auto, const std::string &message) {
+        auto changelog_logger = std::make_shared<AppLog>([&](auto, auto, const std::string &message) {
             changelog_log = message;
         });
         VersionObservable changelog(std::make_unique<VersionChecker>("1.0.0.7", std::move(changelog_strategy),
@@ -350,14 +350,14 @@ int main() {
         assert(unix_credits.Snapshot().licenses.size() == 2);
         assert(unix_credits.Snapshot().licenses[0].name == "Common");
         assert(unix_credits.Snapshot().licenses[1].name == "Unix");
-        AppLogger logger;
-        AppLogger::SetPrivateData(false);
+        AppLog logger;
+        AppLog::SetPrivateData(false);
         logger.Write(LogLevel::info, LogCategory::core, "public marker");
-        AppLogger::SetPrivateData(true);
+        AppLog::SetPrivateData(true);
         logger.Write(LogLevel::info, LogCategory::core, "private marker");
-        AppLogger::SetPrivateData(false);
-        assert(AppLogger::RuntimeLog().find("private marker") != std::string::npos);
-        assert(AppLogger::RuntimeLog(false).find("private marker") == std::string::npos);
+        AppLog::SetPrivateData(false);
+        assert(AppLog::RuntimeLog().find("private marker") != std::string::npos);
+        assert(AppLog::RuntimeLog(false).find("private marker") == std::string::npos);
         Models::Issue issue;
         issue.comment = "café 日本語 $osLine";
         issue.osLine = "Test OS";
@@ -382,7 +382,7 @@ int main() {
             assert(attachment.content.find("private marker") == std::string::npos);
             return false; // No mail provider.
         });
-        assert(!reporter.Report("Unicode: café 日本語 $osLine", AppLogger::RuntimeLog(false)));
+        assert(!reporter.Report("Unicode: café 日本語 $osLine", AppLog::RuntimeLog(false)));
     } catch (const std::exception &error) {
         std::cerr << error.what() << std::endl;
         std::filesystem::remove_all(directory);

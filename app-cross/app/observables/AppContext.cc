@@ -76,10 +76,10 @@ void ApplyLoggingPreferences(const Passepartout::Models::AppPreferences &prefere
     partout_init_args init{};
     init.log_level = PartoutLogLevelDebug;
     init.logs_private_data = preferences.logsPrivateData;
-    init.logger_fn = Passepartout::AppLogger::PartoutMessage;
-    if (preferences.logsPrivateData) Passepartout::AppLogger::SetPrivateData(true);
+    init.logger_fn = Passepartout::AppLog::PartoutMessage;
+    if (preferences.logsPrivateData) Passepartout::AppLog::SetPrivateData(true);
     partout_init(&init);
-    if (!preferences.logsPrivateData) Passepartout::AppLogger::SetPrivateData(false);
+    if (!preferences.logsPrivateData) Passepartout::AppLog::SetPrivateData(false);
 }
 }
 
@@ -91,7 +91,7 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
     : constants(std::move(app_constants)), cross_constants(std::move(frontend_constants)),
       application_version(cross_constants.app.version_number),
       wire_guard_keys(std::make_unique<PartoutWireGuardKeyGenerator>()),
-      logger_(std::make_shared<AppLogger>()),
+      logger_(std::make_shared<AppLog>()),
       profiles(executor_, std::make_unique<ProfileManager>(std::make_unique<FileProfileRepository>(
           Profiles::Directory(data_root, constants)), ImportProfile), logger_),
       tunnel(executor_, MakeTunnel(demo, cross_constants), logger_, ApplyLoggingPreferences),

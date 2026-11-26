@@ -5,7 +5,7 @@
 #pragma once
 #include "../business/managers/VersionChecker.h"
 #include "BackgroundWorker.h"
-#include "../context/AppLogger.h"
+#include "../context/AppLog.h"
 #include "AppConstants_github.h"
 
 namespace Passepartout {
@@ -26,7 +26,7 @@ public:
         bool operation_failed = false;
     };
     VersionObservable(std::unique_ptr<VersionChecker> checker, std::string current, std::string build,
-                      Models::AppConstants_github github, std::shared_ptr<AppLogger> logger
+                      Models::AppConstants_github github, std::shared_ptr<AppLog> logger
     );
     ~VersionObservable();
     State Snapshot() const;
@@ -39,7 +39,7 @@ private:
     State state_;
     const std::string build_;
     const Models::AppConstants_github github_;
-    const std::shared_ptr<AppLogger> logger_;
+    const std::shared_ptr<AppLog> logger_;
     BackgroundWorker worker_;
 };
 }

@@ -11,7 +11,7 @@
 
 namespace Passepartout {
 ProfileObservable::ProfileObservable(SerialExecutor &executor, std::unique_ptr<ProfileManager> manager,
-                                     std::shared_ptr<AppLogger> logger
+                                     std::shared_ptr<AppLog> logger
 ) : executor_(executor), manager_(std::move(manager)), logger_(std::move(logger)) {
 }
 

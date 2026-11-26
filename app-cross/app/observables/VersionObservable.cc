@@ -8,7 +8,7 @@
 
 namespace Passepartout {
 VersionObservable::VersionObservable(std::unique_ptr<VersionChecker> checker, std::string current, std::string build,
-                                     Models::AppConstants_github github, std::shared_ptr<AppLogger> logger
+                                     Models::AppConstants_github github, std::shared_ptr<AppLog> logger
 )
     : checker_(std::move(checker)), build_(std::move(build)), github_(std::move(github)), logger_(std::move(logger)), worker_([this] {
         checker_->Cancel();

@@ -312,7 +312,7 @@ void TestPreferencesRetry(const std::filesystem::path &root) {
     auto strategy = std::make_unique<ControlledTunnel>();
     auto *backend = strategy.get();
     Passepartout::Tests::ObservableFixture session(std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)),
-        std::make_shared<Passepartout::AppLogger>(), [backend](const auto &preferences) { backend->ApplyPreferences(preferences); });
+        std::make_shared<Passepartout::AppLog>(), [backend](const auto &preferences) { backend->ApplyPreferences(preferences); });
     Wait(session);
     backend->events.clear();
     backend->fail_preferences = true;
@@ -878,7 +878,7 @@ int main() {
 
         // Record background errors once, preserve actual availability on cleanup failure, and log recovery/shutdown.
         std::vector<std::string> messages;
-        auto logger = std::make_shared<AppLogger>([&](LogLevel, LogCategory, const std::string &message) {
+        auto logger = std::make_shared<AppLog>([&](LogLevel, LogCategory, const std::string &message) {
             messages.push_back(message);
         });
         {

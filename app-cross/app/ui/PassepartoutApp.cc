@@ -4,7 +4,7 @@
 
 #include "../business/strategy/ConfigurationFiles.h"
 #include "PassepartoutApp.h"
-#include "../context/AppLogger.h"
+#include "../context/AppLog.h"
 #include "app/MainView.h"
 #include "extensions/Models+UI.h"
 #include "platform/Presentation.h"
@@ -28,7 +28,7 @@ bool PassepartoutApp::OnInit() {
     // Configure native appearance, localization, and application identity.
     UseSystemAppearance(*this);
     wxUILocale::UseDefault();
-    AppLogger startup_logger;
+    AppLog startup_logger;
     startup_logger.Write(LogLevel::info, LogCategory::core, "Start application");
     SetAppName(wxString::FromUTF8(CrossConstants.app.name));
 
@@ -67,7 +67,7 @@ bool PassepartoutApp::OnInit() {
     partout_init_args init{};
     init.log_level = PartoutLogLevelDebug;
     init.logs_private_data = false;
-    init.logger_fn = AppLogger::PartoutMessage;
+    init.logger_fn = AppLog::PartoutMessage;
     partout_init(&init);
     const char *stage = "creating application context";
     try {
