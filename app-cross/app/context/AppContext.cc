@@ -4,11 +4,11 @@
 
 #include "../business/extensions/AppConstantsExtensions.h"
 #include "AppContext.h"
-#include "../context/AppLog.h"
+#include "AppLog.h"
 #include "../business/strategy/GitHubReleaseStrategy.h"
 #include "../business/strategy/GitHubConfigStrategy.h"
 #include "../business/strategy/PartoutWireGuardKeyGenerator.h"
-#include "../context/ContextExtensions.h"
+#include "ContextExtensions.h"
 #include "../business/managers/ProfileManager.h"
 #include "../business/strategy/FileProfileRepository.h"
 #include "SettingsResources.h"

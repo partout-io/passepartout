@@ -76,7 +76,7 @@ if(WIN32)
         ../app/ui/platform/WindowsConfigurationPicker.cc
         ../app/ui/platform/FileActivation.cc
         ../app/business/platform/WindowsHttpClient.cc
-        ../app/ui/platform/WindowsIssueHandoff.cc)
+        ../app/context/platform/WindowsIssueHandoff.cc)
     target_link_libraries(passepartout-windows-integration-check PRIVATE
         passepartout-core Partout::Headers)
     target_compile_features(passepartout-windows-integration-check PRIVATE cxx_std_20)

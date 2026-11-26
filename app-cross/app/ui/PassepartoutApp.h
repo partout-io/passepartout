@@ -5,7 +5,7 @@
 #pragma once
 #include <wx/wx.h>
 #include <wx/snglinst.h>
-#include "../observables/AppContext.h"
+#include "../context/AppContext.h"
 #include "platform/FileActivation.h"
 
 class PassepartoutApp final : public wxApp {

@@ -4,20 +4,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CORE_FOLDERS = {"business", "context", "observables"}
-# Composition needs UI adapters; the native issue handoff itself has no wx dependency.
-TARGET_OVERRIDES = {
-    "app/observables/AppContext.cc": "APP_SOURCES",
-    "app/ui/platform/WindowsIssueHandoff.cc": "CORE_SOURCES",
-}
 PLATFORMS = {"Windows": "WIN32", "POSIX": "NOT WIN32"}
 
 
 def classify(path):
     if path.parts[0] == "models":
         return "MODEL_SOURCES", None
-    target = TARGET_OVERRIDES.get(path.as_posix())
-    if target is None:
-        target = "CORE_SOURCES" if path.parts[1] in CORE_FOLDERS else "APP_SOURCES"
+    target = "CORE_SOURCES" if path.parts[1] in CORE_FOLDERS else "APP_SOURCES"
     condition = None
     if path.parent.name == "platform":
         condition = next((value for prefix, value in PLATFORMS.items()

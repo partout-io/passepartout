@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../../observables/AppContext.h"
+#include "../../context/AppContext.h"
 #include "../platform/ConfigurationPicker.h"
 #include "../theme/Theme.h"
 #include "../platform/MainFrame.h"
