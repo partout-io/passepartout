@@ -2,10 +2,9 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "../business/extensions/AppConstantsExtensions.h"
 #include "VersionObservable.h"
+#include "../business/extensions/AppConstantsExtensions.h"
 #include "../context/AppLog.h"
-#include "../business/extensions/Models+Business.h"
 #include <chrono>
 
 namespace Passepartout {
@@ -19,7 +18,6 @@ VersionObservable::VersionObservable(std::unique_ptr<VersionChecker> checker, st
     state_.available = checker_->Available();
     state_.release = checker_->Snapshot();
 }
-
 
 VersionObservable::State VersionObservable::Snapshot() const {
     std::lock_guard lock(mutex_);
