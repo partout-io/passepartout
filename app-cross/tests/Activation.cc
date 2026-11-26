@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "business/platform/FileActivationInbox.h"
-#include "business/extensions/ModelsExtensions.h"
-#include "business/extensions/ModelsExtensions.h"
+#include "business/extensions/Models+Business.h"
+#include "business/extensions/Models+Business.h"
 #include <cassert>
 #include <iostream>
 #include "Support.h"

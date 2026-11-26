@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../extensions/ModelsExtensions.h"
+#include "../extensions/Models+Business.h"
 
 namespace Passepartout {
 struct InteractiveLogin {

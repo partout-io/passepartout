@@ -4,7 +4,7 @@
 
 #include "ContextExtensions.h"
 #include "AppConstantsResource.h"
-#include "../business/extensions/ModelsExtensions.h"
+#include "../business/extensions/Models+Business.h"
 #include <algorithm>
 #include <cctype>
 #include <stdexcept>

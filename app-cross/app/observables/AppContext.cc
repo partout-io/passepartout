@@ -13,7 +13,7 @@
 #include "../business/platform/WindowsHttpClient.h"
 #include "../ui/platform/WindowsIssueHandoff.h"
 #include "SettingsResources.h"
-#include "../business/extensions/ModelsExtensions.h"
+#include "../business/extensions/Models+Business.h"
 #include "partout.h"
 #ifdef _WIN32
 #include <partout/winrt/WinRTTunnelStrategy.h>

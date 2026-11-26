@@ -4,7 +4,7 @@
 
 #include "business/managers/ProfileManager.h"
 #include "business/strategy/FileProfileRepository.h"
-#include "business/extensions/ModelsExtensions.h"
+#include "business/extensions/Models+Business.h"
 #include "context/ContextExtensions.h"
 #include "context/ContextExtensions.h"
 #include <partout/tunnel/Tunnel.h>

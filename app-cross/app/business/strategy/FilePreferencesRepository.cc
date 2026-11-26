@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "../extensions/ModelsExtensions.h"
+#include "../extensions/Models+Business.h"
 #include "FilePreferencesRepository.h"
 
 namespace Passepartout {

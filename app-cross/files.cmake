@@ -52,7 +52,7 @@ if(WIN32)
     )
 endif()
 set(CORE_SOURCES
-    "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/ModelsExtensions.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/extensions/Models+Business.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/AppSession.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ConfigManager.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/managers/ProfileManager.cc"

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "Models+UI.h"
-#include "../../business/extensions/ModelsExtensions.h"
+#include "../../business/extensions/Models+Business.h"
 #include "../../strings/Strings.h"
 #include "../../strings/Unlocalized.h"
 #include <wx/string.h>

@@ -8,7 +8,7 @@
 #include "observables/IssueReporter.h"
 #include "SettingsResources.h"
 #include "context/AppLogger.h"
-#include "business/extensions/ModelsExtensions.h"
+#include "business/extensions/Models+Business.h"
 #include "observables/UserPreferencesObservable.h"
 #include "observables/ConfigObservable.h"
 #include "observables/CreditsObservable.h"

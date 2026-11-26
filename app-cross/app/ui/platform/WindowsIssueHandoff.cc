@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "WindowsIssueHandoff.h"
-#include "../../business/extensions/ModelsExtensions.h"
+#include "../../business/extensions/Models+Business.h"
 #include "SettingsResources.h"
 #include <random>
 #include <stdexcept>

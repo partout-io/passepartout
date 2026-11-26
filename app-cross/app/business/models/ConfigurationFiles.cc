@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ConfigurationFiles.h"
-#include "../extensions/ModelsExtensions.h"
+#include "../extensions/Models+Business.h"
 
 namespace Passepartout {
 std::size_t ConfigurationFiles::Count() const {
