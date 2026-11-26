@@ -4,6 +4,7 @@
 
 #pragma once
 #include "ProfileObservable.h"
+#include <functional>
 #include "TunnelObservable.h"
 #include "../context/ContextExtensions.h"
 #include "../context/CrossConstants.h"
@@ -29,7 +30,9 @@ private:
 public:
     AppContext(const std::filesystem::path &data_root, bool demo,
                Models::AppConstants constants = Constants::Load(),
-               CrossConstants cross_constants = DefaultCrossConstants);
+               CrossConstants cross_constants = DefaultCrossConstants,
+               std::function<void(const Models::AppPreferences &)> store_preferences = {}
+    );
     ~AppContext();
     ProfileObservable profiles;
     TunnelObservable tunnel;

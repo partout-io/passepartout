@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+
 namespace Passepartout {
-inline constexpr const wchar_t TunnelPreferencesKey[] = L"tunnel.preferences";
+inline constexpr const wchar_t AppPreferencesStorageKey[] = L"tunnel.preferences";
 }

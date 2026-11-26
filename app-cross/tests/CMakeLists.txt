@@ -70,7 +70,7 @@ if(WIN32)
     # Compile adapters without wxWidgets independently of the desktop application.
     # WindowsURLLauncher owns a wxWindow and is compiled with the application.
     add_library(passepartout-windows-integration-check OBJECT
-        ../app/business/platform/WindowsTunnelPreferences.cc
+        ../app/business/platform/WindowsPreferencesStorage.cc
         ../app/ui/platform/WindowsConfigurationPicker.cc
         ../app/ui/platform/FileActivation.cc
         ../app/business/platform/WindowsHttpClient.cc

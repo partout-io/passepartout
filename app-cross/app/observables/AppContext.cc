@@ -10,7 +10,6 @@
 #include "../business/strategy/FileProfileJournal.h"
 #include "../business/strategy/FakeTunnelStrategy.h"
 #include "../business/strategy/FilePreferencesRepository.h"
-#include "../business/platform/WindowsTunnelPreferences.h"
 #include "../business/platform/WindowsHttpClient.h"
 #include "../ui/platform/WindowsIssueHandoff.h"
 #include "SettingsResources.h"
@@ -88,20 +87,23 @@ std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const Passepartout::Cross
 #endif
 }
 
-std::function<void(const Passepartout::Models::AppPreferences &)> TunnelPreferences(bool demo) {
-#ifdef _WIN32
-    if (!demo) return [](const auto &preferences) {
-        Passepartout::Windows::Tunnel::ApplyPreferences(preferences);
-    };
-#endif
-    return {};
+void ApplyLoggingPreferences(const Passepartout::Models::AppPreferences &preferences) {
+    partout_init_args init{};
+    init.log_level = PartoutLogLevelDebug;
+    init.logs_private_data = preferences.logsPrivateData;
+    init.logger_fn = Passepartout::AppLogger::PartoutMessage;
+    if (preferences.logsPrivateData) Passepartout::AppLogger::SetPrivateData(true);
+    partout_init(&init);
+    if (!preferences.logsPrivateData) Passepartout::AppLogger::SetPrivateData(false);
 }
 }
 
 using Passepartout::AppContext;
 
 AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
-                       Models::AppConstants app_constants, CrossConstants frontend_constants)
+                       Models::AppConstants app_constants, CrossConstants frontend_constants,
+                       std::function<void(const Models::AppPreferences &)> store_preferences
+)
     : constants(std::move(app_constants)), cross_constants(std::move(frontend_constants)),
       application_version(ApplicationVersion()),
       wire_guard_keys(std::make_unique<PartoutWireGuardKeyGenerator>()),
@@ -110,7 +112,11 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
           Profiles::Directory(data_root, constants, cross_constants, demo)),
           ImportProfile, MakeTunnel(demo, cross_constants), logger_,
           std::make_unique<FileProfileJournal>(Profiles::Directory(data_root, constants, cross_constants, demo) / "transactions"),
-          std::chrono::seconds(1), TunnelPreferences(demo))),
+          std::chrono::seconds(1),
+          [store = std::move(store_preferences)](const Models::AppPreferences &value) {
+              if (store) store(value);
+              ApplyLoggingPreferences(value);
+          })),
       profiles(*session_), tunnel(*session_),
       preferences(std::make_unique<FilePreferencesRepository>(
           Profiles::Directory(data_root, constants, cross_constants, demo) / "preferences.json"), [this] {

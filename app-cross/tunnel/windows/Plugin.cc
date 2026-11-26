@@ -6,7 +6,7 @@
 #include "TunnelDefaults.h"
 #include "AppPreferences.h"
 #include <partout/Json.h>
-#include "../Preferences.h"
+#include "../../app/context/PreferencesStorageKey.h"
 
 #include <atomic>
 #include <memory>
@@ -179,7 +179,7 @@ struct ChannelSession {
         const auto profile = ReadProfile(channel);
         const auto values = winrt::Windows::Storage::ApplicationData::Current().LocalSettings().Values();
         const auto encoded_preferences = winrt::unbox_value<winrt::hstring>(
-            values.Lookup(Passepartout::TunnelPreferencesKey)
+            values.Lookup(Passepartout::AppPreferencesStorageKey)
         );
         const auto preferences = Passepartout::Models::AppPreferences::FromJson(
             Partout::Json::Parse(winrt::to_string(encoded_preferences))
