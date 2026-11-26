@@ -5,7 +5,6 @@
 package com.algoritmico.passepartout
 
 import com.algoritmico.passepartout.business.models.InteractiveLogin
-import io.partout.extensions.encodedPassword
 import io.partout.extensions.interactiveModule
 import io.partout.extensions.isInteractive
 import io.partout.extensions.withInteractiveLogin
@@ -42,11 +41,20 @@ class ProfileExtensionsUnitTest {
             val expected = if (method == OpenVPNCredentialsOTPMethod.none) {
                 "123456"
             } else {
-                method.encodedPassword("saved-secret", "123456")
+                "saved-secret"
             }
             assertEquals(expected, prepared?.credentials?.password)
             assertEquals("saved-secret", original.interactiveOpenVPNModule()?.credentials?.password)
-            assertEquals("", InteractiveLogin(original).password)
+            val restored = tunnelJson.decodeFromString<TaggedProfile>(tunnelJson.encodeToString(login.connectionProfile()))
+            val repeated = InteractiveLogin(restored)
+            assertEquals("", repeated.password)
+            assertEquals(method != OpenVPNCredentialsOTPMethod.none, repeated.needsOTP)
+            repeated.password = "654321"
+            val next = repeated.connectionProfile().interactiveOpenVPNModule()?.credentials
+            assertEquals(method, next?.otpMethod)
+            assertEquals(if (repeated.needsOTP) "saved-secret" else "654321", next?.password)
+            assertEquals(if (repeated.needsOTP) "654321" else null, next?.otp)
+            assertEquals(if (repeated.needsOTP) "123456" else null, prepared?.credentials?.otp)
         }
     }
 
@@ -64,7 +72,8 @@ class ProfileExtensionsUnitTest {
         assertEquals("", login.password)
         login.password = "123456"
         val prepared = login.connectionProfile().interactiveOpenVPNModule()
-        assertEquals("secret123456", prepared?.credentials?.password)
+        assertEquals("secret", prepared?.credentials?.password)
+        assertEquals("123456", prepared?.credentials?.otp)
         assertEquals("secret", original.interactiveOpenVPNModule()?.credentials?.password)
         assertEquals(OpenVPNCredentialsOTPMethod.append, original.interactiveOpenVPNModule()?.credentials?.otpMethod)
     }
@@ -98,7 +107,7 @@ class ProfileExtensionsUnitTest {
     }
 
     @Test
-    fun withInteractiveLogin_encodesOTPForAuthentication() {
+    fun withInteractiveLogin_preservesRawOTPForAuthentication() {
         val profile = openVPNProfile(
             module = OpenVPNModule(
                 id = MODULE_ID,
@@ -116,20 +125,20 @@ class ProfileExtensionsUnitTest {
         )
 
         val updated = profile.withInteractiveLogin(
-            username = "ignored-username",
+            username = "entered-username",
             password = "ignored-password",
             otp = "123456"
         )
         val credentials = updated.interactiveOpenVPNModule()?.credentials
 
-        assertEquals("saved-username", credentials?.username)
-        assertEquals("saved-password123456", credentials?.password)
-        assertEquals(OpenVPNCredentialsOTPMethod.none, credentials?.otpMethod)
-        assertEquals(null, credentials?.otp)
+        assertEquals("entered-username", credentials?.username)
+        assertEquals("saved-password", credentials?.password)
+        assertEquals(OpenVPNCredentialsOTPMethod.append, credentials?.otpMethod)
+        assertEquals("123456", credentials?.otp)
     }
 
     @Test
-    fun withInteractiveLogin_encodesSCRV1OTPForAuthentication() {
+    fun withInteractiveLogin_preservesRawSCRV1OTPForAuthentication() {
         val profile = openVPNProfile(
             module = OpenVPNModule(
                 id = MODULE_ID,
@@ -147,38 +156,43 @@ class ProfileExtensionsUnitTest {
         )
 
         val updated = profile.withInteractiveLogin(
-            username = "ignored-username",
+            username = "entered-username",
             password = "ignored-password",
             otp = "123456"
         )
         val credentials = updated.interactiveOpenVPNModule()?.credentials
 
-        assertEquals("saved-username", credentials?.username)
-        assertEquals("SCRV1:c2F2ZWQtcGFzc3dvcmQ=:MTIzNDU2", credentials?.password)
-        assertEquals(OpenVPNCredentialsOTPMethod.none, credentials?.otpMethod)
+        assertEquals("entered-username", credentials?.username)
+        assertEquals("saved-password", credentials?.password)
+        assertEquals(OpenVPNCredentialsOTPMethod.encode, credentials?.otpMethod)
+        assertEquals("123456", credentials?.otp)
+    }
+
+    @Test
+    fun withInteractiveLogin_preservesRawUnicodeCredentialsThroughSerialization() {
+        val original = openVPNProfile(OpenVPNModule(
+            id = MODULE_ID,
+            requiresInteractiveCredentials = true,
+            credentials = OpenVPNCredentials(username = "user", password = "päss", otpMethod = OpenVPNCredentialsOTPMethod.encode)
+        ))
+        val prepared = original.withInteractiveLogin("user", "ignored", otp = "✓")
+        val restored = tunnelJson.decodeFromString<TaggedProfile>(tunnelJson.encodeToString(prepared))
+        val credentials = restored.interactiveOpenVPNModule()?.credentials
+        assertEquals("päss", credentials?.password)
+        assertEquals("✓", credentials?.otp)
+        assertEquals(OpenVPNCredentialsOTPMethod.encode, credentials?.otpMethod)
+    }
+
+    @Test
+    fun withInteractiveLogin_clearsStaleOTPWithoutAnOTPMethod() {
+        val original = openVPNProfile(OpenVPNModule(
+            id = MODULE_ID,
+            requiresInteractiveCredentials = true,
+            credentials = OpenVPNCredentials(username = "user", password = "old", otpMethod = OpenVPNCredentialsOTPMethod.none, otp = "stale")
+        ))
+        val credentials = original.withInteractiveLogin("user", "new", otp = "ignored").interactiveOpenVPNModule()?.credentials
+        assertEquals("new", credentials?.password)
         assertEquals(null, credentials?.otp)
-    }
-
-    @Test
-    fun encodedPassword_preservesUTF8AndPadding() {
-        assertEquals(
-            "SCRV1:cMOkc3M=:4pyT",
-            OpenVPNCredentialsOTPMethod.encode.encodedPassword("päss", "✓")
-        )
-        assertEquals(
-            "SCRV1::",
-            OpenVPNCredentialsOTPMethod.encode.encodedPassword("", "")
-        )
-    }
-
-    @Test
-    fun encodedPassword_doesNotWrapLongCredentials() {
-        val encoded = OpenVPNCredentialsOTPMethod.encode.encodedPassword(
-            password = "abc".repeat(40),
-            otp = "123".repeat(40)
-        )
-
-        assertEquals("SCRV1:${"YWJj".repeat(40)}:${"MTIz".repeat(40)}", encoded)
     }
 
     @Test
