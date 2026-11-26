@@ -97,14 +97,12 @@ AppContext::AppContext(
     constants(std::move(app_constants)),
     cross_constants(std::move(frontend_constants)),
     wireguard_keygen(std::make_unique<PartoutWireGuardKeyGenerator>()),
-    profiles(
-        executor_,
-        std::make_unique<ProfileManager>(
-            std::make_unique<FileProfileRepository>(Profiles::Directory(data_root, constants)),
-            ImportProfile
-        )
+    profile_manager_(
+        std::make_unique<FileProfileRepository>(Profiles::Directory(data_root, constants)),
+        ImportProfile
     ),
-    tunnel(executor_, MakeTunnel(demo, cross_constants)),
+    profiles(executor_, profile_manager_),
+    tunnel(executor_, MakeTunnel(demo, cross_constants), profile_manager_),
     preferences(
         MakePreferencesRepository(Profiles::Directory(data_root, constants), cross_constants),
         [this] {
@@ -154,9 +152,6 @@ AppContext::AppContext(
     }) {
     try {
         tunnel.Refresh();
-        profiles.OnRemove([this](const std::string &id) {
-            tunnel.Remove(id);
-        });
         profiles.Load();
         preferences.OnChange([this](const auto &value) {
             executor_.Post([value] { ApplyLoggingPreferences(value); });

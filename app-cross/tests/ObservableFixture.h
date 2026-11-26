@@ -16,6 +16,7 @@ public:
     ~ObservableFixture();
     void ClearOperationErrors();
     Worker executor;
+    ProfileManager profile_manager;
     ProfileObservable profiles;
     TunnelObservable tunnel;
 };

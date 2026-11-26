@@ -10,6 +10,20 @@ namespace Passepartout {
 ProfileManager::ProfileManager(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer)
     : repository_(std::move(repository)), importer_(std::move(importer)) {}
 
+std::size_t ProfileManager::Subscribe(EventHandler handler) {
+    const auto subscription = ++next_subscription_;
+    handlers_.emplace(subscription, std::move(handler));
+    return subscription;
+}
+
+void ProfileManager::Unsubscribe(std::size_t subscription) {
+    handlers_.erase(subscription);
+}
+
+void ProfileManager::Emit(const Models::Event &event) {
+    for (const auto &[subscription, handler] : handlers_) handler(event);
+}
+
 void ProfileManager::Load() {
     auto profiles = repository_->Fetch();
     profiles_ = std::move(profiles);
@@ -38,6 +52,9 @@ Profile ProfileManager::ImportText(const std::string &text, const std::string &n
     Profiles::Sort(committed);
     repository_->Save(profile);
     profiles_.swap(committed);
+    Models::ProfileEventSave event;
+    event.profile = profile;
+    Emit(event);
     return profile;
 }
 
@@ -53,6 +70,10 @@ void ProfileManager::Update(const Profile &original, const Profile &replacement)
     Profiles::Sort(committed);
     repository_->Save(replacement);
     profiles_.swap(committed);
+    Models::ProfileEventSave event;
+    event.profile = replacement;
+    event.previous = original;
+    Emit(event);
 }
 
 void ProfileManager::Remove(const std::string &id) {
@@ -61,6 +82,9 @@ void ProfileManager::Remove(const std::string &id) {
     profiles_.erase(std::remove_if(profiles_.begin(), profiles_.end(), [&](const auto &p) {
         return p.id == id;
     }), profiles_.end());
+    Models::ProfileEventDelete event;
+    event.ids = {id};
+    Emit(event);
 }
 
 const Profile &ProfileManager::Find(const std::string &id) const {

@@ -21,10 +21,7 @@ public:
         std::uint64_t revision = 0;
         Worker::Activity activity;
     };
-    using RemovalHandler = std::function<void(const std::string &)>;
-    ProfileObservable(Worker &executor, std::unique_ptr<ProfileManager> manager);
-    // Delivers successful deletions on the shared executor.
-    void OnRemove(RemovalHandler handler);
+    ProfileObservable(Worker &executor, ProfileManager &manager);
     void Cancel();
     static bool CanRemove(const State &state, const std::vector<std::string> &ids);
     static bool CanSave(const State &state, const std::string &id);
@@ -42,12 +39,10 @@ private:
     bool Post(std::function<void()> operation, OperationErrorContext context = OperationErrorContext::general);
     void Publish();
     Worker &executor_;
-    std::unique_ptr<ProfileManager> manager_;
+    ProfileManager &manager_;
     mutable std::mutex mutex_;
     State snapshot_;
     std::vector<Profile> published_profiles_;
-    // Accessed only on the shared worker.
-    RemovalHandler on_remove_;
     std::shared_ptr<const ConfigurationFiles> importing_files_;
 };
 }

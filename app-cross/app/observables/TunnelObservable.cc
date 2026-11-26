@@ -14,8 +14,21 @@ bool TunnelObservable::State::HasActivity() const {
     });
 }
 
-TunnelObservable::TunnelObservable(Worker &executor, std::unique_ptr<Partout::Tunnel> tunnel)
-    : executor_(executor), tunnel_(std::move(tunnel)) {}
+TunnelObservable::TunnelObservable(
+    Worker &executor, std::unique_ptr<Partout::Tunnel> tunnel, ProfileManager &profiles
+) : profiles_(profiles),
+    profile_subscription_(profiles.Subscribe([this](const Models::Event &event) { OnUpdate(event); })),
+    executor_(executor), tunnel_(std::move(tunnel)) {}
+
+TunnelObservable::~TunnelObservable() {
+    profiles_.Unsubscribe(profile_subscription_);
+}
+
+void TunnelObservable::OnUpdate(const Models::Event &event) {
+    const auto *deleted = std::get_if<Models::ProfileEventDelete>(&event);
+    if (!deleted) return;
+    for (const auto &id : deleted->ids) Remove(id);
+}
 
 void TunnelObservable::Cancel() {
     tunnel_->Cancel();

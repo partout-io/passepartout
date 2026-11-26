@@ -413,6 +413,53 @@ void TestPendingActivation(const std::filesystem::path &root) {
     assert(session.tunnel.Snapshot().tunnels.front().id == "first");
 }
 
+void TestProfileEvents(const std::filesystem::path &root) {
+    auto repository = std::make_unique<Passepartout::FileProfileRepository>(root / "profile-events");
+    const auto original = Example("event-profile");
+    repository->Save(original);
+    auto backend = std::make_unique<ControlledTunnel>();
+    auto *native = backend.get();
+    Passepartout::Tests::ObservableFixture session(
+        std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::move(backend))
+    );
+    Wait(session);
+    session.tunnel.ConnectProfile(original);
+    Wait(session);
+    const auto operations = native->events;
+    auto edited = original;
+    edited.name = "Edited";
+    session.executor.Post([&] { session.profile_manager.Update(original, edited); });
+    Wait(session);
+    assert(native->events == operations);
+    assert(session.tunnel.Snapshot().tunnels.front().isEnabled);
+    // Delete through the manager, bypassing ProfileObservable entirely.
+    session.executor.Post([&] { session.profile_manager.Remove(original.id); });
+    Wait(session);
+    assert(session.tunnel.Snapshot().tunnels.empty());
+    assert(session.profile_manager.Profiles().empty());
+
+    auto failing = std::make_unique<FailingImportRepository>();
+    failing->stored = {original};
+    failing->fail_remove = true;
+    auto *storage = failing.get();
+    Passepartout::ProfileManager manager(std::move(failing), {});
+    manager.Load();
+    std::vector<Passepartout::Models::Event> events;
+    const auto subscription = manager.Subscribe([&](const auto &event) { events.push_back(event); });
+    Rejects([&] { manager.Remove(original.id); });
+    assert(events.empty());
+    storage->fail_remove = false;
+    manager.Remove(original.id);
+    assert(events.size() == 1);
+    assert(std::get<Passepartout::Models::ProfileEventDelete>(events.front()).ids ==
+        std::vector<std::string>{original.id});
+    manager.Unsubscribe(subscription);
+    storage->stored = {original};
+    manager.Load();
+    manager.Remove(original.id);
+    assert(events.size() == 1);
+}
+
 void TestRemovalTargets(const std::filesystem::path &root) {
     const auto directory = root / "removal-targets";
     auto repository = std::make_unique<Passepartout::FileProfileRepository>(directory);
@@ -676,6 +723,7 @@ int main() {
         ("passepartout-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     std::filesystem::create_directories(root);
     try {
+        TestProfileEvents(root);
         TestRemovalTargets(root);
         TestPendingActivation(root);
         TestShutdown(root);

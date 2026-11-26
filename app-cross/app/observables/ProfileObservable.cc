@@ -10,14 +10,8 @@
 #include <stdexcept>
 
 namespace Passepartout {
-ProfileObservable::ProfileObservable(Worker &executor, std::unique_ptr<ProfileManager> manager)
-    : executor_(executor), manager_(std::move(manager)) {}
-
-void ProfileObservable::OnRemove(RemovalHandler handler) {
-    executor_.Dispatch([this, handler = std::move(handler)] {
-        on_remove_ = handler;
-    }, false);
-}
+ProfileObservable::ProfileObservable(Worker &executor, ProfileManager &manager)
+    : executor_(executor), manager_(manager) {}
 
 void ProfileObservable::Cancel() {
     std::shared_ptr<const ConfigurationFiles> importing;
@@ -63,7 +57,7 @@ void ProfileObservable::SaveEditor(std::shared_ptr<ProfileEditor> editor) {
     if (!editor || !CanSave(Snapshot(), editor->Original().id) || !editor->BeginSave()) return;
     if (!Post([this, editor] {
         try {
-            manager_->Update(editor->Original(), editor->Snapshot().draft);
+            manager_.Update(editor->Original(), editor->Snapshot().draft);
             editor->FinishSave(true);
         } catch (...) {
             editor->FinishSave(false);
@@ -83,7 +77,7 @@ bool ProfileObservable::CanRemove(const State &state, const std::vector<std::str
 
 void ProfileObservable::Publish() {
     try {
-        const auto &profiles = manager_->Profiles();
+        const auto &profiles = manager_.Profiles();
         std::vector<Models::AppProfileHeader> headers;
         headers.reserve(profiles.size());
         for (const auto &profile : profiles) {
@@ -109,8 +103,8 @@ void ProfileObservable::Load() {
             snapshot_.loaded = false;
         }
         AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Reload local profiles...");
-        manager_->Load();
-        AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Reloaded local profiles: " + std::to_string(manager_->Profiles().size()));
+        manager_.Load();
+        AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Reloaded local profiles: " + std::to_string(manager_.Profiles().size()));
         {
             std::lock_guard lock(mutex_);
             snapshot_.loaded = true;
@@ -154,7 +148,7 @@ void ProfileObservable::ImportFiles(std::shared_ptr<const ConfigurationFiles> fi
             try {
                 AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Import profile...");
                 const auto source = files->Read(index);
-                manager_->ImportText(source.text, source.name);
+                manager_.ImportText(source.text, source.name);
                 AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Finished saving profile");
             } catch (...) {
                 AppLog::Write(AppLog::Level::error, AppLog::Category::profiles, "Unable to import profile");
@@ -177,11 +171,10 @@ void ProfileObservable::Remove(std::vector<std::string> ids) {
         const std::set<std::string> unique_ids(ids.begin(), ids.end());
         // A menu or confirmation can outlive its targets. Validate the entire
         // request before deleting anything, on the same worker as mutations.
-        for (const auto &id : unique_ids) manager_->Find(id);
+        for (const auto &id : unique_ids) manager_.Find(id);
         for (const auto &id : unique_ids) {
             AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Remove profile");
-            manager_->Remove(id);
-            if (on_remove_) on_remove_(id);
+            manager_.Remove(id);
         }
     });
 }

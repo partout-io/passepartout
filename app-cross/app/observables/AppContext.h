@@ -22,6 +22,7 @@ public:
     const std::unique_ptr<WireGuardKeyGenerator> wireguard_keygen;
 private:
     Worker executor_;
+    ProfileManager profile_manager_;
 public:
     AppContext(const std::filesystem::path &data_root,
                Models::AppConstants constants = Constants::Load(),

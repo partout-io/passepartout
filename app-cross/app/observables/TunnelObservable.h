@@ -6,6 +6,7 @@
 #include "../business/extensions/Models+Business.h"
 #include "../business/models/InteractiveLogin.h"
 #include "Worker.h"
+#include "../business/managers/ProfileManager.h"
 #include <partout/tunnel/Tunnel.h>
 
 namespace Passepartout {
@@ -28,7 +29,8 @@ public:
         bool can_interact = false;
         Status status = Status::disconnected;
     };
-    TunnelObservable(Worker &executor, std::unique_ptr<Partout::Tunnel> tunnel);
+    TunnelObservable(Worker &executor, std::unique_ptr<Partout::Tunnel> tunnel, ProfileManager &profiles);
+    ~TunnelObservable();
     void Cancel();
     static ToggleState StateForProfile(const State &state, const std::string &id);
     void SetEnabled(Profile profile, bool enabled);
@@ -38,11 +40,14 @@ public:
     std::optional<InteractiveLogin> TakeInteractiveLogin();
     void CompleteInteractiveLogin(InteractiveLogin login);
     void Disconnect(std::string id);
-    void Remove(std::string id);
     void Refresh();
     void ClearOperationError();
     State Snapshot() const;
 private:
+    void OnUpdate(const Models::Event &event);
+    void Remove(std::string id);
+    ProfileManager &profiles_;
+    std::size_t profile_subscription_;
     void Post(std::function<void()> operation, bool foreground = true);
     void Publish();
     Worker &executor_;
