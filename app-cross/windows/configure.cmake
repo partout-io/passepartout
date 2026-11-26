@@ -128,7 +128,7 @@ function(configure_windows_targets)
     endif()
     file(READ "${TUNNEL_CONSTANTS_PATH}" TUNNEL_CONSTANTS_JSON)
     string(JSON PASSEPARTOUT_DNS_FALLBACK_JSON GET "${TUNNEL_CONSTANTS_JSON}" tunnel dnsFallbackServers)
-    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/TunnelDefaults.h.in"
+    configure_file("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/../tunnel/TunnelDefaults.h.in"
         "${CMAKE_CURRENT_BINARY_DIR}/generated/TunnelDefaults.h" @ONLY)
     target_include_directories(passepartout-vpnplugin PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
     set(PASSEPARTOUT_PLUGIN_FILE "$<TARGET_FILE_NAME:passepartout-vpnplugin>")
