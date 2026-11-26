@@ -9,7 +9,6 @@
 #include "extensions/Models+UI.h"
 #include "platform/Presentation.h"
 #include "../strings/Strings.h"
-#include "partout.h"
 #include <wx/stdpaths.h>
 #include <wx/weakref.h>
 #include <wx/uilocale.h>
@@ -62,12 +61,6 @@ bool PassepartoutApp::OnInit() {
         return false;
     }
 
-    // Initialize the VPN runtime before assembling application dependencies.
-    partout_init_args init{};
-    init.log_level = PartoutLogLevelDebug;
-    init.logs_private_data = false;
-    init.logger_fn = AppLog::PartoutMessage;
-    partout_init(&init);
     const char *stage = "creating application context";
     try {
         // Assemble shared state and create the main presentation surface.

@@ -75,15 +75,6 @@ std::unique_ptr<Passepartout::PreferencesRepository> MakePreferencesRepository(
 #endif
 }
 
-void ApplyLoggingPreferences(const Passepartout::Models::AppPreferences &preferences) {
-    partout_init_args init{};
-    init.log_level = PartoutLogLevelDebug;
-    init.logs_private_data = preferences.logsPrivateData;
-    init.logger_fn = Passepartout::AppLog::PartoutMessage;
-    if (preferences.logsPrivateData) Passepartout::AppLog::SetPrivateData(true);
-    partout_init(&init);
-    if (!preferences.logsPrivateData) Passepartout::AppLog::SetPrivateData(false);
-}
 }
 
 using Passepartout::AppContext;
@@ -151,11 +142,21 @@ AppContext::AppContext(
         return ReviewIssue(recipient, issue);
     }) {
     try {
+        // Initialize native logging once from stored preferences, before starting work.
+        const bool logs_private_data = preferences.Snapshot().logsPrivateData;
+        AppLog::SetPrivateData(logs_private_data);
+        partout_init_args init{};
+        init.log_level = PartoutLogLevelDebug;
+        init.logs_private_data = logs_private_data;
+        init.logger_fn = AppLog::PartoutMessage;
+        partout_init(&init);
+        preferences.OnChange([previous = logs_private_data](const auto &value) mutable {
+            if (previous == value.logsPrivateData) return;
+            AppLog::SetPrivateData(value.logsPrivateData);
+            previous = value.logsPrivateData;
+        });
         tunnel.Refresh();
         profiles.Load();
-        preferences.OnChange([this](const auto &value) {
-            executor_.Post([value] { ApplyLoggingPreferences(value); });
-        });
         config.Refresh();
         AppLog::Write(
             AppLog::Level::info,
