@@ -10,7 +10,6 @@ set(APP_SOURCES
     app/ui/diagnostics/DiagnosticsView.cc
     app/ui/diagnostics/IssueReportView.cc
     app/ui/diagnostics/RuntimeLogView.cc
-    app/ui/extensions/Models+Formatting.cc
     app/ui/extensions/Models+UI.cc
     app/ui/platform/ConfigurationPicker.cc
     app/ui/platform/FileActivation.cc

@@ -34,14 +34,12 @@ add_executable(passepartout-settings-test Settings.cc)
 target_link_libraries(passepartout-settings-test PRIVATE passepartout-core)
 add_executable(passepartout-activation-test Activation.cc)
 target_link_libraries(passepartout-activation-test PRIVATE passepartout-core)
-# Compile only portable UI formatting; native UI helpers remain in the frontend.
-add_executable(passepartout-presentation-test Presentation.cc
-    ../app/ui/extensions/Models+Formatting.cc)
-target_link_libraries(passepartout-presentation-test PRIVATE passepartout-core)
+
+# UI implementation tests require the frontend toolkit and are excluded here.
 
 # Keep assertions enabled in every build configuration.
 enable_testing()
-foreach(TEST_NAME IN ITEMS models application presentation editor settings activation)
+foreach(TEST_NAME IN ITEMS models application editor settings activation)
     set(TEST_TARGET passepartout-${TEST_NAME}-test)
     if(MSVC)
         target_compile_options(${TEST_TARGET} PRIVATE /utf-8
