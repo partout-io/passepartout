@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "OpenVPNView.h"
-#include "../../../business/extensions/Models+Business.h"
+#include <partout/models/OpenVpnPullMask.h>
+#include <partout/models/OpenVpnRoutingPolicy.h>
 #include "../../../strings/Unlocalized.h"
 #include <algorithm>
 #include <wx/base64.h>
@@ -42,6 +43,7 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
         Section(Localized(StringKey::GlobalNounsAccount));
         ContentLink(Localized(StringKey::ModulesOpenvpnCredentials), std::move(open_credentials));
     }
+    using PullMask = Partout::Models::OpenVpnPullMask;
     std::vector<wxString> pulled;
     for (const auto &entry : std::vector<std::pair<PullMask::eOpenVpnPullMask, wxString>>{
         {PullMask::routes, Localized(StringKey::GlobalNounsRoutes)}, {PullMask::dns, DNS}, {PullMask::proxy, Proxy}}) {
@@ -54,6 +56,7 @@ OpenVPNView::OpenVPNView(wxWindow *parent, const Partout::Models::OpenVPNModule 
         std::sort(pulled.begin(), pulled.end());
         for (const auto &title : pulled) Field(title, Localized(StringKey::GlobalNounsEnabled));
     }
+    using RoutingPolicy = Partout::Models::OpenVpnRoutingPolicy;
     const auto has_policy = [&](RoutingPolicy::eOpenVpnRoutingPolicy policy) {
         return c.routingPolicies && std::any_of(c.routingPolicies->begin(), c.routingPolicies->end(), [&](const auto &item) {
             return item.value == policy;
