@@ -239,6 +239,35 @@ int main() {
             platform_remote->response = R"({"appNotWorking":{"rate":100,"platforms":[]}})";
             assert(platform_config.Refresh() && platform_config.ActiveFlags().empty());
         }
+        {
+            auto client = std::make_unique<FakeHttp>();
+            auto *remote = client.get();
+            remote->response = R"({"appNotWorking":{"rate":100,"data":{"reason":"test"}}})";
+            auto manager = std::make_unique<ConfigManager>(std::make_unique<GitHubConfigStrategy>(
+                std::move(client), "https://example.invalid", std::chrono::seconds(0)
+            ), 7, Models::Platform::windows);
+            assert(manager->Refresh());
+            ConfigObservable observable(std::move(manager));
+            assert(observable.Snapshot().flags.at(Models::ConfigFlag::appNotWorking).At("reason") == "test");
+            const auto refresh = [&] {
+                observable.Refresh();
+                const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+                while (observable.Snapshot().refreshing && std::chrono::steady_clock::now() < deadline) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                }
+                assert(!observable.Snapshot().refreshing);
+                return observable.Snapshot();
+            };
+            remote->fails = true;
+            auto state = refresh();
+            assert(state.operation_failed);
+            assert(state.flags.at(Models::ConfigFlag::appNotWorking).At("reason") == "test");
+            remote->fails = false;
+            remote->response = "{}";
+            state = refresh();
+            assert(!state.operation_failed && state.flags.empty());
+        }
+
         auto throttled_http = std::make_unique<FakeHttp>();
         auto *throttled_remote = throttled_http.get();
         ConfigManager throttled(std::make_unique<GitHubConfigStrategy>(std::move(throttled_http), "https://example.invalid", std::chrono::hours(1)), 7, Models::Platform::windows);
