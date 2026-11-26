@@ -90,8 +90,7 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
                        Models::AppConstants app_constants, CrossConstantsType frontend_constants
 )
     : constants(std::move(app_constants)), cross_constants(std::move(frontend_constants)),
-      application_version(cross_constants.app.version_number),
-      wire_guard_keys(std::make_unique<PartoutWireGuardKeyGenerator>()),
+      wireguard_keygen(std::make_unique<PartoutWireGuardKeyGenerator>()),
       profiles(executor_, std::make_unique<ProfileManager>(std::make_unique<FileProfileRepository>(
           Profiles::Directory(data_root, constants)), ImportProfile)),
       tunnel(executor_, MakeTunnel(demo, cross_constants), ApplyLoggingPreferences),
@@ -107,7 +106,7 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
           constants.websites.partoutURL + "/passepartout-config/v1/bundle.json",
           std::chrono::seconds(static_cast<std::int64_t>(constants.websites.configTTL * constants.websites.betaTTLFactor))),
           cross_constants.app.build_number, ApplicationPlatform())),
-      version(std::make_unique<VersionChecker>(application_version,
+      version(std::make_unique<VersionChecker>(cross_constants.app.version_number,
           std::make_unique<GitHubReleaseStrategy>(MakeHttp(constants), constants.github.latestReleaseURL,
               [github = constants.github](const std::string &build) {
                   return Constants::ChangelogURL(github, build);
@@ -115,10 +114,10 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
           static_cast<std::int64_t>(constants.url.versionRateLimit), preferences.Snapshot().lastCheckedVersionTimestamp,
           preferences.Snapshot().lastCheckedVersion, [this](auto timestamp, auto latest) {
               preferences.SetLastCheckedVersion(timestamp, std::move(latest));
-          }), application_version, std::to_string(cross_constants.app.build_number), constants.github),
+          }), cross_constants.app.version_number, std::to_string(cross_constants.app.build_number), constants.github),
       credits(CreditsResource, MakeHttp(constants), ApplicationPlatform()),
       diagnostics(std::make_unique<IssueReporter>(constants.emails.recipients.beta + "@" + constants.emails.domain,
-          application_version, ReviewIssue)) {
+          cross_constants.app.version_number, ReviewIssue)) {
     try {
         profiles.OnChange([this](std::vector<Profile> values, bool loaded) {
             tunnel.SetProfiles(std::move(values), loaded);

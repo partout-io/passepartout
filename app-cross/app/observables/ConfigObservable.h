@@ -9,19 +9,19 @@
 namespace Passepartout {
 class ConfigObservable final {
 public:
-    struct State {
+    struct State final {
         ConfigFlags flags;
         bool refreshing = false;
         bool operation_failed = false;
     };
     explicit ConfigObservable(std::unique_ptr<ConfigManager> manager);
-    ~ConfigObservable();
     State Snapshot() const;
     void Refresh();
 private:
     std::unique_ptr<ConfigManager> manager_;
     mutable std::mutex mutex_;
     State state_;
+    // Destroy first: cancels and joins before captured state and dependencies.
     Worker worker_;
 };
 }

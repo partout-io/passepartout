@@ -261,6 +261,6 @@ void MainView::Edit(const std::string &id) {
     if (picking_ || context_.Activity().foreground) return;
     const auto editor = context_.profiles.CreateEditor(id);
     if (!editor) return;
-    ProfileCoordinator dialog(this, context_.profiles, editor, *context_.wire_guard_keys);
+    ProfileCoordinator dialog(this, context_.profiles, editor, *context_.wireguard_keygen);
     dialog.ShowModal();
 }

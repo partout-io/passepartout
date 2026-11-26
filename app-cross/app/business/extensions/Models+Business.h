@@ -8,6 +8,7 @@
 #include <partout/models/TaggedProfile.h>
 #include <filesystem>
 #include "AppPreferences.h"
+#include "AppProfileHeader.h"
 #include "AppConstants_github.h"
 #include "ChangelogEntry.h"
 #include "ConfigBundleConfig.h"
@@ -26,6 +27,7 @@ using Profile = Partout::Models::TaggedProfile;
 using Status = Models::AppProfileStatus::eAppProfileStatus;
 
 namespace Profiles {
+Models::AppProfileHeader Header(const Profile &profile);
 inline constexpr const char LastUpdateKey[] = "lastUpdate";
 inline constexpr const char FingerprintKey[] = "fingerprint";
 constexpr std::size_t MaxConfigurationBytes = 1024 * 1024;

@@ -19,9 +19,6 @@ VersionObservable::VersionObservable(std::unique_ptr<VersionChecker> checker, st
     state_.release = checker_->Snapshot();
 }
 
-VersionObservable::~VersionObservable() {
-    worker_.Stop();
-}
 
 VersionObservable::State VersionObservable::Snapshot() const {
     std::lock_guard lock(mutex_);

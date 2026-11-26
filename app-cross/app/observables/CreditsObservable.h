@@ -11,14 +11,13 @@
 namespace Passepartout {
 class CreditsObservable final {
 public:
-    struct Content {
+    struct Content final {
         std::string text;
         bool loading = false;
         bool operation_failed = false;
     };
     CreditsObservable(std::string resource, std::unique_ptr<HttpClient> client,
                       Models::Platform::ePlatform platform);
-    ~CreditsObservable();
     const Models::Credits &Snapshot() const;
     bool HasLoadError() const;
     Content License(const std::string &url) const;
@@ -29,6 +28,7 @@ private:
     std::unique_ptr<HttpClient> client_;
     mutable std::mutex mutex_;
     std::map<std::string, Content> content_;
+    // Destroy first: cancels and joins before captured state and dependencies.
     Worker worker_;
 };
 }

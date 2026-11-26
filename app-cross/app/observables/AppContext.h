@@ -19,8 +19,7 @@ class AppContext final {
 public:
     const Models::AppConstants constants;
     const CrossConstantsType cross_constants;
-    const std::string application_version;
-    const std::unique_ptr<WireGuardKeyGenerator> wire_guard_keys;
+    const std::unique_ptr<WireGuardKeyGenerator> wireguard_keygen;
 private:
     Worker executor_;
 public:

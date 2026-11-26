@@ -27,7 +27,6 @@ public:
     VersionObservable(std::unique_ptr<VersionChecker> checker, std::string current, std::string build,
                       Models::AppConstants_github github
     );
-    ~VersionObservable();
     State Snapshot() const;
     void Check();
     void LoadChangelog();
@@ -38,6 +37,7 @@ private:
     State state_;
     const std::string build_;
     const Models::AppConstants_github github_;
+    // Destroy first: cancels and joins before captured state and dependencies.
     Worker worker_;
 };
 }

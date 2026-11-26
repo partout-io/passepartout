@@ -6,6 +6,7 @@
 #include "partout.h"
 #include <partout/models/ABIEnvelope.h>
 #include <algorithm>
+#include <type_traits>
 #include <cctype>
 #include <fstream>
 #include <stdexcept>
@@ -381,5 +382,46 @@ std::vector<Models::ChangelogEntry> Parse(const std::string &text) {
         entries.push_back(std::move(entry));
     }
     return entries;
+}
+}
+
+namespace Passepartout::Profiles {
+Models::AppProfileHeader Header(const Profile &profile) {
+    Models::AppProfileHeader header{};
+    header.id = profile.id;
+    header.name = profile.name;
+    header.fingerprint = profile.id;
+    if (profile.userInfo && profile.userInfo->IsObject()) {
+        const auto fingerprint = profile.userInfo->Find(Profiles::FingerprintKey);
+        if (fingerprint && fingerprint->IsString())
+            header.fingerprint = fingerprint->Get<std::string>();
+    }
+    for (const auto &module : profile.modules) {
+        std::visit([&](const auto &value) {
+            Partout::Models::ModuleType type;
+            std::string id;
+            if constexpr (std::is_same_v<std::decay_t<decltype(value)>, Partout::Models::TaggedModuleCustom>) {
+                type = value.value.innerType;
+                if (value.value.json.IsObject()) {
+                    const auto field = value.value.json.Find("id");
+                    if (field && field->IsString()) id = field->template Get<std::string>();
+                }
+            } else {
+                type = Partout::Models::ModuleType::FromJson(value.type);
+                id = value.value.id;
+            }
+            header.moduleTypes.push_back(type);
+            if (!header.primaryModuleType && !id.empty() &&
+                std::find(profile.activeModulesIds.begin(), profile.activeModulesIds.end(), id)
+                    != profile.activeModulesIds.end()) header.primaryModuleType = type;
+        }, module);
+    }
+    if (!header.primaryModuleType && !header.moduleTypes.empty())
+        header.primaryModuleType = header.moduleTypes.front();
+    for (const auto &type : header.moduleTypes) {
+        if (!header.primaryModuleType || type != *header.primaryModuleType)
+            header.secondaryModuleTypes.push_back(type);
+    }
+    return header;
 }
 }

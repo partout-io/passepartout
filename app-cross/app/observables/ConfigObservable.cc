@@ -9,9 +9,6 @@ ConfigObservable::ConfigObservable(std::unique_ptr<ConfigManager> manager)
     : manager_(std::move(manager)), worker_([this] {
         manager_->Cancel();
     }) {}
-ConfigObservable::~ConfigObservable() {
-    worker_.Stop();
-}
 
 ConfigObservable::State ConfigObservable::Snapshot() const {
     std::lock_guard lock(mutex_);

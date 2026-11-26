@@ -26,7 +26,7 @@ public:
         Worker::Activity activity;
         bool HasActivity() const;
     };
-    struct ToggleState {
+    struct ToggleState final {
         bool is_on = false;
         bool can_interact = false;
         Status status = Status::disconnected;
@@ -51,8 +51,10 @@ public:
 private:
     bool Post(std::function<void()> operation, bool foreground = true, bool dispatch = false);
     void Observe();
+    bool ProfilesLoaded() const;
+    void ApplyPendingPreferences();
     void Publish();
-    std::string SynchronizeProfiles(const std::vector<Models::AppTunnelInfo> &tunnels);
+    std::string SynchronizeProfiles(const std::vector<Models::AppTunnelInfo> &tunnels, bool &changed);
     Worker &executor_;
     std::unique_ptr<Partout::Tunnel> tunnel_;
     std::function<void(const Models::AppPreferences &)> apply_preferences_;

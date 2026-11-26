@@ -22,9 +22,6 @@ CreditsObservable::CreditsObservable(std::string resource, std::unique_ptr<HttpC
         load_error_ = true;
     }
 }
-CreditsObservable::~CreditsObservable() {
-    worker_.Stop();
-}
 
 const Models::Credits &CreditsObservable::Snapshot() const {
     return credits_;

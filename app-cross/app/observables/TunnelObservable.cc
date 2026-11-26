@@ -43,9 +43,19 @@ void TunnelObservable::SetProfiles(std::vector<Profile> profiles, bool loaded) {
 void TunnelObservable::ApplyPreferences(Models::AppPreferences preferences) {
     Post([this, preferences = std::move(preferences)] {
         pending_preferences_ = preferences;
-        if (apply_preferences_) apply_preferences_(*pending_preferences_);
-        pending_preferences_.reset();
+        ApplyPendingPreferences();
     });
+}
+
+bool TunnelObservable::ProfilesLoaded() const {
+    std::lock_guard lock(mutex_);
+    return snapshot_.profiles_loaded;
+}
+
+void TunnelObservable::ApplyPendingPreferences() {
+    if (!pending_preferences_) return;
+    if (apply_preferences_) apply_preferences_(*pending_preferences_);
+    pending_preferences_.reset();
 }
 
 bool TunnelObservable::Post(std::function<void()> operation, bool foreground, bool dispatch) {
@@ -96,8 +106,8 @@ void TunnelObservable::Observe() {
     ++snapshot_.revision;
 }
 
-std::string TunnelObservable::SynchronizeProfiles(const std::vector<Models::AppTunnelInfo> &tunnels) {
-    if (!Snapshot().profiles_loaded) return {};
+std::string TunnelObservable::SynchronizeProfiles(const std::vector<Models::AppTunnelInfo> &tunnels, bool &changed) {
+    if (!ProfilesLoaded()) return {};
     const auto unavailable = tunnel_->ObservationErrors();
     std::string error;
     for (const auto &profile : profiles_) {
@@ -110,6 +120,7 @@ std::string TunnelObservable::SynchronizeProfiles(const std::vector<Models::AppT
         const auto synchronized = synchronized_profiles_.find(profile.id);
         if (native != tunnels.end() && synchronized != synchronized_profiles_.end() && synchronized->second == profile) continue;
         try {
+            changed = true;
             tunnel_->Save(profile);
             synchronized_profiles_[profile.id] = profile;
         } catch (...) {
@@ -124,6 +135,7 @@ std::string TunnelObservable::SynchronizeProfiles(const std::vector<Models::AppT
         });
         if (exists) continue;
         try {
+            changed = true;
             tunnel_->Remove(native.id);
             synchronized_profiles_.erase(native.id);
         } catch (...) {
@@ -135,8 +147,9 @@ std::string TunnelObservable::SynchronizeProfiles(const std::vector<Models::AppT
 
 void TunnelObservable::Publish() {
     auto tunnels = Tunnels::Info(tunnel_->Fetch());
-    auto synchronization_error = SynchronizeProfiles(tunnels);
-    tunnels = Tunnels::Info(tunnel_->Fetch());
+    bool changed = false;
+    auto synchronization_error = SynchronizeProfiles(tunnels, changed);
+    if (changed) tunnels = Tunnels::Info(tunnel_->Fetch());
     if (synchronization_error != last_synchronization_error_) {
         AppLog::Write(synchronization_error.empty() ? AppLog::Level::info : AppLog::Level::error, AppLog::Category::profiles,
             synchronization_error.empty() ? "Profile synchronization succeeded" : synchronization_error);
@@ -224,11 +237,8 @@ void TunnelObservable::CompleteInteractiveLogin(InteractiveLogin login) {
 
 void TunnelObservable::ConnectProfile(std::string id, std::optional<Partout::TunnelCredentials> credentials) {
     Post([this, id = std::move(id), credentials = std::move(credentials)] {
-        if (pending_preferences_) {
-            if (apply_preferences_) apply_preferences_(*pending_preferences_);
-            pending_preferences_.reset();
-        }
-        if (!Snapshot().profiles_loaded) throw std::runtime_error("Load the saved profiles before connecting.");
+        ApplyPendingPreferences();
+        if (!ProfilesLoaded()) throw std::runtime_error("Load the saved profiles before connecting.");
         const auto found = std::find_if(profiles_.begin(), profiles_.end(), [&](const auto &profile) {
             return profile.id == id;
         });

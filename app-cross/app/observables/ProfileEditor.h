@@ -9,7 +9,7 @@
 namespace Passepartout {
 class ProfileEditor final {
 public:
-    struct State {
+    struct State final {
         Profile draft;
         bool saving = false;
         bool saved = false;
