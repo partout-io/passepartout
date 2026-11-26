@@ -11,34 +11,10 @@
 #include "../context/ContextExtensions.h"
 #include "../business/managers/ProfileManager.h"
 #include "../business/strategy/FileProfileRepository.h"
-#include "../ui/platform/WindowsIssueHandoff.h"
 #include "SettingsResources.h"
 #include "../business/extensions/Models+Business.h"
 #include "partout.h"
-#include <cstdlib>
 #include <stdexcept>
-
-namespace {
-
-bool ReviewIssue(const std::string &recipient, const Passepartout::Models::Issue &issue) {
-#ifdef _WIN32
-    return Passepartout::Windows::Issue::Review(recipient, issue);
-#else
-    // FIXME: ###, Implement on .unixLike
-    return false;
-#endif
-}
-
-Passepartout::Profile ImportProfile(const std::string &text, const std::string &name) {
-    std::unique_ptr<char, decltype(&std::free)> json(
-        partout_import_profile(text.c_str(), nullptr, name.c_str()), &std::free
-    );
-    return Passepartout::Imports::DecodeResult(json.get());
-}
-
-
-
-}
 
 using Passepartout::AppContext;
 
@@ -102,7 +78,7 @@ AppContext::AppContext(
     ),
     credits(CreditsResource, MakeHttpClient(constants), ApplicationPlatform()),
     diagnostics([recipient = Constants::BetaEmail(constants.emails)](const Models::Issue &issue) {
-        return ReviewIssue(recipient, issue);
+        return ReportIssue(recipient, issue);
     }) {
     try {
         // Initialize native logging once from stored preferences, before starting work.

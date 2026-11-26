@@ -47,14 +47,8 @@ set(APP_SOURCES
 )
 if(WIN32)
     list(APPEND APP_SOURCES
-        app/business/platform/WindowsHttpClient.cc
-        app/business/platform/WindowsPreferencesRepository.cc
         app/ui/platform/WindowsConfigurationPicker.cc
-        app/ui/platform/WindowsIssueHandoff.cc
         app/ui/platform/WindowsURLLauncher.cc
-    )
-else()
-    list(APPEND APP_SOURCES
     )
 endif()
 set(CORE_SOURCES
@@ -84,6 +78,13 @@ set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/VersionObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/Worker.cc"
 )
+if(WIN32)
+    list(APPEND CORE_SOURCES
+        "${CMAKE_CURRENT_LIST_DIR}/app/business/platform/WindowsHttpClient.cc"
+        "${CMAKE_CURRENT_LIST_DIR}/app/business/platform/WindowsPreferencesRepository.cc"
+        "${CMAKE_CURRENT_LIST_DIR}/app/ui/platform/WindowsIssueHandoff.cc"
+    )
+endif()
 set(MODEL_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/models/AppBundle.cc"
     "${CMAKE_CURRENT_LIST_DIR}/models/AppConfiguration.cc"

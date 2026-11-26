@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "WindowsIssueHandoff.h"
+#include "Issue.h"
 #include "../../business/extensions/Models+Business.h"
 #include "SettingsResources.h"
 #include <random>
@@ -12,7 +12,7 @@
 #include <winrt/base.h>
 
 namespace Passepartout {
-bool Windows::Issue::Review(const std::string &recipient_address, const Models::Issue &issue) {
+bool ReviewIssue(const std::string &recipient_address, const Models::Issue &issue) {
     const auto module = LoadLibraryExW(L"mapi32.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
     if (!module) return false;
     struct Library {

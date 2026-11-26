@@ -3,41 +3,50 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ContextExtensions.h"
+#include "AppConstantsResource.h"
 #include "CrossConstants.h"
 #include "../business/extensions/AppConstantsExtensions.h"
-#include "../business/strategy/OfflineHttpClient.h"
 #include "../business/strategy/FakeTunnelStrategy.h"
-#include "../business/strategy/FilePreferencesRepository.h"
+#include "partout.h"
+#include <algorithm>
+#include <cctype>
+#include <cstdlib>
+#include <stdexcept>
 #ifdef _WIN32
 #include "../business/platform/WindowsHttpClient.h"
 #include "../business/platform/WindowsPreferencesRepository.h"
 #include <partout/winrt/WinRTTunnelStrategy.h>
+#else
+#include "../business/strategy/FilePreferencesRepository.h"
+#include "../business/strategy/OfflineHttpClient.h"
 #endif
-#include "AppConstantsResource.h"
-#include "../business/extensions/Models+Business.h"
-#include <algorithm>
-#include <cctype>
-#include <stdexcept>
 
 namespace Passepartout {
+#ifdef _WIN32
+bool ReviewIssue(const std::string &recipient_address, const Models::Issue &issue);
+#endif
+
+Models::Platform::ePlatform ApplicationPlatform() {
+#ifdef _WIN32
+    return Models::Platform::windows;
+#else
+    return Models::Platform::unixLike;
+#endif
+}
+
+Profile ImportProfile(const std::string &text, const std::string &name) {
+    std::unique_ptr<char, decltype(&std::free)> json(
+        partout_import_profile(text.c_str(), nullptr, name.c_str()), &std::free
+    );
+    return Imports::DecodeResult(json.get());
+}
+
 std::unique_ptr<HttpClient> MakeHttpClient(const Models::AppConstants &constants) {
 #ifdef _WIN32
     return std::make_unique<Windows::HttpClient>(Constants::HTTPTimeout(constants.url));
 #else
     // FIXME: ###, Implement on .unixLike
     return std::make_unique<OfflineHttpClient>();
-#endif
-}
-
-std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const CrossConstantsType &constants) {
-    if (demo) return std::make_unique<Partout::Tunnel>(std::make_unique<FakeTunnelStrategy>());
-#ifdef _WIN32
-    return std::make_unique<Partout::Tunnel>(
-        std::make_unique<Partout::WinRTTunnelStrategy>(constants.tunnel.server_uri)
-    );
-#else
-    // FIXME: ###, Implement on .unixLike
-    return std::make_unique<Partout::Tunnel>(std::make_unique<FakeTunnelStrategy>());
 #endif
 }
 
@@ -52,12 +61,25 @@ std::unique_ptr<PreferencesRepository> MakePreferencesRepository(
 #endif
 }
 
-
-Models::Platform::ePlatform ApplicationPlatform() {
+std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const CrossConstantsType &constants) {
 #ifdef _WIN32
-    return Models::Platform::windows;
+    if (!demo) {
+        return std::make_unique<Partout::Tunnel>(
+            std::make_unique<Partout::WinRTTunnelStrategy>(constants.tunnel.server_uri)
+        );
+    }
 #else
-    return Models::Platform::unixLike;
+    // FIXME: ###, Implement on .unixLike
+#endif
+    return std::make_unique<Partout::Tunnel>(std::make_unique<FakeTunnelStrategy>());
+}
+
+bool ReportIssue(const std::string &recipient, const Models::Issue &issue) {
+#ifdef _WIN32
+    return ReviewIssue(recipient, issue);
+#else
+    // FIXME: ###, Implement on .unixLike
+    return false;
 #endif
 }
 }
