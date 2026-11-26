@@ -65,7 +65,7 @@ Passepartout::ConfigurationPickerResult Collect(const winrt::Windows::Foundation
     const auto root = winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().CreateFolderAsync(
         ImportFolder, winrt::Windows::Storage::CreationCollisionOption::OpenIfExists).get();
     const auto destination = root.CreateFolderAsync(request, winrt::Windows::Storage::CreationCollisionOption::FailIfExists).get();
-    auto selected = Passepartout::Configuration::CollectFiles(count, [&](std::size_t index) {
+    auto selected = Passepartout::CollectConfigurationFiles(count, [&](std::size_t index) {
         const auto file = files.GetAt(static_cast<std::uint32_t>(index));
         const auto stream = file.OpenReadAsync().get();
         if (!stream.Size() || stream.Size() > MaxBytes) throw std::runtime_error("Invalid import file size.");

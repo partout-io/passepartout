@@ -14,7 +14,7 @@
 class MainView final : public Passepartout::MainFrame {
 public:
     MainView(Passepartout::AppContext &context, bool demo,
-             Passepartout::Configuration::PickerFactory picker_factory
+             Passepartout::ConfigurationPickerFactory picker_factory
     );
     ~MainView() override;
     void Quit();

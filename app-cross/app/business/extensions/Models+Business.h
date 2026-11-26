@@ -61,10 +61,6 @@ namespace Passepartout::AtomicFile {
 void Write(const std::filesystem::path &path, const std::string &content);
 }
 
-namespace Passepartout::Imports {
-Profile DecodeResult(const char *json);
-}
-
 namespace Passepartout::Issues {
 std::string Subject(const Models::Issue &issue);
 std::string Body(const Models::Issue &issue, const std::string &text);

@@ -26,7 +26,7 @@ wxString QuitTitle() {
 using namespace Passepartout;
 
 MainView::MainView(AppContext &context, bool demo,
-                   Configuration::PickerFactory picker_factory
+                   ConfigurationPickerFactory picker_factory
 )
     : MainFrame(nullptr, wxID_ANY, Text(context.cross_constants.app.name) +
           (demo ? " (" + Text(context.cross_constants.command_line.demo_argument) + ")" : wxString())),

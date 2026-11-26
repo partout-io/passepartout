@@ -31,10 +31,10 @@ namespace Passepartout::Modules {
 wxString Title(const Partout::Models::TaggedModule &module);
 }
 
-namespace Passepartout::Configuration {
+namespace Passepartout {
 // Keep failures from individual native file reads separate from batch failures.
 template<typename Stage>
-FileConfigurationFiles CollectFiles(std::size_t count, Stage stage) {
+FileConfigurationFiles CollectConfigurationFiles(std::size_t count, Stage stage) {
     std::vector<std::filesystem::path> paths;
     std::size_t failures = 0;
     for (std::size_t index = 0; index < count; ++index) {

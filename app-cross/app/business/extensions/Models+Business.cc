@@ -4,7 +4,6 @@
 
 #include "Models+Business.h"
 #include "partout.h"
-#include <partout/models/ABIEnvelope.h>
 #include <algorithm>
 #include <type_traits>
 #include <cctype>
@@ -75,19 +74,6 @@ double LastUpdate(const Passepartout::Profile &profile) {
 
 using Passepartout::Models::AppTunnelInfo;
 using Passepartout::Models::ProfileTransfer;
-
-Passepartout::Profile Passepartout::Imports::DecodeResult(const char *json) {
-    if (!json) throw std::runtime_error("Partout could not import this configuration.");
-    try {
-        const auto envelope = Partout::Models::ABIEnvelope::FromJson(Partout::Json::Parse(json));
-        if (envelope.code || !envelope.payload)
-            throw std::runtime_error("Import failed");
-        return Profile::FromJson(*envelope.payload);
-    } catch (...) {
-        // ABI errors and parser details may contain configuration secrets.
-        throw std::runtime_error("Partout could not import this configuration.");
-    }
-}
 
 std::string Passepartout::Profiles::ConfigurationName(const std::filesystem::path &path) {
     const auto name = path.stem().u8string();

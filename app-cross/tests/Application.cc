@@ -586,7 +586,7 @@ void TestSelectionFailures(const std::filesystem::path &root) {
     std::ofstream(valid) << "valid";
     std::ofstream(invalid) << "invalid syntax";
     std::vector<std::size_t> visited;
-    auto selected = Passepartout::Configuration::CollectFiles(5, [&](std::size_t index) {
+    auto selected = Passepartout::CollectConfigurationFiles(5, [&](std::size_t index) {
         visited.push_back(index);
         if (index == 1) return valid;
         if (index == 3) return invalid;
@@ -607,14 +607,14 @@ void TestSelectionFailures(const std::filesystem::path &root) {
     assert(snapshot.operation_error == Passepartout::ProfileObservable::OperationErrorContext::import);
     assert(Passepartout::FileProfileRepository(root / "selection-store").Fetch().size() == 1);
 
-    auto failed = Passepartout::Configuration::CollectFiles(2, [](std::size_t) -> std::filesystem::path {
+    auto failed = Passepartout::CollectConfigurationFiles(2, [](std::size_t) -> std::filesystem::path {
         throw std::runtime_error("Unreadable file");
     });
     session.profiles.ImportFiles(std::make_shared<Passepartout::FileConfigurationFiles>(std::move(failed)));
     Wait(session);
     assert(session.profiles.Snapshot().operation_error == Passepartout::ProfileObservable::OperationErrorContext::import);
     assert(session.profiles.Snapshot().profiles.size() == 1);
-    auto empty = Passepartout::Configuration::CollectFiles(0, [](std::size_t) -> std::filesystem::path {
+    auto empty = Passepartout::CollectConfigurationFiles(0, [](std::size_t) -> std::filesystem::path {
         assert(false);
         return {};
     });
@@ -627,7 +627,7 @@ void TestSelectionFailures(const std::filesystem::path &root) {
 
 void TestLargeSelection(const std::filesystem::path &root) {
     constexpr std::size_t count = 40;
-    auto selected = Passepartout::Configuration::CollectFiles(count, [&](std::size_t index) {
+    auto selected = Passepartout::CollectConfigurationFiles(count, [&](std::size_t index) {
         const auto path = root / ("batch-" + std::to_string(index) + ".conf");
         std::ofstream(path) << "batch-" << index;
         return path;
@@ -758,19 +758,26 @@ int main() {
     assert(Profiles::Directory("root", constants) == std::filesystem::path("root/testing"));
     constants.containers.local = "../outside";
     Rejects([&] { Profiles::Directory("root", constants); });
-    const auto imported = Example();
-    const auto success = Partout::Json{{"payload", imported.ToJson()}};
-    assert(Imports::DecodeResult(success.Encode().c_str()) == imported);
-    auto explicit_success = success;
-    explicit_success.Set("code", nullptr);
-    assert(Imports::DecodeResult(explicit_success.Encode().c_str()) == imported);
-    auto failure = success;
-    failure.Set("code", "parsing");
-    Rejects([&] { Imports::DecodeResult(failure.Encode().c_str()); });
-    Rejects([] { Imports::DecodeResult(nullptr); });
-    Rejects([] { Imports::DecodeResult("not JSON"); });
-    Rejects([] { Imports::DecodeResult("{}"); });
-    Rejects([&] { Imports::DecodeResult(imported.ToJson().Encode().c_str()); });
+    const auto imported = ImportProfile(
+        "[Interface]\n"
+        "PrivateKey = 4hBza7JtPKZFKwqtEmDR0iZyru1kqpQta/DRduMbHQw=\n"
+        "Address = 10.0.0.2/32\n"
+        "[Peer]\n"
+        "PublicKey = muwialz9E36nXp9qgbGIxwMrH+5Ovr8d7cutH8JHdvE=\n"
+        "AllowedIPs = 0.0.0.0/0\n"
+        "Endpoint = wg.example.com:51820\n",
+        "Imported WireGuard"
+    );
+    assert(imported.name == "Imported WireGuard");
+    assert(!imported.modules.empty());
+    for (const auto *invalid : {"", "not a configuration", "{}"}) {
+        try {
+            ImportProfile(invalid, "Invalid");
+            assert(false);
+        } catch (const std::runtime_error &error) {
+            assert(std::string(error.what()) == "Partout could not import this configuration.");
+        }
+    }
     const auto root = std::filesystem::temp_directory_path() /
         ("passepartout-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
     std::filesystem::create_directories(root);

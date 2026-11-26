@@ -8,6 +8,7 @@
 #include "../business/extensions/AppConstantsExtensions.h"
 #include "../business/strategy/FakeTunnelStrategy.h"
 #include "partout.h"
+#include <partout/models/ABIEnvelope.h>
 #include <algorithm>
 #include <cctype>
 #include <cstdlib>
@@ -38,7 +39,16 @@ Profile ImportProfile(const std::string &text, const std::string &name) {
     std::unique_ptr<char, decltype(&std::free)> json(
         partout_import_profile(text.c_str(), nullptr, name.c_str()), &std::free
     );
-    return Imports::DecodeResult(json.get());
+    if (!json) throw std::runtime_error("Partout could not import this configuration.");
+    try {
+        const auto envelope = Partout::Models::ABIEnvelope::FromJson(Partout::Json::Parse(json.get()));
+        if (envelope.code || !envelope.payload)
+            throw std::runtime_error("Import failed");
+        return Profile::FromJson(*envelope.payload);
+    } catch (...) {
+        // ABI errors and parser details may contain configuration secrets.
+        throw std::runtime_error("Partout could not import this configuration.");
+    }
 }
 
 std::unique_ptr<HttpClient> MakeHttpClient(const Models::AppConstants &constants) {
