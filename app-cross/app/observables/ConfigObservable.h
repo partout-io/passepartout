@@ -10,7 +10,7 @@ namespace Passepartout {
 class ConfigObservable final {
 public:
     struct State {
-        ConfigManager::Flags flags;
+        ConfigFlags flags;
         bool refreshing = false;
         bool failed = false;
     };

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../models/ConfigBundle.h"
+#include "../extensions/Models+Business.h"
 #include <optional>
 
 namespace Passepartout {

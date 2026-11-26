@@ -6,6 +6,11 @@
 #include <partout/models/TaggedProfile.h>
 #include <filesystem>
 #include "AppPreferences.h"
+#include "ConfigBundleConfig.h"
+#include "ConfigFlag.h"
+#include <partout/models/OpenVpnPullMask.h>
+#include <partout/models/OpenVpnRoutingPolicy.h>
+#include <map>
 #include "Issue.h"
 #include "AppTunnelInfo.h"
 #include "../../../models/Credits.h"
@@ -15,7 +20,12 @@
 #include <stdexcept>
 
 namespace Passepartout {
+using ConfigBundle = std::map<Models::ConfigFlag::eConfigFlag, Models::ConfigBundleConfig>;
+using ConfigFlags = std::map<Models::ConfigFlag::eConfigFlag, Partout::Json>;
 using Profile = Partout::Models::TaggedProfile;
+using PullMask = Partout::Models::OpenVpnPullMask;
+using RoutingPolicy = Partout::Models::OpenVpnRoutingPolicy;
+using Status = Models::AppProfileStatus::eAppProfileStatus;
 
 namespace Profiles {
 constexpr std::size_t MaxConfigurationBytes = 1024 * 1024;
@@ -34,8 +44,6 @@ namespace Credits {
 Models::Platform::ePlatform CurrentPlatform();
 void Filter(Models::Credits &credits, Models::Platform::ePlatform platform);
 }
-
-using Status = Models::AppProfileStatus::eAppProfileStatus;
 
 namespace Tunnels {
 std::vector<Models::AppTunnelInfo> Info(const std::vector<Partout::Models::TunnelSnapshot> &snapshots);

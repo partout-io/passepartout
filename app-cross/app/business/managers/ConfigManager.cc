@@ -12,7 +12,7 @@ ConfigManager::ConfigManager(std::unique_ptr<ConfigManagerStrategy> strategy, in
 bool ConfigManager::Refresh() {
     const auto bundle = strategy_->Bundle();
     if (!bundle) return false;
-    Flags flags;
+    ConfigFlags flags;
     for (const auto &entry : *bundle) {
         const auto &config = entry.second;
         if (config.rate != 100 || (config.minBuild && *config.minBuild > build_)) continue;
@@ -25,7 +25,7 @@ bool ConfigManager::Refresh() {
     return true;
 }
 
-const ConfigManager::Flags &ConfigManager::ActiveFlags() const {
+const ConfigFlags &ConfigManager::ActiveFlags() const {
     return flags_;
 }
 
