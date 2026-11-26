@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "../models/InteractiveLogin.h"
+#include <optional>
 #include <partout/models/TaggedProfile.h>
 #include <filesystem>
 #include "AppPreferences.h"
@@ -32,6 +34,7 @@ void ValidateIdentity(const Profile &profile);
 std::string ConfigurationName(const std::filesystem::path &path);
 std::string ReadConfiguration(const std::filesystem::path &path);
 void Sort(std::vector<Profile> &profiles);
+std::optional<InteractiveLogin> PrepareInteractiveLogin(const Profile &profile);
 }
 
 namespace Preferences {

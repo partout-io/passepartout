@@ -181,7 +181,7 @@ void TunnelObservable::Connect(std::string id) {
             return profile.id == id;
         });
         if (found == profiles_.end()) return;
-        interactive_login_ = InteractiveLogin::FromProfile(*found);
+        interactive_login_ = Profiles::PrepareInteractiveLogin(*found);
     }
     if (!interactive_login_) ConnectProfile(std::move(id));
 }
@@ -219,7 +219,7 @@ std::optional<InteractiveLogin> TunnelObservable::TakeInteractiveLogin() {
 void TunnelObservable::CompleteInteractiveLogin(InteractiveLogin login) {
     if (!login.CanSubmit() || !StateForProfile(Snapshot(), login.original.id).can_interact) return;
     const auto id = login.original.id;
-    ConnectProfile(id, Partout::TunnelCredentials{login.credentials.username, login.credentials.password});
+    ConnectProfile(id, std::move(login.credentials));
 }
 
 void TunnelObservable::ConnectProfile(std::string id, std::optional<Partout::TunnelCredentials> credentials) {

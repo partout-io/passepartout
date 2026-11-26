@@ -97,6 +97,30 @@ bool Passepartout::Profiles::IsSafeId(const std::string &id) {
         });
 }
 
+std::optional<Passepartout::InteractiveLogin> Passepartout::Profiles::PrepareInteractiveLogin(const Profile &profile) {
+    for (const auto &tagged : profile.modules) {
+        const auto *openvpn = std::get_if<Partout::Models::TaggedModuleOpenVpn>(&tagged);
+        if (!openvpn) continue;
+        const auto &module = openvpn->value;
+        if (std::find(profile.activeModulesIds.begin(), profile.activeModulesIds.end(), module.id) == profile.activeModulesIds.end()) continue;
+        const auto &saved = module.credentials;
+        const bool missing = !saved || (saved->username.empty() && saved->password.empty());
+        if (!module.requiresInteractiveCredentials.value_or(false) &&
+            !(module.configuration && (module.configuration->staticChallenge.value_or(false) ||
+                (module.configuration->authUserPass.value_or(false) && missing)))) continue;
+        InteractiveLogin login{};
+        login.original = profile;
+        if (saved) {
+            login.credentials = {saved->username, saved->password};
+            login.needs_otp = saved->otpMethod.value != Partout::Models::OpenVpnCredentialsOTPMethod::none;
+        }
+        // The native adapter receives the raw OTP; Partout applies its encoding.
+        if (login.needs_otp) login.credentials.password.clear();
+        return login;
+    }
+    return std::nullopt;
+}
+
 void Passepartout::Profiles::Sort(std::vector<Profile> &profiles) {
     std::sort(profiles.begin(), profiles.end(), [](const auto &a, const auto &b) {
         const auto left = LowerName(a.name);

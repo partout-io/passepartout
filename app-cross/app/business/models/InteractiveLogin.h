@@ -3,14 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../extensions/Models+Business.h"
+#include <partout/models/TaggedProfile.h>
+#include <partout/tunnel/TunnelCredentials.h>
 
 namespace Passepartout {
 struct InteractiveLogin {
-    Profile original;
-    Partout::Models::OpenVpnCredentials credentials;
+    Partout::Models::TaggedProfile original;
+    Partout::TunnelCredentials credentials;
     bool needs_otp = false;
-    static std::optional<InteractiveLogin> FromProfile(const Profile &profile);
     bool CanSubmit() const;
 };
 }
