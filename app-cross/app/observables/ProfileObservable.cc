@@ -96,7 +96,7 @@ void ProfileObservable::Publish() {
             header.name = profile.name;
             header.fingerprint = profile.id;
             if (profile.userInfo && profile.userInfo->IsObject()) {
-                const auto fingerprint = profile.userInfo->Find("fingerprint");
+                const auto fingerprint = profile.userInfo->Find(Profiles::FingerprintKey);
                 if (fingerprint && fingerprint->IsString())
                     header.fingerprint = fingerprint->Get<std::string>();
             }

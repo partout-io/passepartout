@@ -24,6 +24,8 @@ using Profile = Partout::Models::TaggedProfile;
 using Status = Models::AppProfileStatus::eAppProfileStatus;
 
 namespace Profiles {
+inline constexpr const char LastUpdateKey[] = "lastUpdate";
+inline constexpr const char FingerprintKey[] = "fingerprint";
 constexpr std::size_t MaxConfigurationBytes = 1024 * 1024;
 bool IsSafeId(const std::string &id);
 void ValidateIdentity(const Profile &profile);

@@ -57,7 +57,7 @@ std::wstring LowerName(const std::string &name) {
 
 double LastUpdate(const Passepartout::Profile &profile) {
     if (profile.userInfo && profile.userInfo->IsObject()) {
-        const auto value = profile.userInfo->Find("lastUpdate");
+        const auto value = profile.userInfo->Find(Passepartout::Profiles::LastUpdateKey);
         if (value) {
             if (value->IsNumber()) return value->Get<double>();
             if (value->IsString()) {
