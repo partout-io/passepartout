@@ -4,12 +4,11 @@
 
 #pragma once
 #include "../extensions/ModelsExtensions.h"
-#include <partout/tunnel/TunnelCredentials.h>
 
 namespace Passepartout {
 struct InteractiveLogin {
     Profile original;
-    Partout::TunnelCredentials credentials;
+    Partout::Models::OpenVpnCredentials credentials;
     bool needs_otp = false;
     static std::optional<InteractiveLogin> FromProfile(const Profile &profile);
     bool CanSubmit() const;

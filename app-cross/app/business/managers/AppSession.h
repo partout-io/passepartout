@@ -38,7 +38,8 @@ public:
     void ImportFiles(std::shared_ptr<const ConfigurationFiles> files);
     void ImportFailed();
     void Remove(std::vector<std::string> ids);
-    void Connect(std::string id, std::optional<Partout::TunnelCredentials> credentials = {});
+    void Connect(std::string id, std::optional<Partout::Models::OpenVpnCredentials> credentials = {},
+                 std::optional<Profile> original = {});
     void Disconnect(std::string id);
     void Refresh();
     void ClearError();

@@ -32,7 +32,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
-import com.algoritmico.passepartout.business.models.InteractiveLogin
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
 import com.algoritmico.passepartout.models.ProfileTransfer
@@ -72,8 +71,8 @@ fun ProfileContainerView(
     var requestedConnection by remember {
         mutableStateOf<RequestedConnection?>(null)
     }
-    var interactiveLogin by remember {
-        mutableStateOf<InteractiveLogin?>(null)
+    var interactiveProfile by remember {
+        mutableStateOf<TaggedProfile?>(null)
     }
     var previousActiveProfiles by remember {
         mutableStateOf<Map<String, AppTunnelInfo>>(emptyMap())
@@ -110,7 +109,7 @@ fun ProfileContainerView(
         profileId: String,
         enabled: Boolean,
         profile: TaggedProfile? = null,
-        login: InteractiveLogin? = null
+        force: Boolean = false
     ) {
         if (tunnelState.policy.alwaysOn == true) {
             openVpnSettings(context, errorHandler)
@@ -126,11 +125,7 @@ fun ProfileContainerView(
                     if (connectionProfile == null) {
                         false
                     } else {
-                        if (login != null) {
-                            tunnelObservable.connect(login)
-                        } else {
-                            tunnelObservable.connect(connectionProfile)
-                        }
+                        tunnelObservable.connect(connectionProfile, force = force)
                         true
                     }
                 } else {
@@ -140,7 +135,7 @@ fun ProfileContainerView(
             }.getOrElse {
                 when (it) {
                     is TunnelObservableException.Interactive -> {
-                        interactiveLogin = InteractiveLogin(it.profile)
+                        interactiveProfile = it.profile
                         false
                     }
                     else -> {
@@ -150,7 +145,7 @@ fun ProfileContainerView(
                 }
             }
             if (didStart && profile != null) {
-                interactiveLogin = null
+                interactiveProfile = null
             }
             if (!didStart && requestedConnection == request) {
                 requestedConnection = null
@@ -187,7 +182,7 @@ fun ProfileContainerView(
         if (tunnelState.policy.alwaysOn == true) {
             // A late policy update can reject a stop without a tunnel status change.
             requestedConnection = null
-            interactiveLogin = null
+            interactiveProfile = null
         }
     }
 
@@ -218,19 +213,19 @@ fun ProfileContainerView(
         )
     }
 
-    interactiveLogin?.let { login ->
+    interactiveProfile?.let { profile ->
         InteractiveView(
-            login = login,
+            profile = profile,
             onDismiss = {
-                interactiveLogin = null
+                interactiveProfile = null
             },
             onConnect = {
-                interactiveLogin = null
+                interactiveProfile = null
                 requestProfileConnection(
-                    profileId = it.original.id,
+                    profileId = it.id,
                     enabled = true,
-                    profile = it.original,
-                    login = it
+                    profile = it,
+                    force = true
                 )
             }
         )

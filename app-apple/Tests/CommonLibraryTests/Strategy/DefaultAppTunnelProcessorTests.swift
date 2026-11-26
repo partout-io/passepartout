@@ -10,32 +10,6 @@ import Testing
 @MainActor
 struct DefaultAppTunnelProcessorTests {
     @Test
-    func givenInteractiveLogin_whenConnecting_thenPersistsOnlyOriginal() async throws {
-        let original = try makeOpenVPNProfile(otp: nil)
-        let repository = RecordingProfileRepository()
-        let processor = makeProcessor(repository: repository)
-        let tunnel = TunnelObservable(
-            tunnel: PartoutTunnel(
-                .global,
-                strategy: FakeTunnelStrategy(delay: 0),
-                environmentFactory: { @Sendable _ in SharedTunnelEnvironment(profileId: nil) }
-            ),
-            willInstall: processor.willInstall
-        )
-        var login = InteractiveLogin(original: original)
-        #expect(login.needsOTP)
-        #expect(login.password.isEmpty)
-        login.password = "123456"
-        let prepared = try login.connectionProfile()
-        let credentials = try #require((prepared.activeModules.first as? OpenVPNModule)?.credentials)
-        #expect(credentials.password == "password")
-        #expect(credentials.otp == "123456")
-        try await tunnel.connect(with: login)
-        #expect(await repository.persistedProfiles == [original])
-        #expect(await repository.savedProfiles.isEmpty)
-    }
-
-    @Test
     func givenTransientOTP_whenConnecting_thenSavesProfile() async throws {
         let profile = try makeOpenVPNProfile(otp: "123456")
         let repository = InMemoryProfileRepository()

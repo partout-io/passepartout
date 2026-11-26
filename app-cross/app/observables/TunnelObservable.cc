@@ -49,7 +49,7 @@ std::optional<InteractiveLogin> TunnelObservable::TakeInteractiveLogin() {
 void TunnelObservable::CompleteInteractiveLogin(InteractiveLogin login) {
     if (!login.CanSubmit() || !StateForProfile(Snapshot(), login.original.id).can_interact) return;
     const auto id = login.original.id;
-    session_.Connect(id, std::move(login.credentials));
+    session_.Connect(id, std::move(login.credentials), std::move(login.original));
 }
 
 void TunnelObservable::Disconnect(std::string id) {
