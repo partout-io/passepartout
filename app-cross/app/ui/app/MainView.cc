@@ -45,6 +45,9 @@ MainView::MainView(AppContext &context, bool demo,
         },
         [this](std::string id) {
             Edit(id);
+        },
+        [this](InteractiveLogin login) {
+            PresentInteractiveLogin(std::move(login));
         });
     layout->Add(collection_, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, gap);
     message_ = Theme::EmptyMessage(panel, Localized(StringKey::GlobalNounsLoading));
@@ -163,7 +166,6 @@ void MainView::UpdateActions() {
 }
 
 void MainView::Tick(wxTimerEvent &) {
-    PresentInteractiveLogin();
     if (picking_) {
         if (auto result = picker_->Poll()) {
             picking_ = false;
@@ -209,18 +211,17 @@ void MainView::Tick(wxTimerEvent &) {
     }
 }
 
-void MainView::PresentInteractiveLogin() {
-    auto login = context_.tunnel.TakeInteractiveLogin();
-    if (!login) return;
+void MainView::PresentInteractiveLogin(InteractiveLogin login) {
     timer_.Stop();
-    ThemeModal modal(this, Text(login->original.name), [&login](wxWindow *parent) {
-        return new InteractiveLoginView(parent, *login);
+    ThemeModal modal(this, Text(login.original.name), [&login](wxWindow *parent) {
+        return new InteractiveLoginView(parent, login);
     }, ThemeModal::Mode::Editable, ThemeModal::Sizing::Content,
-        [&login] { return login->CanSubmit(); });
+        [&login] { return login.CanSubmit(); });
     auto *connect = wxDynamicCast(modal.FindWindow(wxID_OK), wxButton);
     connect->SetLabel(Localized(StringKey::GlobalActionsConnect));
     const auto result = modal.ShowModal();
-    if (result == wxID_OK) context_.tunnel.CompleteInteractiveLogin(std::move(*login));
+    if (result == wxID_OK && login.CanSubmit())
+        context_.tunnel.Connect(std::move(login.original), std::move(login.credentials));
     timer_.Start(200);
 }
 

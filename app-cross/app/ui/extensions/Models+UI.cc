@@ -56,3 +56,27 @@ std::string Profiles::TransferText(const Models::ProfileTransfer &transfer, Data
            " \xe2\x86\x91" + DataUnits::Format(transfer.sent, formatter);
 }
 }
+
+namespace Passepartout::Tunnels {
+ToggleState StateForProfile(const TunnelObservable::State &state, const std::string &id) {
+    ToggleState result;
+    for (const auto &tunnel : state.tunnels) {
+        if (tunnel.id == id) {
+            result.is_on = tunnel.isEnabled;
+            result.status = tunnel.status.value;
+        }
+    }
+    result.can_interact = !state.activity.foreground && !state.pending_profile && state.available &&
+        state.observation_errors.find(id) == state.observation_errors.end() &&
+        result.status != Status::disconnecting;
+    return result;
+}
+
+std::optional<InteractiveLogin> SetEnabled(TunnelObservable &tunnel, Profile profile, bool enabled) {
+    const auto state = StateForProfile(tunnel.Snapshot(), profile.id);
+    if (!state.can_interact || state.is_on == enabled) return {};
+    if (enabled) return tunnel.Connect(std::move(profile));
+    tunnel.Disconnect(profile.id);
+    return {};
+}
+}

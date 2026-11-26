@@ -18,7 +18,9 @@ public:
     ProfileListView(wxWindow *parent, ProfileObservable &profiles, TunnelObservable &tunnel,
         std::function<void()> selection_changed,
         std::function<void(std::vector<std::string>)> remove,
-        std::function<void(std::string)> edit);
+        std::function<void(std::string)> edit,
+        std::function<void(InteractiveLogin)> login
+    );
     static constexpr unsigned TransferColumn = 2;
     static constexpr unsigned ToggleColumn = 3;
     void Render(const ProfileObservable::State &profiles, const TunnelObservable::State &tunnel,
@@ -38,6 +40,7 @@ private:
     std::function<void()> selection_changed_;
     std::function<void(std::vector<std::string>)> remove_;
     std::function<void(std::string)> edit_;
+    std::function<void(InteractiveLogin)> login_;
     wxSearchCtrl *search_;
     ThemeList *list_;
     ProfileObservable::State profiles_;

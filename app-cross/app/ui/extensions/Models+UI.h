@@ -4,6 +4,7 @@
 
 #pragma once
 #include "../../business/strategy/ConfigurationFiles.h"
+#include "../../observables/TunnelObservable.h"
 #include <cstdint>
 #include <string>
 #include <functional>
@@ -50,4 +51,15 @@ FileConfigurationFiles CollectFiles(std::size_t count, Stage stage) {
     }
     return FileConfigurationFiles(std::move(paths), failures);
 }
+}
+
+namespace Passepartout::Tunnels {
+struct ToggleState final {
+    bool is_on = false;
+    bool can_interact = false;
+    Status status = Status::disconnected;
+};
+
+ToggleState StateForProfile(const TunnelObservable::State &state, const std::string &id);
+std::optional<InteractiveLogin> SetEnabled(TunnelObservable &tunnel, Profile profile, bool enabled);
 }

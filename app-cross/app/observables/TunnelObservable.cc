@@ -65,46 +65,17 @@ void TunnelObservable::Publish() {
     snapshot_ = std::move(state);
 }
 
-void TunnelObservable::Connect(Profile profile) {
-    interactive_login_ = Profiles::InteractiveLoginFor(profile);
-    if (!interactive_login_) ConnectProfile(std::move(profile));
-}
-
-TunnelObservable::ToggleState TunnelObservable::StateForProfile(const State &state, const std::string &id) {
-    ToggleState result;
-    for (const auto &tunnel : state.tunnels) {
-        if (tunnel.id == id) {
-            result.is_on = tunnel.isEnabled;
-            result.status = tunnel.status.value;
-        }
+std::optional<InteractiveLogin> TunnelObservable::Connect(
+    Profile profile, std::optional<Partout::TunnelCredentials> credentials
+) {
+    if (!credentials) {
+        auto login = Profiles::InteractiveLoginFor(profile);
+        if (login) return login;
     }
-    result.can_interact = !state.activity.foreground && !state.pending_profile && state.available &&
-        state.observation_errors.find(id) == state.observation_errors.end() &&
-        result.status != Status::disconnecting;
-    return result;
-}
-
-void TunnelObservable::SetEnabled(Profile profile, bool enabled) {
-    const auto state = StateForProfile(Snapshot(), profile.id);
-    if (!state.can_interact || state.is_on == enabled) return;
-    if (enabled) Connect(std::move(profile));
-    else Disconnect(profile.id);
-}
-
-std::optional<InteractiveLogin> TunnelObservable::TakeInteractiveLogin() {
-    auto login = std::move(interactive_login_);
-    interactive_login_.reset();
-    return login;
-}
-
-void TunnelObservable::CompleteInteractiveLogin(InteractiveLogin login) {
-    if (login.CanSubmit()) ConnectProfile(std::move(login.original), std::move(login.credentials));
-}
-
-void TunnelObservable::ConnectProfile(Profile profile, std::optional<Partout::TunnelCredentials> credentials) {
     Post([this, profile = std::move(profile), credentials = std::move(credentials)] {
         tunnel_->Connect(profile, credentials);
     });
+    return {};
 }
 
 void TunnelObservable::Disconnect(std::string id) {

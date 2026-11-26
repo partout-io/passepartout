@@ -24,21 +24,11 @@ public:
         bool HasActivity() const;
     };
 
-    struct ToggleState final {
-        bool is_on = false;
-        bool can_interact = false;
-        Status status = Status::disconnected;
-    };
     TunnelObservable(Worker &executor, std::unique_ptr<Partout::Tunnel> tunnel, ProfileManager &profiles);
     ~TunnelObservable();
     void Cancel();
-    static ToggleState StateForProfile(const State &state, const std::string &id);
-    void SetEnabled(Profile profile, bool enabled);
-    void Connect(Profile profile);
-    // Connect with credentials already collected by the presentation layer.
-    void ConnectProfile(Profile profile, std::optional<Partout::TunnelCredentials> credentials = {});
-    std::optional<InteractiveLogin> TakeInteractiveLogin();
-    void CompleteInteractiveLogin(InteractiveLogin login);
+    // Returns a login request without connecting when credentials are needed.
+    std::optional<InteractiveLogin> Connect(Profile profile, std::optional<Partout::TunnelCredentials> credentials = {});
     void Disconnect(std::string id);
     void Refresh();
     void ClearOperationError();
@@ -52,7 +42,6 @@ private:
     void Publish();
     Worker &executor_;
     std::unique_ptr<Partout::Tunnel> tunnel_;
-    std::optional<InteractiveLogin> interactive_login_;
     mutable std::mutex mutex_;
     State snapshot_;
 };

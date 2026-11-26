@@ -49,9 +49,11 @@ using Passepartout::ProfileListView;
 ProfileListView::ProfileListView(wxWindow *parent, ProfileObservable &profiles, TunnelObservable &tunnel,
     std::function<void()> selection_changed,
     std::function<void(std::vector<std::string>)> remove,
-    std::function<void(std::string)> edit)
+    std::function<void(std::string)> edit,
+    std::function<void(InteractiveLogin)> login
+)
     : wxPanel(parent), profiles_observable_(profiles), tunnel_(tunnel), selection_changed_(std::move(selection_changed)),
-      remove_(std::move(remove)), edit_(std::move(edit)) {
+      remove_(std::move(remove)), edit_(std::move(edit)), login_(std::move(login)) {
     auto *layout = new wxBoxSizer(wxVERTICAL);
     search_ = new wxSearchCtrl(this, wxID_ANY);
     search_->ShowCancelButton(true);
@@ -140,7 +142,7 @@ void ProfileListView::RenderRows() {
     unsigned row = 0;
     for (const auto &profile : profiles_.profiles) {
         if (!query.empty() && !Text(profile.name).Lower().Contains(query)) continue;
-        const auto toggle = TunnelObservable::StateForProfile(tunnels_, profile.id);
+        const auto toggle = Tunnels::StateForProfile(tunnels_, profile.id);
         const auto status = tunnels_.available &&
             tunnels_.observation_errors.find(profile.id) == tunnels_.observation_errors.end()
             ? StatusText(toggle.status) : wxString();
@@ -170,7 +172,10 @@ void ProfileListView::ToggleProfile(wxDataViewEvent &event) {
     const auto row = list_->ItemToRow(event.GetItem());
     if (row < 0 || static_cast<std::size_t>(row) >= visible_ids_.size()) return;
     const auto profile = profiles_observable_.FindProfile(visible_ids_[row]);
-    if (profile) tunnel_.SetEnabled(*profile, list_->GetToggleValue(row, ProfileListView::ToggleColumn));
+    if (profile) {
+        auto login = Tunnels::SetEnabled(tunnel_, *profile, list_->GetToggleValue(row, ProfileListView::ToggleColumn));
+        if (login) login_(std::move(*login));
+    }
     // Restore observed state immediately; the next snapshot supplies completion
     // or failure instead of displaying an optimistic connection as successful.
     tunnels_ = tunnel_.Snapshot();

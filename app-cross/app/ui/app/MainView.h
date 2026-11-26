@@ -22,7 +22,7 @@ private:
     void Render();
     void UpdateActions();
     void Import();
-    void PresentInteractiveLogin();
+    void PresentInteractiveLogin(Passepartout::InteractiveLogin login);
     void Edit(const std::string &id);
     void Remove(std::vector<std::string> ids);
     void Tick(wxTimerEvent &);
