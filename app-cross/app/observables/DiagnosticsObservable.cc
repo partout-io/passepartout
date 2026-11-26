@@ -13,7 +13,7 @@ constexpr std::size_t MaxCommentBytes = 64 * 1024;
 
 namespace Passepartout {
 DiagnosticsObservable::DiagnosticsObservable(std::string recipient, CrossConstantsType::App app,
-                                             std::string app_log_filename, Handoff handoff
+                                             std::string app_log_filename, IssueHandoff handoff
 )
     : recipient_(std::move(recipient)),
       app_line_(app.name + " " + app.version_number + " (" + std::to_string(app.build_number) + ")"),

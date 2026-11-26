@@ -12,9 +12,9 @@
 namespace Passepartout {
 class DiagnosticsObservable final {
 public:
-    using Handoff = std::function<bool(const std::string &, const Models::Issue &)>;
+    using IssueHandoff = std::function<bool(const std::string &, const Models::Issue &)>;
     DiagnosticsObservable(std::string recipient, CrossConstantsType::App app,
-                          std::string app_log_filename, Handoff handoff
+                          std::string app_log_filename, IssueHandoff handoff
     );
     std::string ApplicationLog() const;
     std::optional<std::string> TunnelLog() const;
@@ -24,6 +24,6 @@ private:
     std::string recipient_;
     std::string app_line_;
     std::string app_log_filename_;
-    Handoff handoff_;
+    IssueHandoff handoff_;
 };
 }
