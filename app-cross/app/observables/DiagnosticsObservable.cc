@@ -7,11 +7,16 @@
 #include "SettingsResources.h"
 #include <stdexcept>
 
+namespace {
+constexpr std::size_t MaxCommentBytes = 64 * 1024;
+}
+
 namespace Passepartout {
 DiagnosticsObservable::DiagnosticsObservable(std::string recipient, CrossConstantsType::App app,
                                              std::string app_log_filename, Handoff handoff
 )
-    : recipient_(std::move(recipient)), app_(std::move(app)),
+    : recipient_(std::move(recipient)),
+      app_line_(app.name + " " + app.version_number + " (" + std::to_string(app.build_number) + ")"),
       app_log_filename_(std::move(app_log_filename)), handoff_(std::move(handoff)) {}
 
 std::string DiagnosticsObservable::ApplicationLog() const {
@@ -23,11 +28,11 @@ std::optional<std::string> DiagnosticsObservable::TunnelLog() const {
     return {};
 }
 
-bool DiagnosticsObservable::Report(const std::string &comment) {
-    if (comment.size() > 64 * 1024) throw std::invalid_argument("The comment is too long.");
+bool DiagnosticsObservable::Report(const std::string &comment) const {
+    if (comment.size() > MaxCommentBytes) throw std::invalid_argument("The comment is too long.");
     Models::Issue issue;
     issue.comment = comment;
-    issue.appLine = app_.name + " " + app_.version_number + " (" + std::to_string(app_.build_number) + ")";
+    issue.appLine = app_line_;
     issue.osLine = IssuePlatform;
     const auto runtime_log = AppLog::RuntimeLog(false);
     if (!runtime_log.empty()) {

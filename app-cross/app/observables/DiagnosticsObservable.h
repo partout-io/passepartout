@@ -19,10 +19,10 @@ public:
     std::string ApplicationLog() const;
     std::optional<std::string> TunnelLog() const;
     // The native handler must present a draft and own temporary attachment files.
-    bool Report(const std::string &comment);
+    bool Report(const std::string &comment) const;
 private:
     std::string recipient_;
-    CrossConstantsType::App app_;
+    std::string app_line_;
     std::string app_log_filename_;
     Handoff handoff_;
 };
