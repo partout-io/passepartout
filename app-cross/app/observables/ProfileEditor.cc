@@ -3,33 +3,17 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ProfileEditor.h"
-#include <algorithm>
 #include <type_traits>
 
-namespace {
-std::string ModuleId(const Partout::Models::TaggedModule &module) {
-    return std::visit([](const auto &value) -> std::string {
-        if constexpr (std::is_same_v<std::decay_t<decltype(value)>, Partout::Models::TaggedModuleCustom>) {
-            return {};
-        } else {
-            return value.value.id;
-        }
-    }, module);
-}
-}
-
-using Passepartout::ProfileEditor;
-
-ProfileEditor::ProfileEditor(Profile profile) : original_(std::move(profile)) {
-    state_.draft = original_;
-}
+namespace Passepartout {
+ProfileEditor::ProfileEditor(Profile profile) : original_(std::move(profile)), state_{original_} {}
 
 ProfileEditor::State ProfileEditor::Snapshot() const {
     std::lock_guard lock(mutex_);
     return state_;
 }
 
-const Passepartout::Profile &ProfileEditor::Original() const {
+const Profile &ProfileEditor::Original() const {
     return original_;
 }
 
@@ -42,14 +26,19 @@ void ProfileEditor::Rename(std::string name) {
 void ProfileEditor::UpdateModule(const Partout::Models::TaggedModule &module) {
     std::lock_guard lock(mutex_);
     if (state_.saving || state_.saved) return;
-    const auto id = ModuleId(module);
-    if (id.empty()) return;
-    for (auto &existing : state_.draft.modules) {
-        if (ModuleId(existing) == id && existing.index() == module.index()) {
-            existing = module;
-            return;
+    std::visit([this](const auto &replacement) {
+        using Module = std::decay_t<decltype(replacement)>;
+        if constexpr (!std::is_same_v<Module, Partout::Models::TaggedModuleCustom>) {
+            if (replacement.value.id.empty()) return;
+            for (auto &module : state_.draft.modules) {
+                auto *existing = std::get_if<Module>(&module);
+                if (existing && existing->value.id == replacement.value.id) {
+                    *existing = replacement;
+                    return;
+                }
+            }
         }
-    }
+    }, module);
 }
 
 bool ProfileEditor::IsValidChange() const {
@@ -80,4 +69,5 @@ void ProfileEditor::FinishSave(bool succeeded) {
 void ProfileEditor::ClearOperationError() {
     std::lock_guard lock(mutex_);
     state_.operation_failed = false;
+}
 }

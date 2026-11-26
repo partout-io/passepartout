@@ -28,7 +28,6 @@ public:
     void Cancel();
     static bool CanRemove(const State &state, const std::vector<std::string> &ids);
     static bool CanSave(const State &state, const std::string &id);
-    std::optional<Profile> FindProfile(const std::string &id) const;
     std::shared_ptr<ProfileEditor> CreateEditor(const std::string &id) const;
     void SaveEditor(std::shared_ptr<ProfileEditor> editor);
     void Load();
@@ -39,6 +38,7 @@ public:
     State Snapshot() const;
     void ClearOperationError();
 private:
+    std::optional<Profile> FindProfile(const std::string &id) const;
     bool Post(std::function<void()> operation, OperationErrorContext context = OperationErrorContext::general);
     void Publish();
     Worker &executor_;
@@ -46,6 +46,7 @@ private:
     mutable std::mutex mutex_;
     State snapshot_;
     std::vector<Profile> published_profiles_;
+    // Accessed only on the shared worker.
     ChangeHandler on_change_;
     std::shared_ptr<const ConfigurationFiles> importing_files_;
 };

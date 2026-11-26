@@ -15,10 +15,7 @@ ProfileObservable::ProfileObservable(Worker &executor, std::unique_ptr<ProfileMa
 
 void ProfileObservable::OnChange(ChangeHandler handler) {
     executor_.Dispatch([this, handler = std::move(handler)] {
-        {
-            std::lock_guard lock(mutex_);
-            on_change_ = handler;
-        }
+        on_change_ = handler;
         Publish();
     }, false);
 }
@@ -87,20 +84,21 @@ bool ProfileObservable::CanRemove(const State &state, const std::vector<std::str
 
 void ProfileObservable::Publish() {
     try {
+        const auto &profiles = manager_->Profiles();
         std::vector<Models::AppProfileHeader> headers;
-        for (const auto &profile : manager_->Profiles()) {
+        headers.reserve(profiles.size());
+        for (const auto &profile : profiles) {
             headers.push_back(Profiles::Header(profile));
         }
-        ChangeHandler handler;
+        const auto handler = on_change_;
         bool loaded;
         {
             std::lock_guard lock(mutex_);
             snapshot_.profiles = std::move(headers);
-            published_profiles_ = manager_->Profiles();
-            handler = on_change_;
+            published_profiles_ = profiles;
             loaded = snapshot_.loaded;
         }
-        if (handler) handler(manager_->Profiles(), loaded);
+        if (handler) handler(profiles, loaded);
     } catch (...) {
         std::lock_guard lock(mutex_);
         snapshot_.operation_error = "Unable to publish saved profiles.";
@@ -157,19 +155,14 @@ void ProfileObservable::ImportFiles(std::shared_ptr<const ConfigurationFiles> fi
         // Process every supplied activation, even if one configuration fails.
         std::size_t failures = files->SelectionFailures();
         for (std::size_t index = 0; index < files->Count(); ++index) {
-            {
-                std::lock_guard lock(mutex_);
-                if (executor_.IsStopping()) return;
-            }
+            if (executor_.IsStopping()) return;
             try {
                 AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Import profile...");
                 const auto source = files->Read(index);
                 manager_->ImportText(source.text, source.name);
                 AppLog::Write(AppLog::Level::info, AppLog::Category::profiles, "Finished saving profile");
-            } catch (const std::exception &) {
-                AppLog::Write(AppLog::Level::error, AppLog::Category::profiles, "Unable to import profile");
-                ++failures;
             } catch (...) {
+                AppLog::Write(AppLog::Level::error, AppLog::Category::profiles, "Unable to import profile");
                 ++failures;
             }
         }

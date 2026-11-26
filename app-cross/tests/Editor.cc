@@ -159,7 +159,6 @@ int main() {
         auto pending = profiles.CreateEditor(original.id);
         assert(pending);
         assert(!profiles.CreateEditor("missing-profile"));
-        assert(!session.profiles.FindProfile("missing-profile"));
         pending->Rename("Retry name");
         backend->rejects = true;
         profiles.SaveEditor(pending);
