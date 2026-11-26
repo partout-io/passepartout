@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "business/strategy/MemoryProfileJournal.h"
 #include "../app/business/models/FileConfigurationFiles.h"
 #include "business/managers/ProfileManager.h"
 #include "business/strategy/FileProfileRepository.h"

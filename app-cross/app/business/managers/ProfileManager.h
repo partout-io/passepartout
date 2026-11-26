@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "../strategy/MemoryProfileJournal.h"
 #include "../strategy/ProfileRepository.h"
 #include "../strategy/ProfileJournal.h"
 #include <functional>

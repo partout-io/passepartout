@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "../strategy/MemoryProfileJournal.h"
 #include "../models/AppSnapshot.h"
 #include "ProfileManager.h"
 #include <partout/tunnel/Tunnel.h>

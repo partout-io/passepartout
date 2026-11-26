@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "ProfileJournal.h"
+#include "MemoryProfileJournal.h"
 
 namespace Passepartout {
 std::vector<ProfileTransaction> MemoryProfileJournal::Fetch() {

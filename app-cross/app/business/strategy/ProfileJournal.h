@@ -4,7 +4,6 @@
 
 #pragma once
 #include "../extensions/Models+Business.h"
-#include <map>
 #include <optional>
 
 namespace Passepartout {
@@ -19,14 +18,5 @@ public:
     virtual std::vector<ProfileTransaction> Fetch() = 0;
     virtual void Save(const ProfileTransaction &transaction) = 0;
     virtual void Remove(const std::string &id) = 0;
-};
-// Ephemeral journal for injected test repositories; production uses FileProfileJournal.
-class MemoryProfileJournal final : public ProfileJournal {
-public:
-    std::vector<ProfileTransaction> Fetch() override;
-    void Save(const ProfileTransaction &transaction) override;
-    void Remove(const std::string &id) override;
-private:
-    std::map<std::string, ProfileTransaction> transactions_;
 };
 }
