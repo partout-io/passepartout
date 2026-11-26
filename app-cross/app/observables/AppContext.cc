@@ -47,7 +47,8 @@ bool ReviewIssue(const std::string &recipient, const Passepartout::Models::Issue
 
 Passepartout::Profile ImportProfile(const std::string &text, const std::string &name) {
     std::unique_ptr<char, decltype(&std::free)> json(
-        partout_import_profile(text.c_str(), nullptr, name.c_str()), &std::free);
+        partout_import_profile(text.c_str(), nullptr, name.c_str()), &std::free
+    );
     return Passepartout::Imports::DecodeResult(json.get());
 }
 
@@ -93,36 +94,70 @@ AppContext::AppContext(
     CrossConstantsType frontend_constants,
     bool demo
 ) :
-      constants(std::move(app_constants)),
-      cross_constants(std::move(frontend_constants)),
-      wireguard_keygen(std::make_unique<PartoutWireGuardKeyGenerator>()),
-      profiles(executor_, std::make_unique<ProfileManager>(std::make_unique<FileProfileRepository>(
-          Profiles::Directory(data_root, constants)), ImportProfile)),
-      tunnel(executor_, MakeTunnel(demo, cross_constants), ApplyLoggingPreferences),
-      preferences(MakePreferencesRepository(
-          Profiles::Directory(data_root, constants), cross_constants), [this] {
-              const auto state = tunnel.Snapshot();
-              return profiles.Snapshot().loaded && !state.activity.busy && !state.pending_profile && state.available &&
-                  state.observation_errors.empty() && std::all_of(state.tunnels.begin(), state.tunnels.end(), [](const auto &info) {
-                      return info.status.value == Status::disconnected;
-                  });
-          }),
-      config(std::make_unique<ConfigManager>(std::make_unique<GitHubConfigStrategy>(MakeHttp(constants),
-          Constants::ConfigURL(constants.websites),
-          Constants::ConfigTTL(constants.websites)),
-          cross_constants.app.build_number, ApplicationPlatform())),
-      version(std::make_unique<VersionChecker>(cross_constants.app.version_number,
-          std::make_unique<GitHubReleaseStrategy>(MakeHttp(constants), constants.github.latestReleaseURL,
-              [github = constants.github](const std::string &build) {
-                  return Constants::ChangelogURL(github, build);
-              }), std::string(),
-          static_cast<std::int64_t>(constants.url.versionRateLimit), preferences.Snapshot().lastCheckedVersionTimestamp,
-          preferences.Snapshot().lastCheckedVersion, [this](auto timestamp, auto latest) {
-              preferences.SetLastCheckedVersion(timestamp, std::move(latest));
-          }), cross_constants.app.version_number, std::to_string(cross_constants.app.build_number), constants.github),
-      credits(CreditsResource, MakeHttp(constants), ApplicationPlatform()),
-      diagnostics(Constants::BetaEmail(constants.emails),
-          cross_constants.app, constants.log.filenames.app, ReviewIssue) {
+    constants(std::move(app_constants)),
+    cross_constants(std::move(frontend_constants)),
+    wireguard_keygen(std::make_unique<PartoutWireGuardKeyGenerator>()),
+    profiles(
+        executor_,
+        std::make_unique<ProfileManager>(
+            std::make_unique<FileProfileRepository>(Profiles::Directory(data_root, constants)),
+            ImportProfile
+        )
+    ),
+    tunnel(executor_, MakeTunnel(demo, cross_constants), ApplyLoggingPreferences),
+    preferences(
+        MakePreferencesRepository(Profiles::Directory(data_root, constants), cross_constants),
+        [this] {
+            const auto state = tunnel.Snapshot();
+            return profiles.Snapshot().loaded && !state.activity.busy && !state.pending_profile && state.available &&
+                state.observation_errors.empty() && std::all_of(
+                    state.tunnels.begin(), state.tunnels.end(),
+                    [](const auto &info) {
+                        return info.status.value == Status::disconnected;
+                    }
+                );
+        }
+    ),
+    config(
+        std::make_unique<ConfigManager>(
+            std::make_unique<GitHubConfigStrategy>(
+                MakeHttp(constants),
+                Constants::ConfigURL(constants.websites),
+                Constants::ConfigTTL(constants.websites)
+            ),
+            cross_constants.app.build_number,
+            ApplicationPlatform()
+        )
+    ),
+    version(
+        std::make_unique<VersionChecker>(
+            cross_constants.app.version_number,
+            std::make_unique<GitHubReleaseStrategy>(
+                MakeHttp(constants),
+                constants.github.latestReleaseURL,
+                [github = constants.github](const std::string &build) {
+                    return Constants::ChangelogURL(github, build);
+                }
+            ),
+            std::string(),
+            static_cast<std::int64_t>(constants.url.versionRateLimit),
+            preferences.Snapshot().lastCheckedVersionTimestamp,
+            preferences.Snapshot().lastCheckedVersion,
+            [this](auto timestamp, auto latest) {
+                preferences.SetLastCheckedVersion(timestamp, std::move(latest));
+            }
+        ),
+        cross_constants.app.version_number,
+        std::to_string(cross_constants.app.build_number),
+        constants.github
+    ),
+    credits(CreditsResource, MakeHttp(constants), ApplicationPlatform()),
+    diagnostics(
+        Constants::BetaEmail(constants.emails),
+        cross_constants.app,
+        constants.log.filenames.app,
+        ReviewIssue
+    ) {
     try {
         profiles.OnChange([this](std::vector<Profile> values, bool loaded) {
             tunnel.SetProfiles(std::move(values), loaded);
@@ -132,7 +167,11 @@ AppContext::AppContext(
             tunnel.ApplyPreferences(value);
         });
         config.Refresh();
-        AppLog::Write(AppLog::Level::info, AppLog::Category::core, demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)");
+        AppLog::Write(
+            AppLog::Level::info,
+            AppLog::Category::core,
+            demo ? "Application mode: demo (FakeTunnel)" : "Application mode: normal (Partout::Tunnel)"
+        );
     } catch (...) {
         executor_.RequestStop();
         profiles.Cancel();
@@ -152,4 +191,3 @@ AppContext::~AppContext() {
 Passepartout::Worker::Activity AppContext::Activity() const {
     return executor_.Snapshot();
 }
-
