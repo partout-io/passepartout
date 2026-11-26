@@ -13,6 +13,6 @@ Models::AppConstants Load();
 
 namespace Passepartout::Profiles {
 std::filesystem::path Directory(const std::filesystem::path &root,
-    const Models::AppConstants &constants, const CrossConstants &cross_constants, bool demo
+    const Models::AppConstants &constants, const CrossConstantsType &cross_constants, bool demo
 );
 }

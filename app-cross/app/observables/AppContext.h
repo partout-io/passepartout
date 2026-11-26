@@ -21,7 +21,7 @@ class AppSession;
 class AppContext final {
 public:
     const Models::AppConstants constants;
-    const CrossConstants cross_constants;
+    const CrossConstantsType cross_constants;
     const std::string application_version;
     const std::unique_ptr<WireGuardKeyGenerator> wire_guard_keys;
 private:
@@ -30,7 +30,7 @@ private:
 public:
     AppContext(const std::filesystem::path &data_root, bool demo,
                Models::AppConstants constants = Constants::Load(),
-               CrossConstants cross_constants = DefaultCrossConstants,
+               CrossConstantsType cross_constants = CrossConstants,
                std::function<void(const Models::AppPreferences &)> store_preferences = {}
     );
     ~AppContext();

@@ -18,8 +18,8 @@
 namespace {
 std::string SingleInstanceKey(bool demo) {
     // Scope both the instance lock and activation channel to the user and mode.
-    auto key = Passepartout::DefaultCrossConstants.tags.app + "-" + wxGetUserId().ToStdString(wxConvUTF8);
-    if (demo) key += Passepartout::DefaultCrossConstants.command_line.demo_argument;
+    auto key = Passepartout::CrossConstants.tags.app + "-" + wxGetUserId().ToStdString(wxConvUTF8);
+    if (demo) key += Passepartout::CrossConstants.command_line.demo_argument;
     return key;
 }
 }
@@ -32,14 +32,14 @@ bool PassepartoutApp::OnInit() {
     wxUILocale::UseDefault();
     AppLogger startup_logger;
     startup_logger.Write(LogLevel::info, LogCategory::core, "Start application");
-    SetAppName(wxString::FromUTF8(DefaultCrossConstants.tags.app));
+    SetAppName(wxString::FromUTF8(CrossConstants.tags.app));
 
     // Parse the launch mode and configuration paths.
     bool demo = false;
     std::vector<std::filesystem::path> files;
     for (int i = 1; i < argc; ++i) {
         const wxString arg(argv[i]);
-        if (arg == wxString::FromUTF8(DefaultCrossConstants.command_line.demo_argument)) demo = true;
+        if (arg == wxString::FromUTF8(CrossConstants.command_line.demo_argument)) demo = true;
         else files.push_back(Paths::FromString(arg));
     }
 
@@ -77,7 +77,7 @@ bool PassepartoutApp::OnInit() {
         std::function<void(const Models::AppPreferences &)> store_preferences;
         if (!demo) store_preferences = StoreAppPreferences;
         context_ = std::make_unique<AppContext>(
-            data_root, demo, Constants::Load(), DefaultCrossConstants, std::move(store_preferences)
+            data_root, demo, Constants::Load(), CrossConstants, std::move(store_preferences)
         );
         stage = "creating main window";
         startup_logger.Write(LogLevel::debug, LogCategory::core, "Create main window");

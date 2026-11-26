@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "../../context/PreferencesStorage.h"
-#include "../../context/PreferencesStorageKey.h"
+#include "../../context/CrossConstants.h"
 #include <partout/Json.h>
 #include <winrt/Windows.Foundation.Collections.h>
 #include <winrt/Windows.Storage.h>
@@ -19,5 +19,5 @@ void Passepartout::StoreAppPreferences(
     } apartment;
     // One atomic package setting is read by the host at the next activation.
     winrt::Windows::Storage::ApplicationData::Current().LocalSettings().Values().Insert(
-        AppPreferencesStorageKey, winrt::box_value(winrt::to_hstring(preferences.ToJson().Encode())));
+        CrossConstants.storage.preferences_key.c_str(), winrt::box_value(winrt::to_hstring(preferences.ToJson().Encode())));
 }

@@ -606,10 +606,10 @@ int main() {
     }
     auto constants = Constants::Load();
     assert(constants.containers.local == "Local");
-    assert(Profiles::Directory("root", constants, DefaultCrossConstants, false) == std::filesystem::path("root/local"));
-    assert(Profiles::Directory("root", constants, DefaultCrossConstants, true) == std::filesystem::path("root/demo-local"));
+    assert(Profiles::Directory("root", constants, CrossConstants, false) == std::filesystem::path("root/local"));
+    assert(Profiles::Directory("root", constants, CrossConstants, true) == std::filesystem::path("root/demo-local"));
     constants.containers.local = "Testing";
-    auto frontend_constants = DefaultCrossConstants;
+    auto frontend_constants = CrossConstants;
     frontend_constants.storage.demo_prefix = "preview-";
     assert(Profiles::Directory("root", constants, frontend_constants, true) == std::filesystem::path("root/preview-testing"));
     constants.containers.local = "../outside";

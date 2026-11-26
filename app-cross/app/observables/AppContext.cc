@@ -76,7 +76,7 @@ Passepartout::Profile ImportProfile(const std::string &text, const std::string &
     return Passepartout::Imports::DecodeResult(json.get());
 }
 
-std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const Passepartout::CrossConstants &constants) {
+std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const Passepartout::CrossConstantsType &constants) {
     if (demo) return std::make_unique<Partout::Tunnel>(std::make_unique<Passepartout::FakeTunnelStrategy>());
 #ifdef _WIN32
     return std::make_unique<Partout::Tunnel>(
@@ -101,7 +101,7 @@ void ApplyLoggingPreferences(const Passepartout::Models::AppPreferences &prefere
 using Passepartout::AppContext;
 
 AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
-                       Models::AppConstants app_constants, CrossConstants frontend_constants,
+                       Models::AppConstants app_constants, CrossConstantsType frontend_constants,
                        std::function<void(const Models::AppPreferences &)> store_preferences
 )
     : constants(std::move(app_constants)), cross_constants(std::move(frontend_constants)),
