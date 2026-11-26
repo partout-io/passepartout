@@ -13,6 +13,8 @@
 #include "../theme/ThemeModal.h"
 #include "../settings/ChangelogView.h"
 
+wxDEFINE_EVENT(wxEVT_PASSEPARTOUT_STATE_CHANGED, wxThreadEvent);
+
 namespace {
 wxString Text(const std::string &value) {
     return wxString::FromUTF8(value);
@@ -30,7 +32,7 @@ MainView::MainView(AppContext &context, bool demo,
 )
     : MainFrame(nullptr, wxID_ANY, Text(context.cross_constants.app.name) +
           (demo ? " (" + Text(context.cross_constants.command_line.demo_argument) + ")" : wxString())),
-      context_(context), timer_(this), picker_(picker_factory(*this)) {
+      context_(context), tunnel_timer_(this), picker_timer_(this), picker_(picker_factory(*this)) {
     Theme::Apply(this);
     auto *panel = new wxPanel(this);
     Theme::Apply(panel);
@@ -126,21 +128,31 @@ MainView::MainView(AppContext &context, bool demo,
             event.Skip();
         }
     });
-    Bind(wxEVT_TIMER, &MainView::Tick, this);
+    Bind(wxEVT_TIMER, &MainView::RefreshTunnel, this, tunnel_timer_.GetId());
+    Bind(wxEVT_TIMER, &MainView::PollPicker, this, picker_timer_.GetId());
+    Bind(wxEVT_PASSEPARTOUT_STATE_CHANGED, [this](wxThreadEvent &) { UpdateState(); });
     const auto icon = Theme::AppIcon(this);
     if (icon.IsOk()) SetIcon(icon);
     SetMinSize(FromDIP(wxSize(640, 360)));
     SetSize(FromDIP(wxSize(720, 480)));
     Centre();
+    const auto notify = [this] {
+        wxQueueEvent(this, new wxThreadEvent(wxEVT_PASSEPARTOUT_STATE_CHANGED));
+    };
+    context_.profiles.SetChangeHandler(notify);
+    context_.tunnel.SetChangeHandler(notify);
     profiles_ = *context_.profiles.SnapshotIfChanged(profiles_cursor_);
     tunnels_ = *context_.tunnel.SnapshotIfChanged(tunnels_cursor_);
     Render();
-    timer_.Start(200);
+    tunnel_timer_.Start(2000);
 }
 
 MainView::~MainView() {
+    context_.profiles.SetChangeHandler({});
+    context_.tunnel.SetChangeHandler({});
     picker_->Cancel();
-    timer_.Stop();
+    picker_timer_.Stop();
+    tunnel_timer_.Stop();
 }
 
 void MainView::Render() {
@@ -164,15 +176,23 @@ void MainView::UpdateActions() {
     remove_->Enable(!picking_ && ProfileObservable::CanRemove(profiles_, selected) && !tunnels_.pending_profile);
 }
 
-void MainView::Tick(wxTimerEvent &) {
-    if (picking_) {
-        if (auto result = picker_->Poll()) {
-            picking_ = false;
-            if (result->failed) context_.profiles.ImportFailed();
-            else if (result->files) context_.profiles.ImportFiles(std::move(result->files));
-            UpdateActions();
-        }
+void MainView::RefreshTunnel(wxTimerEvent &) {
+    context_.tunnel.Refresh();
+}
+
+void MainView::PollPicker(wxTimerEvent &) {
+    if (auto result = picker_->Poll()) {
+        picker_timer_.Stop();
+        picking_ = false;
+        if (result->failed) context_.profiles.ImportFailed();
+        else if (result->files) context_.profiles.ImportFiles(std::move(result->files));
+        UpdateState();
+        UpdateActions();
     }
+}
+
+void MainView::UpdateState() {
+    if (presenting_) return;
     auto next_profiles = context_.profiles.SnapshotIfChanged(profiles_cursor_);
     auto next_tunnels = context_.tunnel.SnapshotIfChanged(tunnels_cursor_);
     if (next_profiles || next_tunnels) {
@@ -182,8 +202,9 @@ void MainView::Tick(wxTimerEvent &) {
         // Background observation can recover on the next poll. Keep its error
         // inline; reserve modal alerts for failed actions or local loading.
         if ((profiles_.operation_error.has_value() || tunnels_.errors.operation) && !profiles_.busy && !tunnels_.busy) {
-            // Pause polling while the alert runs its nested event loop.
-            timer_.Stop();
+            // Defer state handling while the alert runs its nested event loop.
+            presenting_ = true;
+            tunnel_timer_.Stop();
             const bool profile_error = profiles_.operation_error.has_value();
             const bool importing = profile_error && profiles_.operation_error == ProfileObservable::OperationErrorContext::import;
             // FIXME: ### Map typed failure reasons to localized recovery guidance without exposing raw native errors or secrets.
@@ -195,20 +216,25 @@ void MainView::Tick(wxTimerEvent &) {
             dialog.ShowModal();
             if (profile_error) context_.profiles.ClearOperationError();
             else context_.tunnel.ClearOperationError();
-            timer_.Start(200);
+            presenting_ = false;
+            tunnel_timer_.Start(2000);
         }
     }
+    ProcessActivations();
+}
+
+void MainView::ProcessActivations() {
+    if (presenting_) return;
     if (!picking_ && !profiles_.busy && !tunnels_.busy && profiles_.loaded && !activations_.empty()) {
         auto files = std::move(activations_.front());
         activations_.pop_front();
         context_.profiles.ImportFiles(std::move(files));
-    } else if (++ticks_ % 10 == 0) {
-        context_.tunnel.Refresh();
     }
 }
 
 void MainView::PresentInteractiveLogin(InteractiveLogin login) {
-    timer_.Stop();
+    presenting_ = true;
+    tunnel_timer_.Stop();
     ThemeModal modal(this, Text(login.original.name), [&login](wxWindow *parent) {
         return new InteractiveLoginView(parent, login);
     }, ThemeModal::Mode::Editable, ThemeModal::Sizing::Content,
@@ -218,7 +244,9 @@ void MainView::PresentInteractiveLogin(InteractiveLogin login) {
     const auto result = modal.ShowModal();
     if (result == wxID_OK && login.CanSubmit())
         context_.tunnel.Connect(std::move(login.original), std::move(login.credentials));
-    timer_.Start(200);
+    presenting_ = false;
+    tunnel_timer_.Start(2000);
+    UpdateState();
 }
 
 void MainView::Import() {
@@ -227,6 +255,7 @@ void MainView::Import() {
     UpdateActions();
     try {
         picker_->Start();
+        picker_timer_.Start(200);
     } catch (...) {
         picking_ = false;
         picker_->Cancel();
@@ -250,6 +279,7 @@ void MainView::Quit() {
 
 void MainView::Activate(std::shared_ptr<const ConfigurationFiles> files) {
     if (files && (files->Count() || files->SelectionFailures())) activations_.push_back(std::move(files));
+    UpdateState();
     if (IsIconized()) Iconize(false);
     Raise();
 }

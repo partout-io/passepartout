@@ -25,7 +25,10 @@ private:
     void PresentInteractiveLogin(Passepartout::InteractiveLogin login);
     void Edit(const std::string &id);
     void Remove(std::vector<std::string> ids);
-    void Tick(wxTimerEvent &);
+    void UpdateState();
+    void ProcessActivations();
+    void PollPicker(wxTimerEvent &);
+    void RefreshTunnel(wxTimerEvent &);
     Passepartout::AppContext &context_;
     Passepartout::ProfileObservable::Cursor profiles_cursor_;
     Passepartout::TunnelObservable::Cursor tunnels_cursor_;
@@ -36,9 +39,10 @@ private:
     wxActivityIndicator *progress_;
     wxButton *import_;
     wxButton *remove_;
-    wxTimer timer_;
+    wxTimer tunnel_timer_;
+    wxTimer picker_timer_;
     std::deque<std::shared_ptr<const Passepartout::ConfigurationFiles>> activations_;
     std::unique_ptr<Passepartout::ConfigurationPicker> picker_;
     bool picking_ = false;
-    unsigned ticks_ = 0;
+    bool presenting_ = false;
 };

@@ -4,6 +4,8 @@
 
 #pragma once
 #include <cstdint>
+#include <functional>
+#include <utility>
 #include <optional>
 
 namespace Passepartout {
@@ -17,8 +19,14 @@ public:
         std::optional<std::uint64_t> revision_;
     };
 
+    // Invoked under the owner's mutex. Enqueue delivery; do not read state here.
+    void SetChangeHandler(std::function<void()> handler) {
+        on_change_ = std::move(handler);
+    }
+
     void Advance() {
         ++revision_;
+        if (on_change_) on_change_();
     }
 
     std::optional<State> SnapshotIfChanged(Cursor &cursor, const State &state) const {
@@ -30,5 +38,6 @@ public:
 
 private:
     std::uint64_t revision_ = 0;
+    std::function<void()> on_change_;
 };
 }

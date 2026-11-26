@@ -35,6 +35,8 @@ public:
     void ImportFiles(std::shared_ptr<const ConfigurationFiles> files);
     void ImportFailed();
     void Remove(std::vector<std::string> ids);
+    // Handler must enqueue UI delivery, without reading state synchronously.
+    void SetChangeHandler(std::function<void()> handler);
     State Snapshot() const;
     std::optional<State> SnapshotIfChanged(Cursor &cursor) const;
     void ClearOperationError();

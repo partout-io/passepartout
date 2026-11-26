@@ -39,6 +39,8 @@ public:
     void Disconnect(std::string id);
     void Refresh();
     void ClearOperationError();
+    // Handler must enqueue UI delivery, without reading state synchronously.
+    void SetChangeHandler(std::function<void()> handler);
     State Snapshot() const;
     std::optional<State> SnapshotIfChanged(Cursor &cursor) const;
 private:

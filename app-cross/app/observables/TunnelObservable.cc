@@ -115,6 +115,11 @@ void TunnelObservable::ClearOperationError() {
     changes_.Advance();
 }
 
+void TunnelObservable::SetChangeHandler(std::function<void()> handler) {
+    std::lock_guard lock(mutex_);
+    changes_.SetChangeHandler(std::move(handler));
+}
+
 TunnelObservable::State TunnelObservable::Snapshot() const {
     std::lock_guard lock(mutex_);
     auto result = snapshot_;

@@ -315,6 +315,46 @@ void TestIndependentObservableState(const std::filesystem::path &root) {
     assert(!context.tunnel.SnapshotIfChanged(other_cursor));
 }
 
+void TestStateNotifications(const std::filesystem::path &root) {
+    Passepartout::Tests::ObservableFixture context(
+        std::make_unique<Passepartout::FileProfileRepository>(root / "state-notifications"), {},
+        std::make_unique<Partout::Tunnel>(std::make_unique<ControlledTunnel>())
+    );
+    Wait(context);
+    std::mutex delivery_mutex;
+    std::vector<std::thread::id> deliveries;
+    const auto enqueue = [&] {
+        std::lock_guard lock(delivery_mutex);
+        deliveries.push_back(std::this_thread::get_id());
+    };
+    context.profiles.SetChangeHandler(enqueue);
+    context.tunnel.SetChangeHandler(enqueue);
+    context.profiles.ImportFailed();
+    context.tunnel.Connect(Example("notification"));
+    Wait(context);
+    // Worker publications enqueue delivery without reading locked state.
+    {
+        std::lock_guard lock(delivery_mutex);
+        assert(std::any_of(deliveries.begin(), deliveries.end(), [](auto thread) {
+            return thread != std::this_thread::get_id();
+        }));
+    }
+    // The consumer reads the latest state on its own thread, without a timer.
+    Passepartout::ProfileObservable::Cursor profiles;
+    Passepartout::TunnelObservable::Cursor tunnels;
+    assert(context.profiles.SnapshotIfChanged(profiles)->operation_error);
+    assert(!context.tunnel.SnapshotIfChanged(tunnels)->tunnels.empty());
+    assert(!context.profiles.SnapshotIfChanged(profiles));
+    assert(!context.tunnel.SnapshotIfChanged(tunnels));
+    context.profiles.SetChangeHandler({});
+    context.tunnel.SetChangeHandler({});
+    const auto count = deliveries.size();
+    context.profiles.ClearOperationError();
+    context.tunnel.Disconnect("notification");
+    Wait(context);
+    assert(deliveries.size() == count);
+}
+
 void TestObservationAfterOperationFailure(const std::filesystem::path &root) {
     auto repository = std::make_unique<Passepartout::FileProfileRepository>(root / "observe-after-failure");
     repository->Save(Example());
@@ -747,6 +787,7 @@ int main() {
         TestShutdown(root);
         TestObservableOrdering(root);
         TestIndependentObservableState(root);
+        TestStateNotifications(root);
         TestObservationAfterOperationFailure(root);
         const auto selection_root = root / "selection";
         std::filesystem::create_directories(selection_root);

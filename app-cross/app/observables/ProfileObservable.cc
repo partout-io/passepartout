@@ -182,6 +182,11 @@ void ProfileObservable::Remove(std::vector<std::string> ids) {
     });
 }
 
+void ProfileObservable::SetChangeHandler(std::function<void()> handler) {
+    std::lock_guard lock(mutex_);
+    changes_.SetChangeHandler(std::move(handler));
+}
+
 ProfileObservable::State ProfileObservable::Snapshot() const {
     std::lock_guard lock(mutex_);
     auto result = snapshot_;
