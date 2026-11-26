@@ -74,7 +74,7 @@ MainView::MainView(AppContext &context, bool demo,
     help->Append(changelog_id, Strings::Unlocalized::Changelog);
     Bind(wxEVT_MENU, [this](wxCommandEvent &) {
         ThemeModal modal(this, Strings::Unlocalized::Changelog, [this](wxWindow *parent) {
-            return new ChangelogView(parent, context_.version);
+            return new ChangelogView(parent, context_.version, context_.cross_constants.app, context_.constants.github);
         });
         modal.ShowModal();
     }, changelog_id);
@@ -95,7 +95,7 @@ MainView::MainView(AppContext &context, bool demo,
                     ThemeModal modal(parent, title, make_content);
                     modal.ShowModal();
                 };
-                return new VersionView(parent, context_.version, Text(context_.cross_constants.app.name), present);
+                return new VersionView(parent, context_.version, context_.cross_constants.app, context_.constants.github, present);
             }, ThemeModal::Mode::ReadOnly, ThemeModal::Sizing::FixedContent);
         dialog.ShowModal();
     }, wxID_ABOUT);

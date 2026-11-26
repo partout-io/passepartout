@@ -12,12 +12,7 @@ constexpr std::size_t MaxCommentBytes = 64 * 1024;
 }
 
 namespace Passepartout {
-DiagnosticsObservable::DiagnosticsObservable(std::string recipient, CrossConstantsType::App app,
-                                             std::string app_log_filename, IssueHandoff handoff
-)
-    : recipient_(std::move(recipient)),
-      app_line_(app.name + " " + app.version_number + " (" + std::to_string(app.build_number) + ")"),
-      app_log_filename_(std::move(app_log_filename)), handoff_(std::move(handoff)) {}
+DiagnosticsObservable::DiagnosticsObservable(IssueHandoff handoff) : handoff_(std::move(handoff)) {}
 
 std::string DiagnosticsObservable::ApplicationLog() const {
     return AppLog::RuntimeLog();
@@ -28,16 +23,18 @@ std::optional<std::string> DiagnosticsObservable::TunnelLog() const {
     return {};
 }
 
-bool DiagnosticsObservable::Report(const std::string &comment) const {
+bool DiagnosticsObservable::Report(const std::string &comment, const CrossConstantsType::App &app,
+                                   const std::string &app_log_filename
+) const {
     if (comment.size() > MaxCommentBytes) throw std::invalid_argument("The comment is too long.");
     Models::Issue issue;
     issue.comment = comment;
-    issue.appLine = app_line_;
+    issue.appLine = app.name + " " + app.version_number + " (" + std::to_string(app.build_number) + ")";
     issue.osLine = IssuePlatform;
     const auto runtime_log = AppLog::RuntimeLog(false);
     if (!runtime_log.empty()) {
-        issue.attachments.push_back({app_log_filename_, runtime_log});
+        issue.attachments.push_back({app_log_filename, runtime_log});
     }
-    return handoff_(recipient_, issue);
+    return handoff_(issue);
 }
 }

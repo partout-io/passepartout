@@ -3,18 +3,14 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "VersionObservable.h"
-#include "../business/extensions/AppConstantsExtensions.h"
 #include "../context/AppLog.h"
 #include <chrono>
 
 namespace Passepartout {
-VersionObservable::VersionObservable(std::unique_ptr<VersionChecker> checker, std::string current, std::string build,
-                                     Models::AppConstants_github github
-)
-    : checker_(std::move(checker)), build_(std::move(build)), github_(std::move(github)), worker_([this] {
+VersionObservable::VersionObservable(std::unique_ptr<VersionChecker> checker)
+    : checker_(std::move(checker)), worker_([this] {
         checker_->Cancel();
     }) {
-    state_.current = std::move(current);
     state_.available = checker_->Available();
     state_.release = checker_->Snapshot();
 }
@@ -44,26 +40,24 @@ void VersionObservable::Check() {
     });
 }
 
-void VersionObservable::LoadChangelog() {
+void VersionObservable::LoadChangelog(std::string build) {
     std::lock_guard lock(mutex_);
-    if (state_.changelog.loading) return;
+    if (state_.changelog.loading && state_.changelog.build == build) return;
+    const auto request = ++changelog_request_;
     state_.changelog = {};
+    state_.changelog.build = build;
     state_.changelog.loading = true;
-    worker_.Post([this] {
+    worker_.Post([this, build = std::move(build), request] {
         ChangelogState result;
+        result.build = build;
         try {
-            result.entries = checker_->FetchChangelog(build_);
+            result.entries = checker_->FetchChangelog(build);
         } catch (...) {
-            AppLog::Write(AppLog::Level::error, AppLog::Category::core, "Unable to load changelog for build " + build_);
+            AppLog::Write(AppLog::Level::error, AppLog::Category::core, "Unable to load changelog for build " + build);
             result.operation_failed = true;
         }
         std::lock_guard lock(mutex_);
-        state_.changelog = std::move(result);
+        if (request == changelog_request_) state_.changelog = std::move(result);
     });
-}
-
-std::optional<std::string> VersionObservable::IssueURL(const Models::ChangelogEntry &entry) const {
-    if (!entry.issue) return {};
-    return Constants::IssueURL(github_, *entry.issue);
 }
 }

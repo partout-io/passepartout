@@ -8,19 +8,21 @@
 #include "../../strings/Unlocalized.h"
 
 namespace Passepartout {
-VersionView::VersionView(wxWindow *parent, VersionObservable &version, const wxString &name, SettingsPresentation present)
+VersionView::VersionView(wxWindow *parent, VersionObservable &version, const CrossConstantsType::App &app,
+                         const Models::AppConstants_github &github, SettingsPresentation present
+)
     : ThemeDetailView(parent, Presentation::Centered) {
-    const auto state = version.Snapshot();
+    const auto name = wxString::FromUTF8(app.name);
     Logo();
     Section(name);
-    Message(wxString::FromUTF8(state.current));
+    Message(wxString::FromUTF8(app.version_number));
     auto author = Localized(StringKey::ViewsVersionExtra);
     author.Replace("%@", name, false);
     author.Replace("%@", wxString::FromUTF8(Strings::Unlocalized::AuthorName), false);
     Message(author);
-    ContentLink(wxString(Strings::Unlocalized::Changelog).Upper(), [present, &version] {
-        present(Strings::Unlocalized::Changelog, [&version](wxWindow *parent) {
-            return new ChangelogView(parent, version);
+    ContentLink(wxString(Strings::Unlocalized::Changelog).Upper(), [present, &version, app, github] {
+        present(Strings::Unlocalized::Changelog, [&version, app, github](wxWindow *parent) {
+            return new ChangelogView(parent, version, app, github);
         });
     });
     Finish();

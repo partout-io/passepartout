@@ -12,18 +12,15 @@
 namespace Passepartout {
 class DiagnosticsObservable final {
 public:
-    using IssueHandoff = std::function<bool(const std::string &, const Models::Issue &)>;
-    DiagnosticsObservable(std::string recipient, CrossConstantsType::App app,
-                          std::string app_log_filename, IssueHandoff handoff
-    );
+    using IssueHandoff = std::function<bool(const Models::Issue &)>;
+    explicit DiagnosticsObservable(IssueHandoff handoff);
     std::string ApplicationLog() const;
     std::optional<std::string> TunnelLog() const;
     // The native handler must present a draft and own temporary attachment files.
-    bool Report(const std::string &comment) const;
+    bool Report(const std::string &comment, const CrossConstantsType::App &app,
+                const std::string &app_log_filename
+    ) const;
 private:
-    std::string recipient_;
-    std::string app_line_;
-    std::string app_log_filename_;
     IssueHandoff handoff_;
 };
 }

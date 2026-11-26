@@ -3,14 +3,18 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "ChangelogView.h"
+#include "../../business/extensions/AppConstantsExtensions.h"
 #include "../platform/Presentation.h"
 #include "../../strings/Strings.h"
 
 namespace Passepartout {
-ChangelogView::ChangelogView(wxWindow *parent, VersionObservable &version)
-    : wxPanel(parent), version_(version), timer_(this) {
+ChangelogView::ChangelogView(wxWindow *parent, VersionObservable &version, const CrossConstantsType::App &app,
+                             Models::AppConstants_github github
+)
+    : wxPanel(parent), version_(version), current_version_(app.version_number),
+      github_(std::move(github)), timer_(this) {
     SetSizer(new wxBoxSizer(wxVERTICAL));
-    version_.LoadChangelog();
+    version_.LoadChangelog(std::to_string(app.build_number));
     Bind(wxEVT_TIMER, [this](wxTimerEvent &) {
         if (!version_.Snapshot().changelog.loading) UpdateContent();
     });
@@ -32,11 +36,12 @@ void ChangelogView::UpdateContent() {
     } else if (state.changelog.entries.empty()) {
         content_->Message(Localized(StringKey::GlobalNounsNoContent));
     } else {
-        content_->Section(wxString::FromUTF8(state.current));
+        content_->Section(wxString::FromUTF8(current_version_));
         for (const auto &entry : state.changelog.entries) {
             const auto comment = wxString::FromUTF8(entry.comment);
-            if (const auto url = version_.IssueURL(entry)) {
-                content_->ExternalLink(comment, [this, url = *url] {
+            if (entry.issue) {
+                const auto url = Constants::IssueURL(github_, *entry.issue);
+                content_->ExternalLink(comment, [this, url] {
                     OpenURL(this, url);
                 });
             } else {

@@ -75,6 +75,7 @@ public:
     bool fails = false;
     unsigned requests = 0;
     unsigned changelog_requests = 0;
+    std::function<void()> before_changelog;
     std::string LatestVersion() override {
         ++requests;
         if (fails) throw std::runtime_error("Offline");
@@ -83,6 +84,7 @@ public:
 
     std::vector<Passepartout::Models::ChangelogEntry> FetchChangelog(const std::string &build) override {
         ++changelog_requests;
+        if (before_changelog) before_changelog();
         if (fails) throw std::runtime_error("Offline");
         return {{1, build, 42}};
     }
@@ -309,14 +311,12 @@ int main() {
             auto changelog_strategy = std::make_unique<FakeVersion>();
             auto *changelog_remote = changelog_strategy.get();
             changelog_remote->fails = true;
-            Models::AppConstants_github github_constants;
-            github_constants.issuesURL = "https://example.invalid/issues";
             std::string changelog_log;
             Tests::ScopedLogSink log_sink([&](auto, auto, const std::string &message) {
                 changelog_log = message;
             });
             VersionObservable changelog(std::make_unique<VersionChecker>("1.0.0.7", std::move(changelog_strategy),
-                "", 60, std::nullopt, std::nullopt, [](auto, auto) {}), "1.0.0.7", "7", github_constants
+                "", 60, std::nullopt, std::nullopt, [](auto, auto) {})
             );
             assert(!changelog.Snapshot().available);
             const auto wait_changelog = [&] {
@@ -326,22 +326,25 @@ int main() {
                 }
                 assert(!changelog.Snapshot().changelog.loading);
             };
-            changelog.LoadChangelog();
+            changelog.LoadChangelog("7");
             wait_changelog();
             assert(changelog.Snapshot().changelog.operation_failed);
             assert(changelog.Snapshot().changelog.entries.empty());
             assert(changelog_log == "Unable to load changelog for build 7");
             changelog_remote->fails = false;
-            changelog.LoadChangelog();
+            changelog.LoadChangelog("7");
             wait_changelog();
             assert(!changelog.Snapshot().changelog.operation_failed);
             assert(changelog.Snapshot().changelog.entries[0].comment == "7");
-            assert(changelog.IssueURL(changelog.Snapshot().changelog.entries[0]) == "https://example.invalid/issues/42");
-            assert(!changelog.IssueURL({1, "No issue", std::nullopt}));
-            changelog.LoadChangelog();
+            changelog.LoadChangelog("7");
             wait_changelog();
             assert(changelog_remote->changelog_requests == 3); // Reopening refetches successful content.
             assert(changelog_remote->requests == 0); // Never requests the latest release for a changelog.
+            changelog.LoadChangelog("8");
+            wait_changelog();
+            assert(changelog.Snapshot().changelog.build == "8");
+            assert(changelog.Snapshot().changelog.entries[0].comment == "8");
+            assert(changelog_remote->changelog_requests == 4);
 
             auto blocked_changelog = std::make_shared<BlockingState>();
             {
@@ -349,9 +352,9 @@ int main() {
                     std::make_unique<GitHubReleaseStrategy>(std::make_unique<BlockingHttp>(blocked_changelog),
                         "https://example.invalid/releases/latest", [](const std::string &) {
                             return "https://example.invalid/changelog";
-                        }), "", 60, std::nullopt, std::nullopt, [](auto, auto) {}), "1.0.0.7", "7", github_constants
+                        }), "", 60, std::nullopt, std::nullopt, [](auto, auto) {})
                 );
-                pending.LoadChangelog();
+                pending.LoadChangelog("7");
                 std::unique_lock lock(blocked_changelog->mutex);
                 assert(blocked_changelog->changed.wait_for(lock, std::chrono::seconds(2), [&] {
                     return blocked_changelog->entered;
@@ -359,6 +362,50 @@ int main() {
             }
             assert(blocked_changelog->canceled);
 
+        }
+
+        {
+            // A newer build supersedes an in-flight response without publishing stale entries.
+            std::mutex gate_mutex;
+            std::condition_variable gate_changed;
+            unsigned entered = 0;
+            unsigned released = 0;
+            auto strategy = std::make_unique<FakeVersion>();
+            auto *remote = strategy.get();
+            strategy->before_changelog = [&] {
+                std::unique_lock lock(gate_mutex);
+                const auto request = ++entered;
+                gate_changed.notify_all();
+                gate_changed.wait(lock, [&] { return released >= request; });
+            };
+            VersionObservable changelog(std::make_unique<VersionChecker>(
+                "1.0.0", std::move(strategy), "", 60, std::nullopt, std::nullopt, [](auto, auto) {}
+            ));
+            changelog.LoadChangelog("7");
+            {
+                std::unique_lock lock(gate_mutex);
+                assert(gate_changed.wait_for(lock, std::chrono::seconds(2), [&] { return entered == 1; }));
+            }
+            changelog.LoadChangelog("8");
+            changelog.LoadChangelog("8");
+            {
+                std::unique_lock lock(gate_mutex);
+                released = 1;
+                gate_changed.notify_all();
+                assert(gate_changed.wait_for(lock, std::chrono::seconds(2), [&] { return entered == 2; }));
+                const auto state = changelog.Snapshot().changelog;
+                assert(state.build == "8" && state.loading && state.entries.empty());
+                released = 2;
+                gate_changed.notify_all();
+            }
+            const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+            while (changelog.Snapshot().changelog.loading && std::chrono::steady_clock::now() < deadline) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            }
+            const auto state = changelog.Snapshot().changelog;
+            assert(!state.loading && !state.operation_failed);
+            assert(state.build == "8" && state.entries.front().comment == "8");
+            assert(remote->changelog_requests == 2);
         }
 
         CreditsObservable credits(CreditsResource, std::make_unique<FakeHttp>(), Models::Platform::unixLike);
@@ -464,8 +511,7 @@ int main() {
         assert(body.find("Hi,\n\ncafé 日本語 $osLine") == 0);
         assert(body.find("App: Passepartout 0.1.0.7\nOS: Test OS") != std::string::npos);
 
-        DiagnosticsObservable diagnostics("test@example.invalid", {"Test App", "0.1.0", 4199}, "app.log", [&](const std::string &recipient, const Models::Issue &report) {
-            assert(recipient == "test@example.invalid");
+        DiagnosticsObservable diagnostics([&](const Models::Issue &report) {
             assert(report.comment == "Unicode: café 日本語 $osLine");
             assert(report.appLine == "Test App 0.1.0 (4199)");
             assert(Issues::Body(report, IssueTemplateResource).find("Test App 0.1.0 (4199)") != std::string::npos);
@@ -476,7 +522,7 @@ int main() {
             assert(attachment.content.find("private marker") == std::string::npos);
             return false; // No mail provider.
         });
-        assert(!diagnostics.Report("Unicode: café 日本語 $osLine"));
+        assert(!diagnostics.Report("Unicode: café 日本語 $osLine", {"Test App", "0.1.0", 4199}, "app.log"));
     } catch (const std::exception &error) {
         std::cerr << error.what() << std::endl;
         std::filesystem::remove_all(directory);

@@ -146,18 +146,12 @@ AppContext::AppContext(
             [this](auto timestamp, auto latest) {
                 preferences.SetLastCheckedVersion(timestamp, std::move(latest));
             }
-        ),
-        cross_constants.app.version_number,
-        std::to_string(cross_constants.app.build_number),
-        constants.github
+        )
     ),
     credits(CreditsResource, MakeHttp(constants), ApplicationPlatform()),
-    diagnostics(
-        Constants::BetaEmail(constants.emails),
-        cross_constants.app,
-        constants.log.filenames.app,
-        ReviewIssue
-    ) {
+    diagnostics([recipient = Constants::BetaEmail(constants.emails)](const Models::Issue &issue) {
+        return ReviewIssue(recipient, issue);
+    }) {
     try {
         profiles.OnChange([this](std::vector<Profile> values, bool loaded) {
             tunnel.SetProfiles(std::move(values), loaded);

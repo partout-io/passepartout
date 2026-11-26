@@ -129,7 +129,9 @@ void SettingsCoordinator::ReportIssue() {
         [&view] { return view && view->CanSubmit(); });
     if (modal.ShowModal() != wxID_OK) return;
     try {
-        if (!context_.diagnostics.Report(view->Comment())) {
+        if (!context_.diagnostics.Report(
+            view->Comment(), context_.cross_constants.app, context_.constants.log.filenames.app
+        )) {
             PresentError(this, StringKey::ViewsDiagnosticsAlertsReportIssueEmail);
         }
     } catch (...) {
