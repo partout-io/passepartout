@@ -13,6 +13,7 @@ class CreditsObservable final {
 public:
     struct Content final {
         std::string text;
+        bool loaded = false;
         bool loading = false;
         bool operation_failed = false;
     };

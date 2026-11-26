@@ -371,16 +371,52 @@ int main() {
             {"Unix", std::vector<Models::Platform>{{Models::Platform::unixLike}}, "MIT", "https://example.com/unix"},
             {"Hidden", std::vector<Models::Platform>{}, "MIT", "https://example.com/hidden"}
         };
+        sample.licenses.push_back({"alpha", std::nullopt, "MIT", "https://example.com/alpha"});
+        sample.licenses.push_back({"ALPHA", std::nullopt, "MIT", "https://example.com/upper-alpha"});
+        sample.notices = {{"Zulu", "last"}, {"beta", "second"}, {"Alpha", "first"}};
         const auto resource = sample.ToJson().Encode();
         CreditsObservable windows_credits(resource, std::make_unique<FakeHttp>(), Models::Platform::windows);
         CreditsObservable unix_credits(resource, std::make_unique<FakeHttp>(), Models::Platform::unixLike);
         assert(!windows_credits.HasLoadError() && !unix_credits.HasLoadError());
-        assert(windows_credits.Snapshot().licenses.size() == 2);
-        assert(windows_credits.Snapshot().licenses[0].name == "Common");
-        assert(windows_credits.Snapshot().licenses[1].name == "Windows");
-        assert(unix_credits.Snapshot().licenses.size() == 2);
-        assert(unix_credits.Snapshot().licenses[0].name == "Common");
-        assert(unix_credits.Snapshot().licenses[1].name == "Unix");
+        assert(windows_credits.Snapshot().licenses.size() == 4);
+        assert(windows_credits.Snapshot().licenses[2].name == "Common");
+        assert(windows_credits.Snapshot().licenses[3].name == "Windows");
+        assert(unix_credits.Snapshot().licenses.size() == 4);
+        assert(unix_credits.Snapshot().licenses[2].name == "Common");
+        assert(unix_credits.Snapshot().licenses[3].name == "Unix");
+        assert(unix_credits.Snapshot().licenses[0].name == "alpha");
+        assert(unix_credits.Snapshot().licenses[1].name == "ALPHA");
+        assert(unix_credits.Snapshot().notices[0].name == "Alpha");
+        assert(unix_credits.Snapshot().notices[1].name == "beta");
+        assert(unix_credits.Snapshot().notices[2].name == "Zulu");
+        {
+            auto client = std::make_unique<FakeHttp>();
+            auto *remote = client.get();
+            remote->response.clear();
+            remote->fails = true;
+            CreditsObservable cached_credits(resource, std::move(client), Models::Platform::unixLike);
+            const std::string url = "https://example.com/common";
+            const auto load_license = [&] {
+                cached_credits.LoadLicense(url);
+                const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
+                while (cached_credits.License(url).loading && std::chrono::steady_clock::now() < deadline) {
+                    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+                }
+                assert(!cached_credits.License(url).loading);
+                return cached_credits.License(url);
+            };
+            assert(!cached_credits.License(url).loaded);
+            auto content = load_license();
+            assert(content.operation_failed && !content.loaded);
+            assert(remote->requests == 1);
+            remote->fails = false;
+            content = load_license();
+            assert(content.loaded && !content.operation_failed && content.text.empty());
+            assert(remote->requests == 2);
+            content = load_license();
+            assert(content.loaded && content.text.empty());
+            assert(remote->requests == 2);
+        }
         {
             unsigned calls = 0;
             Tests::ScopedLogSink outer([&](AppLog::Level, AppLog::Category, const std::string &) {

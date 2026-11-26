@@ -15,9 +15,7 @@ CreditsObservable::CreditsObservable(std::string resource, std::unique_ptr<HttpC
         auto json = Partout::Json::Parse(resource);
         credits_ = Models::Credits::FromJson(json);
         Credits::Filter(credits_, platform);
-        std::sort(credits_.licenses.begin(), credits_.licenses.end(), [](const auto &a, const auto &b) {
-            return a.name < b.name;
-        });
+        Credits::Sort(credits_);
     } catch (...) {
         load_error_ = true;
     }
@@ -43,12 +41,13 @@ void CreditsObservable::LoadLicense(const std::string &url) {
     })) return;
     std::lock_guard lock(mutex_);
     auto &content = content_[url];
-    if (content.loading || !content.text.empty()) return;
+    if (content.loading || content.loaded) return;
     content.loading = true;
     worker_.Post([this, url] {
         Content result;
         try {
             result.text = client_->Get(url);
+            result.loaded = true;
         } catch (...) {
             result.operation_failed = true;
         }

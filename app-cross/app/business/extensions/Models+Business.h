@@ -44,6 +44,7 @@ Models::AppPreferences FromJson(const Partout::Json &data);
 }
 
 namespace Credits {
+void Sort(Models::Credits &credits);
 void Filter(Models::Credits &credits, Models::Platform::ePlatform platform);
 }
 

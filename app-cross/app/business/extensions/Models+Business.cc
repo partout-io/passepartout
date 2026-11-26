@@ -33,13 +33,13 @@ std::wstring LowerName(const std::string &name) {
 #ifdef _WIN32
     if (name.empty()) return {};
     const int wide_size = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name.data(), static_cast<int>(name.size()), nullptr, 0);
-    if (!wide_size) throw std::runtime_error("Invalid UTF-8 profile name.");
+    if (!wide_size) throw std::runtime_error("Invalid UTF-8 name.");
     std::wstring wide(wide_size, L'\0');
     MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, name.data(), static_cast<int>(name.size()), wide.data(), wide_size);
     if (wide.empty()) return wide;
     const int size = LCMapStringEx(LOCALE_NAME_INVARIANT, LCMAP_LOWERCASE,
         wide.data(), static_cast<int>(wide.size()), nullptr, 0, nullptr, nullptr, 0);
-    if (!size) throw std::runtime_error("Unable to order profile names.");
+    if (!size) throw std::runtime_error("Unable to order names.");
     std::wstring lower(size, L'\0');
     LCMapStringEx(LOCALE_NAME_INVARIANT, LCMAP_LOWERCASE,
         wide.data(), static_cast<int>(wide.size()), lower.data(), size, nullptr, nullptr, 0);
@@ -183,6 +183,14 @@ Models::AppPreferences Preferences::FromJson(const Partout::Json &data) {
     auto preferences = Models::AppPreferences::FromJson(merged);
     preferences.cryptoBackend = defaults.cryptoBackend;
     return preferences;
+}
+
+void Credits::Sort(Models::Credits &credits) {
+    const auto by_name = [](const auto &left, const auto &right) {
+        return LowerName(left.name) < LowerName(right.name);
+    };
+    std::stable_sort(credits.licenses.begin(), credits.licenses.end(), by_name);
+    std::stable_sort(credits.notices.begin(), credits.notices.end(), by_name);
 }
 
 void Credits::Filter(Models::Credits &credits, Models::Platform::ePlatform platform) {
