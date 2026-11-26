@@ -103,7 +103,7 @@ function(configure_windows_targets)
     set(PASSEPARTOUT_PUBLISHER_DISPLAY_NAME "${PASSEPARTOUT_NAME}" CACHE STRING "MSIX publisher display name")
     set(PASSEPARTOUT_BACKGROUND_TASK "${PASSEPARTOUT_TUNNEL_NAME}.BackgroundTask")
     get_filename_component(PASSEPARTOUT_PACKAGE_LOGO "${PASSEPARTOUT_APP_ICON}" NAME)
-    set(PASSEPARTOUT_PACKAGE_VERSION "0.1.0.0" CACHE STRING "Four-part MSIX identity, independent of the application build")
+    set(PASSEPARTOUT_PACKAGE_VERSION "${PASSEPARTOUT_APP_VERSION}.0" CACHE STRING "Four-part MSIX identity, independent of the application build")
     set(PASSEPARTOUT_PACKAGE_PUBLISHER "CN=${PASSEPARTOUT_PUBLISHER_DISPLAY_NAME}" CACHE STRING "MSIX publisher matching the signing certificate")
 
     if(NOT PASSEPARTOUT_PACKAGE_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+$")
