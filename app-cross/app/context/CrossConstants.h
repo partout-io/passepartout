@@ -14,6 +14,7 @@ struct CrossConstantsType {
     } tags;
     struct Storage {
         std::string demo_prefix = "demo-";
+        std::string preferences_file = "preferences.json";
         std::wstring preferences_key = L"AppPreferences";
     } storage;
     struct Tunnel {

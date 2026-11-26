@@ -45,14 +45,13 @@ set(APP_SOURCES
 if(WIN32)
     list(APPEND APP_SOURCES
         app/business/platform/WindowsHttpClient.cc
-        app/business/platform/WindowsPreferencesStorage.cc
+        app/business/platform/WindowsPreferencesRepository.cc
         app/ui/platform/WindowsConfigurationPicker.cc
         app/ui/platform/WindowsIssueHandoff.cc
         app/ui/platform/WindowsURLLauncher.cc
     )
 else()
     list(APPEND APP_SOURCES
-        app/business/platform/POSIXPreferencesStorage.cc
     )
 endif()
 set(CORE_SOURCES

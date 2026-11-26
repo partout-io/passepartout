@@ -178,12 +178,16 @@ struct ChannelSession {
     explicit ChannelSession(winrt::Windows::Networking::Vpn::VpnChannel const &value) : channel(value) {
         const auto profile = ReadProfile(channel);
         const auto values = winrt::Windows::Storage::ApplicationData::Current().LocalSettings().Values();
-        const auto encoded_preferences = winrt::unbox_value<winrt::hstring>(
-            values.Lookup(Passepartout::CrossConstants.storage.preferences_key.c_str())
-        );
-        const auto preferences = Passepartout::Models::AppPreferences::FromJson(
-            Partout::Json::Parse(winrt::to_string(encoded_preferences))
-        );
+        // Before the first app preference write, use the tunnel's default behavior.
+        Passepartout::Models::AppPreferences preferences{};
+        preferences.dnsFallsBack = true;
+        const auto &preferences_key = Passepartout::CrossConstants.storage.preferences_key;
+        if (values.HasKey(preferences_key)) {
+            const auto encoded_preferences = winrt::unbox_value<winrt::hstring>(values.Lookup(preferences_key));
+            preferences = Passepartout::Models::AppPreferences::FromJson(
+                Partout::Json::Parse(winrt::to_string(encoded_preferences))
+            );
+        }
         partout_init_args init{};
         init.logger_fn = LogNative;
         init.log_level = PartoutLogLevelDebug;

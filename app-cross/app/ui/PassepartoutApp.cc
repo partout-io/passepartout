@@ -10,7 +10,6 @@
 #include "platform/Presentation.h"
 #include "../strings/Strings.h"
 #include "partout.h"
-#include "../context/PreferencesStorage.h"
 #include <wx/stdpaths.h>
 #include <wx/weakref.h>
 #include <wx/uilocale.h>
@@ -74,10 +73,8 @@ bool PassepartoutApp::OnInit() {
     const char *stage = "creating application context";
     try {
         // Assemble shared state and create the main presentation surface.
-        std::function<void(const Models::AppPreferences &)> store_preferences;
-        if (!demo) store_preferences = StoreAppPreferences;
         context_ = std::make_unique<AppContext>(
-            data_root, demo, Constants::Load(), CrossConstants, std::move(store_preferences)
+            data_root, demo, Constants::Load(), CrossConstants
         );
         stage = "creating main window";
         startup_logger.Write(LogLevel::debug, LogCategory::core, "Create main window");

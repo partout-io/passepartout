@@ -17,6 +17,7 @@
 #include "partout.h"
 #ifdef _WIN32
 #include <partout/winrt/WinRTTunnelStrategy.h>
+#include "../business/platform/WindowsPreferencesRepository.h"
 #endif
 #include <cstdlib>
 #include <stdexcept>
@@ -87,6 +88,15 @@ std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const Passepartout::Cross
 #endif
 }
 
+std::unique_ptr<Passepartout::PreferencesRepository> MakePreferencesRepository(
+    const std::filesystem::path &directory, bool demo, const Passepartout::CrossConstantsType &constants
+) {
+#ifdef _WIN32
+    if (!demo) return std::make_unique<Passepartout::Windows::PreferencesRepository>(constants.storage.preferences_key);
+#endif
+    return std::make_unique<Passepartout::FilePreferencesRepository>(directory / constants.storage.preferences_file);
+}
+
 void ApplyLoggingPreferences(const Passepartout::Models::AppPreferences &preferences) {
     partout_init_args init{};
     init.log_level = PartoutLogLevelDebug;
@@ -101,8 +111,7 @@ void ApplyLoggingPreferences(const Passepartout::Models::AppPreferences &prefere
 using Passepartout::AppContext;
 
 AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
-                       Models::AppConstants app_constants, CrossConstantsType frontend_constants,
-                       std::function<void(const Models::AppPreferences &)> store_preferences
+                       Models::AppConstants app_constants, CrossConstantsType frontend_constants
 )
     : constants(std::move(app_constants)), cross_constants(std::move(frontend_constants)),
       application_version(ApplicationVersion()),
@@ -113,13 +122,10 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
           ImportProfile, MakeTunnel(demo, cross_constants), logger_,
           std::make_unique<FileProfileJournal>(Profiles::Directory(data_root, constants, cross_constants, demo) / "transactions"),
           std::chrono::seconds(1),
-          [store = std::move(store_preferences)](const Models::AppPreferences &value) {
-              if (store) store(value);
-              ApplyLoggingPreferences(value);
-          })),
+          ApplyLoggingPreferences)),
       profiles(*session_), tunnel(*session_),
-      preferences(std::make_unique<FilePreferencesRepository>(
-          Profiles::Directory(data_root, constants, cross_constants, demo) / "preferences.json"), [this] {
+      preferences(MakePreferencesRepository(
+          Profiles::Directory(data_root, constants, cross_constants, demo), demo, cross_constants), [this] {
               const auto state = session_->Snapshot();
               return state.loaded && !state.busy && !state.pending_profile && state.tunnel_available &&
                   state.tunnel_observation_errors.empty() && std::all_of(state.tunnels.begin(), state.tunnels.end(), [](const auto &info) {
