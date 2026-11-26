@@ -141,7 +141,7 @@ MainView::~MainView() {
 }
 
 void MainView::Render() {
-    const bool tunnel_unavailable = !snapshot_.tunnel_error.empty() || !snapshot_.reconciliation_error.empty();
+    const bool tunnel_unavailable = !snapshot_.tunnel_error.empty() || !snapshot_.synchronization_error.empty();
     message_->SetLabel(Localized(tunnel_unavailable ? StringKey::ErrorsAppTunnel : StringKey::ViewsAppFoldersNoProfiles));
     message_->Show(tunnel_unavailable || (snapshot_.loaded && snapshot_.profiles.empty()));
     const bool activity = snapshot_.HasActivity();

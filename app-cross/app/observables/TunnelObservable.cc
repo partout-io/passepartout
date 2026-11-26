@@ -27,7 +27,6 @@ TunnelObservable::ToggleState TunnelObservable::StateForProfile(const AppSnapsho
         return profile.id == id;
     });
     result.can_interact = exists && state.loaded && !state.foreground_busy && !state.pending_profile && state.tunnel_available &&
-        std::find(state.recovering_profiles.begin(), state.recovering_profiles.end(), id) == state.recovering_profiles.end() &&
         state.tunnel_observation_errors.find(id) == state.tunnel_observation_errors.end() &&
         result.status != Status::disconnecting;
     return result;

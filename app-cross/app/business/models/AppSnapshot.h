@@ -18,11 +18,10 @@ struct AppSnapshot {
     bool tunnel_available = false;
     bool foreground_busy = false;
     std::optional<std::string> pending_profile;
-    std::vector<std::string> recovering_profiles;
     bool HasActivity() const;
     std::string error;
     std::string tunnel_error;
-    std::string reconciliation_error;
+    std::string synchronization_error;
     AppErrorContext error_context = AppErrorContext::general;
     std::uint64_t revision = 0;
 };

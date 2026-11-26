@@ -12,10 +12,9 @@
 namespace Passepartout {
 AppSession::AppSession(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
                        std::unique_ptr<Partout::Tunnel> tunnel, std::shared_ptr<AppLogger> logger,
-                       std::unique_ptr<ProfileJournal> journal, std::chrono::milliseconds recovery_delay,
                        std::function<void(const Models::AppPreferences &)> apply_preferences
 )
-    : recovery_delay_(recovery_delay), logger_(std::move(logger)), profiles_(std::move(repository), std::move(importer), std::move(journal)),
+    : logger_(std::move(logger)), profiles_(std::move(repository), std::move(importer)),
       tunnel_(std::move(tunnel)), apply_preferences_(std::move(apply_preferences)) {
     logger_->Write(LogLevel::info, LogCategory::core, "Start application session");
     snapshot_.busy = false;
@@ -127,64 +126,44 @@ void AppSession::Run() {
     }
 }
 
-void AppSession::ValidateNewRegistration(const std::string &id) {
-    if (pending_profile_) throw std::runtime_error("Wait for the pending VPN action before importing.");
-    const auto tunnels = tunnel_->Fetch();
-    if (tunnel_->ObservationErrors().count(id) || std::any_of(tunnels.begin(), tunnels.end(), [&](const auto &tunnel) {
-        return tunnel.id == id;
-    })) throw std::runtime_error("The VPN profile is already registered.");
-}
-
-void AppSession::ValidateProfileUpdate(const std::string &id) {
-    if (pending_profile_) throw std::runtime_error("Wait for the pending VPN action before saving.");
-    const auto tunnels = tunnel_->Fetch();
-    if (tunnel_->ObservationErrors().count(id))
-        throw std::runtime_error("Unable to observe the VPN profile before updating.");
-    for (const auto &tunnel : tunnels) {
-        if (tunnel.id == id && (tunnel.isEnabled || tunnel.status.value != Partout::Models::TunnelStatus::inactive))
-            throw std::runtime_error("Disconnect the VPN before saving this profile.");
-    }
-}
-
-void AppSession::RollbackRegistration(const std::string &id) {
-    // Rollback must never disconnect a profile that became active externally.
-    ValidateProfileUpdate(id);
-    tunnel_->Remove(id);
-}
-
-std::string AppSession::RecoverProfiles() {
+std::string AppSession::SynchronizeProfiles(const std::vector<Models::AppTunnelInfo> &tunnels) {
+    if (!Snapshot().loaded) return {};
+    const auto unavailable = tunnel_->ObservationErrors();
     std::string error;
-    for (const auto &transaction : profiles_.PendingTransactions()) {
-        auto &retry = recovery_retries_[transaction.id];
-        if (std::chrono::steady_clock::now() < retry.next) {
-            error = retry.error;
-            continue;
-        }
+    for (const auto &profile : profiles_.Profiles()) {
+        if (unavailable.count(profile.id)) continue;
+        const auto native = std::find_if(tunnels.begin(), tunnels.end(), [&](const auto &value) {
+            return value.id == profile.id;
+        });
+        // Preserve a running connection; apply saved edits after it disconnects.
+        if (native != tunnels.end() && (native->isEnabled || native->status.value != Status::disconnected)) continue;
+        const auto synchronized = synchronized_profiles_.find(profile.id);
+        if (native != tunnels.end() && synchronized != synchronized_profiles_.end() && synchronized->second == profile) continue;
         try {
-            profiles_.Recover(transaction, [this](const ProfileTransaction &pending) {
-                if (pending.removal) tunnel_->Remove(pending.id);
-                else if (pending.previous) {
-                    tunnel_->Save(*pending.previous);
-                } else RollbackRegistration(pending.id);
-            });
-            recovery_retries_.erase(transaction.id);
+            tunnel_->Save(profile);
+            synchronized_profiles_[profile.id] = profile;
         } catch (...) {
-            retry.attempts = std::min(retry.attempts + 1, 5u);
-            retry.next = std::chrono::steady_clock::now() + recovery_delay_ * (1u << retry.attempts);
-            retry.error = "Unable to recover profile " + transaction.id + ". Recovery will be retried.";
-            error = retry.error;
+            error = "Unable to synchronize saved VPN profile " + profile.id + ".";
         }
     }
-    std::vector<std::string> pending_ids;
-    for (const auto &transaction : profiles_.PendingTransactions()) pending_ids.push_back(transaction.id);
-    std::lock_guard lock(mutex_);
-    snapshot_.recovering_profiles = std::move(pending_ids);
+    // Fetch exposes only this app's registrations. Never clean up after a failed local load.
+    for (const auto &native : tunnels) {
+        if (unavailable.count(native.id)) continue;
+        const bool exists = std::any_of(profiles_.Profiles().begin(), profiles_.Profiles().end(), [&](const auto &profile) {
+            return profile.id == native.id;
+        });
+        if (exists) continue;
+        try {
+            tunnel_->Remove(native.id);
+            synchronized_profiles_.erase(native.id);
+        } catch (...) {
+            error = "Unable to remove VPN registration " + native.id + ".";
+        }
+    }
     return error;
 }
 
 void AppSession::Publish() {
-    std::string reconciliation_error;
-    if (Snapshot().loaded) reconciliation_error = RecoverProfiles();
     std::vector<Models::AppProfileHeader> headers;
     for (const auto &profile : profiles_.Profiles()) {
         Models::AppProfileHeader header{};
@@ -230,31 +209,12 @@ void AppSession::Publish() {
         published_profiles_ = profiles_.Profiles();
     }
     auto tunnels = Tunnels::Info(tunnel_->Fetch());
-    if (register_missing_profiles_) {
-        const auto unavailable = tunnel_->ObservationErrors();
-        try {
-            for (const auto &profile : profiles_.Profiles()) {
-                if (unavailable.find(profile.id) != unavailable.end()) continue;
-                const auto state = Snapshot();
-                if (std::find(state.recovering_profiles.begin(), state.recovering_profiles.end(), profile.id)
-                    != state.recovering_profiles.end()) continue;
-                const bool exists = std::any_of(tunnels.begin(), tunnels.end(), [&](const auto &tunnel) {
-                    return tunnel.id == profile.id;
-                });
-                if (!exists) tunnel_->Save(profile);
-            }
-            tunnels = Tunnels::Info(tunnel_->Fetch());
-            register_missing_profiles_ = false;
-        } catch (const std::exception &error) {
-            reconciliation_error = "Unable to register saved profiles: " + std::string(error.what());
-        }
-    }
-    // Only durable intents authorize cleanup. Untracked native profiles are
-    // preserved, including registrations which predate a rejected import.
-    if (reconciliation_error != last_reconciliation_error_) {
-        logger_->Write(reconciliation_error.empty() ? LogLevel::info : LogLevel::error, LogCategory::profiles,
-            reconciliation_error.empty() ? "Profile reconciliation recovered" : reconciliation_error);
-        last_reconciliation_error_ = reconciliation_error;
+    auto synchronization_error = SynchronizeProfiles(tunnels);
+    tunnels = Tunnels::Info(tunnel_->Fetch());
+    if (synchronization_error != last_synchronization_error_) {
+        logger_->Write(synchronization_error.empty() ? LogLevel::info : LogLevel::error, LogCategory::profiles,
+            synchronization_error.empty() ? "Profile synchronization succeeded" : synchronization_error);
+        last_synchronization_error_ = synchronization_error;
     }
     const auto previous = Snapshot();
     const auto observation_errors = tunnel_->ObservationErrors();
@@ -282,7 +242,7 @@ void AppSession::Publish() {
     snapshot_.tunnels = std::move(tunnels);
     snapshot_.tunnel_available = true;
     snapshot_.tunnel_observation_errors = observation_errors;
-    snapshot_.reconciliation_error = std::move(reconciliation_error);
+    snapshot_.synchronization_error = std::move(synchronization_error);
 }
 
 void AppSession::Load() {
@@ -298,7 +258,7 @@ void AppSession::Load() {
             std::lock_guard lock(mutex_);
             snapshot_.loaded = true;
         }
-        register_missing_profiles_ = true;
+        synchronized_profiles_.clear();
     });
 }
 
@@ -315,15 +275,10 @@ bool AppSession::SaveProfile(Profile original, Profile draft, std::function<void
     return Post([this, original = std::move(original), draft = std::move(draft), completion = std::move(completion)] {
         bool succeeded = false;
         try {
-            profiles_.Update(original, draft,
-                [this](const Profile &profile) {
-                    tunnel_->Save(profile);
-                }, [this](const Profile &profile) {
-                    ValidateProfileUpdate(profile.id);
-                });
+            profiles_.Update(original, draft);
             succeeded = true;
         } catch (...) {
-            // ProfileManager preserves recovery information for failed transactions.
+            // The editor reports storage failures and retains its draft.
         }
         completion(succeeded);
     });
@@ -358,15 +313,7 @@ void AppSession::ImportFiles(std::shared_ptr<const ConfigurationFiles> files) {
             try {
                 logger_->Write(LogLevel::info, LogCategory::profiles, "Import profile...");
                 const auto source = files->Read(index);
-                // Registration follows the injected strategy on every platform,
-                // including fake tunnels used by portable tests and demo mode.
-                profiles_.ImportText(source.text, source.name, [this](const Profile &value) {
-                    tunnel_->Save(value);
-                }, [this](const std::string &id) {
-                    RollbackRegistration(id);
-                }, [this](const Profile &value) {
-                    ValidateNewRegistration(value.id);
-                });
+                profiles_.ImportText(source.text, source.name);
                 logger_->Write(LogLevel::info, LogCategory::profiles, "Finished saving profile");
             } catch (const std::exception &) {
                 logger_->Write(LogLevel::error, LogCategory::profiles, "Unable to import profile");
@@ -397,7 +344,6 @@ void AppSession::Remove(std::vector<std::string> ids) {
             profiles_.Remove(id);
             if (pending_profile_ == id) {
                 pending_profile_.reset();
-                tunnel_->Disconnect(id);
             }
         }
     });
@@ -410,14 +356,24 @@ void AppSession::Connect(std::string id, std::optional<Partout::Models::OpenVpnC
             if (apply_preferences_) apply_preferences_(*pending_preferences_);
             pending_preferences_.reset();
         }
-        for (const auto &transaction : profiles_.PendingTransactions()) {
-            if (transaction.id == id) throw std::runtime_error("Profile recovery is still pending.");
-        }
         const auto profile = profiles_.Find(id);
         if (original && profile != *original) throw std::runtime_error("Profile changed during interactive login.");
         std::optional<Partout::TunnelCredentials> authentication;
         if (credentials) authentication = Partout::TunnelCredentials{credentials->username, credentials->password};
         pending_profile_.reset();
+        const auto native = tunnel_->Fetch();
+        const bool already_active = std::any_of(native.begin(), native.end(), [&](const auto &value) {
+            return value.id == id && value.status.value == Partout::Models::TunnelStatus::active;
+        });
+        const auto synchronized = synchronized_profiles_.find(id);
+        const bool installed = std::any_of(native.begin(), native.end(), [&](const auto &value) {
+            return value.id == id;
+        });
+        if (!already_active && (!installed || synchronized == synchronized_profiles_.end() || synchronized->second != profile)) {
+            // Never connect using an older native configuration after a synchronization failure.
+            tunnel_->Save(profile);
+            synchronized_profiles_[id] = profile;
+        }
         tunnel_->Connect(profile, std::move(authentication));
         pending_profile_ = id;
     }, AppErrorContext::tunnel);

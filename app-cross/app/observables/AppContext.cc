@@ -9,7 +9,6 @@
 #include "../context/ContextExtensions.h"
 #include "../business/managers/AppSession.h"
 #include "../business/strategy/FileProfileRepository.h"
-#include "../business/strategy/FileProfileJournal.h"
 #include "../business/strategy/FakeTunnelStrategy.h"
 #include "../business/strategy/FilePreferencesRepository.h"
 #include "../business/platform/WindowsHttpClient.h"
@@ -109,8 +108,6 @@ AppContext::AppContext(const std::filesystem::path &data_root, bool demo,
       session_(std::make_unique<AppSession>(std::make_unique<FileProfileRepository>(
           Profiles::Directory(data_root, constants)),
           ImportProfile, MakeTunnel(demo, cross_constants), logger_,
-          std::make_unique<FileProfileJournal>(Profiles::Directory(data_root, constants) / "transactions"),
-          std::chrono::seconds(1),
           ApplyLoggingPreferences)),
       profiles(*session_), tunnel(*session_),
       preferences(MakePreferencesRepository(

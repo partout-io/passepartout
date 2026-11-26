@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "business/strategy/MemoryProfileJournal.h"
 #include "../app/business/models/FileConfigurationFiles.h"
 #include "business/managers/ProfileManager.h"
 #include "business/strategy/FileProfileRepository.h"
@@ -261,8 +260,7 @@ void TestPreferencesRetry(const std::filesystem::path &root) {
     auto strategy = std::make_unique<ControlledTunnel>();
     auto *backend = strategy.get();
     Passepartout::AppSession session(std::move(repository), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)),
-        std::make_shared<Passepartout::AppLogger>(), std::make_unique<Passepartout::MemoryProfileJournal>(),
-        std::chrono::seconds(1), [backend](const auto &preferences) { backend->ApplyPreferences(preferences); });
+        std::make_shared<Passepartout::AppLogger>(), [backend](const auto &preferences) { backend->ApplyPreferences(preferences); });
     Wait(session);
     backend->events.clear();
     backend->fail_preferences = true;
@@ -723,37 +721,14 @@ int main() {
         {
             auto repository = std::make_unique<FailingImportRepository>();
             auto *storage = repository.get();
-            ProfileManager transaction(std::move(repository), importer);
-            transaction.Load();
-            bool registered = false;
-            bool rollback_attempted = false;
-            Rejects([&] {
-                transaction.Import(config, [&](const Profile &) { registered = true; }, [&](const std::string &) {
-                    rollback_attempted = true;
-                    registered = false;
-                });
-            });
-            assert(!registered && rollback_attempted && storage->stored.empty() && transaction.Profiles().empty());
-            rollback_attempted = false;
-            Rejects([&] {
-                transaction.Import(config, [](const Profile &) { throw std::runtime_error("Rejected"); },
-                    [&](const std::string &) { rollback_attempted = true; });
-            });
-            // A rejected registration may have partially written native state.
-            assert(rollback_attempted && storage->stored.empty());
-            storage->fail_remove = true;
-            std::string error;
-            try {
-                transaction.Import(config, [](const Profile &) {}, [&](const std::string &) {
-                    rollback_attempted = true;
-                    throw std::runtime_error("Native rollback failed");
-                });
-            } catch (const std::exception &failure) {
-                error = failure.what();
-            }
-            assert(rollback_attempted && transaction.Profiles().empty());
-            assert(error.find("Local import rollback failed") != std::string::npos);
-            assert(error.find("VPN registration rollback failed") != std::string::npos);
+            ProfileManager manager(std::move(repository), importer);
+            manager.Load();
+            Rejects([&] { manager.Import(config); });
+            assert(manager.Profiles().empty());
+            // A partial storage write remains authoritative when reloaded; no native rollback is involved.
+            assert(storage->stored.size() == 1);
+            manager.Load();
+            assert(manager.Profiles().size() == 1);
         }
 
         auto controlled = std::make_unique<ControlledTunnel>();
@@ -860,10 +835,8 @@ int main() {
             auto logging_backend = std::make_unique<ControlledTunnel>();
             auto *backend = logging_backend.get();
             backend->fail_fetch = true;
-            auto journal = std::make_unique<MemoryProfileJournal>();
-            auto *pending = journal.get();
             AppSession logged(std::make_unique<FileProfileRepository>(root / "logging"), importer,
-                std::make_unique<Partout::Tunnel>(std::move(logging_backend)), logger, std::move(journal), std::chrono::milliseconds(0));
+                std::make_unique<Partout::Tunnel>(std::move(logging_backend)), logger);
             Wait(logged);
             const auto count = messages.size();
             logged.Refresh();
@@ -871,17 +844,16 @@ int main() {
             assert(messages.size() == count);
             backend->fail_fetch = false;
             backend->fake.Save(Example("orphan"));
-            pending->Save({"orphan", std::nullopt, true});
             backend->fail_remove = true;
             logged.Refresh();
             Wait(logged);
             assert(logged.Snapshot().tunnel_available);
             assert(logged.Snapshot().tunnel_error.empty());
-            assert(!logged.Snapshot().reconciliation_error.empty());
+            assert(!logged.Snapshot().synchronization_error.empty());
             backend->fail_remove = false;
             logged.Refresh();
             Wait(logged);
-            assert(logged.Snapshot().reconciliation_error.empty());
+            assert(logged.Snapshot().synchronization_error.empty());
         }
         const auto contains_log = [&](const std::string &part) {
             return std::any_of(messages.begin(), messages.end(), [&](const auto &message) { return message.find(part) != std::string::npos; });
@@ -889,8 +861,8 @@ int main() {
         assert(contains_log("Reload local profiles"));
         assert(contains_log("Unable to fetch tunnel state"));
         assert(contains_log("Tunnel observation recovered"));
-        assert(contains_log("Unable to recover profile orphan"));
-        assert(contains_log("Profile reconciliation recovered"));
+        assert(contains_log("Unable to remove VPN registration orphan"));
+        assert(contains_log("Profile synchronization succeeded"));
         assert(contains_log("Finished application session"));
 
         auto failed = std::make_unique<ControlledTunnel>();
@@ -915,17 +887,17 @@ int main() {
             auto *registration = backend.get();
             AppSession imported(std::make_unique<FileProfileRepository>(root / "registration"), importer, std::make_unique<Partout::Tunnel>(std::move(backend)));
             Wait(imported);
-            // An import cannot overwrite or roll back an existing native registration.
+            // Import persists independently of an active native registration.
             registration->fake.Save(Example("imported"));
             registration->fake.Connect("imported");
             imported.Import({config});
             Wait(imported);
-            assert(!imported.Snapshot().error.empty());
-            assert(imported.Snapshot().profiles.empty());
+            assert(imported.Snapshot().error.empty());
+            assert(imported.Snapshot().profiles.size() == 1);
             assert(registration->events.empty() && registration->removal_attempts == 0);
             assert(registration->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::active);
             registration->fake.Remove("imported");
-            imported.Import({config});
+            imported.Refresh();
             Wait(imported);
             assert(imported.Snapshot().error.empty());
             assert(registration->events == std::vector<std::string>{"save:imported"});
@@ -936,24 +908,23 @@ int main() {
             registration->fail_save = true;
             imported.Import({another});
             Wait(imported);
-            assert(!imported.Snapshot().error.empty());
-            assert(imported.Snapshot().error_context == Passepartout::AppErrorContext::import);
-            assert(FileProfileRepository(root / "registration").Fetch().size() == 1);
-            assert(imported.Snapshot().profiles.size() == 1);
+            assert(imported.Snapshot().error.empty());
+            assert(!imported.Snapshot().synchronization_error.empty());
+            assert(FileProfileRepository(root / "registration").Fetch().size() == 2);
+            assert(imported.Snapshot().profiles.size() == 2);
             registration->fail_save = false;
-            imported.Import({another});
+            imported.Refresh();
             Wait(imported);
             assert(imported.Snapshot().error.empty());
             assert(imported.Snapshot().tunnels.size() == 2);
             assert(std::count(registration->events.begin(), registration->events.end(), "save:imported") == 1);
             assert(std::count(registration->events.begin(), registration->events.end(), "save:batch-id") == 2);
         }
-        // Import requires native registration; failed observation must not save locally.
+        // Native observation failures must not prevent local imports.
         auto unavailable = std::make_unique<ControlledTunnel>();
         auto *unavailable_strategy = unavailable.get();
         unavailable->fail_fetch = true;
-        AppSession offline(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::make_unique<Partout::Tunnel>(std::move(unavailable)),
-            std::make_shared<AppLogger>(), std::make_unique<MemoryProfileJournal>(), std::chrono::milliseconds(0));
+        AppSession offline(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::make_unique<Partout::Tunnel>(std::move(unavailable)));
         Wait(offline);
         // A transient startup observation failure is not a failed user action.
         assert(offline.Snapshot().loaded);
@@ -969,13 +940,13 @@ int main() {
         unavailable_strategy->fail_fetch = true;
         offline.Import({another});
         Wait(offline);
-        assert(!offline.Snapshot().error.empty());
+        assert(offline.Snapshot().error.empty());
         assert(!offline.Snapshot().tunnel_error.empty());
         assert(!offline.Snapshot().tunnel_available);
-        assert(offline.Snapshot().profiles.empty());
-        assert(FileProfileRepository(root / "offline").Fetch().empty());
+        assert(offline.Snapshot().profiles.size() == 1);
+        assert(FileProfileRepository(root / "offline").Fetch().size() == 1);
         unavailable_strategy->fail_fetch = false;
-        offline.Import({another});
+        offline.Refresh();
         Wait(offline);
         assert(offline.Snapshot().error.empty());
         assert(offline.Snapshot().profiles.size() == 1);
@@ -1003,8 +974,8 @@ int main() {
         orphaned->fake.Save(Example("orphaned"));
         AppSession restarted(std::make_unique<FileProfileRepository>(root / "offline"), importer, std::make_unique<Partout::Tunnel>(std::move(orphaned)));
         Wait(restarted);
-        // An untracked registration is not proof of an interrupted deletion.
-        assert(restarted.Snapshot().tunnels.size() == 1);
+        // A successful local load is authoritative for app-owned native registrations.
+        assert(restarted.Snapshot().tunnels.empty());
         // Failed local loading is not evidence that all profiles were deleted.
         auto corrupt_repository = std::make_unique<FileProfileRepository>(root / "corrupt");
         std::ofstream(root / "corrupt" / "objects" / "broken.json") << "invalid";
@@ -1035,7 +1006,7 @@ int main() {
         Wait(session);
         assert(session.Snapshot().tunnel_available);
         assert(session.Snapshot().tunnel_error.empty());
-        assert(session.Snapshot().reconciliation_error.empty());
+        assert(session.Snapshot().synchronization_error.empty());
         assert(session.Snapshot().tunnel_observation_errors.size() == 2);
         assert(!TunnelObservable::StateForProfile(session.Snapshot(), p.id).can_interact);
         session_strategy->observation_errors.erase(p.id);
@@ -1107,15 +1078,14 @@ int main() {
         delayed->delayed_disconnect = true;
         auto *delayed_strategy = delayed.get();
         AppSession removal(std::make_unique<FileProfileRepository>(root / "profiles"),
-            importer, std::make_unique<Partout::Tunnel>(std::move(delayed)), std::make_shared<AppLogger>(),
-            std::make_unique<MemoryProfileJournal>(), std::chrono::milliseconds(0));
+            importer, std::make_unique<Partout::Tunnel>(std::move(delayed)));
         Wait(removal);
         removal.Remove({p.id});
         Wait(removal);
         assert(removal.Snapshot().error.empty());
         assert(removal.Snapshot().tunnel_error.empty());
         assert(removal.Snapshot().tunnel_available);
-        assert(!removal.Snapshot().reconciliation_error.empty());
+        assert(!removal.Snapshot().synchronization_error.empty());
         assert(removal.Snapshot().profiles.empty());
         assert(reopened.Fetch().empty());
         // Keep the Windows registration until disconnect actually finishes.
@@ -1125,7 +1095,7 @@ int main() {
         Wait(removal);
         assert(removal.Snapshot().tunnel_error.empty());
         assert(removal.Snapshot().tunnels.empty());
-        assert(removal.Snapshot().reconciliation_error.empty());
+        assert(removal.Snapshot().synchronization_error.empty());
     } catch (...) {
         std::filesystem::remove_all(root);
         try {

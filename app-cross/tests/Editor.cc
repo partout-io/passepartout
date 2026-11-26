@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #include "business/strategy/FileProfileRepository.h"
-#include "business/strategy/FileProfileJournal.h"
 #include "business/strategy/FakeTunnelStrategy.h"
 #include "observables/ProfileEditor.h"
 #include "business/models/InteractiveLogin.h"
@@ -131,23 +130,14 @@ int main() {
     std::filesystem::create_directories(root);
     try {
         const auto store = root / "profiles";
-        const auto journal_path = store / "transactions";
         FileProfileRepository repository(store);
         repository.Save(original);
-        FileProfileJournal journal(journal_path);
-        // Interrupted replacement: the authoritative local object may already
-        // contain the draft. Startup rolls both stores back before allowing edits.
-        journal.Save({original.id, original, false});
-        repository.Save(draft);
         auto strategy = std::make_unique<RejectingTunnel>();
         auto *backend = strategy.get();
-        backend->fake.Save(draft);
-        AppSession session(std::make_unique<FileProfileRepository>(store), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)),
-            std::make_shared<AppLogger>(), std::make_unique<FileProfileJournal>(journal_path),
-            std::chrono::milliseconds(0));
+        backend->fake.Save(draft); // Startup synchronizes the authoritative saved profile.
+        AppSession session(std::make_unique<FileProfileRepository>(store), {}, std::make_unique<Partout::Tunnel>(std::move(strategy)));
         Wait(session);
         assert(repository.Fetch().front() == original && backend->saved == original);
-        assert(journal.Fetch().empty());
         ProfileObservable profiles(session);
         TunnelObservable tunnel(session);
         tunnel.Connect(original.id);
@@ -174,16 +164,21 @@ int main() {
         backend->rejects = true;
         profiles.SaveEditor(pending);
         Wait(session);
-        assert(pending->Snapshot().failed && pending->Snapshot().draft.name == "Retry name");
-        assert(repository.Fetch().front() == original);
-        assert(!session.Snapshot().recovering_profiles.empty());
-        assert(!ProfileObservable::CanSave(session.Snapshot(), original.id));
+        assert(pending->Snapshot().saved && !pending->Snapshot().failed);
+        assert(repository.Fetch().front().name == "Retry name");
+        assert(!session.Snapshot().synchronization_error.empty());
+        assert(ProfileObservable::CanSave(session.Snapshot(), original.id));
+        backend->connection_credentials.reset();
+        session.Connect(original.id);
+        Wait(session);
+        assert(!session.Snapshot().error.empty());
+        assert(!backend->connection_credentials);
+        assert(backend->fake.Fetch().front().status.value == Partout::Models::TunnelStatus::inactive);
+        session.ClearError();
         backend->rejects = false;
         session.Refresh();
         Wait(session);
-        assert(journal.Fetch().empty());
-        profiles.SaveEditor(pending);
-        Wait(session);
+        assert(session.Snapshot().synchronization_error.empty());
         assert(pending->Snapshot().saved);
         assert(repository.Fetch().front().name == "Retry name");
         assert(backend->saved.name == "Retry name");
@@ -197,33 +192,38 @@ int main() {
         backend->fake.Connect(original.id);
         session.Refresh();
         Wait(session);
-        assert(!ProfileObservable::CanSave(session.Snapshot(), original.id));
+        assert(ProfileObservable::CanSave(session.Snapshot(), original.id));
+        auto active_editor = profiles.CreateEditor(original.id);
+        active_editor->Rename("Saved while active");
+        profiles.SaveEditor(active_editor);
+        Wait(session);
+        assert(active_editor->Snapshot().saved);
+        assert(repository.Fetch().front().name == "Saved while active");
+        assert(backend->saved.name == "Retry name");
         backend->fake.Disconnect(original.id);
-        // Interrupted import rolls back; an untracked native entry is retained.
+        session.Refresh();
+        Wait(session);
+        assert(backend->saved.name == "Saved while active");
+        // Reload synchronizes stored profiles and removes obsolete app-owned registrations.
         auto imported = original;
-        imported.id = "interrupted-import";
+        imported.id = "saved-import";
         repository.Save(imported);
-        backend->fake.Save(imported);
-        journal.Save({imported.id, std::nullopt, false});
         auto untracked = original;
         untracked.id = "untracked";
         backend->fake.Save(untracked);
         session.Load();
         Wait(session);
-        assert(repository.Fetch().size() == 1);
-        assert(journal.Fetch().empty());
+        assert(repository.Fetch().size() == 2);
         assert(backend->fake.Fetch().size() == 2);
-        // Deletion intent survives a new manager and completes without a local object.
-        journal.Save({original.id, std::nullopt, true});
-        session.Load();
+        session.Remove({original.id, imported.id});
         Wait(session);
-        assert(repository.Fetch().empty() && journal.Fetch().empty());
-        assert(backend->fake.Fetch().size() == 1);
+        assert(repository.Fetch().empty());
+        assert(backend->fake.Fetch().empty());
     } catch (const std::exception &error) {
         std::cerr << error.what() << std::endl;
         std::filesystem::remove_all(root);
         return 1;
     }
     std::filesystem::remove_all(root);
-    std::cout << "Editor drafts, native save failure/retry, conflicts and transaction recovery passed.\n";
+    std::cout << "Editor drafts, authoritative saves, tunnel synchronization and conflicts passed.\n";
 }

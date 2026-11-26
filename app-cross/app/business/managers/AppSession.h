@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
-#include "../strategy/MemoryProfileJournal.h"
 #include "../models/AppSnapshot.h"
 #include "ProfileManager.h"
 #include <partout/tunnel/Tunnel.h>
@@ -16,15 +15,13 @@
 #include <thread>
 
 namespace Passepartout {
-// Shared serial executor for profile/tunnel transactions. Snapshots are copied
+// Shared serial executor for profile actions and tunnel synchronization. Snapshots are copied
 // under a lock; UI consumers never retain references into worker-owned models.
 class AppSession final {
 public:
     AppSession(std::unique_ptr<ProfileRepository> repository, ProfileImporter importer,
                std::unique_ptr<Partout::Tunnel> tunnel,
                std::shared_ptr<AppLogger> logger = std::make_shared<AppLogger>(),
-               std::unique_ptr<ProfileJournal> journal = std::make_unique<MemoryProfileJournal>(),
-               std::chrono::milliseconds recovery_delay = std::chrono::seconds(1),
                std::function<void(const Models::AppPreferences &)> apply_preferences = {}
     );
     ~AppSession();
@@ -51,21 +48,11 @@ private:
               bool foreground = true);
     void Run();
     void Publish();
-    void ValidateNewRegistration(const std::string &id);
-    void ValidateProfileUpdate(const std::string &id);
-    void RollbackRegistration(const std::string &id);
-    std::string RecoverProfiles();
-    struct RecoveryRetry {
-        unsigned attempts = 0;
-        std::chrono::steady_clock::time_point next;
-        std::string error;
-    };
-    std::map<std::string, RecoveryRetry> recovery_retries_;
-    std::chrono::milliseconds recovery_delay_;
+    std::string SynchronizeProfiles(const std::vector<Models::AppTunnelInfo> &tunnels);
+    std::map<std::string, Profile> synchronized_profiles_;
     std::shared_ptr<AppLogger> logger_;
     std::string last_observation_error_;
-    std::string last_reconciliation_error_;
-    bool register_missing_profiles_ = false;
+    std::string last_synchronization_error_;
     std::optional<Models::AppPreferences> pending_preferences_;
     ProfileManager profiles_;
     std::unique_ptr<Partout::Tunnel> tunnel_;
