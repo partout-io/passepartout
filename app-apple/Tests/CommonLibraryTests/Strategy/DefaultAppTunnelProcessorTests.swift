@@ -22,18 +22,12 @@ struct DefaultAppTunnelProcessorTests {
             ),
             willInstall: processor.willInstall
         )
-        var login = InteractiveLogin(original: original)
-        #expect(login.needsOTP == (method != .none))
-        #expect(login.password.isEmpty)
-        login.password = "123456"
-        let prepared = try login.connectionProfile()
+        let prepared = try original.withInteractiveLogin(username: "user", password: "123456", otp: "123456")
         let credentials = try #require((prepared.activeModules.first as? OpenVPNModule)?.credentials)
         #expect(credentials.password == (method == .none ? "123456" : "password"))
         #expect(credentials.otp == (method == .none ? nil : "123456"))
         #expect(credentials.otpMethod == method)
-        #expect(InteractiveLogin(original: prepared).password.isEmpty)
-        #expect(InteractiveLogin(original: prepared).username == "user")
-        try await tunnel.connect(with: login)
+        try await tunnel.connect(to: prepared, force: true)
         #expect(await repository.persistedProfiles == [prepared])
         #expect(await repository.savedProfiles.isEmpty)
     }

@@ -134,7 +134,7 @@ private extension InteractiveCoordinator {
     var interactiveView: some View {
         manager
             .editor
-            .interactiveProvider(for: manager.login?.moduleId)
+            .interactiveProvider(for: manager.moduleId)
             .map(innerView)
     }
 

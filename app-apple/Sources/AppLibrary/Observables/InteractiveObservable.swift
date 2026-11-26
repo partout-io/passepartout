@@ -6,13 +6,13 @@ import CommonLibrary
 
 @MainActor @Observable
 public final class InteractiveObservable {
-    public typealias CompletionBlock = (InteractiveLogin) throws -> Void
+    public typealias CompletionBlock = (Profile) throws -> Void
 
     public var isPresented = false
 
     public private(set) var editor = ProfileEditor()
 
-    public private(set) var login: InteractiveLogin?
+    public private(set) var moduleId: UniqueID?
 
     private var onComplete: CompletionBlock?
 
@@ -20,7 +20,7 @@ public final class InteractiveObservable {
     }
 
     public func present(with profile: Profile, onComplete: CompletionBlock?) {
-        login = InteractiveLogin(original: profile)
+        moduleId = profile.interactiveModules?.first?.id
         editor = ProfileEditor()
         editor.load(profile.editable(), isShared: false)
         self.onComplete = onComplete
@@ -30,13 +30,6 @@ public final class InteractiveObservable {
     public func complete() throws {
         isPresented = false
         let newProfile = try editor.buildAndUpdate()
-        guard var login,
-              let credentials = newProfile.activeModules.compactMap({ $0 as? OpenVPNModule }).first(where: { $0.id == login.moduleId })?.credentials else {
-            throw ABI.AppError.interactiveLogin
-        }
-        login.username = credentials.username
-        login.password = login.needsOTP ? credentials.otp ?? "" : credentials.password
-        self.login = nil
-        try onComplete?(login)
+        try onComplete?(newProfile)
     }
 }
