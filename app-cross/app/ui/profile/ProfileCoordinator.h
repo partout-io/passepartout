@@ -20,8 +20,9 @@ public:
 private:
     void SelectSection(std::size_t selection);
     void OpenModule(std::size_t index);
+    void EditCredentials(std::size_t index);
     void ShowSection(wxWindow *page, const wxString &title);
-    void Dismiss();
+    bool Dismiss();
     void RefreshState();
     ProfileObservable &profiles_;
     std::shared_ptr<ProfileEditor> editor_;

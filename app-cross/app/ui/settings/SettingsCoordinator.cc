@@ -3,6 +3,7 @@
 
 #include "SettingsCoordinator.h"
 #include "PreferencesView.h"
+#include "SettingsPresentation.h"
 #include "CreditsView.h"
 #include "LinksView.h"
 #include "../diagnostics/DiagnosticsView.h"
@@ -57,13 +58,7 @@ SettingsCoordinator::SettingsCoordinator(wxWindow *parent, AppContext &context)
     buttons->Realize();
     layout->Add(buttons, 0, wxALIGN_RIGHT | wxALL, Theme::Spacing(this));
     SetSizer(layout);
-    close->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-        EndModal(wxID_CANCEL);
-    });
-    Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
-        if (event.GetKeyCode() == WXK_ESCAPE) EndModal(wxID_CANCEL);
-        else event.Skip();
-    });
+    SetEscapeId(wxID_CANCEL);
     SelectSection(initial);
     GetSizer()->SetSizeHints(this);
     const wxSize viewport(GetCharWidth() * 90, GetCharHeight() * 28);
@@ -95,24 +90,24 @@ void SettingsCoordinator::SelectSection(SettingsSection section) {
     };
     switch (section) {
         case SettingsSection::Preferences:
-            ShowSection(Localized(StringKey::GlobalNounsPreferences), [this](wxWindow *parent) {
-                return new PreferencesView(parent, context_.preferences);
-            });
+            ShowSection(new PreferencesView(pages_, context_.preferences),
+                Localized(StringKey::GlobalNounsPreferences)
+            );
             break;
         case SettingsSection::Links:
-            ShowSection(Localized(StringKey::ViewsSettingsLinksTitle), [this](wxWindow *parent) {
-                return new LinksView(parent, context_.constants);
-            });
+            ShowSection(new LinksView(pages_, context_.constants),
+                Localized(StringKey::ViewsSettingsLinksTitle)
+            );
             break;
         case SettingsSection::Credits:
-            ShowSection(Localized(StringKey::ViewsSettingsCreditsTitle), [this, present](wxWindow *parent) {
-                return new CreditsView(parent, context_.credits, present);
-            });
+            ShowSection(new CreditsView(pages_, context_.credits, present),
+                Localized(StringKey::ViewsSettingsCreditsTitle)
+            );
             break;
         case SettingsSection::Diagnostics:
-            ShowSection(Localized(StringKey::ViewsDiagnosticsTitle), [this, present](wxWindow *parent) {
-                return new DiagnosticsView(parent, context_.diagnostics, context_.preferences, context_.profiles, context_.tunnel, present, [this] { ReportIssue(); });
-            });
+            ShowSection(new DiagnosticsView(pages_, context_.diagnostics, context_.preferences, context_.profiles, context_.tunnel, present, [this] { ReportIssue(); }),
+                Localized(StringKey::ViewsDiagnosticsTitle)
+            );
             break;
         default:
             break;
@@ -126,7 +121,8 @@ void SettingsCoordinator::ReportIssue() {
             view = new IssueReportView(parent);
             return view;
         }, ThemeModal::Mode::Editable, ThemeModal::Sizing::TextInput,
-        [&view] { return view && view->CanSubmit(); });
+        [&view] { return view && view->CanSubmit(); }
+    );
     if (modal.ShowModal() != wxID_OK) return;
     try {
         if (!context_.diagnostics.Report(
@@ -139,9 +135,7 @@ void SettingsCoordinator::ReportIssue() {
     }
 }
 
-void SettingsCoordinator::ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> make_page) {
-    wxWindowUpdateLocker update(this);
-    auto *page = make_page(pages_);
+void SettingsCoordinator::ShowSection(wxWindow *page, const wxString &title) {
     pages_->AddPage(page, title, true);
     pages_->InvalidateBestSize();
     pages_->GetParent()->Layout();

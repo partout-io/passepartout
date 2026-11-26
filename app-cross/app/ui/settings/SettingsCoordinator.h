@@ -3,7 +3,6 @@
 
 #pragma once
 #include "../../observables/AppContext.h"
-#include "SettingsPresentation.h"
 #include "SettingsView.h"
 #include <wx/simplebook.h>
 
@@ -14,7 +13,7 @@ public:
 private:
     void ReportIssue();
     void SelectSection(SettingsSection section);
-    void ShowSection(wxString title, std::function<wxWindow *(wxWindow *)> make_page);
+    void ShowSection(wxWindow *page, const wxString &title);
     AppContext &context_;
     SettingsSection section_ = SettingsSection::Preferences;
     wxSimplebook *pages_;
