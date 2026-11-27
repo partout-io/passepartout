@@ -1,6 +1,9 @@
 $Arch = "arm64"
+$Preset = "windows-$Arch-debug"
+$NProcs = 8
 cmake --preset "windows-$Arch"
-cmake --build --preset "windows-$Arch-debug" --target clean
+cmake --build --preset $Preset --parallel $NProcs | Out-Host
+cmake --build --preset $Preset --target clean
 Measure-Command {
-    cmake --build --preset "windows-$Arch-debug" --parallel 8 | Out-Host
+    cmake --build --preset $Preset --parallel $NProcs | Out-Host
 }
