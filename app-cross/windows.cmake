@@ -24,6 +24,10 @@ function(configure_windows_platform)
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL" PARENT_SCOPE)
     endif()
 
+    # AppContainer CRT libraries do not supply the desktop /RTC helpers.
+    # Apply this to static dependencies too, particularly the shared models.
+    set(CMAKE_MSVC_RUNTIME_CHECKS "" PARENT_SCOPE)
+
     # Installation prerequisites must run before Partout installs its DLLs.
     if(NOT BUILD_APP)
         install(CODE [[
