@@ -46,7 +46,6 @@ import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView
 import com.algoritmico.passepartout.ui.profile.ProfileCoordinator
-import io.partout.models.TaggedProfile
 import kotlinx.coroutines.launch
 
 @Composable
@@ -109,7 +108,6 @@ fun ProfileContainerView(
     fun requestProfileConnection(
         profileId: String,
         enabled: Boolean,
-        profile: TaggedProfile? = null,
         login: InteractiveLogin? = null
     ) {
         if (tunnelState.policy.alwaysOn == true) {
@@ -122,21 +120,17 @@ fun ProfileContainerView(
         coroutineScope.launch {
             val didStart = runCatchingNonFatal {
                 if (enabled) {
-                    val connectionProfile = profile ?: profileObservable.profile(profileId)
-                    if (connectionProfile == null) {
-                        false
+                    if (login != null) {
+                        tunnelObservable.connect(login)
                     } else {
-                        if (login != null) {
-                            tunnelObservable.connect(login)
-                        } else {
-                            tunnelObservable.connect(connectionProfile)
-                        }
-                        true
+                        val profile = profileObservable.profile(profileId)
+                            ?: return@runCatchingNonFatal false
+                        tunnelObservable.connect(profile)
                     }
                 } else {
                     tunnelObservable.disconnect(profileId)
-                    true
                 }
+                true
             }.getOrElse {
                 when (it) {
                     is TunnelObservableException.Interactive -> {
@@ -148,9 +142,6 @@ fun ProfileContainerView(
                         false
                     }
                 }
-            }
-            if (didStart && profile != null) {
-                interactiveLogin = null
             }
             if (!didStart && requestedConnection == request) {
                 requestedConnection = null
@@ -229,7 +220,6 @@ fun ProfileContainerView(
                 requestProfileConnection(
                     profileId = it.original.id,
                     enabled = true,
-                    profile = it.original,
                     login = it
                 )
             }
