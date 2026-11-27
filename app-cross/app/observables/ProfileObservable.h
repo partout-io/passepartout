@@ -43,7 +43,7 @@ private:
     MainThread delivery_;
     bool Post(std::function<void()> operation, OperationErrorContext context = OperationErrorContext::general);
     void FinishOperation();
-    void OnUpdate(const std::vector<Profile> &profiles);
+    void OnUpdateProfiles(const std::vector<Profile> &profiles);
     Worker &executor_;
     ProfileManager &manager_;
     std::size_t profile_subscription_;

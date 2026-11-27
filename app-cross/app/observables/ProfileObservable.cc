@@ -16,7 +16,7 @@ ProfileObservable::ProfileObservable(Worker &executor, ProfileManager &manager)
           if (!std::holds_alternative<Models::ProfileEventReady>(event) &&
               !std::holds_alternative<Models::ProfileEventSave>(event) &&
               !std::holds_alternative<Models::ProfileEventDelete>(event)) return;
-          delivery_.Post([this, profiles = manager_.Profiles()] { OnUpdate(profiles); });
+          delivery_.Post([this, profiles = manager_.Profiles()] { OnUpdateProfiles(profiles); });
       })) {}
 
 ProfileObservable::~ProfileObservable() {
@@ -98,7 +98,7 @@ bool ProfileObservable::CanRemove(const State &state, const std::vector<std::str
     });
 }
 
-void ProfileObservable::OnUpdate(const std::vector<Profile> &profiles) {
+void ProfileObservable::OnUpdateProfiles(const std::vector<Profile> &profiles) {
     MainThread::Assert();
     std::vector<Models::AppProfileHeader> headers;
     headers.reserve(profiles.size());
