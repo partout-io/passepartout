@@ -52,8 +52,9 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
         return NavigationStack {
             TabView {
                 Group {
-                    if profileObservable.hasProfiles {
-                        connectionView
+                    if !profileObservable.isReady {
+                        ThemeProgressView()
+                            .themeGradient()
                     } else {
                         emptyProfilesView
                     }
