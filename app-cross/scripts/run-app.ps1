@@ -33,10 +33,10 @@ function GetNextDevelopmentVersion {
     foreach ($version in $RegisteredVersions) {
         if ($version -gt $latest) { $latest = $version }
     }
-    if ($latest.Major -ne 0 -or $latest.Revision -ge 65535) {
-        throw 'Choose a newer 0.* development package version in the CMake cache.'
+    if ($latest.Revision -ge 65535) {
+        throw 'Choose a newer development package version in the CMake cache.'
     }
-    return "0.$($latest.Minor).$($latest.Build).$($latest.Revision + 1)"
+    return "$($latest.Major).$($latest.Minor).$($latest.Build).$($latest.Revision + 1)"
 }
 
 function AssertFrontendClosed {
@@ -123,7 +123,6 @@ try {
     }
     $processName = [IO.Path]::GetFileNameWithoutExtension($frontend.Executable)
     AssertFrontendClosed
-    if (-not $identity.Version.StartsWith('0.')) { throw 'Development packages must use a 0.* version.' }
     $registered = @(Get-AppxPackage -Name $identity.Name | Where-Object { $_.Publisher -eq $identity.Publisher })
     if (@($registered | Where-Object { -not $_.IsDevelopmentMode }).Count) {
         throw 'Refusing to replace a production package with a development registration.'

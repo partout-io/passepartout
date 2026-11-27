@@ -47,7 +47,11 @@ try {
 
     AssertEqual (GetNextDevelopmentVersion '0.1.0.0' @('0.1.0.0')) '0.1.0.1'
     AssertEqual (GetNextDevelopmentVersion '0.1.0.0' @('0.1.0.8', '0.2.0.0')) '0.2.0.1'
-    AssertRejected { GetNextDevelopmentVersion '0.1.0.0' @('1.0.0.0') }
+    AssertEqual (GetNextDevelopmentVersion '0.1.0.0' @('1.0.0.0')) '1.0.0.1'
+    AssertEqual (GetNextDevelopmentVersion '3.12.9.0' @()) '3.12.9.1'
+    AssertEqual (GetNextDevelopmentVersion '3.12.9.0' @('3.12.9.8')) '3.12.9.9'
+    AssertEqual (GetNextDevelopmentVersion '3.13.0.0' @('3.12.9.8')) '3.13.0.1'
+    AssertRejected { GetNextDevelopmentVersion '3.12.9.65535' @() }
     AssertRejected { GetNextDevelopmentVersion '0.1.0.65535' @() }
 
     [IO.File]::WriteAllText($manifestPath, '<Path>passepartout-vpnchannel.dll</Path>')
