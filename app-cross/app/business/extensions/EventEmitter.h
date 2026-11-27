@@ -13,7 +13,8 @@ namespace Passepartout {
 // Synchronous delivery on the emitting thread. Unsubscribe waits for in-flight
 // delivery, so a subscriber can release its captured state after unsubscribing.
 // Handlers must not subscribe, unsubscribe, or emit on this same emitter.
-// UI handlers must only enqueue delivery; state may still be locked by the owner.
+// Manager handlers capture data before dispatching to main-thread observables.
+// View handlers enqueue presentation work to avoid reentering this emitter.
 template<typename... Args>
 class EventEmitter final {
 public:

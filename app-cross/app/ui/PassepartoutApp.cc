@@ -25,6 +25,9 @@ std::string SingleInstanceKey() {
 using namespace Passepartout;
 
 bool PassepartoutApp::OnInit() {
+    MainThread::SetDispatcher([this](std::function<void()> action) {
+        CallAfter(std::move(action));
+    });
     // Configure native appearance, localization, and application identity.
     UseSystemAppearance(*this);
     wxUILocale::UseDefault();
@@ -113,6 +116,7 @@ int PassepartoutApp::OnExit() {
     // Stop accepting activations before releasing application state and the instance lock.
     activation_.reset();
     context_.reset();
+    MainThread::SetDispatcher({});
     instance_.reset();
     return wxApp::OnExit();
 }

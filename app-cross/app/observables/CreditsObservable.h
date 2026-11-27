@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "MainThread.h"
 #include "../business/extensions/EventEmitter.h"
 #include "../business/extensions/Models+Business.h"
 #include "../business/strategy/HttpClient.h"
@@ -26,10 +27,10 @@ public:
     Content License(const std::string &url) const;
     void LoadLicense(const std::string &url);
 private:
+    MainThread delivery_;
     Models::Credits credits_{};
     bool load_error_ = false;
     std::unique_ptr<HttpClient> client_;
-    mutable std::mutex mutex_;
     std::map<std::string, Content> content_;
     // Destroy first: cancels and joins before captured state and dependencies.
     Worker worker_;

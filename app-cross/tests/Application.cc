@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "MainThreadQueue.h"
 #include "ScopedLogSink.h"
 #include "business/strategy/ConfigurationFiles.h"
 #include "business/managers/ProfileManager.h"
@@ -157,7 +158,10 @@ private:
     Passepartout::FakeTunnelStrategy fake_;
 };
 void Wait(Passepartout::Tests::ObservableFixture &session) {
-    assert(session.executor.WaitIdle(std::chrono::seconds(5)));
+    do {
+        assert(session.executor.WaitIdle(std::chrono::seconds(5)));
+        Passepartout::Tests::MainThreadQueue::Drain();
+    } while (session.executor.CurrentActivity().busy);
 }
 struct Cancellation {
     std::mutex mutex;
@@ -303,6 +307,29 @@ void TestIndependentObservableState(const std::filesystem::path &root) {
     assert(!context.tunnel.Snapshot().errors.operation);
 }
 
+void TestMainThreadDelivery() {
+    using Passepartout::MainThread;
+    using Passepartout::Worker;
+    std::vector<int> delivered;
+    {
+        MainThread owner;
+        Worker worker;
+        worker.Post([&] {
+            owner.Post([&] { delivered.push_back(1); });
+            owner.Post([&] { delivered.push_back(2); });
+        });
+        assert(worker.WaitIdle(std::chrono::seconds(5)));
+        assert(delivered.empty());
+        Passepartout::Tests::MainThreadQueue::Drain();
+        assert((delivered == std::vector<int>{1, 2}));
+        worker.Post([&] { owner.Post([&] { delivered.push_back(3); }); });
+        assert(worker.WaitIdle(std::chrono::seconds(5)));
+    }
+    // Destruction invalidates already queued completions.
+    Passepartout::Tests::MainThreadQueue::Drain();
+    assert((delivered == std::vector<int>{1, 2}));
+}
+
 void TestStateNotifications(const std::filesystem::path &root) {
     Passepartout::Tests::ObservableFixture context(
         std::make_unique<Passepartout::FileProfileRepository>(root / "state-notifications"), {},
@@ -312,6 +339,8 @@ void TestStateNotifications(const std::filesystem::path &root) {
     std::mutex delivery_mutex;
     std::vector<std::thread::id> deliveries;
     const auto enqueue = [&] {
+        context.profiles.Snapshot();
+        context.tunnel.Snapshot();
         std::lock_guard lock(delivery_mutex);
         deliveries.push_back(std::this_thread::get_id());
     };
@@ -323,11 +352,11 @@ void TestStateNotifications(const std::filesystem::path &root) {
     assert(other_deliveries > 0);
     context.tunnel.Connect(Example("notification"));
     Wait(context);
-    // Worker publications enqueue delivery without reading locked state.
+    // Every publication is delivered on the owning main thread.
     {
         std::lock_guard lock(delivery_mutex);
-        assert(std::any_of(deliveries.begin(), deliveries.end(), [](auto thread) {
-            return thread != std::this_thread::get_id();
+        assert(std::all_of(deliveries.begin(), deliveries.end(), [](auto thread) {
+            return thread == std::this_thread::get_id();
         }));
     }
     // The consumer reads the latest state on its own thread, without a timer.
@@ -730,12 +759,14 @@ void TestSelectedFiles(const std::filesystem::path &root, bool fail) {
 
 using namespace Passepartout;
 int main() {
+    Passepartout::Tests::MainThreadQueue main_thread;
 #ifdef _MSC_VER
     _set_error_mode(_OUT_TO_STDERR);
     _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
     _CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDERR);
     _set_abort_behavior(0, _WRITE_ABORT_MSG | _CALL_REPORTFAULT);
 #endif
+    TestMainThreadDelivery();
     TestModalPicker();
     TestRemovalObservation();
     {

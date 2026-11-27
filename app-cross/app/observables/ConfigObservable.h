@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "MainThread.h"
 #include "../business/managers/ConfigManager.h"
 #include "Worker.h"
 
@@ -19,10 +20,9 @@ public:
     State Snapshot() const;
     void Refresh();
 private:
-    void OnUpdate(const Models::Event &event);
+    MainThread delivery_;
     std::size_t subscription_;
     std::unique_ptr<ConfigManager> manager_;
-    mutable std::mutex mutex_;
     State state_;
     // Destroy first: cancels and joins before captured state and dependencies.
     Worker worker_;

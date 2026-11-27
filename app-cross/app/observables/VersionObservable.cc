@@ -11,30 +11,30 @@ VersionObservable::VersionObservable(std::unique_ptr<VersionChecker> checker)
     : checker_(std::move(checker)), worker_([this] {
         checker_->Cancel();
     }) {
-    subscription_ = checker_->events.Subscribe([this](const Models::Event &event) { OnUpdate(event); });
+    subscription_ = checker_->events.Subscribe([this](const Models::Event &event) {
+        if (!std::holds_alternative<Models::VersionEventNew>(event)) return;
+        delivery_.Post([this, release = checker_->Snapshot()] {
+            state_.release = release;
+            changes.Emit();
+        });
+    });
     state_.available = checker_->Available();
     state_.release = checker_->Snapshot();
 }
 
 VersionObservable::~VersionObservable() {
+    MainThread::Assert();
     worker_.Stop();
     checker_->events.Unsubscribe(subscription_);
 }
 
-void VersionObservable::OnUpdate(const Models::Event &event) {
-    if (!std::holds_alternative<Models::VersionEventNew>(event)) return;
-    std::lock_guard lock(mutex_);
-    state_.release = checker_->Snapshot();
-    changes.Emit();
-}
-
 VersionObservable::State VersionObservable::Snapshot() const {
-    std::lock_guard lock(mutex_);
+    MainThread::Assert();
     return state_;
 }
 
 void VersionObservable::Check() {
-    std::lock_guard lock(mutex_);
+    MainThread::Assert();
     if (!state_.available || state_.checking) return;
     state_.checking = true;
     state_.release = {};
@@ -48,15 +48,16 @@ void VersionObservable::Check() {
         } catch (...) {
             operation_failed = true;
         }
-        std::lock_guard lock(mutex_);
-        state_.operation_failed = operation_failed;
-        state_.checking = false;
-        changes.Emit();
+        delivery_.Post([this, operation_failed] {
+            state_.operation_failed = operation_failed;
+            state_.checking = false;
+            changes.Emit();
+        });
     });
 }
 
 void VersionObservable::LoadChangelog(std::string build) {
-    std::lock_guard lock(mutex_);
+    MainThread::Assert();
     if (state_.changelog.loading && state_.changelog.build == build) return;
     const auto request = ++changelog_request_;
     state_.changelog = {};
@@ -72,10 +73,11 @@ void VersionObservable::LoadChangelog(std::string build) {
             AppLog::Write(AppLog::Level::error, AppLog::Category::core, "Unable to load changelog for build " + build);
             result.operation_failed = true;
         }
-        std::lock_guard lock(mutex_);
-        if (request != changelog_request_) return;
-        state_.changelog = std::move(result);
-        changes.Emit();
+        delivery_.Post([this, request, result = std::move(result)]() mutable {
+            if (request != changelog_request_) return;
+            state_.changelog = std::move(result);
+            changes.Emit();
+        });
     });
 }
 }

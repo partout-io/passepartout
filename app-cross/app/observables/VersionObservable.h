@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "MainThread.h"
 #include "../business/extensions/EventEmitter.h"
 #include "../business/managers/VersionChecker.h"
 #include "Worker.h"
@@ -31,10 +32,9 @@ public:
     void Check();
     void LoadChangelog(std::string build);
 private:
-    void OnUpdate(const Models::Event &event);
+    MainThread delivery_;
     std::size_t subscription_;
     std::unique_ptr<VersionChecker> checker_;
-    mutable std::mutex mutex_;
     State state_;
     std::uint64_t changelog_request_ = 0;
     // Destroy first: cancels and joins before captured state and dependencies.

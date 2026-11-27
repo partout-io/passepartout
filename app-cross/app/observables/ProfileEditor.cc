@@ -9,23 +9,24 @@ namespace Passepartout {
 ProfileEditor::ProfileEditor(Profile profile) : original_(std::move(profile)), state_{original_} {}
 
 ProfileEditor::State ProfileEditor::Snapshot() const {
-    std::lock_guard lock(mutex_);
+    MainThread::Assert();
     return state_;
 }
 
 const Profile &ProfileEditor::Original() const {
+    MainThread::Assert();
     return original_;
 }
 
 void ProfileEditor::Rename(std::string name) {
-    std::lock_guard lock(mutex_);
+    MainThread::Assert();
     if (state_.saving || state_.saved) return;
     state_.draft.name = std::move(name);
     changes.Emit();
 }
 
 void ProfileEditor::UpdateModule(const Partout::Models::TaggedModule &module) {
-    std::lock_guard lock(mutex_);
+    MainThread::Assert();
     if (state_.saving || state_.saved) return;
     std::visit([this](const auto &replacement) {
         using Module = std::decay_t<decltype(replacement)>;
@@ -44,17 +45,18 @@ void ProfileEditor::UpdateModule(const Partout::Models::TaggedModule &module) {
 }
 
 bool ProfileEditor::IsValidChange() const {
+    MainThread::Assert();
     return !state_.saving && !state_.saved && state_.draft != original_ &&
         state_.draft.name.find_first_not_of(" \t\r\n") != std::string::npos;
 }
 
 bool ProfileEditor::CanSave() const {
-    std::lock_guard lock(mutex_);
+    MainThread::Assert();
     return IsValidChange();
 }
 
 bool ProfileEditor::BeginSave() {
-    std::lock_guard lock(mutex_);
+    MainThread::Assert();
     if (!IsValidChange()) return false;
     state_.saving = true;
     state_.operation_failed = false;
@@ -63,7 +65,7 @@ bool ProfileEditor::BeginSave() {
 }
 
 void ProfileEditor::FinishSave(bool succeeded) {
-    std::lock_guard lock(mutex_);
+    MainThread::Assert();
     state_.saving = false;
     state_.saved = succeeded;
     state_.operation_failed = !succeeded;
@@ -71,7 +73,7 @@ void ProfileEditor::FinishSave(bool succeeded) {
 }
 
 void ProfileEditor::ClearOperationError() {
-    std::lock_guard lock(mutex_);
+    MainThread::Assert();
     state_.operation_failed = false;
     changes.Emit();
 }

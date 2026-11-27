@@ -22,24 +22,26 @@ CreditsObservable::CreditsObservable(std::string resource, std::unique_ptr<HttpC
 }
 
 const Models::Credits &CreditsObservable::Snapshot() const {
+    MainThread::Assert();
     return credits_;
 }
 
 bool CreditsObservable::HasLoadError() const {
+    MainThread::Assert();
     return load_error_;
 }
 
 CreditsObservable::Content CreditsObservable::License(const std::string &url) const {
-    std::lock_guard lock(mutex_);
+    MainThread::Assert();
     const auto found = content_.find(url);
     return found == content_.end() ? Content{} : found->second;
 }
 
 void CreditsObservable::LoadLicense(const std::string &url) {
+    MainThread::Assert();
     if (std::none_of(credits_.licenses.begin(), credits_.licenses.end(), [&](const auto &license) {
         return license.licenseURL == url;
     })) return;
-    std::lock_guard lock(mutex_);
     auto &content = content_[url];
     if (content.loading || content.loaded) return;
     content.loading = true;
@@ -52,9 +54,10 @@ void CreditsObservable::LoadLicense(const std::string &url) {
         } catch (...) {
             result.operation_failed = true;
         }
-        std::lock_guard lock(mutex_);
-        content_[url] = std::move(result);
-        changes.Emit();
+        delivery_.Post([this, url, result = std::move(result)]() mutable {
+            content_[url] = std::move(result);
+            changes.Emit();
+        });
     });
 }
 }

@@ -10,6 +10,10 @@
 #include <winrt/Windows.Web.Http.h>
 #include <winrt/Windows.Web.Http.Filters.h>
 
+namespace {
+constexpr auto ReadPollInterval = std::chrono::milliseconds(20);
+}
+
 namespace Passepartout::Windows {
 template<typename Operation>
 auto HttpClient::Await(Operation operation, std::chrono::steady_clock::time_point deadline) {
@@ -18,7 +22,7 @@ auto HttpClient::Await(Operation operation, std::chrono::steady_clock::time_poin
             operation.Cancel();
             throw std::runtime_error("HTTP request canceled or timed out.");
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        std::this_thread::sleep_for(ReadPollInterval);
     }
     return operation.GetResults();
 }
