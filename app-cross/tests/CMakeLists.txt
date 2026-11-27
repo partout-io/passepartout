@@ -9,6 +9,7 @@ project(PassepartoutTests LANGUAGES CXX)
 
 # Dependencies: link application tests against the shared Partout library.
 set(PP_BUILD_LIBRARY ON)
+set(PP_BUILD_CPP_RUNTIME ON)
 if(WIN32)
     set(PP_BUILD_WINRT ON)
 endif()

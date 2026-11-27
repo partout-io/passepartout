@@ -40,6 +40,9 @@ if(NOT PASSEPARTOUT_WX_PREBUILT_BASE_URL)
 endif()
 
 # Partout configuration
+if(BUILD_APP)
+    set(PP_BUILD_CPP_RUNTIME ON)
+endif()
 if(WIN32)
     set(PP_BUILD_WINRT ON)
 endif()
