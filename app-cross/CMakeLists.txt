@@ -89,7 +89,7 @@ if(BUILD_APP)
 
     # Load wxWidgets only for the desktop application.
     include("wx.cmake")
-    target_precompile_headers(passepartout PRIVATE <wx/wx.h>)
+    target_precompile_headers(passepartout PRIVATE <wx/wx.h> <partout/Json.h>)
 
     option(BUILD_UI_TESTS "Build native wxWidgets presentation regression tests" OFF)
     if(BUILD_UI_TESTS)

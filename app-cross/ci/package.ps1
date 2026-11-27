@@ -10,13 +10,18 @@ Requires Visual Studio C++ tools for the target architecture, Windows SDK,
 CMake 4 or newer, Ninja, Zig, and Go. The Store signs the submitted package.
 Defaults to the shared Apple release version with a zero Store revision.
 Override with a four-part version with a nonzero major and a zero revision.
+Reuses the build cache by default. Use -Fresh to reset CMake configuration.
+-Jobs overrides build parallelism; otherwise CMAKE_BUILD_PARALLEL_LEVEL or the
+build tool default applies.
 #>
 [CmdletBinding()]
 param(
     [Parameter(Mandatory, Position = 0)][ValidateSet('msix')][string]$Target,
     [Parameter(Mandatory, Position = 1)][string]$OutputDirectory,
     [Parameter(Mandatory, Position = 2)][ValidateSet('x64', 'arm64')][string]$Architecture,
-    [string]$Version
+    [string]$Version,
+    [ValidateRange(1, 1024)][int]$Jobs,
+    [switch]$Fresh
 )
 
 $packageName = 'AlgoritmicoLtd.Passepartout'
@@ -60,17 +65,26 @@ $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer
 $visualStudio = & $vswhere -latest -products '*' -requires 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' -property installationPath
 if ($LASTEXITCODE -ne 0 -or -not $visualStudio) { throw 'Visual Studio C++ build tools were not found.' }
 Import-Module (Join-Path $visualStudio 'Common7/Tools/Microsoft.VisualStudio.DevShell.dll')
-$hostArchitecture = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }
+# Read the machine environment, not the emulated PowerShell process environment.
+$nativeArchitecture = [Environment]::GetEnvironmentVariable('PROCESSOR_ARCHITECTURE', 'Machine')
+$hostArchitecture = if ($nativeArchitecture -eq 'ARM64') { 'arm64' } else { 'x64' }
 Enter-VsDevShell -VsInstallPath $visualStudio -SkipAutomaticLocation -DevCmdArguments "-arch=$Architecture -host_arch=$hostArchitecture"
+# Update an existing CMake cache that may still point at an emulated host compiler.
+$compiler = (Get-Command cl.exe -CommandType Application | Select-Object -First 1).Source
 $makeAppx = Join-Path $env:WindowsSdkDir "bin/$($env:WindowsSDKVersion.TrimEnd('\'))/$hostArchitecture/makeappx.exe"
 if (-not (Test-Path -LiteralPath $makeAppx)) { throw 'Windows SDK MakeAppx.exe was not found.' }
 
-InvokeTool $cmake @('--fresh', '-S', $source, '--preset', "windows-$Architecture", '-B', $build,
+$configureArguments = @('-S', $source, '--preset', "windows-$Architecture", '-B', $build,
     "-DCMAKE_INSTALL_PREFIX=$stage", "-DPASSEPARTOUT_PACKAGE_VERSION=$packageVersion",
+    "-DCMAKE_C_COMPILER=$compiler", "-DCMAKE_CXX_COMPILER=$compiler",
     "-DPASSEPARTOUT_PACKAGE_NAME=$packageName",
     "-DPASSEPARTOUT_PACKAGE_PUBLISHER=$packagePublisher",
     "-DPASSEPARTOUT_PUBLISHER_DISPLAY_NAME=$publisherDisplayName")
-InvokeTool $cmake @('--build', $build, '--config', 'Release', '--parallel', '2')
+if ($Fresh) { $configureArguments = @('--fresh') + $configureArguments }
+InvokeTool $cmake $configureArguments
+$buildArguments = @('--build', $build, '--config', 'Release')
+if ($PSBoundParameters.ContainsKey('Jobs')) { $buildArguments += @('--parallel', "$Jobs") }
+InvokeTool $cmake $buildArguments
 InvokeTool $cmake @('--install', $build, '--config', 'Release')
 
 New-Item -ItemType Directory -Force -Path $output | Out-Null

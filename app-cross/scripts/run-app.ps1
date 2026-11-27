@@ -102,13 +102,18 @@ $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer
 $visualStudio = & $vswhere -latest -products '*' -requires 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64' -property installationPath
 if (-not $visualStudio) { throw 'Visual Studio C++ build tools were not found.' }
 Import-Module (Join-Path $visualStudio 'Common7/Tools/Microsoft.VisualStudio.DevShell.dll')
-$hostArchitecture = if ($env:PROCESSOR_ARCHITECTURE -eq 'ARM64') { 'arm64' } else { 'x64' }
+# Read the machine environment, not the emulated PowerShell process environment.
+$nativeArchitecture = [Environment]::GetEnvironmentVariable('PROCESSOR_ARCHITECTURE', 'Machine')
+$hostArchitecture = if ($nativeArchitecture -eq 'ARM64') { 'arm64' } else { 'x64' }
 Enter-VsDevShell -VsInstallPath $visualStudio -SkipAutomaticLocation -DevCmdArguments "-arch=$Architecture -host_arch=$hostArchitecture"
+# Update an existing CMake cache that may still point at an emulated host compiler.
+$compiler = (Get-Command cl.exe -CommandType Application | Select-Object -First 1).Source
 Push-Location $source
 try {
     $debuggerWait = if ($WaitForDebugger -and $Configuration -eq 'Debug') { 'ON' } else { 'OFF' }
     InvokeCMake -Arguments @('--preset', "windows-$Architecture", "-DCMAKE_INSTALL_PREFIX=$install",
-        "-DPASSEPARTOUT_WAIT_FOR_DEBUGGER=$debuggerWait")
+        "-DPASSEPARTOUT_WAIT_FOR_DEBUGGER=$debuggerWait",
+        "-DCMAKE_C_COMPILER=$compiler", "-DCMAKE_CXX_COMPILER=$compiler")
     [xml]$manifest = Get-Content -LiteralPath $buildManifest -Raw
     $identity = $manifest.Package.Identity
     $frontend = $manifest.Package.Applications.Application | Where-Object { $_.GetAttribute('RuntimeBehavior', 'http://schemas.microsoft.com/appx/manifest/uap/windows10/10') -eq 'packagedClassicApp' }

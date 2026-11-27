@@ -45,6 +45,11 @@ function(configure_application_core)
         "${CMAKE_CURRENT_BINARY_DIR}/generated/SettingsResources.h" @ONLY)
 
     add_library(passepartout-core STATIC ${CORE_SOURCES})
+    # Model headers pull in the JSON implementation throughout the core.
+    target_precompile_headers(passepartout-core PRIVATE <partout/Json.h>)
+    target_compile_definitions(passepartout-core PUBLIC
+        PASSEPARTOUT_APP_VERSION="${PASSEPARTOUT_APP_VERSION}"
+        PASSEPARTOUT_APP_BUILD=${PASSEPARTOUT_APP_BUILD})
     target_link_libraries(passepartout-core
         PUBLIC passepartout-identity passepartout-models Partout::Partout Threads::Threads
         PRIVATE Partout::Headers)
