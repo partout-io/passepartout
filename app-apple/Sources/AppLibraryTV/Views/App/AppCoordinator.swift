@@ -51,15 +51,15 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
         debugChanges()
         return NavigationStack {
             TabView {
-                Group {
-                    if profileObservable.hasProfiles {
-                        connectionView
-                    } else {
-                        emptyProfilesView
+                connectionView
+                    .themeProgress(
+                        if: !profileObservable.isReady,
+                        isEmpty: !profileObservable.hasProfiles,
+                        emptyContent: { emptyProfilesView }
+                    )
+                    .tabItem {
+                        Text(Strings.Global.Nouns.connection)
                     }
-                }.tabItem {
-                    Text(Strings.Global.Nouns.connection)
-                }
                 profilesView.tabItem {
                     Text(Strings.Global.Nouns.profiles)
                 }
