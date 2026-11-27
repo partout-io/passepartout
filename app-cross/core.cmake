@@ -14,6 +14,12 @@ if(NOT PASSEPARTOUT_APP_BUILD MATCHES "^[1-9][0-9]*$" OR PASSEPARTOUT_APP_BUILD 
     message(FATAL_ERROR "App build must be a positive 32-bit integer")
 endif()
 
+# CrossConstants.h is also consumed by the plugin and standalone UI tests.
+add_library(passepartout-identity INTERFACE)
+target_compile_definitions(passepartout-identity INTERFACE
+    PASSEPARTOUT_APP_VERSION="${PASSEPARTOUT_APP_VERSION}"
+    PASSEPARTOUT_APP_BUILD=${PASSEPARTOUT_APP_BUILD})
+
 function(configure_application_core)
     include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/filenames.cmake")
     include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/files.cmake")
@@ -39,11 +45,13 @@ function(configure_application_core)
         "${CMAKE_CURRENT_BINARY_DIR}/generated/SettingsResources.h" @ONLY)
 
     add_library(passepartout-core STATIC ${CORE_SOURCES})
+    # Model headers pull in the JSON implementation throughout the core.
+    target_precompile_headers(passepartout-core PRIVATE <partout/Json.h>)
     target_compile_definitions(passepartout-core PUBLIC
         PASSEPARTOUT_APP_VERSION="${PASSEPARTOUT_APP_VERSION}"
         PASSEPARTOUT_APP_BUILD=${PASSEPARTOUT_APP_BUILD})
     target_link_libraries(passepartout-core
-        PUBLIC passepartout-models Partout::Partout Threads::Threads
+        PUBLIC passepartout-identity passepartout-models Partout::Partout Threads::Threads
         PRIVATE Partout::Headers)
     target_include_directories(passepartout-core PUBLIC "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/app"
         "${CMAKE_CURRENT_BINARY_DIR}/generated")

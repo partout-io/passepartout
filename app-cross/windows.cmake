@@ -24,6 +24,10 @@ function(configure_windows_platform)
         set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreadedDLL" PARENT_SCOPE)
     endif()
 
+    # AppContainer CRT libraries do not supply the desktop /RTC helpers.
+    # Apply this to static dependencies too, particularly the shared models.
+    set(CMAKE_MSVC_RUNTIME_CHECKS "" PARENT_SCOPE)
+
     # Installation prerequisites must run before Partout installs its DLLs.
     if(NOT BUILD_APP)
         install(CODE [[
@@ -73,7 +77,7 @@ function(configure_windows_targets)
         target_link_libraries(${PLUGIN_TARGET} PRIVATE windowsapp runtimeobject)
     endforeach()
     include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/models.cmake")
-    target_link_libraries(passepartout-vpnplugin PRIVATE passepartout-models)
+    target_link_libraries(passepartout-vpnplugin PRIVATE passepartout-identity passepartout-models)
     target_link_partout_runtime(passepartout-vpnplugin)
     set_target_properties(passepartout-vpnplugin PROPERTIES
         PREFIX ""

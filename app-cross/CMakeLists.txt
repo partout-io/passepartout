@@ -89,7 +89,7 @@ if(BUILD_APP)
 
     # Load wxWidgets only for the desktop application.
     include("wx.cmake")
-    target_precompile_headers(passepartout PRIVATE <wx/wx.h>)
+    target_precompile_headers(passepartout PRIVATE <wx/wx.h> <partout/Json.h>)
 
     option(BUILD_UI_TESTS "Build native wxWidgets presentation regression tests" OFF)
     if(BUILD_UI_TESTS)
@@ -103,7 +103,7 @@ if(BUILD_APP)
             app/ui/theme/ThemeButtonRow.cc app/ui/theme/ThemeModal.cc
             app/ui/theme/ThemeContentLink.cc app/strings/Strings.cc)
         target_compile_features(passepartout-ui-test PRIVATE cxx_std_17)
-        target_link_libraries(passepartout-ui-test PRIVATE Partout::Partout)
+        target_link_libraries(passepartout-ui-test PRIVATE passepartout-identity Partout::Partout)
         if(MSVC)
             target_compile_options(passepartout-ui-test PRIVATE /utf-8)
         endif()
