@@ -44,6 +44,7 @@
 "errors.app.incompatible_modules" = "Vissa aktiva moduler är inkompatibla, försök att endast aktivera en.";
 "errors.app.incomplete_module" = "Vänligen slutför konfigurationen av %@-modulen.";
 "errors.app.ineligible" = "Köp krävs";
+"errors.app.interactive_login" = "Open Passepartout to enter the credentials required for this VPN.";
 "errors.app.invalid_fields" = "Ogiltiga fält.";
 "errors.app.malformed_module" = "Modulen %@ är felaktig. %@";
 "errors.app.missing_provider_entity" = "Ingen server vald hos leverantören.";
