@@ -9,6 +9,29 @@ import Testing
 
 @MainActor
 struct DefaultAppTunnelProcessorTests {
+    @Test(arguments: [OpenVPN.Credentials.OTPMethod.none, .append, .encode])
+    func givenInteractiveLogin_whenConnecting_thenPersistsUpdatedProfile(method: OpenVPN.Credentials.OTPMethod) async throws {
+        let original = try makeOpenVPNProfile(otp: nil, method: method)
+        let repository = RecordingProfileRepository()
+        let processor = makeProcessor(repository: repository)
+        let tunnel = TunnelObservable(
+            tunnel: PartoutTunnel(
+                .global,
+                strategy: FakeTunnelStrategy(delay: 0),
+                environmentFactory: { @Sendable _ in SharedTunnelEnvironment(profileId: nil) }
+            ),
+            willInstall: processor.willInstall
+        )
+        let prepared = try original.withInteractiveLogin(username: "user", password: "123456", otp: "123456")
+        let credentials = try #require((prepared.activeModules.first as? OpenVPNModule)?.credentials)
+        #expect(credentials.password == (method == .none ? "123456" : "password"))
+        #expect(credentials.otp == (method == .none ? nil : "123456"))
+        #expect(credentials.otpMethod == method)
+        try await tunnel.connect(to: prepared, force: true)
+        #expect(await repository.persistedProfiles == [prepared])
+        #expect(await repository.savedProfiles.isEmpty)
+    }
+
     @Test
     func givenTransientOTP_whenConnecting_thenSavesProfile() async throws {
         let profile = try makeOpenVPNProfile(otp: "123456")
@@ -69,7 +92,7 @@ private extension DefaultAppTunnelProcessorTests {
         )
     }
 
-    func makeOpenVPNProfile(otp: String?) throws -> Profile {
+    func makeOpenVPNProfile(otp: String?, method: OpenVPN.Credentials.OTPMethod = .append) throws -> Profile {
         var configuration = OpenVPN.Configuration.Builder()
         configuration.ca = OpenVPN.CryptoContainer(pem: "ca")
         configuration.remotes = [
@@ -78,7 +101,7 @@ private extension DefaultAppTunnelProcessorTests {
         let credentials = OpenVPN.Credentials.Builder(
             username: "user",
             password: "password",
-            otpMethod: .append,
+            otpMethod: method,
             otp: otp
         ).build()
         let module = try OpenVPNModule.Builder(

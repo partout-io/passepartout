@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.algoritmico.passepartout.R
 import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
+import com.algoritmico.passepartout.business.models.InteractiveLogin
 import com.algoritmico.passepartout.models.AppProfileStatus
 import com.algoritmico.passepartout.models.AppTunnelInfo
 import com.algoritmico.passepartout.models.ProfileTransfer
@@ -45,7 +46,6 @@ import com.algoritmico.passepartout.ui.alerts.VpnPermissionDeniedAlert
 import com.algoritmico.passepartout.ui.theme.LocalTheme
 import com.algoritmico.passepartout.ui.theme.ThemeProgressView
 import com.algoritmico.passepartout.ui.profile.ProfileCoordinator
-import io.partout.models.TaggedProfile
 import kotlinx.coroutines.launch
 
 @Composable
@@ -71,8 +71,8 @@ fun ProfileContainerView(
     var requestedConnection by remember {
         mutableStateOf<RequestedConnection?>(null)
     }
-    var interactiveProfile by remember {
-        mutableStateOf<TaggedProfile?>(null)
+    var interactiveLogin by remember {
+        mutableStateOf<InteractiveLogin?>(null)
     }
     var previousActiveProfiles by remember {
         mutableStateOf<Map<String, AppTunnelInfo>>(emptyMap())
@@ -108,8 +108,7 @@ fun ProfileContainerView(
     fun requestProfileConnection(
         profileId: String,
         enabled: Boolean,
-        profile: TaggedProfile? = null,
-        force: Boolean = false
+        login: InteractiveLogin? = null
     ) {
         if (tunnelState.policy.alwaysOn == true) {
             openVpnSettings(context, errorHandler)
@@ -121,21 +120,21 @@ fun ProfileContainerView(
         coroutineScope.launch {
             val didStart = runCatchingNonFatal {
                 if (enabled) {
-                    val connectionProfile = profile ?: profileObservable.profile(profileId)
-                    if (connectionProfile == null) {
-                        false
+                    if (login != null) {
+                        tunnelObservable.connect(login)
                     } else {
-                        tunnelObservable.connect(connectionProfile, force = force)
-                        true
+                        val profile = profileObservable.profile(profileId)
+                            ?: return@runCatchingNonFatal false
+                        tunnelObservable.connect(profile)
                     }
                 } else {
                     tunnelObservable.disconnect(profileId)
-                    true
                 }
+                true
             }.getOrElse {
                 when (it) {
                     is TunnelObservableException.Interactive -> {
-                        interactiveProfile = it.profile
+                        interactiveLogin = InteractiveLogin(it.profile)
                         false
                     }
                     else -> {
@@ -143,9 +142,6 @@ fun ProfileContainerView(
                         false
                     }
                 }
-            }
-            if (didStart && profile != null) {
-                interactiveProfile = null
             }
             if (!didStart && requestedConnection == request) {
                 requestedConnection = null
@@ -182,7 +178,7 @@ fun ProfileContainerView(
         if (tunnelState.policy.alwaysOn == true) {
             // A late policy update can reject a stop without a tunnel status change.
             requestedConnection = null
-            interactiveProfile = null
+            interactiveLogin = null
         }
     }
 
@@ -213,19 +209,18 @@ fun ProfileContainerView(
         )
     }
 
-    interactiveProfile?.let { profile ->
+    interactiveLogin?.let { login ->
         InteractiveView(
-            profile = profile,
+            login = login,
             onDismiss = {
-                interactiveProfile = null
+                interactiveLogin = null
             },
             onConnect = {
-                interactiveProfile = null
+                interactiveLogin = null
                 requestProfileConnection(
-                    profileId = it.id,
+                    profileId = it.original.id,
                     enabled = true,
-                    profile = it,
-                    force = true
+                    login = it
                 )
             }
         )

@@ -86,6 +86,10 @@ int main() {
     auto login = Profiles::InteractiveLoginFor(original);
     assert(login && !login->needs_otp && login->CanSubmit());
     assert(login->credentials.username == "before");
+    assert(login->credentials.password.empty());
+    login->credentials.password = "entered-secret";
+    assert(Profiles::InteractiveLoginFor(original)->credentials.password.empty());
+    assert(std::get<Partout::Models::TaggedModuleOpenVpn>(original.modules.front()).value.credentials->password == "old-secret");
     login->credentials.username = "  ";
     assert(!login->CanSubmit());
     auto inactive = original;

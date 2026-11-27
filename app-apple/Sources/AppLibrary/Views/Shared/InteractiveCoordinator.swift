@@ -134,7 +134,7 @@ private extension InteractiveCoordinator {
     var interactiveView: some View {
         manager
             .editor
-            .interactiveProvider
+            .interactiveProvider(for: manager.moduleId)
             .map(innerView)
     }
 
@@ -163,10 +163,10 @@ private extension ProfileEditor {
 
     // in the future, multiple modules may be interactive
     // here we only intercept the first interactive module
-    var interactiveProvider: (any InteractiveViewProviding)? {
+    func interactiveProvider(for moduleId: UniqueID?) -> (any InteractiveViewProviding)? {
         modules
             .first {
-                $0 is any InteractiveViewProviding
+                $0.id == moduleId && $0 is any InteractiveViewProviding
             } as? any InteractiveViewProviding
    }
 }

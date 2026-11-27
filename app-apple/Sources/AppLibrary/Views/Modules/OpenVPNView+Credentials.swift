@@ -47,7 +47,9 @@ public struct OpenVPNCredentialsGroup: View {
         debugChanges()
         return Group {
 #if !os(tvOS)
-            interactiveSection
+            if !isAuthenticating {
+                interactiveSection
+            }
 #endif
             inputSection
         }
@@ -155,6 +157,7 @@ private extension OpenVPNCredentialsGroup {
         if isAuthenticating {
             switch builder.otpMethod {
             case .none:
+                builder.password = ""
                 focusedField = .username
             default:
                 focusedField = .otp

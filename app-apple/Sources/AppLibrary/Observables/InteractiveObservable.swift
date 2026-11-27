@@ -12,12 +12,15 @@ public final class InteractiveObservable {
 
     public private(set) var editor = ProfileEditor()
 
+    public private(set) var moduleId: UniqueID?
+
     private var onComplete: CompletionBlock?
 
     public init() {
     }
 
     public func present(with profile: Profile, onComplete: CompletionBlock?) {
+        moduleId = profile.interactiveModules?.first?.id
         editor = ProfileEditor()
         editor.load(profile.editable(), isShared: false)
         self.onComplete = onComplete
