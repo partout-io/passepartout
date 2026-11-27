@@ -181,7 +181,8 @@ int main() {
         auto memory = std::make_unique<MemoryPreferences>();
         auto *backend = memory.get();
         bool permitted = true;
-        UserPreferencesObservable preferences(std::move(memory), [&] { return permitted; });
+        auto store = std::make_shared<PreferencesStore>(std::move(memory));
+        UserPreferencesObservable preferences(store, [&] { return permitted; });
         unsigned notifications = 0;
         preferences.OnChange([&](const auto &value) {
             assert(value.dnsFallsBack == preferences.Snapshot().dnsFallsBack);
@@ -193,6 +194,29 @@ int main() {
         Fails([&] { preferences.SetDNSFallback(true); });
         assert(!preferences.Snapshot().dnsFallsBack && notifications == 2);
         backend->fails = false;
+        // Background cache writes must survive later UI preference edits.
+        store->Update([](auto &value) {
+            value.lastCheckedVersionTimestamp = 1234;
+            value.lastCheckedVersion = "2.0.0";
+        });
+        assert(notifications == 2);
+        preferences.SetDNSFallback(true);
+        assert(backend->value.lastCheckedVersion == "2.0.0");
+        assert(backend->value.lastCheckedVersionTimestamp == 1234);
+        assert(preferences.Snapshot().lastCheckedVersion == "2.0.0");
+        // Concurrent field updates serialize against the latest stored model.
+        std::thread cache_writer([&] {
+            for (int i = 0; i < 100; ++i) {
+                store->Update([](auto &value) {
+                    value.lastCheckedVersionTimestamp = value.lastCheckedVersionTimestamp.value_or(0) + 1;
+                });
+            }
+        });
+        for (int i = 0; i < 100; ++i) preferences.SetDNSFallback(i % 2 == 0);
+        cache_writer.join();
+        assert(store->Fetch().lastCheckedVersionTimestamp == 1334);
+        assert(!backend->value.dnsFallsBack);
+        assert(backend->value.lastCheckedVersion == "2.0.0");
         permitted = false;
         Fails([&] { preferences.SetLogsPrivateData(true); });
         assert(!preferences.Snapshot().logsPrivateData);
@@ -200,7 +224,9 @@ int main() {
             std::ofstream broken(directory / "preferences.json");
             broken << "invalid";
         }
-        UserPreferencesObservable broken(std::make_unique<FilePreferencesRepository>(directory / "preferences.json"));
+        UserPreferencesObservable broken(std::make_shared<PreferencesStore>(
+            std::make_unique<FilePreferencesRepository>(directory / "preferences.json")
+        ));
         assert(broken.HasLoadError() && broken.Snapshot().dnsFallsBack);
 
         ConfigManager fixed(std::make_unique<FixedConfig>(), 7, Models::Platform::windows);

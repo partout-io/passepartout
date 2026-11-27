@@ -65,6 +65,7 @@ set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/GitHubReleaseStrategy.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/OfflineHttpClient.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/PartoutWireGuardKeyGenerator.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/business/strategy/PreferencesStore.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/context/AppContext.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/context/AppLog.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/context/ContextExtensions.cc"

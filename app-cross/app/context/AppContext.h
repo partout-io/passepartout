@@ -23,6 +23,7 @@ public:
 private:
     Worker executor_;
     ProfileManager profile_manager_;
+    std::shared_ptr<PreferencesStore> preferences_store_;
 public:
     AppContext(const std::filesystem::path &data_root,
                Models::AppConstants constants = Constants::Load(),

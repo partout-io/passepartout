@@ -2,43 +2,27 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-#include "../business/extensions/Models+Business.h"
 #include "UserPreferencesObservable.h"
 #include <stdexcept>
 
 namespace Passepartout {
 UserPreferencesObservable::UserPreferencesObservable(
-    std::unique_ptr<PreferencesRepository> repository,
+    std::shared_ptr<PreferencesStore> store,
     std::function<bool()> can_change_private_data
 )
-    : repository_(std::move(repository)), preferences_(Preferences::Defaults()), can_change_private_data_(std::move(can_change_private_data)) {
-    try {
-        preferences_ = repository_->Fetch();
-    } catch (...) {
-        load_error_ = true;
-    }
-}
+    : store_(std::move(store)), can_change_private_data_(std::move(can_change_private_data)) {}
 
 Models::AppPreferences UserPreferencesObservable::Snapshot() const {
-    std::lock_guard lock(mutex_);
-    return preferences_;
+    return store_->Fetch();
 }
 
 bool UserPreferencesObservable::HasLoadError() const {
-    std::lock_guard lock(mutex_);
-    return load_error_;
+    return store_->HasLoadError();
 }
 
 void UserPreferencesObservable::Update(std::function<void(Models::AppPreferences &)> edit) {
     std::lock_guard write_lock(write_mutex_);
-    auto updated = Snapshot();
-    edit(updated);
-    repository_->Save(updated);
-    {
-        std::lock_guard lock(mutex_);
-        preferences_ = updated;
-        load_error_ = false;
-    }
+    const auto updated = store_->Update(edit);
     // Preserve write order while allowing observers to read the published state.
     if (apply_) apply_(updated);
     changes.Emit();
@@ -59,13 +43,6 @@ void UserPreferencesObservable::SetLogsPrivateData(bool enabled) {
 
 bool UserPreferencesObservable::CanChangePrivateData() const {
     return !can_change_private_data_ || can_change_private_data_();
-}
-
-void UserPreferencesObservable::SetLastCheckedVersion(std::int64_t timestamp, std::optional<std::string> version) {
-    Update([timestamp, version = std::move(version)](auto &preferences) {
-        preferences.lastCheckedVersionTimestamp = timestamp;
-        preferences.lastCheckedVersion = version;
-    });
 }
 
 void UserPreferencesObservable::OnChange(ChangeHandler apply) {

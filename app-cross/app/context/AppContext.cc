@@ -31,10 +31,13 @@ AppContext::AppContext(
         std::make_unique<FileProfileRepository>(Profiles::Directory(data_root, constants)),
         ImportProfile
     ),
+    preferences_store_(std::make_shared<PreferencesStore>(
+        MakePreferencesRepository(Profiles::Directory(data_root, constants), cross_constants)
+    )),
     profiles(executor_, profile_manager_),
     tunnel(executor_, MakeTunnel(demo, cross_constants), profile_manager_),
     preferences(
-        MakePreferencesRepository(Profiles::Directory(data_root, constants), cross_constants),
+        preferences_store_,
         [this] {
             const auto state = tunnel.Snapshot();
             return profiles.Snapshot().loaded && !state.busy && !profiles.Snapshot().busy && !state.pending_profile && state.available &&
@@ -71,8 +74,11 @@ AppContext::AppContext(
             static_cast<std::int64_t>(constants.url.versionRateLimit),
             preferences.Snapshot().lastCheckedVersionTimestamp,
             preferences.Snapshot().lastCheckedVersion,
-            [this](auto timestamp, auto latest) {
-                preferences.SetLastCheckedVersion(timestamp, std::move(latest));
+            [store = preferences_store_](auto timestamp, auto latest) {
+                store->Update([&](auto &value) {
+                    value.lastCheckedVersionTimestamp = timestamp;
+                    value.lastCheckedVersion = std::move(latest);
+                });
             }
         )
     ),
