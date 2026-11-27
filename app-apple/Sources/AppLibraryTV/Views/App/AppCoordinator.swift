@@ -55,6 +55,8 @@ public struct AppCoordinator: View, AppCoordinatorConforming {
                     if !profileObservable.isReady {
                         ThemeProgressView()
                             .themeGradient()
+                    } else if profileObservable.hasProfiles {
+                        connectionView
                     } else {
                         emptyProfilesView
                     }
