@@ -26,7 +26,6 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/base.h>
 
-#include "partout.h"
 #include <partout/winrt/VpnChannelRuntime.h>
 
 namespace {
@@ -188,16 +187,16 @@ struct ChannelSession {
                 Partout::Json::Parse(winrt::to_string(encoded_preferences))
             );
         }
-        partout_init_args init{};
+        Partout::Runtime::InitializationOptions init{};
         init.logger_fn = LogNative;
-        init.log_level = PartoutLogLevelDebug;
+        init.log_level = Partout::Runtime::LogLevel::Debug;
         init.logs_private_data = preferences.logsPrivateData;
         logs_private_data.store(init.logs_private_data);
         const auto temporary = winrt::to_string(winrt::Windows::Storage::ApplicationData::Current().TemporaryFolder().Path());
-        partout_daemon_options options{};
-        options.cache_dir = temporary.c_str();
+        Partout::Runtime::DaemonOptions options{};
+        options.cache_dir = temporary;
         options.starts_immediately = true;
-        options.crypto = PartoutCryptoMbedTLS;
+        options.crypto = Partout::Runtime::CryptoBackend::MbedTLS;
         Partout::Models::TunnelControllerOptions controller_options{};
         if (preferences.dnsFallsBack) {
             for (const auto &server : Partout::Json::Parse(Passepartout::DNSFallbackServers).Elements()) {
@@ -205,7 +204,7 @@ struct ChannelSession {
             }
         }
         runtime = std::make_unique<Partout::VpnChannelRuntime>(
-            channel, profile.c_str(), init, options, std::move(controller_options));
+            channel, profile, init, options, std::move(controller_options));
     }
 
     void Cancel() noexcept {

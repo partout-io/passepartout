@@ -7,12 +7,9 @@
 #include "CrossConstants.h"
 #include "../business/extensions/AppConstantsExtensions.h"
 #include "../business/strategy/FakeTunnelStrategy.h"
-#include "partout.h"
-#include <partout/models/ABIEnvelope.h>
+#include <partout/Runtime.h>
 #include <algorithm>
 #include <cctype>
-#include <cstdlib>
-#include <stdexcept>
 #ifdef _WIN32
 #include "../business/platform/WindowsHttpClient.h"
 #include "../business/platform/WindowsPreferencesRepository.h"
@@ -36,19 +33,7 @@ Models::Platform::ePlatform ApplicationPlatform() {
 }
 
 Profile ImportProfile(const std::string &text, const std::string &name) {
-    std::unique_ptr<char, decltype(&std::free)> json(
-        partout_import_profile(text.c_str(), nullptr, name.c_str()), &std::free
-    );
-    if (!json) throw std::runtime_error("Partout could not import this configuration.");
-    try {
-        const auto envelope = Partout::Models::ABIEnvelope::FromJson(Partout::Json::Parse(json.get()));
-        if (envelope.code || !envelope.payload)
-            throw std::runtime_error("Import failed");
-        return Profile::FromJson(*envelope.payload);
-    } catch (...) {
-        // ABI errors and parser details may contain configuration secrets.
-        throw std::runtime_error("Partout could not import this configuration.");
-    }
+    return Partout::Runtime::ImportProfile(text, name);
 }
 
 std::unique_ptr<HttpClient> MakeHttpClient([[maybe_unused]] const Models::AppConstants &constants) {
