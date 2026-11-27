@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "MainThreadQueue.h"
 #include "business/strategy/FileProfileRepository.h"
 #include "business/strategy/FakeTunnelStrategy.h"
 #include "observables/ProfileEditor.h"
@@ -42,7 +43,7 @@ Passepartout::Profile Example() {
 void Wait(Passepartout::Tests::ObservableFixture &session) {
     do {
         assert(session.executor.WaitIdle(std::chrono::seconds(5)));
-        Passepartout::MainThread::Drain();
+        Passepartout::Tests::MainThreadQueue::Drain();
     } while (session.executor.CurrentActivity().busy);
 }
 class RejectingTunnel final : public Partout::TunnelStrategy {
@@ -84,6 +85,7 @@ public:
 
 using namespace Passepartout;
 int main() {
+    Passepartout::Tests::MainThreadQueue main_thread;
     InitializeTests();
     const auto original = Example();
     auto login = Profiles::InteractiveLoginFor(original);

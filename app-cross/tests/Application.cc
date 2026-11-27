@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "MainThreadQueue.h"
 #include "ScopedLogSink.h"
 #include "business/strategy/ConfigurationFiles.h"
 #include "business/managers/ProfileManager.h"
@@ -159,7 +160,7 @@ private:
 void Wait(Passepartout::Tests::ObservableFixture &session) {
     do {
         assert(session.executor.WaitIdle(std::chrono::seconds(5)));
-        Passepartout::MainThread::Drain();
+        Passepartout::Tests::MainThreadQueue::Drain();
     } while (session.executor.CurrentActivity().busy);
 }
 struct Cancellation {
@@ -319,13 +320,13 @@ void TestMainThreadDelivery() {
         });
         assert(worker.WaitIdle(std::chrono::seconds(5)));
         assert(delivered.empty());
-        MainThread::Drain();
+        Passepartout::Tests::MainThreadQueue::Drain();
         assert((delivered == std::vector<int>{1, 2}));
         worker.Post([&] { owner.Post([&] { delivered.push_back(3); }); });
         assert(worker.WaitIdle(std::chrono::seconds(5)));
     }
     // Destruction invalidates already queued completions.
-    MainThread::Drain();
+    Passepartout::Tests::MainThreadQueue::Drain();
     assert((delivered == std::vector<int>{1, 2}));
 }
 
@@ -758,6 +759,7 @@ void TestSelectedFiles(const std::filesystem::path &root, bool fail) {
 
 using namespace Passepartout;
 int main() {
+    Passepartout::Tests::MainThreadQueue main_thread;
 #ifdef _MSC_VER
     _set_error_mode(_OUT_TO_STDERR);
     _CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);

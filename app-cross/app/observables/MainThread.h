@@ -7,8 +7,8 @@
 #include <memory>
 
 namespace Passepartout {
-// One delivery lifetime per observable. The UI installs a wake-up hook; portable
-// tests drain the same queue explicitly. Workers never wait for delivery.
+// One delivery lifetime per observable. Off-thread work uses the installed UI
+// dispatcher; queued callbacks are discarded when this owner is destroyed.
 class MainThread final {
 public:
     MainThread();
@@ -16,10 +16,12 @@ public:
     MainThread(const MainThread &) = delete;
     MainThread &operator=(const MainThread &) = delete;
     static void Assert();
-    static void SetWakeup(std::function<void()> wakeup);
-    static void Drain();
+    // Install before starting workers; replace/clear only after they have joined.
+    // The dispatcher must enqueue callbacks on the main thread in FIFO order.
+    static void SetDispatcher(std::function<void(std::function<void()>)> dispatch);
     void Post(std::function<void()> action) const;
 private:
-    std::shared_ptr<int> lifetime_;
+    struct Lifetime final {};
+    std::shared_ptr<Lifetime> lifetime_;
 };
 }

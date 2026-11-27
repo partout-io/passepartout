@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
+#include "MainThreadQueue.h"
 #include "business/extensions/AppConstantsExtensions.h"
 #include "ScopedLogSink.h"
 #include "business/strategy/FilePreferencesRepository.h"
@@ -131,6 +132,7 @@ void Fails(Action action) {
 
 using namespace Passepartout;
 int main() {
+    Passepartout::Tests::MainThreadQueue main_thread;
     InitializeTests();
     const auto directory = std::filesystem::temp_directory_path() /
         ("passepartout-settings-test-" + std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
@@ -301,7 +303,7 @@ int main() {
                 observable.Refresh();
                 const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
                 while (observable.Snapshot().refreshing && std::chrono::steady_clock::now() < deadline) {
-                    Passepartout::MainThread::Drain();
+                    Passepartout::Tests::MainThreadQueue::Drain();
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 }
                 assert(!observable.Snapshot().refreshing);
@@ -415,7 +417,7 @@ int main() {
                 observable.Check();
                 const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
                 while (observable.Snapshot().checking && std::chrono::steady_clock::now() < deadline) {
-                    Passepartout::MainThread::Drain();
+                    Passepartout::Tests::MainThreadQueue::Drain();
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 }
                 assert(!observable.Snapshot().checking);
@@ -448,7 +450,7 @@ int main() {
             const auto wait_changelog = [&] {
                 const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
                 while (changelog.Snapshot().changelog.loading && std::chrono::steady_clock::now() < deadline) {
-                    Passepartout::MainThread::Drain();
+                    Passepartout::Tests::MainThreadQueue::Drain();
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 }
                 assert(!changelog.Snapshot().changelog.loading);
@@ -527,7 +529,7 @@ int main() {
             }
             const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
             while (changelog.Snapshot().changelog.loading && std::chrono::steady_clock::now() < deadline) {
-                Passepartout::MainThread::Drain();
+                Passepartout::Tests::MainThreadQueue::Drain();
                 std::this_thread::sleep_for(std::chrono::milliseconds(1));
             }
             const auto state = changelog.Snapshot().changelog;
@@ -575,7 +577,7 @@ int main() {
                 cached_credits.LoadLicense(url);
                 const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(2);
                 while (cached_credits.License(url).loading && std::chrono::steady_clock::now() < deadline) {
-                    Passepartout::MainThread::Drain();
+                    Passepartout::Tests::MainThreadQueue::Drain();
                     std::this_thread::sleep_for(std::chrono::milliseconds(1));
                 }
                 assert(!cached_credits.License(url).loading);
