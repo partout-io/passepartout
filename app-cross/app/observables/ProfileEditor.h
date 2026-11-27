@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "MainThread.h"
 #include "../business/extensions/EventEmitter.h"
 #include "../business/extensions/Models+Business.h"
-#include <mutex>
 
 namespace Passepartout {
 class ProfileEditor final {
@@ -27,9 +27,9 @@ public:
     void FinishSave(bool succeeded);
     void ClearOperationError();
 private:
+    MainThread delivery_;
     bool IsValidChange() const;
     const Profile original_;
-    mutable std::mutex mutex_;
     State state_;
 };
 }

@@ -72,6 +72,7 @@ set(CORE_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/ConfigObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/CreditsObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/DiagnosticsObservable.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/app/observables/MainThread.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/ProfileEditor.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/ProfileObservable.cc"
     "${CMAKE_CURRENT_LIST_DIR}/app/observables/TunnelObservable.cc"

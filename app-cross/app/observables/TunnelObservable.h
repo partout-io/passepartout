@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "MainThread.h"
 #include "../business/extensions/EventEmitter.h"
 #include "../business/extensions/Models+Business.h"
 #include "../business/models/InteractiveLogin.h"
@@ -41,16 +42,15 @@ public:
     void ClearOperationError();
     State Snapshot() const;
 private:
+    MainThread delivery_;
     void OnUpdate(const Models::Event &event);
     void Remove(std::string id);
     ProfileManager &profiles_;
     std::size_t profile_subscription_;
     void Post(std::function<void()> operation, bool foreground = true);
-    void Publish();
     void FinishOperation();
     Worker &executor_;
     std::unique_ptr<Partout::Tunnel> tunnel_;
-    mutable std::mutex mutex_;
     State snapshot_;
     std::size_t pending_operations_ = 0;
 };

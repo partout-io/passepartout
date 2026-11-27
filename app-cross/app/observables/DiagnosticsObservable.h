@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "MainThread.h"
 #include "Issue.h"
 #include "../context/CrossConstants.h"
 #include <functional>
@@ -21,6 +22,7 @@ public:
                 const std::string &app_log_filename
     ) const;
 private:
+    MainThread delivery_;
     IssueHandoff handoff_;
 };
 }

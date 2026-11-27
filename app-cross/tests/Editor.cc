@@ -40,7 +40,10 @@ Passepartout::Profile Example() {
 }
 
 void Wait(Passepartout::Tests::ObservableFixture &session) {
-    assert(session.executor.WaitIdle(std::chrono::seconds(5)));
+    do {
+        assert(session.executor.WaitIdle(std::chrono::seconds(5)));
+        Passepartout::MainThread::Drain();
+    } while (session.executor.CurrentActivity().busy);
 }
 class RejectingTunnel final : public Partout::TunnelStrategy {
 public:

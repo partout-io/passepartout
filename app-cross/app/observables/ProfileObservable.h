@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "MainThread.h"
 #include "../business/extensions/EventEmitter.h"
 #include "AppProfileHeader.h"
 #include "../business/managers/ProfileManager.h"
@@ -39,16 +40,16 @@ public:
     void ClearOperationError();
     std::optional<Profile> FindProfile(const std::string &id) const;
 private:
+    MainThread delivery_;
     bool Post(std::function<void()> operation, OperationErrorContext context = OperationErrorContext::general);
     void FinishOperation();
-    void OnUpdate(const Models::Event &event);
+    void OnUpdate(const std::vector<Profile> &profiles);
     Worker &executor_;
     ProfileManager &manager_;
     std::size_t profile_subscription_;
-    mutable std::mutex mutex_;
     State snapshot_;
     std::size_t pending_operations_ = 0;
     std::vector<Profile> published_profiles_;
-    std::shared_ptr<const ConfigurationFiles> importing_files_;
+    std::vector<std::shared_ptr<const ConfigurationFiles>> importing_files_;
 };
 }

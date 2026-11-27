@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: GPL-3.0
 
 #pragma once
+#include "MainThread.h"
 #include "../business/extensions/EventEmitter.h"
 #include "../business/strategy/PreferencesStore.h"
 #include <functional>
 #include <memory>
-#include <mutex>
 
 namespace Passepartout {
 class UserPreferencesObservable final {
@@ -25,10 +25,9 @@ public:
     bool CanChangePrivateData() const;
     void OnChange(ChangeHandler apply);
 private:
+    MainThread delivery_;
     void Update(std::function<void(Models::AppPreferences &)> edit);
     std::shared_ptr<PreferencesStore> store_;
-    std::mutex write_mutex_;
-    // Protected by write_mutex_, including callback delivery.
     ChangeHandler apply_;
     std::function<bool()> can_change_private_data_;
 };
