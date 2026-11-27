@@ -78,7 +78,7 @@ jobs:
   package_windows:
     name: Package Windows app
     needs: release_info
-    if: ${{ github.event_name == 'push' || inputs.platform == 'windows' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.platform == 'windows' }}
     uses: ./.github/workflows/package_windows.yml
     with:
       version: ${{ needs.release_info.outputs.version }}
