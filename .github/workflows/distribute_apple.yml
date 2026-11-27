@@ -49,6 +49,7 @@ jobs:
   submit_for_app_review:
     name: Submit to App Review (${{ matrix.platform }})
     runs-on: ubuntu-latest
+    continue-on-error: true
     # All release tags share each platform's editable App Store draft.
     concurrency:
       group: app-store-review-${{ matrix.platform }}
