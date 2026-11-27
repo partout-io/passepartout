@@ -139,16 +139,17 @@ void ProfileObservable::ImportFiles(std::shared_ptr<const ConfigurationFiles> fi
     MainThread::Assert();
     if (!files || (!files->Count() && !files->SelectionFailures())) return;
     importing_files_.push_back(files);
-    const auto accepted = Post([this, files] {
+    const auto release_files = [this, files] {
+        importing_files_.erase(std::find(importing_files_.begin(), importing_files_.end(), files));
+    };
+    const auto accepted = Post([this, files, release_files] {
         struct ReleaseFiles final {
             MainThread &delivery;
             std::function<void()> release;
             ~ReleaseFiles() {
                 delivery.Post(std::move(release));
             }
-        } release{delivery_, [this, files] {
-            importing_files_.erase(std::find(importing_files_.begin(), importing_files_.end(), files));
-        }};
+        } release{delivery_, release_files};
         // Process every supplied activation, even if one configuration fails.
         std::size_t failures = files->SelectionFailures();
         for (std::size_t index = 0; index < files->Count(); ++index) {
