@@ -13,7 +13,7 @@
 #include "../business/strategy/FileProfileRepository.h"
 #include "SettingsResources.h"
 #include "../business/extensions/Models+Business.h"
-#include "partout.h"
+#include <partout/Runtime.h>
 #include <stdexcept>
 
 using Passepartout::AppContext;
@@ -90,11 +90,11 @@ AppContext::AppContext(
         // Initialize native logging once from stored preferences, before starting work.
         const bool logs_private_data = preferences.Snapshot().logsPrivateData;
         AppLog::SetPrivateData(logs_private_data);
-        partout_init_args init{};
-        init.log_level = PartoutLogLevelDebug;
+        Partout::Runtime::InitializationOptions init{};
+        init.log_level = Partout::Runtime::LogLevel::Debug;
         init.logs_private_data = logs_private_data;
         init.logger_fn = AppLog::PartoutMessage;
-        partout_init(&init);
+        Partout::Runtime::Initialize(init);
         preferences.OnChange([previous = logs_private_data](const auto &value) mutable {
             if (previous == value.logsPrivateData) return;
             AppLog::SetPrivateData(value.logsPrivateData);
