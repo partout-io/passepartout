@@ -73,7 +73,7 @@ function(configure_windows_targets)
         target_link_libraries(${PLUGIN_TARGET} PRIVATE windowsapp runtimeobject)
     endforeach()
     include("${CMAKE_CURRENT_FUNCTION_LIST_DIR}/models.cmake")
-    target_link_libraries(passepartout-vpnplugin PRIVATE passepartout-models)
+    target_link_libraries(passepartout-vpnplugin PRIVATE passepartout-identity passepartout-models)
     target_link_partout_runtime(passepartout-vpnplugin)
     set_target_properties(passepartout-vpnplugin PROPERTIES
         PREFIX ""
