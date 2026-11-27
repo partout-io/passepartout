@@ -1,6 +1,5 @@
 #!/bin/bash
-cwd=`dirname $0`
-cd $cwd/..
+pushd "$(dirname "$0")/.." >/dev/null || exit 1
 
 # https://stackoverflow.com/questions/192249/how-do-i-parse-command-line-arguments-in-bash
 
@@ -49,17 +48,8 @@ done
 set -- "${positional_args[@]}" # restore positional parameters
 set -e
 
-cwd=`dirname $0`
-apple_xcconfig_path="app-apple/Passepartout/Config.xcconfig"
-android_gradle_path="app-android/app/build.gradle.kts"
-apple_changelog_path="app-apple/CHANGELOG.txt"
-android_changelog_path="app-android/CHANGELOG.txt"
-cross_changelog_path="app-cross/CHANGELOG.txt"
-cross_version_path="app-cross/version.txt"
-cross_build_path="app-cross/build.txt"
-metadata_root_apple="app-apple/fastlane/metadata"
-metadata_root_android="app-android/app/src/main/play"
-
+apple_xcconfig_path="Passepartout/Config.xcconfig"
+android_gradle_path="app/build.gradle.kts"
 edit_changelog() {
     local changelog_path="$1"
     local log_path="$changelog_path.tmp"
@@ -82,14 +72,14 @@ edit_changelog() {
     mv "$log_path" "$changelog_path"
 }
 
-cross_version=$(cat "$cross_version_path")
-cross_build=$(cat "$cross_build_path")
+cross_version=$(cat "app-cross/version.txt")
+cross_build=$(cat "app-cross/build.txt")
 if [[ ! "$cross_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo "Invalid app-cross version in $cross_version_path"
+    echo "Invalid Cross version in app-cross/version.txt"
     exit 1
 fi
 if [[ ! "$cross_build" =~ ^[1-9][0-9]*$ ]]; then
-    echo "Invalid app-cross build in $cross_build_path"
+    echo "Invalid Cross build in app-cross/build.txt"
     exit 1
 fi
 if [[ -n "$opt_version" && ! "$opt_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
@@ -98,10 +88,10 @@ if [[ -n "$opt_version" && ! "$opt_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
 fi
 
 if [[ -z "$opt_build" ]]; then
-    apple_build=`app-apple/ci/xcconfig-get.sh "$apple_xcconfig_path" CURRENT_PROJECT_VERSION`
-    android_build=`sed -n -E "s/^[[:space:]]*versionCode = ([0-9]+)[[:space:]]*$/\1/p" "$android_gradle_path"`
+    apple_build=`app-apple/ci/xcconfig-get.sh "app-apple/$apple_xcconfig_path" CURRENT_PROJECT_VERSION`
+    android_build=`sed -n -E "s/^[[:space:]]*versionCode = ([0-9]+)[[:space:]]*$/\1/p" "app-android/$android_gradle_path"`
     if [[ -z "$android_build" ]]; then
-        echo "Android versionCode not found in $android_gradle_path"
+        echo "Android versionCode not found in app-android/$android_gradle_path"
         exit 1
     fi
     current_build="$apple_build"
@@ -125,6 +115,7 @@ if [[ -n $opt_dry_run ]]; then
     echo "since   = $opt_since"
     echo "no_log  = $opt_no_log"
     echo "no_tag  = $opt_no_tag"
+    popd >/dev/null
     exit 0
 fi
 
@@ -135,61 +126,61 @@ if [[ $opt_no_log != "1" ]]; then
     fi
     git_range="$opt_since..HEAD"
     log=$(git log $git_range --pretty="* %s" --date=short)
-    edit_changelog "$apple_changelog_path"
+    edit_changelog "app-apple/CHANGELOG.txt"
 
-    read -r -p "Reuse Apple CHANGELOG for Android? y/N " reuse_apple_changelog
-    case "$reuse_apple_changelog" in
-        y|Y)
-            cp "$apple_changelog_path" "$android_changelog_path"
-            ;;
-        *)
-            edit_changelog "$android_changelog_path"
-            ;;
-    esac
-
-    read -r -p "Reuse Apple CHANGELOG for app-cross? y/N " reuse_apple_cross_changelog
-    case "$reuse_apple_cross_changelog" in
-        y|Y)
-            cp "$apple_changelog_path" "$cross_changelog_path"
-            ;;
-        *)
-            edit_changelog "$cross_changelog_path"
-            ;;
-    esac
+    for app in Android Cross; do
+        app_path="app-$(echo "$app" | tr '[:upper:]' '[:lower:]')"
+        read -r -p "Reuse Apple CHANGELOG for $app? y/N " reuse_changelog
+        case "$reuse_changelog" in
+            y|Y)
+                cp "app-apple/CHANGELOG.txt" "$app_path/CHANGELOG.txt"
+                ;;
+            *)
+                edit_changelog "$app_path/CHANGELOG.txt"
+                ;;
+        esac
+    done
 fi
 
 # Apple
 
-pushd "app-apple"
+pushd "app-apple" >/dev/null
 
-source "scripts/env.sh"
-echo "Set build number to $opt_build..."
-ci/xcconfig-set.sh "$xcconfig_path" CURRENT_PROJECT_VERSION "$opt_build"
+echo "Set Apple build number to $opt_build..."
+ci/xcconfig-set.sh "$apple_xcconfig_path" CURRENT_PROJECT_VERSION "$opt_build"
 if [[ -n "$opt_version" ]]; then
-    echo "Set version number to $opt_version..."
-    ci/xcconfig-set.sh $xcconfig_path MARKETING_VERSION "$opt_version"
+    echo "Set Apple version number to $opt_version..."
+    ci/xcconfig-set.sh "$apple_xcconfig_path" MARKETING_VERSION "$opt_version"
 fi
-git add "$xcconfig_path"
+git add "$apple_xcconfig_path"
 
-popd
+popd >/dev/null
 
 # Android
 
+pushd "app-android" >/dev/null
+
 echo "Set Android build number to $opt_build..."
-app-android/ci/gradle-set.sh "$android_gradle_path" versionCode "$opt_build"
+ci/gradle-set.sh "$android_gradle_path" versionCode "$opt_build"
 if [[ -n "$opt_version" ]]; then
     echo "Set Android version number to $opt_version..."
-    app-android/ci/gradle-set.sh "$android_gradle_path" versionName "$opt_version"
+    ci/gradle-set.sh "$android_gradle_path" versionName "$opt_version"
 fi
 git add "$android_gradle_path"
 
+popd >/dev/null
+
 # Cross
 
+pushd "app-cross" >/dev/null
+
 cross_version="${opt_version:-$cross_version}"
-echo "Set app-cross version to $cross_version ($opt_build)..."
-printf '%s\n' "$cross_version" > "$cross_version_path"
-printf '%s\n' "$opt_build" > "$cross_build_path"
-git add "$cross_version_path" "$cross_build_path"
+echo "Set Cross version to $cross_version ($opt_build)..."
+printf '%s\n' "$cross_version" > "version.txt"
+printf '%s\n' "$opt_build" > "build.txt"
+git add "version.txt" "build.txt"
+
+popd >/dev/null
 
 if [[ $opt_no_log != "1" ]]; then
     echo "Copy CHANGELOG to release notes..."
@@ -198,11 +189,11 @@ fi
 
 echo "Commit changes to repository..."
 git add \
-    "$metadata_root_apple" \
-    "$metadata_root_android" \
-    "$apple_changelog_path" \
-    "$android_changelog_path" \
-    "$cross_changelog_path"
+    "app-apple/fastlane/metadata" \
+    "app-android/app/src/main/play" \
+    "app-apple/CHANGELOG.txt" \
+    "app-android/CHANGELOG.txt" \
+    "app-cross/CHANGELOG.txt"
 
 git commit -m "Bump version"
 
@@ -211,5 +202,7 @@ if [[ -z "$opt_no_tag" ]]; then
     echo "Tag commit as $tag..."
     git tag -as "$tag" -m "$tag"
 fi
+
+popd >/dev/null
 
 echo "Done!"
