@@ -51,17 +51,17 @@ Profile ImportProfile(const std::string &text, const std::string &name) {
     }
 }
 
-std::unique_ptr<HttpClient> MakeHttpClient(const Models::AppConstants &constants) {
+std::unique_ptr<HttpClient> MakeHttpClient([[maybe_unused]] const Models::AppConstants &constants) {
 #ifdef _WIN32
     return std::make_unique<Windows::HttpClient>(Constants::HTTPTimeout(constants.url));
 #else
-    // FIXME: ###, Implement on .unixLike
+    // FIXME: ###, Implement on .unixLike and remove the corresponding [[maybe_unused]] attributes.
     return std::make_unique<OfflineHttpClient>();
 #endif
 }
 
 std::unique_ptr<PreferencesRepository> MakePreferencesRepository(
-    const std::filesystem::path &directory,
+    [[maybe_unused]] const std::filesystem::path &directory,
     const CrossConstantsType &constants
 ) {
 #ifdef _WIN32
@@ -71,7 +71,7 @@ std::unique_ptr<PreferencesRepository> MakePreferencesRepository(
 #endif
 }
 
-std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const CrossConstantsType &constants) {
+std::unique_ptr<Partout::Tunnel> MakeTunnel([[maybe_unused]] bool demo, [[maybe_unused]] const CrossConstantsType &constants) {
 #ifdef _WIN32
     if (!demo) {
         return std::make_unique<Partout::Tunnel>(
@@ -79,16 +79,16 @@ std::unique_ptr<Partout::Tunnel> MakeTunnel(bool demo, const CrossConstantsType 
         );
     }
 #else
-    // FIXME: ###, Implement on .unixLike
+    // FIXME: ###, Implement on .unixLike and remove the corresponding [[maybe_unused]] attributes.
 #endif
     return std::make_unique<Partout::Tunnel>(std::make_unique<FakeTunnelStrategy>());
 }
 
-bool ReportIssue(const std::string &recipient, const Models::Issue &issue) {
+bool ReportIssue([[maybe_unused]] const std::string &recipient, [[maybe_unused]] const Models::Issue &issue) {
 #ifdef _WIN32
     return ReviewIssue(recipient, issue);
 #else
-    // FIXME: ###, Implement on .unixLike
+    // FIXME: ###, Implement on .unixLike and remove the corresponding [[maybe_unused]] attributes.
     return false;
 #endif
 }
