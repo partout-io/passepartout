@@ -4,16 +4,19 @@
 
 package com.algoritmico.passepartout
 
-import com.algoritmico.passepartout.observables.ProfileImporter
 import com.algoritmico.passepartout.business.models.ProfileImporterInput
+import com.algoritmico.passepartout.models.AppErrorCode
+import com.algoritmico.passepartout.observables.ProfileImporter
+import com.algoritmico.passepartout.observables.ProfileImporterException
+import com.algoritmico.passepartout.observables.asAppError
 import io.partout.abi.PartoutException
 import io.partout.models.PartoutErrorCode
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.buildJsonObject
@@ -28,7 +31,7 @@ class ProfileImporterUnitTest {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         val phrases = mutableListOf<String?>()
         var successes = 0
-        val importer = ProfileImporter(scope, { it as ProfileImporterInput.Contents }, { text, name, phrase ->
+        val importer = ProfileImporter(scope, { listOf(it as ProfileImporterInput.Contents) }, { text, name, phrase ->
             assertEquals("encrypted", text)
             assertEquals("Private.ovpn", name)
             phrases += phrase
@@ -56,7 +59,7 @@ class ProfileImporterUnitTest {
     fun cancellationDiscardsPendingInput() {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         var attempts = 0
-        val importer = ProfileImporter(scope, { it as ProfileImporterInput.Contents }, { _, _, _ ->
+        val importer = ProfileImporter(scope, { listOf(it as ProfileImporterInput.Contents) }, { _, _, _ ->
             attempts++
             throw parsingError("passphraseRequired")
         }, { throw AssertionError(it) })
@@ -75,7 +78,7 @@ class ProfileImporterUnitTest {
     fun unrelatedParsingFailureIsReportedWithoutPrompt() {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         val failures = mutableListOf<Throwable>()
-        val importer = ProfileImporter(scope, { it as ProfileImporterInput.Contents }, { _, _, _ ->
+        val importer = ProfileImporter(scope, { listOf(it as ProfileImporterInput.Contents) }, { _, _, _ ->
             throw parsingError("unsupportedOption")
         }, failures::add)
         try {
@@ -92,7 +95,7 @@ class ProfileImporterUnitTest {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         val release = CompletableDeferred<Unit>()
         var successes = 0
-        val importer = ProfileImporter(scope, { it as ProfileImporterInput.Contents }, { _, name, _ ->
+        val importer = ProfileImporter(scope, { listOf(it as ProfileImporterInput.Contents) }, { _, name, _ ->
             if (name == "Old.ovpn") {
                 withContext(NonCancellable) { release.await() }
                 throw parsingError("passphraseRequired")
@@ -114,7 +117,7 @@ class ProfileImporterUnitTest {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         val imported = mutableListOf<String>()
         val failures = mutableListOf<Throwable>()
-        val importer = ProfileImporter(scope, { it as ProfileImporterInput.Contents }, { _, name, phrase ->
+        val importer = ProfileImporter(scope, { listOf(it as ProfileImporterInput.Contents) }, { _, name, phrase ->
             when (name) {
                 "skip", "decrypt" -> if (phrase != "correct") throw parsingError("passphraseRequired")
                 "invalid" -> throw parsingError("unsupportedOption")
@@ -141,7 +144,7 @@ class ProfileImporterUnitTest {
     fun closeDiscardsBatchWithoutStartingNextImport() {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
         val attempts = mutableListOf<String>()
-        val importer = ProfileImporter(scope, { it as ProfileImporterInput.Contents }, { _, name, _ ->
+        val importer = ProfileImporter(scope, { listOf(it as ProfileImporterInput.Contents) }, { _, name, _ ->
             attempts += name
             throw parsingError("passphraseRequired")
         }, { throw AssertionError(it) })
@@ -154,6 +157,204 @@ class ProfileImporterUnitTest {
             importer.submitPassphrase("ignored")
             importer.skipImport()
             assertEquals(listOf("first"), attempts)
+            assertEquals(ProfileImporter.State(), importer.state.value)
+        } finally {
+            scope.cancel()
+        }
+    }
+
+    @Test
+    fun archivePartialFailureImportsValidEntriesAndReportsSinglePartialNotice() {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        val imported = mutableListOf<String>()
+        val failures = mutableListOf<Throwable>()
+        val importer = ProfileImporter(
+            scope,
+            {
+                listOf(
+                    ProfileImporterInput.Contents("ok1", "good1.ovpn", isFromArchive = true),
+                    ProfileImporterInput.Contents("bad", "bad.ovpn", isFromArchive = true),
+                    ProfileImporterInput.Contents("ok2", "good2.conf", isFromArchive = true)
+                )
+            },
+            { _, name, _ ->
+                if (name == "bad.ovpn") throw parsingError("unsupportedOption")
+                imported += name
+            },
+            failures::add
+        )
+        try {
+            importer.importProfile(ProfileImporterInput.Contents("placeholder", "bundle.zip"))
+            assertEquals(listOf("good1.ovpn", "good2.conf"), imported)
+            val partial = failures.single() as ProfileImporterException.Partial
+            assertEquals(2, partial.imported)
+            assertEquals(3, partial.total)
+            assertEquals(AppErrorCode.importError, partial.asAppError.code)
+        } finally {
+            scope.cancel()
+        }
+    }
+
+    @Test
+    fun archiveAllFailingEntriesReportZeroOfTotalPartialNotice() {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        val failures = mutableListOf<Throwable>()
+        val importer = ProfileImporter(
+            scope,
+            {
+                listOf(
+                    ProfileImporterInput.Contents("bad1", "bad1.ovpn", isFromArchive = true),
+                    ProfileImporterInput.Contents("bad2", "bad2.conf", isFromArchive = true)
+                )
+            },
+            { _, _, _ -> throw parsingError("unsupportedOption") },
+            failures::add
+        )
+        try {
+            importer.importProfile(ProfileImporterInput.Contents("placeholder", "bad.zip"))
+            val partial = failures.single() as ProfileImporterException.Partial
+            assertEquals(0, partial.imported)
+            assertEquals(2, partial.total)
+        } finally {
+            scope.cancel()
+        }
+    }
+
+    @Test
+    fun archiveEncryptedEntryPromptsWithoutPrecountingAndUpdatesPartialNotice() {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        val imported = mutableListOf<String>()
+        val failures = mutableListOf<Throwable>()
+        val importer = ProfileImporter(
+            scope,
+            {
+                listOf(
+                    ProfileImporterInput.Contents("ok", "good.ovpn", isFromArchive = true),
+                    ProfileImporterInput.Contents("enc", "secret.ovpn", isFromArchive = true),
+                    ProfileImporterInput.Contents("bad", "bad.ovpn", isFromArchive = true)
+                )
+            },
+            { _, name, phrase ->
+                when (name) {
+                    "secret.ovpn" -> if (phrase != "correct") {
+                        throw parsingError(if (phrase == null) "passphraseRequired" else "unableToDecrypt")
+                    }
+                    "bad.ovpn" -> throw parsingError("unsupportedOption")
+                }
+                imported += name
+            },
+            failures::add
+        )
+        try {
+            importer.importProfile(ProfileImporterInput.Contents("placeholder", "bundle.zip"))
+            assertEquals(listOf("good.ovpn"), imported)
+            assertEquals("secret.ovpn", importer.state.value.passphraseFilename)
+            assertTrue(failures.isEmpty())
+
+            importer.submitPassphrase("wrong")
+            assertEquals("secret.ovpn", importer.state.value.passphraseFilename)
+            assertTrue(failures.isEmpty())
+
+            importer.submitPassphrase("correct")
+            assertEquals(listOf("good.ovpn", "secret.ovpn"), imported)
+            assertEquals(ProfileImporter.State(), importer.state.value)
+            val partial = failures.single() as ProfileImporterException.Partial
+            assertEquals(2, partial.imported)
+            assertEquals(3, partial.total)
+        } finally {
+            scope.cancel()
+        }
+    }
+
+    @Test
+    fun archiveSkippedEncryptedEntryIsNotCountedInPartialNotice() {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        val imported = mutableListOf<String>()
+        val failures = mutableListOf<Throwable>()
+        val importer = ProfileImporter(
+            scope,
+            {
+                listOf(
+                    ProfileImporterInput.Contents("ok", "good.ovpn", isFromArchive = true),
+                    ProfileImporterInput.Contents("enc", "secret.ovpn", isFromArchive = true),
+                    ProfileImporterInput.Contents("bad", "bad.ovpn", isFromArchive = true)
+                )
+            },
+            { _, name, phrase ->
+                when (name) {
+                    "secret.ovpn" -> if (phrase != "correct") throw parsingError("passphraseRequired")
+                    "bad.ovpn" -> throw parsingError("unsupportedOption")
+                }
+                imported += name
+            },
+            failures::add
+        )
+        try {
+            importer.importProfile(ProfileImporterInput.Contents("placeholder", "bundle.zip"))
+            assertEquals("secret.ovpn", importer.state.value.passphraseFilename)
+            importer.skipImport()
+            assertEquals(listOf("good.ovpn"), imported)
+            val partial = failures.single() as ProfileImporterException.Partial
+            assertEquals(1, partial.imported)
+            assertEquals(2, partial.total)
+        } finally {
+            scope.cancel()
+        }
+    }
+
+    @Test
+    fun explicitFileFailuresPreserveBinaryAndPerFileReporting() {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        val failures = mutableListOf<Throwable>()
+        val importer = ProfileImporter(
+            scope,
+            { input ->
+                val contents = input as ProfileImporterInput.Contents
+                if (contents.filename == "binary.bin") {
+                    throw ProfileImporterException.Binary
+                }
+                listOf(contents)
+            },
+            { _, _, _ -> throw parsingError("unsupportedOption") },
+            failures::add
+        )
+        try {
+            importer.importProfile(
+                ProfileImporterInput.Contents("bin", "binary.bin"),
+                ProfileImporterInput.Contents("bad", "bad.ovpn")
+            )
+            assertEquals(2, failures.size)
+            assertSame(ProfileImporterException.Binary, failures[0])
+            assertTrue(failures[1] is ProfileImporterException.Failure)
+            assertFalse(failures.any { it is ProfileImporterException.Partial })
+        } finally {
+            scope.cancel()
+        }
+    }
+
+    @Test
+    fun closeMidArchiveBatchDiscardsPartialCounts() {
+        val scope = CoroutineScope(SupervisorJob() + Dispatchers.Unconfined)
+        val failures = mutableListOf<Throwable>()
+        val importer = ProfileImporter(
+            scope,
+            {
+                listOf(
+                    ProfileImporterInput.Contents("bad", "bad.ovpn", isFromArchive = true),
+                    ProfileImporterInput.Contents("enc", "secret.ovpn", isFromArchive = true)
+                )
+            },
+            { _, name, _ ->
+                if (name == "bad.ovpn") throw parsingError("unsupportedOption")
+                throw parsingError("passphraseRequired")
+            },
+            failures::add
+        )
+        try {
+            importer.importProfile(ProfileImporterInput.Contents("placeholder", "bundle.zip"))
+            assertEquals("secret.ovpn", importer.state.value.passphraseFilename)
+            importer.close()
+            assertTrue(failures.isEmpty())
             assertEquals(ProfileImporter.State(), importer.state.value)
         } finally {
             scope.cancel()

@@ -377,6 +377,7 @@
     <string name="errors_app_empty_profile_name">Имя профиля пустое.</string>
     <string name="errors_app_import_binary">Импортируется двоичный файл.</string>
     <string name="errors_app_import_generic">Не удалось импортировать профили.</string>
+    <string name="errors_app_import_partial">Импортировано %1$d из %2$d профилей.</string>
     <string name="errors_app_incompatible_modules">Некоторые активные модули несовместимы, попробуйте активировать только один.</string>
     <string name="errors_app_incomplete_module">Пожалуйста, завершите настройку модуля %1$s.</string>
     <string name="errors_app_ineligible">Требуется покупка</string>

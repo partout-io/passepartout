@@ -44,7 +44,8 @@ let package = Package(
             dependencies: [
                 "AppAccessibility",
                 "AppResources",
-                "AppStrings"
+                "AppStrings",
+                .product(name: "ZIPFoundation", package: "ZIPFoundation")
             ]
         ),
         .target(
@@ -129,7 +130,8 @@ package.products.append(
 package.dependencies.append(contentsOf: [
     .package(path: "../partout"),
     .package(path: "../resources"),
-    .package(url: "https://github.com/apple/swift-nio", from: "2.83.0")
+    .package(url: "https://github.com/apple/swift-nio", from: "2.83.0"),
+    .package(url: "https://github.com/weichsel/ZIPFoundation", from: "0.9.21")
 ])
 
 package.targets.append(contentsOf: [

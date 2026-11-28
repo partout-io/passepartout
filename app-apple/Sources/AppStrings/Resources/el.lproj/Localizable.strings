@@ -41,6 +41,7 @@
 "errors.app.empty_profile_name" = "Το όνομα του προφίλ είναι κενό.";
 "errors.app.import.binary" = "Γίνεται εισαγωγή δυαδικού αρχείου.";
 "errors.app.import.generic" = "Δεν ήταν δυνατή η εισαγωγή προφίλ.";
+"errors.app.import.partial" = "Εισήχθησαν %ld από %ld προφίλ.";
 "errors.app.incompatible_modules" = "Μερικές ενεργές μονάδες είναι ασύμβατες, δοκιμάστε να ενεργοποιήσετε μόνο μία.";
 "errors.app.incomplete_module" = "Ολοκληρώστε τη ρύθμιση του %@ module.";
 "errors.app.ineligible" = "Απαιτείται αγορά";
@@ -454,12 +455,9 @@
 "web_uploader.title" = "Αποστολή στο Apple TV";
 "views.tv.profiles.import_local" = "Εισαγωγή προφίλ";
 "views.tv.connection_profiles.web_import_description" = "Μοιραστείτε ένα προφίλ μέσω iCloud ή επιλέξτε «Εισαγωγή προφίλ» για να εμφανιστεί ένας κωδικός QR. Σαρώστε τον με το Passepartout στο iPhone, το iPad ή το Mac σας για να στείλετε ένα προφίλ σε αυτή την τηλεόραση ή χρησιμοποιήστε ένα πρόγραμμα περιήγησης για να ανεβάσετε ένα αρχείο διαμόρφωσης.";
-
 "android.search.title" = "Αναζήτηση";
 "android.search.clear" = "Εκκαθάριση αναζήτησης";
 "android.vpn.settings" = "Ρυθμίσεις VPN";
 "android.vpn.restore_failed" = "Αδυναμία επαναφοράς του VPN";
 "android.vpn.restore_help" = "Ανοίξτε το Passepartout για να διαμορφώσετε ένα έγκυρο προφίλ. Αν οι συνδέσεις χωρίς VPN είναι αποκλεισμένες, χρησιμοποιήστε τις ρυθμίσεις VPN του Android για να διαχειριστείτε το VPN πάντα ενεργό.";
-
 "android.vpn.delete_blocked" = "Διαχειριστείτε το VPN πάντα ενεργό στις ρυθμίσεις VPN του Android πριν διαγράψετε προφίλ.";
-

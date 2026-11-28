@@ -381,6 +381,7 @@ enum class StringKey {
     ErrorsAppEmptyProfileName,
     ErrorsAppImportBinary,
     ErrorsAppImportGeneric,
+    ErrorsAppImportPartial,
     ErrorsAppIncompatibleModules,
     ErrorsAppIncompleteModule,
     ErrorsAppIneligible,
@@ -846,6 +847,7 @@ constexpr const char *StringKeyName(StringKey key) {
         case StringKey::ErrorsAppEmptyProfileName: return "errors.app.empty_profile_name";
         case StringKey::ErrorsAppImportBinary: return "errors.app.import.binary";
         case StringKey::ErrorsAppImportGeneric: return "errors.app.import.generic";
+        case StringKey::ErrorsAppImportPartial: return "errors.app.import.partial";
         case StringKey::ErrorsAppIncompatibleModules: return "errors.app.incompatible_modules";
         case StringKey::ErrorsAppIncompleteModule: return "errors.app.incomplete_module";
         case StringKey::ErrorsAppIneligible: return "errors.app.ineligible";

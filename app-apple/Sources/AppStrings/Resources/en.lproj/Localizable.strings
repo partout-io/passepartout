@@ -446,6 +446,7 @@
 "errors.app.empty_profile_name" = "Profile name is empty.";
 "errors.app.import.binary" = "Importing a binary file.";
 "errors.app.import.generic" = "Unable to import profiles.";
+"errors.app.import.partial" = "Imported %ld of %ld profiles.";
 "errors.app.incompatible_modules" = "Some active modules are incompatible, try to only activate one of them.";
 "errors.app.incomplete_module" = "Please finish the configuration of the %@ module.";
 "errors.app.ineligible" = "Purchase required";

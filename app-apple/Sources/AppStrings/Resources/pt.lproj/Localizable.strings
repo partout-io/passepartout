@@ -41,6 +41,7 @@
 "errors.app.empty_profile_name" = "O nome do perfil está vazio.";
 "errors.app.import.binary" = "A importar um ficheiro binário.";
 "errors.app.import.generic" = "Não foi possível importar os perfis.";
+"errors.app.import.partial" = "Importados %ld de %ld perfis.";
 "errors.app.incompatible_modules" = "Alguns módulos ativos são incompatíveis, tente ativar apenas um.";
 "errors.app.incomplete_module" = "Conclua a configuração do módulo %@.";
 "errors.app.ineligible" = "Compra necessária";
@@ -454,12 +455,9 @@
 "web_uploader.title" = "Enviar para Apple TV";
 "views.tv.profiles.import_local" = "Importar perfil";
 "views.tv.connection_profiles.web_import_description" = "Compartilhe um perfil pelo iCloud ou selecione “Importar perfil” para exibir um código QR. Escaneie-o com o Passepartout no iPhone, iPad ou Mac para enviar um perfil para esta TV, ou use um navegador web para carregar um arquivo de configuração.";
-
 "android.search.title" = "Pesquisar";
 "android.search.clear" = "Limpar pesquisa";
 "android.vpn.settings" = "Definições de VPN";
 "android.vpn.restore_failed" = "Não foi possível restabelecer a VPN";
 "android.vpn.restore_help" = "Abra o Passepartout para configurar um perfil válido. Se as ligações sem VPN estiverem bloqueadas, utilize as definições de VPN do Android para gerir a VPN sempre ativa.";
-
 "android.vpn.delete_blocked" = "Faça a gestão da VPN sempre ativa nas definições de VPN do Android antes de apagar perfis.";
-

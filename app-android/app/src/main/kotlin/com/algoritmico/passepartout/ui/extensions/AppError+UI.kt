@@ -12,6 +12,7 @@ import com.algoritmico.passepartout.business.extensions.errorPair
 import com.algoritmico.passepartout.business.extensions.parseErrorInfo
 import com.algoritmico.passepartout.models.AppErrorCode
 import com.algoritmico.passepartout.observables.AppError
+import com.algoritmico.passepartout.observables.ProfileImporterException
 import com.algoritmico.passepartout.observables.ProfileObservableException
 import com.algoritmico.passepartout.observables.fromLastErrorCode
 import io.partout.abi.PartoutException
@@ -35,8 +36,15 @@ fun AppError.localizedMessage(): String {
         AppErrorCode.emptyProducts -> stringResource(R.string.errors_app_empty_products)
         AppErrorCode.emptyProfileName -> stringResource(R.string.errors_app_empty_profile_name)
         AppErrorCode.encoding -> detail ?: stringResource(R.string.errors_app_other)
-        AppErrorCode.importError -> stringResource(R.string.errors_app_parsing)
-            .appending(detail, separator = " ")
+        AppErrorCode.importError -> when (cause) {
+            is ProfileImporterException.Partial -> stringResource(
+                R.string.errors_app_import_partial,
+                cause.imported,
+                cause.total
+            )
+            else -> stringResource(R.string.errors_app_parsing)
+                .appending(detail, separator = " ")
+        }
         AppErrorCode.incompatibleModules -> stringResource(R.string.errors_app_incompatible_modules)
         AppErrorCode.incompleteModule -> stringResource(
             R.string.errors_app_incomplete_module,

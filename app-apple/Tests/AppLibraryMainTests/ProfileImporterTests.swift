@@ -15,10 +15,10 @@ struct ProfileImporterTests {
         let profileManager = ProfileManager(profiles: [])
 
         try await sut.tryImport(
-            urls: [],
+            inputs: [],
             block: profileManager.mockImport
         )
-        #expect(sut.nextURL == nil)
+        #expect(sut.nextInput == nil)
         #expect(!profileManager.hasProfiles)
     }
 
@@ -46,10 +46,10 @@ struct ProfileImporterTests {
         }
 
         try await sut.tryImport(
-            urls: [url],
+            inputs: [.file(url)],
             block: profileManager.mockImport
         )
-        #expect(sut.nextURL == nil)
+        #expect(sut.nextInput == nil)
 
         try await exp.fulfillment(timeout: 500)
     }
@@ -78,17 +78,17 @@ struct ProfileImporterTests {
         }
 
         try await sut.tryImport(
-            urls: [url],
+            inputs: [.file(url)],
             block: profileManager.mockImport
         )
-        #expect(sut.nextURL == url)
+        #expect(sut.nextInput?.displayName == url.lastPathComponent)
 
         sut.currentPassphrase = "passphrase"
         try await sut.reImport(
-            url: url,
+            input: .file(url),
             block: profileManager.mockImport
         )
-        #expect(sut.nextURL == nil)
+        #expect(sut.nextInput == nil)
 
         try await exp.fulfillment(timeout: 500)
     }
@@ -98,14 +98,14 @@ struct ProfileImporterTests {
         let sut = ProfileImporter()
         let url = URL(string: "file:///filename.encrypted")!
 
-        try await sut.tryImport(urls: [url]) { _, _ in
+        try await sut.tryImport(inputs: [.file(url)]) { _, _ in
             let error = try openVPNParseError(code)
             if wrapped {
                 throw ABI.AppError(error)
             }
             throw error
         }
-        #expect(sut.urlsRequiringPassphrase == [url])
+        #expect(sut.inputsRequiringPassphrase.map(\.displayName) == [url.lastPathComponent])
     }
 
     @Test
@@ -114,7 +114,7 @@ struct ProfileImporterTests {
         let url = URL(string: "file:///filename.ovpn")!
 
         do {
-            try await sut.tryImport(urls: [url]) { _, _ in
+            try await sut.tryImport(inputs: [.file(url)]) { _, _ in
                 throw try openVPNParseError(.unsupportedCompression)
             }
             Issue.record("Expected unsupported compression error")
@@ -126,7 +126,7 @@ struct ProfileImporterTests {
             #expect(wrapped.code == .parsing)
             #expect(wrapped.parseErrorInfo?.subCode == OpenVPNErrorCode.unsupportedCompression.rawValue)
         }
-        #expect(sut.urlsRequiringPassphrase.isEmpty)
+        #expect(sut.inputsRequiringPassphrase.isEmpty)
         #expect(!sut.isPresentingPassphrase)
     }
 
@@ -137,11 +137,55 @@ struct ProfileImporterTests {
         let url = URL(string: "file:///filename.encrypted")!
 
         try await sut.tryImport(
-            urls: [url, url, url],
+            inputs: [.file(url), .file(url), .file(url)],
             block: profileManager.mockImport
         )
-        #expect(sut.nextURL == url)
-        #expect(sut.urlsRequiringPassphrase.count == 3)
+        #expect(sut.nextInput?.displayName == url.lastPathComponent)
+        #expect(sut.inputsRequiringPassphrase.count == 3)
+    }
+
+    @Test
+    func givenArchiveEntry_whenImportFails_thenOthersAreImported() async throws {
+        let sut = ProfileImporter()
+        let inputs: [ABI.ProfileImporterInput] = [
+            .contents(filename: "one.ovpn", data: ""),
+            .contents(filename: "bad.ovpn", data: ""),
+            .contents(filename: "two.ovpn", data: "")
+        ]
+
+        let summary = try await sut.tryImport(inputs: inputs) { input, _ in
+            if input.displayName == "bad.ovpn" {
+                throw ABI.AppError.importError()
+            }
+        }
+        #expect(summary.imported == 2)
+        #expect(summary.failed == 1)
+    }
+
+    @Test
+    func givenFile_whenImportFails_thenThrows() async {
+        let sut = ProfileImporter()
+        let url = URL(string: "file:///filename.ovpn")!
+
+        await #expect(throws: ABI.AppError.self) {
+            try await sut.tryImport(inputs: [.file(url)]) { _, _ in
+                throw ABI.AppError.importError()
+            }
+        }
+    }
+
+    @Test
+    func givenArchiveEntryRequiringPassphrase_whenImport_thenQueuesWithoutCounting() async throws {
+        let sut = ProfileImporter()
+
+        let summary = try await sut.tryImport(inputs: [
+            .contents(filename: "encrypted.ovpn", data: "")
+        ]) { _, _ in
+            throw try openVPNParseError(.passphraseRequired)
+        }
+        #expect(summary.imported == 0)
+        #expect(summary.failed == 0)
+        #expect(sut.nextInput?.displayName == "encrypted.ovpn")
     }
 }
 
@@ -151,9 +195,9 @@ private struct SomeModule: Module {
 }
 
 private extension ProfileManager {
-    func mockImport(url: URL, passphrase: String?) async throws {
+    func mockImport(input: ABI.ProfileImporterInput, passphrase: String?) async throws {
         let importedModule = try {
-            if url.absoluteString.hasSuffix(".encrypted") {
+            if input.displayName.hasSuffix(".encrypted") {
                 guard let passphrase else {
                     throw try openVPNParseError(.passphraseRequired)
                 }

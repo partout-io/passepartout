@@ -6,7 +6,7 @@ import com.algoritmico.passepartout.business.extensions.runCatchingNonFatal
 import com.algoritmico.passepartout.business.managers.ConfigManager
 import com.algoritmico.passepartout.business.managers.ProfileManager
 import com.algoritmico.passepartout.business.managers.VersionChecker
-import com.algoritmico.passepartout.business.models.decodedPair
+import com.algoritmico.passepartout.business.models.decodedPairs
 import com.algoritmico.passepartout.business.strategy.PartoutWireGuardKeyGenerator
 import com.algoritmico.passepartout.business.strategy.WireGuardKeyGenerator
 import com.algoritmico.passepartout.models.AppConfiguration
@@ -128,8 +128,8 @@ class AppContext(
         )
         profileImporter = ProfileImporter(
             coroutineScope = coroutineScope,
-            readProfile = { input ->
-                input.decodedPair(
+            readProfiles = { input ->
+                input.decodedPairs(
                     applicationContext.contentResolver,
                     applicationContext.getString(R.string.placeholders_profile_imported_name),
                     logTag
@@ -137,7 +137,8 @@ class AppContext(
             },
             importText = profileManager::importText,
             reportError = errorHandler::report,
-            onImportSuccess = ::onApplicationActive
+            onImportSuccess = ::onApplicationActive,
+            logTag = logTag
         )
         tunnelObservable = TunnelObservable(
             logTag,

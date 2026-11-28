@@ -46,6 +46,7 @@
                 <data android:mimeType="application/json" />
                 <data android:mimeType="text/plain" />
                 <data android:mimeType="application/octet-stream" />
+                <data android:mimeType="application/zip" />
             </intent-filter>
         </activity>
         <!-- pathSuffix is only understood from API 31 onward. -->
@@ -63,6 +64,7 @@
                 <data android:pathSuffix=".ovpn" />
                 <data android:pathSuffix=".conf" />
                 <data android:pathSuffix=".json" />
+                <data android:pathSuffix=".zip" />
             </intent-filter>
         </activity-alias>
         <provider
